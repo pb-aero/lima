@@ -1,0 +1,10 @@
+.env
+*.pem
+*.key
+id_*
+*.db
+*.sqlite
+*.zip
+.DS_Store
+node_modules/
+__pycache__/
