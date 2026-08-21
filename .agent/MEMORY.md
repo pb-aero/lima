@@ -199,3 +199,37 @@ the only artefact that carries the outline, so it is the only thing that can cat
 5. **Read the whole model, not just the outline.** 105 solids hang 0.700 mm below the SOM's PCB
    bottom face — the module cannot seat flat on a plain host board. A footprint with no keepout for
    that looks perfectly correct in 2D and is unbuildable.
+
+## KiCAD scar — a datasheet dimension measures what it points at, not what you hoped (2026-08-21)
+`[measured]`. Follow-on to the scar above. The CC93 footprint's 118 pads were built around **33,56 mm**
+read off HRM 90002549 p.83 as "the pad row span". It is the **HOST PCB CUTOUT width**. One misread
+dimension put 64 of 118 pads 3.49 mm inboard, under the module body, and every downstream check —
+pad-overlap, DRC, pad-count reconciliation against the datasheet — passed anyway.
+
+**How it was finally settled, and what nearly broke each step:**
+1. **Digi's own Altium `CC93_DVK.PcbLib` did not answer it.** It holds a 474-pad **LGA** array — a
+   different variant from the 118-pad castellated part. Reading it was still worth it: **KiCad ships
+   an Altium importer usable from Python** — `/Applications/KiCad/KiCad.app/Contents/Frameworks/
+   Python.framework/Versions/3.9/bin/python3.9`, then `pcbnew.PCB_IO_MGR.FindPlugin(
+   pcbnew.PCB_IO_MGR.ALTIUM_DESIGNER)` → `.FootprintEnumerate(path)` / `.FootprintLoad(path, name)`.
+   No need to hand-parse OLE. Same trick reads Eagle, CADSTAR, EasyEDA, PCAD.
+2. **The HRM drawing is an embedded BITMAP, not vector.** A PDF content-stream walk returned 3
+   subpaths. Check `page.images` before writing a vector extractor.
+3. **Autocorrelation picked the 2nd harmonic** on one of four pad runs — 100.8 px against the true
+   50.4 px — which would have halved every dimension. Three concordant runs outvoted the outlier.
+   *Measure the same quantity several independent ways and let them vote; a lone number has no way
+   to tell you it is wrong.*
+4. **Calibration was checked against four of the drawing's own labels** (33,56 / 20,86 / 12,07 /
+   3,22, all reproduced to better than 0.1 mm) **before any result was believed.** A dimensioned
+   drawing carries its own test fixture — use it.
+
+**Rules:**
+- **Before building geometry off a single dimension, confirm what it is measuring** by reproducing a
+  second, independent dimension from the same drawing. One number read off a datasheet is `[assumed]`,
+  not `[fetched]`, until something else agrees with it.
+- **Prefer a constraint that falls out rather than one you set.** The corrected pads straddle the
+  module edge by exactly **1.000 mm**, which then matched DETAIL A's `1` — nobody aimed at that, and
+  that is precisely why it is good evidence. A number you chose proves nothing; a number that arrives
+  on its own and agrees with an independent source is close to proof.
+- **When correcting a document, mark the old claim superseded in place — do not delete it.** The
+  wrong reasoning is what stops the next session repeating it.

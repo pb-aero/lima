@@ -20,7 +20,12 @@ Built 2026-08-21 from **ConnectCore 93 System-on-Module Hardware Reference Manua
   counter-clockwise numbering, and 32+27+32+27 = 118 independently confirms the pad table.
 - **Overlap check** — `[measured]` every pad pair tested; zero overlaps.
 
-## Read this before using it on real hardware
+## ~~Read this before using it on real hardware~~ — SUPERSEDED 2026-08-21
+
+> **This whole section was wrong and is kept only as a record.** The 33.56 mm it treats as the
+> pad row span is the **host PCB cutout width**. See *Resolved* at the foot of this file.
+
+### original text
 
 **The corner offsets are approximated.** The HRM dimensions the row span (33.56 mm) and the pad
 pitch, but not the gap between where a column run ends and a row run begins. Placing rows and
@@ -96,7 +101,7 @@ Verified at the point of use: placed on a throwaway board and rendered headlessl
 `kicad-cli pcb render`. Evidence in `doc/cc93_3dmodel_top.png` and `doc/cc93_3dmodel_front.png`.
 The front view confirms the module seats flat on the host board.
 
-## ⚠ What the render exposed: the side pad columns are in the wrong place
+## ⚠ What the render exposed: the side pad columns were in the wrong place  — NOW FIXED
 
 This is the caveat the old README flagged as "the corner offsets are approximated", and it is worse
 than approximate. The module is **40 mm wide**, not the 33.56 mm that was read off the HRM.
@@ -115,12 +120,10 @@ visible past the module edge and the left and right columns are simply not there
 Pad **counts and pitch are fine** — 32 pads × 1.27 = 39.37 mm inside the 45 mm edge, 27 × 1.27 =
 33.02 mm inside the 40 mm edge. Only the columns' X coordinate and the body outline are wrong.
 
-**The fix is not yet made, deliberately.** By analogy with the rows (centre 0.275 mm inboard of the
-edge) the columns belong at **x = ±19.725** — but that is `[derived]`, not read from a drawing, and
-it silently moves 64 electrical pads. Confirm it against the HRM pad table or Digi's Altium
-`CC93_LGA.SchLib` / `CC93_DVK.PcbLib` before applying. The body outline should become 40 × 45 mm.
+**Fixed — see *Resolved* below.** The derived ±19.725 was close but wrong; the drawing gives
+**±20.000**, pads centred exactly on the module outline.
 
-## ⚠ The host board needs a keepout under the module
+## ⚠ The host board needs a keepout under the module  — NOW MARKED
 
 `[measured]` from the STEP: **105 solids sit entirely below the SOM's PCB**, protruding **0.700 mm**
 past its bottom face. The module cannot seat flat on a plain host board.
@@ -132,7 +135,8 @@ X  -11.750 … +15.400   (27.150 mm)
 Y   -4.425 …  +7.850   (12.275 mm)
 ```
 
-The footprint carries no keepout for this. It should.
+Now marked on `Dwgs.User` — see *Resolved* below. Digi's own dimensioned cutout is larger than
+this measured envelope, and Digi's is the one to build to.
 
 ## ⚠ Digi ships the wrong file under the footprint/cutout asset
 
@@ -147,3 +151,79 @@ ConnectCore 8X-Host PCB footprint and cutout.pdf
 **ConnectCore 8X — a different module.** This is the exact document the earlier README told us to
 check the corner geometry against. It is not the right part, and its file dates (2022-09-08) predate
 the CC93. Do not use it for CC93 corner geometry; raise it with Digi.
+
+---
+
+# 2026-08-21 (later) · RESOLVED — geometry sourced from the HRM drawing
+
+Digi's Altium `CC93_DVK.PcbLib` was opened (via KiCad 10's own built-in Altium importer, through
+`pcbnew` Python) and it **does not answer the question**: it holds one footprint, a **474-pad LGA
+array** at 1.27 mm pitch spanning 40.64 × 35.56 mm with six mounting holes. That is the LGA variant's
+land pattern — a different part from the 118-pad castellated one. Recorded so nobody spends the time
+twice. It does corroborate the body size indirectly: its array sits inside a 45 × 40 body with a
+uniform 2.18 mm margin on both axes.
+
+The answer came from **HRM 90002549 rev 4P, page 83, "Host PCB footprint and cutout"** — which shows
+LGA *and* CASTELLATION footprints side by side. The drawing is an embedded bitmap, not vector, so it
+was measured by projection profile and calibrated against the pad pitch. `[measured]`
+
+**Guard against the instrument:** autocorrelation on the right-hand column locked onto the *second*
+harmonic (100.8 px vs the true 50.4 px), which would have halved every result. The three concordant
+runs outvoted it. The calibration was then checked against four of the drawing's own dimension
+labels before any of it was believed:
+
+| Drawing label | Reproduced from the bitmap | Error |
+|---|---|---|
+| `33,56` | 33.632 mm | 0.07 |
+| `20,86` | 20.880 mm | 0.02 |
+| `12,07` | 12.057 mm | 0.01 |
+| `3,22` | 3.225 mm | 0.005 |
+
+## What 33,56 actually is
+
+**`33,56` dimensions the HOST PCB CUTOUT width.** It is not the pad span, and never was. The earlier
+session read it as the row span and built all 118 pads around it — which is how 64 pads ended up
+3.49 mm inboard of where they belong.
+
+## Corrected geometry — applied
+
+Pad centres sit **on the module outline**, confirmed three ways: the drawing measures ±20.046 /
+±22.504; the STEP gives the body as exactly 40.000 × 45.000; and DETAIL A dimensions the pad as
+2 mm long with **1** from its centreline, i.e. 1 mm either side of the edge.
+
+| | was | now | source |
+|---|---|---|---|
+| Side columns (64 pads) | x = ±16.510 | **x = ±20.000** | HRM p.83 + STEP outline |
+| Top/bottom rows (54 pads) | y = ±22.225 | **y = ±22.500** | HRM p.83 + STEP outline |
+| F.Fab body | 33.56 × 44.45 | **40.000 × 45.000**, pin-1 chamfer | STEP |
+| Courtyard | ±17.76 × ±23.475 | **±21.25 × ±23.75** | pad envelope + 0.25 |
+| Host cutout | — | **33.56 × 20.86 centred**, on `Dwgs.User` | HRM p.83 |
+
+Pad numbering, pitch, counts (32/27/32/27) and sizes (0.9 × 2.0) are unchanged — they were always
+right. The correction is a pure translation of each run outward.
+
+Verified `[measured]`: all four runs straddle the module edge by exactly **1.000 mm**, matching
+DETAIL A's `1`; 118 pads present and numbered 1..118 with no gaps; **0 overlapping pad pairs**;
+`kicad-cli pcb drc` **0 violations**; and the render `doc/cc93_3dmodel_top.png` now shows
+castellations on all four edges where before two sides were bare.
+
+The 1.000 mm overhang was not a target — it fell out of the drawing measurement and then matched
+DETAIL A. That agreement is the strongest evidence here.
+
+## The keepout, and which number to build to
+
+Two figures, and they are not the same thing:
+
+- **Digi's dimensioned cutout: 33.56 × 20.86 mm**, centred. Heavy line on `Dwgs.User`. **Build to this.**
+- **Measured protrusion envelope: X −11.75…+15.40, Y −4.425…+7.85** `[measured]` from the STEP.
+  Thin line on `Dwgs.User`, for reference only. It sits comfortably inside Digi's cutout, which is
+  what you would hope — Digi's allows for tolerance and assembly.
+
+Deepest bottom-side protrusion is **0.700 mm** below the SOM's PCB, across 105 solids.
+
+## Still open
+
+- The symbol (`Digi.kicad_sym`) is untouched and still has `NVCC_SD2` / `1V8` typed `bidirectional`
+  where they are power rails, and empty Footprint/Datasheet/Description properties.
+- Digi's *"ConnectCore 91 and 93 — Host PCB footprint and cutout drawing"* asset still ships
+  ConnectCore **8X** files. Worth reporting to Digi; the HRM page 83 drawing is the usable source.
