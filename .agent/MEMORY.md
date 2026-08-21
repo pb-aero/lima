@@ -93,3 +93,44 @@ The LED was shorted and had zero volts across it.
 3. **Verify a circuit by its per-pin nets, never by ERC's exit state.** An unnamed midpoint net
    reading `None` from `get_pin_net_name` is the *correct* signal for a two-component divider —
    `list_schematic_nets` counts only *named* nets, so "2 nets" here is right, not a shortfall.
+
+## KiCAD PCB via Konnect IPC — scars from the layout shakedown (2026-08-21)
+`[measured]` end-to-end on the blinky throwaway board. All of these cost real time.
+
+**1. IPC edits live in KiCad's memory until you SAVE. This makes DRC lie.**
+`get_drc_violations` and every `kicad-cli` export read the **file**; IPC tools read **KiCad's
+memory**. After syncing and routing over IPC I ran DRC: **0 violations**. Called
+`save_project`, re-ran the identical check: **4 violations, two of them errors.** The clean
+result was measured against a board that did not yet contain the work. `get_board_info` showed
+`net_count: 0` at the same moment `get_nets_list` (IPC) showed 4 nets — that disagreement is
+the tell. **Save before you believe any file-based check.**
+
+**2. A read immediately after a geometry-changing IPC call can be stale.**
+`get_component_pads` right after `rotate_component` returned **pre-rotation** pad positions. I
+concluded the rotation had failed and routed to the old coordinates — straight onto the GND pad.
+It had worked; my instrument was stale. **Re-read after a save, not straight after the write.**
+
+**3. Routing tools drive straight through whatever is in the way.**
+`route_pad_to_pad` and `route_trace` lay copper on a direct path with no awareness of
+intervening pads — it shorted `/GND` to `Net-(D1-A)` by crossing D1's GND pad. This is the
+**same failure mode** as `connect_pins` on the schematic (see the ERC scar above). Same rule
+applies: read the pad coordinates first and route around, or move the part.
+
+**4. Footprints placed in file-mode have no schematic identity.**
+`place_component` with KiCad closed writes a footprint with a blank symbol path.
+`update_pcb_from_schematic` then refuses the whole plan with `duplicate_board_identity` and
+`reference_identity_conflict` — correctly, rather than guessing which pads get which nets. Fix:
+`delete_component` the orphans and let the sync add them. Do the schematic first, always.
+
+**5. Tools that fail closed, and deserve credit for it.** `add_copper_pour` refuses while KiCad
+holds the board: *"a copper pour written to the file would be discarded by KiCAD's next save."*
+`update_pcb_from_schematic` requires `expected_plan_revision` from a dry run before it will
+apply. `place_component` states in its result when it fell back to a file edit.
+
+**6. Setup gotchas.** KiCad's IPC is OFF by default — `api.enable_server` in
+`~/Library/Preferences/kicad/10.0/kicad_common.json` (backed up as `.bak-preconnect`); KiCad
+rewrites that file on exit, so edit it CLOSED. Konnect reads its config **once at launch**, so
+`~/.konnect/bin/settings.json` (`ipc_socket_path: ipc:///tmp/kicad/api.sock`) needs a client
+restart. The API server runs in the **project manager** — an editor launched standalone gets
+`ppid 1`, never registers, and every call returns `AS_UNHANDLED`. Pour `points` are objects
+`{x,y}`, not `[x,y]` pairs.
