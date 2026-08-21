@@ -67,3 +67,29 @@ Scars and hard-won facts. Read before acting.
   or ships it inside a product — raise with Chris before that happens, not after.
 - **Beta, and macOS is the less-tested platform** — upstream says Windows has the mileage. v0.7.0
   was published 2026-08-21, the same day it was installed, with single-digit download counts.
+
+## KiCAD scar — a green ERC is not a correct circuit (2026-08-21)
+`[measured]` on the first Konnect throwaway board. I placed `Device:LED` with `rotation: 270`,
+which put the **cathode on top**. `connect_pins(R1.2 -> D1.2)` then drew a single vertical wire
+from y=78.74 straight down to the anode at y=99.06 — **passing through the cathode pin at
+y=91.44 on the way**. The cathode joined that wire, so R1.2, D1.1 and D1.2 all landed on GND.
+The LED was shorted and had zero volts across it.
+
+**What every instrument said about this broken circuit:**
+- `run_erc` — **0 errors.** KiCad does not treat "both pins of a passive on one net" as a rule
+  violation, so it is not lying, but green ERC is *not* evidence the circuit works.
+- `find_shorted_nets` — **0 shorts.** From the netlist's view there was no short, just one net.
+- The only signal was an **absence**: ERC warned `Label connected to only one pin: 'VCC'` and
+  gave **no matching GND warning**, because GND had silently collected three pins.
+
+**What actually caught it:** `get_pin_net_name` per pin, and counting nets. Three pins reading
+`GND` where the midpoint should have been unnamed.
+
+**Rules taken from this:**
+1. `connect_pins` routes a straight line and will run it **through a symbol body** without
+   warning or adding a junction. Check pin coordinates with `batch_get_schematic_pin_locations`
+   **before** wiring, not after.
+2. For `Device:LED`, `rotation: 90` puts the anode up (A at the smaller y). 270 inverts it.
+3. **Verify a circuit by its per-pin nets, never by ERC's exit state.** An unnamed midpoint net
+   reading `None` from `get_pin_net_name` is the *correct* signal for a two-component divider —
+   `list_schematic_nets` counts only *named* nets, so "2 nets" here is right, not a shortfall.
