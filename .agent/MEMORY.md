@@ -134,3 +134,38 @@ rewrites that file on exit, so edit it CLOSED. Konnect reads its config **once a
 restart. The API server runs in the **project manager** — an editor launched standalone gets
 `ppid 1`, never registers, and every call returns `AS_UNHANDLED`. Pour `points` are objects
 `{x,y}`, not `[x,y]` pairs.
+
+## Konnect library + IPC findings (2026-08-21, building the ConnectCore 93 part)
+`[measured]` while adding a Digi ConnectCore 93 SOM to the throwaway board.
+
+**Konnect bugs found — all silent, none raised an error:**
+- **`create_symbol` drops `footprint`, `datasheet` and `description`.** Passed all three; the
+  .kicad_sym came back with all three properties empty. Reported `success: true`. Set them on
+  the instance with `edit_schematic_component` instead, or the netlist preflight later fails
+  with "KiCad netlist node is missing footprint".
+- **`get_symbol_info` returns 0 pins** for a symbol whose file genuinely holds 118. The
+  `power_pin_count: 0` in the create response is wrong the same way. **Grep the .kicad_sym to
+  check a symbol — the read-back API lies.**
+- **`set_board_size` APPENDS an outline, it does not replace.** Calling it twice left two
+  overlapping rectangles on Edge.Cuts and DRC reported `invalid_outline` + four
+  `copper_edge_clearance` errors. Strip the old `gr_line` Edge.Cuts blocks before re-sizing.
+
+**IPC socket rule — this is the thing that cost the most time.** The first KiCad process to
+start owns `/tmp/kicad/api.sock`; any later one gets `/tmp/kicad/api-<pid>.sock`. A **standalone
+`PCB Editor.app` IS addressable** — point `ipc_socket_path` at whichever socket `lsof` shows it
+owning. (Corrects an earlier conclusion of mine that a standalone editor can never register and
+that only a GUI double-click from the project manager works. It registers fine; I was pointing
+at the wrong socket.) The project-manager-only case gives `GetOpenDocuments (AS_UNHANDLED)` —
+that error means *no editor holds a document*, not that IPC is down.
+
+**Stale `.lck` files block the sync and carry no PID.** `~<name>.kicad_sch.lck` survives a killed
+editor, and `update_pcb_from_schematic` refuses with "open in the schematic editor" forever
+after. They contain only `{"hostname","username"}`, so nothing can tell live from stale — delete
+by hand once the editors are closed.
+
+**My own scar: a land pattern whose corners collided.** Building rows and columns each on their
+own centre-span put pad 32 and pad 33 at the identical coordinate, at all four corners. Neither
+`create_footprint` nor the pad count caught it — **the render did**, as four cross-shaped blobs.
+Now guarded by an explicit pairwise overlap assert before the footprint is written. **For any
+generated footprint, test every pad pair for overlap and look at the render; a correct pad
+*count* says nothing about pad *positions*.**

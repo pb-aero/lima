@@ -1,0 +1,710 @@
+[
+ {
+  "pad": 1,
+  "lga": "E4",
+  "signal": "SD2_RESET_B",
+  "power_group": null
+ },
+ {
+  "pad": 2,
+  "lga": "E3",
+  "signal": "GPIO2_IO19",
+  "power_group": null
+ },
+ {
+  "pad": 3,
+  "lga": "F3",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 4,
+  "lga": "G2",
+  "signal": "SD2_CD_B",
+  "power_group": null
+ },
+ {
+  "pad": 5,
+  "lga": "F1",
+  "signal": "SD2_CMD",
+  "power_group": null
+ },
+ {
+  "pad": 6,
+  "lga": "G1",
+  "signal": "SD2_DATA0",
+  "power_group": null
+ },
+ {
+  "pad": 7,
+  "lga": "H1",
+  "signal": "SD2_DATA1",
+  "power_group": null
+ },
+ {
+  "pad": 8,
+  "lga": "J1",
+  "signal": "SD2_DATA2",
+  "power_group": null
+ },
+ {
+  "pad": 9,
+  "lga": "K1",
+  "signal": "SD2_DATA3",
+  "power_group": null
+ },
+ {
+  "pad": 10,
+  "lga": "L1",
+  "signal": "SD2_CLK",
+  "power_group": null
+ },
+ {
+  "pad": 11,
+  "lga": "M1",
+  "signal": "GND",
+  "power_group": null
+ },
+ {
+  "pad": 12,
+  "lga": "N1",
+  "signal": "NVCC_SD2",
+  "power_group": "NVCC_SD2"
+ },
+ {
+  "pad": 13,
+  "lga": "P1",
+  "signal": "UART7_TX",
+  "power_group": null
+ },
+ {
+  "pad": 14,
+  "lga": "R1",
+  "signal": "UART7_RX",
+  "power_group": null
+ },
+ {
+  "pad": 15,
+  "lga": "T1",
+  "signal": "GND",
+  "power_group": null
+ },
+ {
+  "pad": 16,
+  "lga": "U1",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 17,
+  "lga": "V1",
+  "signal": "I2C2_SCL",
+  "power_group": null
+ },
+ {
+  "pad": 18,
+  "lga": "W1",
+  "signal": "I2C2_SDA",
+  "power_group": null
+ },
+ {
+  "pad": 19,
+  "lga": "Y1",
+  "signal": "GPIO1_IO10",
+  "power_group": null
+ },
+ {
+  "pad": 20,
+  "lga": "AA1",
+  "signal": "GPIO2_IO06",
+  "power_group": null
+ },
+ {
+  "pad": 21,
+  "lga": "AB1",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 22,
+  "lga": "AC1",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 23,
+  "lga": "AD1",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 24,
+  "lga": "AE1",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 25,
+  "lga": "AF1",
+  "signal": "GPIO4_IO14(1V8)",
+  "power_group": null
+ },
+ {
+  "pad": 26,
+  "lga": "AG1",
+  "signal": "GPIO4_IO15(1V8)",
+  "power_group": null
+ },
+ {
+  "pad": 27,
+  "lga": "AH1",
+  "signal": "1V8",
+  "power_group": null
+ },
+ {
+  "pad": 28,
+  "lga": "AJ1",
+  "signal": "GND",
+  "power_group": null
+ },
+ {
+  "pad": 29,
+  "lga": "AK1",
+  "signal": "3V3",
+  "power_group": "3V3"
+ },
+ {
+  "pad": 30,
+  "lga": null,
+  "signal": "GND",
+  "power_group": null
+ },
+ {
+  "pad": 31,
+  "lga": null,
+  "signal": "VSYS2",
+  "power_group": "VSYS2"
+ },
+ {
+  "pad": 32,
+  "lga": null,
+  "signal": "VSYS2",
+  "power_group": "VSYS2"
+ },
+ {
+  "pad": 33,
+  "lga": null,
+  "signal": "VSYS",
+  "power_group": "VSYS"
+ },
+ {
+  "pad": 34,
+  "lga": null,
+  "signal": "GND",
+  "power_group": null
+ },
+ {
+  "pad": 35,
+  "lga": "AN4",
+  "signal": "GPIO2_IO18",
+  "power_group": null
+ },
+ {
+  "pad": 36,
+  "lga": "AN5",
+  "signal": "SD2_VSELECT",
+  "power_group": null
+ },
+ {
+  "pad": 37,
+  "lga": "AN6",
+  "signal": "MIPI_DSI1_CLK_N",
+  "power_group": null
+ },
+ {
+  "pad": 38,
+  "lga": "AN7",
+  "signal": "MIPI_DSI1_CLK_P",
+  "power_group": null
+ },
+ {
+  "pad": 39,
+  "lga": "AN8",
+  "signal": "GND",
+  "power_group": null
+ },
+ {
+  "pad": 40,
+  "lga": "AN9",
+  "signal": "MIPI_DSI1_DATA0_N",
+  "power_group": null
+ },
+ {
+  "pad": 41,
+  "lga": "AN10",
+  "signal": "MIPI_DSI1_DATA0_P",
+  "power_group": null
+ },
+ {
+  "pad": 42,
+  "lga": "AN11",
+  "signal": "GND",
+  "power_group": null
+ },
+ {
+  "pad": 43,
+  "lga": "AN12",
+  "signal": "MIPI_DSI1_DATA1_N",
+  "power_group": null
+ },
+ {
+  "pad": 44,
+  "lga": "AN13",
+  "signal": "MIPI_DSI1_DATA1_P",
+  "power_group": null
+ },
+ {
+  "pad": 45,
+  "lga": "AN14",
+  "signal": "GND",
+  "power_group": null
+ },
+ {
+  "pad": 46,
+  "lga": "AN15",
+  "signal": "MIPI_DSI1_DATA2_N",
+  "power_group": null
+ },
+ {
+  "pad": 47,
+  "lga": "AN16",
+  "signal": "MIPI_DSI1_DATA2_P",
+  "power_group": null
+ },
+ {
+  "pad": 48,
+  "lga": "AN17",
+  "signal": "GND",
+  "power_group": null
+ },
+ {
+  "pad": 49,
+  "lga": "AN18",
+  "signal": "MIPI_DSI1_DATA3_N",
+  "power_group": null
+ },
+ {
+  "pad": 50,
+  "lga": "AN19",
+  "signal": "MIPI_DSI1_DATA3_P",
+  "power_group": null
+ },
+ {
+  "pad": 51,
+  "lga": "AN20",
+  "signal": "GND",
+  "power_group": null
+ },
+ {
+  "pad": 52,
+  "lga": "AN21",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 53,
+  "lga": "AN22",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 54,
+  "lga": "AN23",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 55,
+  "lga": "AN24",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 56,
+  "lga": "AN25",
+  "signal": "SYS_RESET",
+  "power_group": null
+ },
+ {
+  "pad": 57,
+  "lga": "AN26",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 58,
+  "lga": "AM27",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 59,
+  "lga": null,
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 60,
+  "lga": null,
+  "signal": "GND",
+  "power_group": null
+ },
+ {
+  "pad": 61,
+  "lga": "AL27",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 62,
+  "lga": "AL28",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 63,
+  "lga": "AK29",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 64,
+  "lga": "AJ29",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 65,
+  "lga": "AH29",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 66,
+  "lga": "AG29",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 67,
+  "lga": "AF29",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 68,
+  "lga": "AE29",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 69,
+  "lga": "AD29",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 70,
+  "lga": "AC29",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 71,
+  "lga": "AB29",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 72,
+  "lga": "AA29",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 73,
+  "lga": "Y29",
+  "signal": "GND",
+  "power_group": null
+ },
+ {
+  "pad": 74,
+  "lga": "W29",
+  "signal": "UART6_TX",
+  "power_group": null
+ },
+ {
+  "pad": 75,
+  "lga": "V29",
+  "signal": "UART6_RX",
+  "power_group": null
+ },
+ {
+  "pad": 76,
+  "lga": "U29",
+  "signal": "CAN1_RX",
+  "power_group": null
+ },
+ {
+  "pad": 77,
+  "lga": "T29",
+  "signal": "CAN1_TX",
+  "power_group": null
+ },
+ {
+  "pad": 78,
+  "lga": "R29",
+  "signal": "CAN2_RX",
+  "power_group": null
+ },
+ {
+  "pad": 79,
+  "lga": "P29",
+  "signal": "CAN2_TX",
+  "power_group": null
+ },
+ {
+  "pad": 80,
+  "lga": "N29",
+  "signal": "UART7_RTS",
+  "power_group": null
+ },
+ {
+  "pad": 81,
+  "lga": "M29",
+  "signal": "UART7_CTS",
+  "power_group": null
+ },
+ {
+  "pad": 82,
+  "lga": "L29",
+  "signal": "ADC_IN1(1V8)",
+  "power_group": null
+ },
+ {
+  "pad": 83,
+  "lga": "K29",
+  "signal": "ADC_IN0(1V8)",
+  "power_group": null
+ },
+ {
+  "pad": 84,
+  "lga": "J29",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 85,
+  "lga": "H29",
+  "signal": "GND",
+  "power_group": null
+ },
+ {
+  "pad": 86,
+  "lga": "G29",
+  "signal": "TAMPER0(1V8)",
+  "power_group": null
+ },
+ {
+  "pad": 87,
+  "lga": "F29",
+  "signal": "TAMPER1(1V8)",
+  "power_group": null
+ },
+ {
+  "pad": 88,
+  "lga": "E29",
+  "signal": "I2C4_SDA",
+  "power_group": null
+ },
+ {
+  "pad": 89,
+  "lga": "F28",
+  "signal": "I2C4_SCL",
+  "power_group": null
+ },
+ {
+  "pad": 90,
+  "lga": "E28",
+  "signal": "GPIO2_IO22",
+  "power_group": null
+ },
+ {
+  "pad": 91,
+  "lga": "E27",
+  "signal": "GPIO2_IO23",
+  "power_group": null
+ },
+ {
+  "pad": 92,
+  "lga": "C24",
+  "signal": "GPIO2_IO24",
+  "power_group": null
+ },
+ {
+  "pad": 93,
+  "lga": "B24",
+  "signal": "SAI3_MCLK",
+  "power_group": null
+ },
+ {
+  "pad": 94,
+  "lga": null,
+  "signal": "GND",
+  "power_group": null
+ },
+ {
+  "pad": 95,
+  "lga": null,
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 96,
+  "lga": "A24",
+  "signal": "ENET1_TXC",
+  "power_group": null
+ },
+ {
+  "pad": 97,
+  "lga": "A23",
+  "signal": "ENET1_TX_CTL",
+  "power_group": null
+ },
+ {
+  "pad": 98,
+  "lga": "A22",
+  "signal": "ENET1_TXD0",
+  "power_group": null
+ },
+ {
+  "pad": 99,
+  "lga": "A21",
+  "signal": "ENET1_TXD1",
+  "power_group": null
+ },
+ {
+  "pad": 100,
+  "lga": "A20",
+  "signal": "ENET1_TXD2",
+  "power_group": null
+ },
+ {
+  "pad": 101,
+  "lga": "A19",
+  "signal": "ENET1_TXD3",
+  "power_group": null
+ },
+ {
+  "pad": 102,
+  "lga": "A18",
+  "signal": "ENET1_RXC",
+  "power_group": null
+ },
+ {
+  "pad": 103,
+  "lga": "A17",
+  "signal": "ENET1_RX_CTL",
+  "power_group": null
+ },
+ {
+  "pad": 104,
+  "lga": "A16",
+  "signal": "ENET1_RXD0",
+  "power_group": null
+ },
+ {
+  "pad": 105,
+  "lga": "A15",
+  "signal": "ENET1_RXD1",
+  "power_group": null
+ },
+ {
+  "pad": 106,
+  "lga": "A14",
+  "signal": "ENET1_RXD2",
+  "power_group": null
+ },
+ {
+  "pad": 107,
+  "lga": "A13",
+  "signal": "ENET1_RXD3",
+  "power_group": null
+ },
+ {
+  "pad": 108,
+  "lga": "A12",
+  "signal": "NC",
+  "power_group": null
+ },
+ {
+  "pad": 109,
+  "lga": "A11",
+  "signal": "ENET1_MDIO",
+  "power_group": null
+ },
+ {
+  "pad": 110,
+  "lga": "A10",
+  "signal": "ENET1_MDC",
+  "power_group": null
+ },
+ {
+  "pad": 111,
+  "lga": "A9",
+  "signal": "USB_OTG2_P",
+  "power_group": null
+ },
+ {
+  "pad": 112,
+  "lga": "A8",
+  "signal": "USB_OTG2_N",
+  "power_group": null
+ },
+ {
+  "pad": 113,
+  "lga": "A7",
+  "signal": "USB_OTG1_P",
+  "power_group": null
+ },
+ {
+  "pad": 114,
+  "lga": "A6",
+  "signal": "USB_OTG1_N",
+  "power_group": null
+ },
+ {
+  "pad": 115,
+  "lga": null,
+  "signal": "GND",
+  "power_group": null
+ },
+ {
+  "pad": 116,
+  "lga": "B6",
+  "signal": "USB1_VBUS",
+  "power_group": null
+ },
+ {
+  "pad": 117,
+  "lga": "D4",
+  "signal": "GND",
+  "power_group": null
+ },
+ {
+  "pad": 118,
+  "lga": "C6",
+  "signal": "USB_OTG1_ID",
+  "power_group": "3V3"
+ }
+]
