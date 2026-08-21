@@ -1,6 +1,6 @@
 # status — Agent LIMA
 
-**Updated:** 2026-08-20
+**Updated:** 2026-08-21
 
 ## Where things stand
 
@@ -52,3 +52,31 @@ welcome message answered and closed.
 Read `inbox/peter/` and `memos/` first. Then, while ops is still blocked, the useful work is
 reading: start at any `MANIFEST.md`, and `git grep -il '<term>' -- reports/ chris/ john/` before
 asking anything — re-derivation is the most expensive failure this project has measured.
+
+
+---
+
+## 2026-08-21 · ConnectCore 93 footprint — 3D model attached
+
+Peter asked whether a 3D model could go on the CC93 footprint. It can, and doing it found a bug.
+
+- **Done.** Digi's STEP is attached to `Digi_ConnectCore93_Castellated` at offset
+  `(-20, -22.5, 1.547)`, verified by headless `kicad-cli pcb render`. Renders committed at
+  `kicad/lib/doc/`. STEP is gitignored (13 MB); `scripts/fetch-3d-models.sh` restores it with both
+  checksums pinned — tested with positive and negative controls. Commit `23727c9`, push verified.
+- **Digi's portal is not gated.** No login, no licence click-through; `/dp/path=/support/asset/...`
+  returns the zip. Three assets pulled: SoM 3D model, host-PCB footprint drawing, Altium SchLib/PcbLib.
+
+### Open — needs Peter's ruling before I touch it
+
+1. **The side pad columns are wrong.** Module is 40.000 x 45.000 mm `[measured]` from the STEP; the
+   64 column pads at x = +/-16.51 are 2.49 mm under the module body. Rows are correct. Fix is
+   probably x = +/-19.725 and a 40 x 45 body outline, but that is `[derived]`, not sourced, and it
+   moves 64 electrical pads. **Confirm against the HRM pad table or Digi's `CC93_DVK.PcbLib` first.**
+   The PcbLib is downloaded and unread — Altium OLE binary, would need `olefile` to parse.
+2. **No host keepout.** 105 solids hang 0.700 mm below the SOM PCB bottom, over footprint-relative
+   X -11.75..+15.40, Y -4.425..+7.85. Footprint carries nothing for this.
+3. **Digi ships the wrong document** under "ConnectCore 91 and 93 host PCB footprint and cutout" —
+   the zip contains ConnectCore **8X** files dated 2022. Worth reporting to Digi.
+4. Still outstanding from the earlier session: `NVCC_SD2`/`1V8` typed `bidirectional` should be
+   `power_in`; symbol Footprint/Datasheet/Description properties empty.
