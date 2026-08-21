@@ -67,16 +67,30 @@ Peter asked whether a 3D model could go on the CC93 footprint. It can, and doing
 - **Digi's portal is not gated.** No login, no licence click-through; `/dp/path=/support/asset/...`
   returns the zip. Three assets pulled: SoM 3D model, host-PCB footprint drawing, Altium SchLib/PcbLib.
 
-### Open — needs Peter's ruling before I touch it
+### Closed later the same day — geometry sourced and fixed (commit `bb463d6`)
 
-1. **The side pad columns are wrong.** Module is 40.000 x 45.000 mm `[measured]` from the STEP; the
-   64 column pads at x = +/-16.51 are 2.49 mm under the module body. Rows are correct. Fix is
-   probably x = +/-19.725 and a 40 x 45 body outline, but that is `[derived]`, not sourced, and it
-   moves 64 electrical pads. **Confirm against the HRM pad table or Digi's `CC93_DVK.PcbLib` first.**
-   The PcbLib is downloaded and unread — Altium OLE binary, would need `olefile` to parse.
-2. **No host keepout.** 105 solids hang 0.700 mm below the SOM PCB bottom, over footprint-relative
-   X -11.75..+15.40, Y -4.425..+7.85. Footprint carries nothing for this.
-3. **Digi ships the wrong document** under "ConnectCore 91 and 93 host PCB footprint and cutout" —
+1. **Pad geometry FIXED and sourced.** `33,56` is the **host PCB cutout width**, not the pad span —
+   that one misread is the whole bug. From HRM 90002549 rev 4P p.83, measured by projection profile
+   and cross-checked against four of the drawing's own labels: columns now **x = +/-20.000**, rows
+   **y = +/-22.500**, body **40 x 45**. All four runs straddle the edge by exactly 1.000 mm, matching
+   DETAIL A's `1` — an agreement I did not aim for. 118 pads, 0 overlaps, DRC 0 violations.
+   The earlier `[derived]` guess of +/-19.725 was close but wrong; good thing it was not applied.
+2. **Keepout MARKED** on `Dwgs.User`: Digi's dimensioned cutout **33.56 x 20.86 centred** (build to
+   this), plus the measured protrusion envelope as a thin reference rect.
+3. **Digi's Altium `CC93_DVK.PcbLib` does not cover this part** — 474-pad LGA array, different
+   variant. Do not retry it. But noted for reuse: **KiCad ships an Altium importer callable from its
+   own Python** (`pcbnew.PCB_IO_MGR.FindPlugin(...ALTIUM_DESIGNER)`), so no OLE parsing needed.
+
+### Open
+
+4. **Digi ships the wrong document** under "ConnectCore 91 and 93 host PCB footprint and cutout" —
    the zip contains ConnectCore **8X** files dated 2022. Worth reporting to Digi.
 4. Still outstanding from the earlier session: `NVCC_SD2`/`1V8` typed `bidirectional` should be
    `power_in`; symbol Footprint/Datasheet/Description properties empty.
+
+
+### Not mine — flagged, untouched
+
+`kicad/imu-board/` and `kicad/lib/TDK.kicad_sym` appeared untracked in the working tree during this
+session; they were not there at boot and are not my work. **Left alone, not staged.** Another session
+is live in this checkout — check before assuming the tree is yours.
