@@ -276,3 +276,29 @@ Don't chase them — cross-check against `export_netlist_summary`, which is the 
 **accelerometer**, CSB2/SDO2 are the **gyroscope** (datasheet §6 Table 10). Also: the accel always
 boots in I2C regardless of the PS pin and needs a rising edge on CSB1 to enter SPI, and its SPI
 reads return a leading dummy byte. The gyro does neither.
+
+## Scar — I answered "is X available?" from a table that could not contain the answer (2026-08-21)
+`[measured]`. I told Peter the castellated ConnectCore 93 has **no SPI**. It has LPSPI3, a complete
+4-wire master. He challenged the claim; he was right.
+
+The mistake: `cc93_pads.json` stores each pad's **primary** signal name. I grepped it for `SPI`, got
+nothing, and reported an absence. But a pin's *muxed* functions live in a column that extraction never
+captured — the HRM had **296 ALT entries across 47 pads** that my table simply did not contain.
+
+**This is the §3 scar in its purest form and I still walked into it.** A broken instrument fails toward
+the answer you expected: I had already framed the castellated variant as the cut-down one, so "no SPI"
+felt right and I stopped. Worse, an *absence* is the one result you cannot sanity-check by looking at
+it — a wrong presence shows up as a nonsense value, a wrong absence looks exactly like the truth.
+
+**Rules:**
+1. **Before reporting that something is ABSENT, prove your source could have shown it present.** Find
+   a known-present example of the same class in the same table. Had I grepped for `UART` and seen only
+   primary names, the missing ALT column would have been obvious in seconds.
+2. **On a pin-muxed SoC, "not on the pinout" is meaningless without the mux table.** Every pad of an
+   i.MX-class part has up to 8 ALT functions. Always parse the ALT columns; never answer peripheral
+   availability from a signal-name list.
+3. **Record provenance per field, not per file.** `cc93_pads.json` now carries `alt_source` on every
+   record, so a future session can see at a glance which pads were checked against the manual and
+   which have no ALT column at all. A table that cannot say what it does not know will mislead again.
+4. **When the human contradicts a measurement, re-measure before defending it.** The challenge cost
+   one tool call to check and would have cost a carrier board's worth of rework to ignore.

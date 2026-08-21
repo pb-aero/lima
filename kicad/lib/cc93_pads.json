@@ -3,708 +3,1287 @@
   "pad": 1,
   "lga": "E4",
   "signal": "SD2_RESET_B",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "USDHC2_RESET_B",
+   "ALT1": "LPTMR2_ALT2",
+   "ALT4": "FLEXIO1_FLEXIO07",
+   "ALT5": "GPIO3_IO07",
+   "ALT6": "CCMSRCGPCMIX_SYSTEM_RESET"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 2,
   "lga": "E3",
   "signal": "GPIO2_IO19",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "GPIO2_IO19",
+   "ALT1": "SAI3_RX_SYNC",
+   "ALT2": "PDM_BIT_STREAM03",
+   "ALT3": "MEDIAMIX_DISP_DATA15",
+   "ALT4": "LPSPI5_SIN",
+   "ALT5": "LPSPI4_SIN",
+   "ALT6": "TPM6_CH2",
+   "ALT7": "SAI3_TX_DATA00"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 3,
   "lga": "F3",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 4,
   "lga": "G2",
   "signal": "SD2_CD_B",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "USDHC2_CD_B",
+   "ALT1": "ENET_QOS_1588_EVENT0_IN",
+   "ALT2": "I3C2_SCL",
+   "ALT4": "FLEXIO1_FLEXIO00",
+   "ALT5": "GPIO3_IO00"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 5,
   "lga": "F1",
   "signal": "SD2_CMD",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "USDHC2_CMD",
+   "ALT1": "ENET1_1588_EVENT0_IN",
+   "ALT2": "I3C2_PUR",
+   "ALT3": "I3C2_PUR_B",
+   "ALT4": "FLEXIO1_FLEXIO02",
+   "ALT5": "GPIO3_IO02",
+   "ALT6": "CCMSRCGPCMIX_OBSERVE1"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 6,
   "lga": "G1",
   "signal": "SD2_DATA0",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "USDHC2_DATA0",
+   "ALT1": "ENET1_1588_EVENT0_OUT",
+   "ALT2": "CAN2_TX",
+   "ALT4": "FLEXIO1_FLEXIO03",
+   "ALT5": "GPIO3_IO03",
+   "ALT6": "CCMSRCGPCMIX_OBSERVE2"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 7,
   "lga": "H1",
   "signal": "SD2_DATA1",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "USDHC2_DATA1",
+   "ALT1": "ENET1_1588_EVENT1_IN",
+   "ALT2": "CAN2_RX",
+   "ALT4": "FLEXIO1_FLEXIO04",
+   "ALT5": "GPIO3_IO04",
+   "ALT6": "CCMSRCGPCMIX_WAIT"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 8,
   "lga": "J1",
   "signal": "SD2_DATA2",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "USDHC2_DATA2",
+   "ALT1": "ENET1_1588_EVENT1_OUT",
+   "ALT2": "MQS2_RIGHT",
+   "ALT4": "FLEXIO1_FLEXIO05",
+   "ALT5": "GPIO3_IO05",
+   "ALT6": "CCMSRCGPCMIX_STOP"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 9,
   "lga": "K1",
   "signal": "SD2_DATA3",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "USDHC2_DATA3",
+   "ALT1": "LPTMR2_ALT1",
+   "ALT2": "MQS2_LEFT",
+   "ALT4": "FLEXIO1_FLEXIO06",
+   "ALT5": "GPIO3_IO06",
+   "ALT6": "CCMSRCGPCMIX_EARLY_RESET"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 10,
   "lga": "L1",
   "signal": "SD2_CLK",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "USDHC2_CLK",
+   "ALT1": "ENET_QOS_1588_EVENT0_OUT",
+   "ALT2": "I3C2_SDA",
+   "ALT4": "FLEXIO1_FLEXIO01",
+   "ALT5": "GPIO3_IO01",
+   "ALT6": "CCMSRCGPCMIX_OBSERVE0"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 11,
   "lga": "M1",
   "signal": "GND",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 12,
   "lga": "N1",
   "signal": "NVCC_SD2",
-  "power_group": "NVCC_SD2"
+  "power_group": "NVCC_SD2",
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 13,
   "lga": "P1",
   "signal": "UART7_TX",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "GPIO2_IO08",
+   "ALT1": "LPSPI3_PCS0",
+   "ALT2": "MEDIAMIX_CAM_DATA02",
+   "ALT3": "MEDIAMIX_DISP_DATA04",
+   "ALT4": "TPM6_CH0",
+   "ALT5": "LPUART7_TX",
+   "ALT6": "LPI2C7_SDA",
+   "ALT7": "FLEXIO1_FLEXIO08"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 14,
   "lga": "R1",
   "signal": "UART7_RX",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "GPIO2_IO09",
+   "ALT1": "LPSPI3_SIN",
+   "ALT2": "MEDIAMIX_CAM_DATA03",
+   "ALT3": "MEDIAMIX_DISP_DATA05",
+   "ALT4": "TPM3_EXTCLK",
+   "ALT5": "LPUART7_RX",
+   "ALT6": "LPI2C7_SCL",
+   "ALT7": "FLEXIO1_FLEXIO09"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 15,
   "lga": "T1",
   "signal": "GND",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 16,
   "lga": "U1",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 17,
   "lga": "V1",
   "signal": "I2C2_SCL",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "LPI2C2_SCL",
+   "ALT1": "I3C1_PUR",
+   "ALT2": "LPUART2_DCB_B",
+   "ALT3": "TPM2_CH2",
+   "ALT4": "SAI1_RX_SYNC",
+   "ALT5": "GPIO1_IO02",
+   "ALT6": "I3C1_PUR_B"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 18,
   "lga": "W1",
   "signal": "I2C2_SDA",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "LPI2C2_SDA",
+   "ALT2": "LPUART2_RIN_B",
+   "ALT3": "TPM2_CH3",
+   "ALT4": "SAI1_RX_BCLK",
+   "ALT5": "GPIO1_IO03"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 19,
   "lga": "Y1",
   "signal": "GPIO1_IO10",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "PDM_BIT_STREAM01",
+   "ALT1": "NMI_GLUE_NMI",
+   "ALT2": "LPSPI2_PCS1",
+   "ALT3": "TPM2_EXTCLK",
+   "ALT4": "LPTMR1_ALT3",
+   "ALT5": "GPIO1_IO10",
+   "ALT6": "CCMSRCGPCMIX_EXT_CLK1"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 20,
   "lga": "AA1",
   "signal": "GPIO2_IO06",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "GPIO2_IO06",
+   "ALT1": "TPM5_CH0",
+   "ALT2": "PDM_BIT_STREAM01",
+   "ALT3": "MEDIAMIX_DISP_DATA02",
+   "ALT4": "LPSPI7_SOUT",
+   "ALT5": "LPUART6_CTS_B",
+   "ALT6": "LPI2C7_SDA",
+   "ALT7": "FLEXIO1_FLEXIO06"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 21,
   "lga": "AB1",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 22,
   "lga": "AC1",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 23,
   "lga": "AD1",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 24,
   "lga": "AE1",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 25,
   "lga": "AF1",
   "signal": "GPIO4_IO14(1V8)",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "ENET1_MDC",
+   "ALT1": "LPUART4_DCB_B",
+   "ALT2": "SAI2_RX_SYNC",
+   "ALT4": "FLEXIO2_FLEXIO14",
+   "ALT5": "GPIO4_IO14"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 26,
   "lga": "AG1",
   "signal": "GPIO4_IO15(1V8)",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "ENET1_MDIO",
+   "ALT1": "LPUART4_RIN_B",
+   "ALT2": "SAI2_RX_BCLK",
+   "ALT4": "FLEXIO2_FLEXIO15",
+   "ALT5": "GPIO4_IO15"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 27,
   "lga": "AH1",
   "signal": "1V8",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 28,
   "lga": "AJ1",
   "signal": "GND",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 29,
   "lga": "AK1",
   "signal": "3V3",
-  "power_group": "3V3"
+  "power_group": "3V3",
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 30,
   "lga": null,
   "signal": "GND",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 31,
   "lga": null,
   "signal": "VSYS2",
-  "power_group": "VSYS2"
+  "power_group": "VSYS2",
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 32,
   "lga": null,
   "signal": "VSYS2",
-  "power_group": "VSYS2"
+  "power_group": "VSYS2",
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 33,
   "lga": null,
   "signal": "VSYS",
-  "power_group": "VSYS"
+  "power_group": "VSYS",
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 34,
   "lga": null,
   "signal": "GND",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 35,
   "lga": "AN4",
   "signal": "GPIO2_IO18",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "GPIO2_IO18",
+   "ALT1": "SAI3_RX_BCLK",
+   "ALT2": "MEDIAMIX_CAM_DATA09",
+   "ALT3": "MEDIAMIX_DISP_DATA14",
+   "ALT4": "LPSPI5_PCS0",
+   "ALT5": "LPSPI4_PCS0",
+   "ALT6": "TPM5_CH2",
+   "ALT7": "FLEXIO1_FLEXIO18"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 36,
   "lga": "AN5",
   "signal": "SD2_VSELECT",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "USDHC2_VSELECT",
+   "ALT1": "USDHC3_WP",
+   "ALT2": "LPTMR2_ALT3",
+   "ALT4": "FLEXIO1_FLEXIO19",
+   "ALT5": "GPIO3_IO19",
+   "ALT6": "CCMSRCGPCMIX_EXT_CLK1"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 37,
   "lga": "AN6",
   "signal": "MIPI_DSI1_CLK_N",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 38,
   "lga": "AN7",
   "signal": "MIPI_DSI1_CLK_P",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 39,
   "lga": "AN8",
   "signal": "GND",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 40,
   "lga": "AN9",
   "signal": "MIPI_DSI1_DATA0_N",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 41,
   "lga": "AN10",
   "signal": "MIPI_DSI1_DATA0_P",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 42,
   "lga": "AN11",
   "signal": "GND",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 43,
   "lga": "AN12",
   "signal": "MIPI_DSI1_DATA1_N",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 44,
   "lga": "AN13",
   "signal": "MIPI_DSI1_DATA1_P",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 45,
   "lga": "AN14",
   "signal": "GND",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 46,
   "lga": "AN15",
   "signal": "MIPI_DSI1_DATA2_N",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 47,
   "lga": "AN16",
   "signal": "MIPI_DSI1_DATA2_P",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 48,
   "lga": "AN17",
   "signal": "GND",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 49,
   "lga": "AN18",
   "signal": "MIPI_DSI1_DATA3_N",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 50,
   "lga": "AN19",
   "signal": "MIPI_DSI1_DATA3_P",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 51,
   "lga": "AN20",
   "signal": "GND",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 52,
   "lga": "AN21",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 53,
   "lga": "AN22",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 54,
   "lga": "AN23",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 55,
   "lga": "AN24",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 56,
   "lga": "AN25",
   "signal": "SYS_RESET",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 57,
   "lga": "AN26",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 58,
   "lga": "AM27",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 59,
   "lga": null,
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 60,
   "lga": null,
   "signal": "GND",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 61,
   "lga": "AL27",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 62,
   "lga": "AL28",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 63,
   "lga": "AK29",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 64,
   "lga": "AJ29",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 65,
   "lga": "AH29",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 66,
   "lga": "AG29",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 67,
   "lga": "AF29",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 68,
   "lga": "AE29",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 69,
   "lga": "AD29",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 70,
   "lga": "AC29",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 71,
   "lga": "AB29",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 72,
   "lga": "AA29",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 73,
   "lga": "Y29",
   "signal": "GND",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 74,
   "lga": "W29",
   "signal": "UART6_TX",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "GPIO2_IO04",
+   "ALT1": "TPM3_CH0",
+   "ALT2": "PDM_CLK",
+   "ALT3": "MEDIAMIX_DISP_DATA00",
+   "ALT4": "LPSPI7_PCS0",
+   "ALT5": "LPUART6_TX",
+   "ALT6": "LPI2C6_SDA",
+   "ALT7": "FLEXIO1_FLEXIO04"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 75,
   "lga": "V29",
   "signal": "UART6_RX",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "GPIO2_IO05",
+   "ALT1": "TPM4_CH0",
+   "ALT2": "PDM_BIT_STREAM00",
+   "ALT3": "MEDIAMIX_DISP_DATA01",
+   "ALT4": "LPSPI7_SIN",
+   "ALT5": "LPUART6_RX",
+   "ALT6": "LPI2C6_SCL",
+   "ALT7": "FLEXIO1_FLEXIO05"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 76,
   "lga": "U29",
   "signal": "CAN1_RX",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "PDM_BIT_STREAM00",
+   "ALT1": "MQS1_RIGHT",
+   "ALT2": "LPSPI1_PCS1",
+   "ALT3": "TPM1_EXTCLK",
+   "ALT4": "LPTMR1_ALT2",
+   "ALT5": "GPIO1_IO09",
+   "ALT6": "CAN1_RX"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 77,
   "lga": "T29",
   "signal": "CAN1_TX",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "PDM_CLK",
+   "ALT1": "MQS1_LEFT",
+   "ALT4": "LPTMR1_ALT1",
+   "ALT5": "GPIO1_IO08",
+   "ALT6": "CAN1_TX"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 78,
   "lga": "R29",
   "signal": "CAN2_RX",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "GPIO2_IO27",
+   "ALT1": "USDHC3_DATA3",
+   "ALT2": "CAN2_RX",
+   "ALT3": "MEDIAMIX_DISP_DATA23",
+   "ALT4": "TPM6_CH3",
+   "ALT5": "JTAG_MUX_TMS",
+   "ALT6": "LPSPI5_PCS1",
+   "ALT7": "FLEXIO1_FLEXIO27"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 79,
   "lga": "P29",
   "signal": "CAN2_TX",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "GPIO2_IO25",
+   "ALT1": "USDHC3_DATA1",
+   "ALT2": "CAN2_TX",
+   "ALT3": "MEDIAMIX_DISP_DATA21",
+   "ALT4": "TPM4_CH3",
+   "ALT5": "JTAG_MUX_TCK",
+   "ALT6": "LPSPI7_PCS1",
+   "ALT7": "FLEXIO1_FLEXIO25"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 80,
   "lga": "N29",
   "signal": "UART7_RTS",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "GPIO2_IO11",
+   "ALT1": "LPSPI3_SCK",
+   "ALT2": "MEDIAMIX_CAM_DATA05",
+   "ALT3": "MEDIAMIX_DISP_DATA07",
+   "ALT4": "TPM5_EXTCLK",
+   "ALT5": "LPUART7_RTS_B",
+   "ALT6": "LPI2C8_SCL",
+   "ALT7": "FLEXIO1_FLEXIO11"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 81,
   "lga": "M29",
   "signal": "UART7_CTS",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "GPIO2_IO10",
+   "ALT1": "LPSPI3_SOUT",
+   "ALT2": "MEDIAMIX_CAM_DATA04",
+   "ALT3": "MEDIAMIX_DISP_DATA06",
+   "ALT4": "TPM4_EXTCLK",
+   "ALT5": "LPUART7_CTS_B",
+   "ALT6": "LPI2C8_SDA",
+   "ALT7": "FLEXIO1_FLEXIO10"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 82,
   "lga": "L29",
   "signal": "ADC_IN1(1V8)",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 83,
   "lga": "K29",
   "signal": "ADC_IN0(1V8)",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 84,
   "lga": "J29",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 85,
   "lga": "H29",
   "signal": "GND",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 86,
   "lga": "G29",
   "signal": "TAMPER0(1V8)",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 87,
   "lga": "F29",
   "signal": "TAMPER1(1V8)",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 88,
   "lga": "E29",
   "signal": "I2C4_SDA",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "GPIO2_IO02",
+   "ALT1": "LPI2C4_SDA",
+   "ALT2": "MEDIAMIX_CAM_VSYNC",
+   "ALT3": "MEDIAMIX_DISP_VSYNC",
+   "ALT4": "LPSPI6_SOUT",
+   "ALT5": "LPUART5_CTS_B",
+   "ALT6": "LPI2C6_SDA",
+   "ALT7": "FLEXIO1_FLEXIO02"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 89,
   "lga": "F28",
   "signal": "I2C4_SCL",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "GPIO2_IO03",
+   "ALT1": "LPI2C4_SCL",
+   "ALT2": "MEDIAMIX_CAM_HSYNC",
+   "ALT3": "MEDIAMIX_DISP_HSYNC",
+   "ALT4": "LPSPI6_SCK",
+   "ALT5": "LPUART5_RTS_B",
+   "ALT6": "LPI2C6_SCL",
+   "ALT7": "FLEXIO1_FLEXIO03"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 90,
   "lga": "E28",
   "signal": "GPIO2_IO22",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "GPIO2_IO22",
+   "ALT1": "USDHC3_CLK",
+   "ALT2": "SPDIF_IN",
+   "ALT3": "MEDIAMIX_DISP_DATA18",
+   "ALT4": "TPM5_CH1",
+   "ALT5": "TPM6_EXTCLK",
+   "ALT6": "LPI2C5_SDA",
+   "ALT7": "FLEXIO1_FLEXIO22"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 91,
   "lga": "E27",
   "signal": "GPIO2_IO23",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "GPIO2_IO23",
+   "ALT1": "USDHC3_CMD",
+   "ALT2": "SPDIF_OUT",
+   "ALT3": "MEDIAMIX_DISP_DATA19",
+   "ALT4": "TPM6_CH1",
+   "ALT6": "LPI2C5_SCL",
+   "ALT7": "FLEXIO1_FLEXIO23"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 92,
   "lga": "C24",
   "signal": "GPIO2_IO24",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "GPIO2_IO24",
+   "ALT1": "USDHC3_DATA0",
+   "ALT3": "MEDIAMIX_DISP_DATA20",
+   "ALT4": "TPM3_CH3",
+   "ALT5": "JTAG_MUX_TDO",
+   "ALT6": "LPSPI6_PCS1",
+   "ALT7": "FLEXIO1_FLEXIO24"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 93,
   "lga": "B24",
   "signal": "SAI3_MCLK",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "GPIO2_IO17",
+   "ALT1": "SAI3_MCLK",
+   "ALT2": "MEDIAMIX_CAM_DATA08",
+   "ALT3": "MEDIAMIX_DISP_DATA13",
+   "ALT4": "LPUART3_RTS_B",
+   "ALT5": "LPSPI4_PCS1",
+   "ALT6": "LPUART4_RTS_B",
+   "ALT7": "FLEXIO1_FLEXIO17"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 94,
   "lga": null,
   "signal": "GND",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 95,
   "lga": null,
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 96,
   "lga": "A24",
   "signal": "ENET1_TXC",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "CCM_ENET_QOS_CLOCK_",
+   "ALT1": "ENET_QOS_TX_ER",
+   "ALT4": "FLEXIO2_FLEXIO07",
+   "ALT5": "GPIO4_IO07"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 97,
   "lga": "A23",
   "signal": "ENET1_TX_CTL",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "ENET_QOS_RGMII_TX_CTL",
+   "ALT1": "LPUART3_DTR_B",
+   "ALT4": "FLEXIO2_FLEXIO06",
+   "ALT5": "GPIO4_IO06"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 98,
   "lga": "A22",
   "signal": "ENET1_TXD0",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "ENET_QOS_RGMII_TD0",
+   "ALT1": "LPUART3_TX",
+   "ALT4": "FLEXIO2_FLEXIO05",
+   "ALT5": "GPIO4_IO05"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 99,
   "lga": "A21",
   "signal": "ENET1_TXD1",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "ENET_QOS_RGMII_TD1",
+   "ALT1": "LPUART3_RTS_B",
+   "ALT2": "I3C2_PUR",
+   "ALT3": "HSIOMIX_OTG_OC1",
+   "ALT4": "FLEXIO2_FLEXIO04",
+   "ALT5": "GPIO4_IO04",
+   "ALT6": "I3C2_PUR_B"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 100,
   "lga": "A20",
   "signal": "ENET1_TXD2",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "ENET_QOS_RGMII_TD2",
+   "ALT1": "CCM_ENET_QOS_CLOCK_",
+   "ALT2": "CAN2_RX",
+   "ALT3": "HSIOMIX_OTG_OC2",
+   "ALT4": "FLEXIO2_FLEXIO03",
+   "ALT5": "GPIO4_IO03"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 101,
   "lga": "A19",
   "signal": "ENET1_TXD3",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "ENET_QOS_RGMII_TD3",
+   "ALT2": "CAN2_TX",
+   "ALT3": "HSIOMIX_OTG_ID2",
+   "ALT4": "FLEXIO2_FLEXIO02",
+   "ALT5": "GPIO4_IO02"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 102,
   "lga": "A18",
   "signal": "ENET1_RXC",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "CCM_ENET_QOS_CLOCK_",
+   "ALT1": "ENET_QOS_RX_ER",
+   "ALT4": "FLEXIO2_FLEXIO09",
+   "ALT5": "GPIO4_IO09"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 103,
   "lga": "A17",
   "signal": "ENET1_RX_CTL",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "ENET_QOS_RGMII_RX_CTL",
+   "ALT1": "LPUART3_DSR_B",
+   "ALT3": "HSIOMIX_OTG_PWR2",
+   "ALT4": "FLEXIO2_FLEXIO08",
+   "ALT5": "GPIO4_IO08"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 104,
   "lga": "A16",
   "signal": "ENET1_RXD0",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "ENET_QOS_RGMII_RD0",
+   "ALT1": "LPUART3_RX",
+   "ALT4": "FLEXIO2_FLEXIO10",
+   "ALT5": "GPIO4_IO10"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 105,
   "lga": "A15",
   "signal": "ENET1_RXD1",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "ENET_QOS_RGMII_RD1",
+   "ALT1": "LPUART3_CTS_B",
+   "ALT3": "LPTMR2_ALT1",
+   "ALT4": "FLEXIO2_FLEXIO11",
+   "ALT5": "GPIO4_IO11"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 106,
   "lga": "A14",
   "signal": "ENET1_RXD2",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "ENET_QOS_RGMII_RD2",
+   "ALT3": "LPTMR2_ALT2",
+   "ALT4": "FLEXIO2_FLEXIO12",
+   "ALT5": "GPIO4_IO12"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 107,
   "lga": "A13",
   "signal": "ENET1_RXD3",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "ENET_QOS_RGMII_RD3",
+   "ALT3": "LPTMR2_ALT3",
+   "ALT4": "FLEXIO2_FLEXIO13",
+   "ALT5": "GPIO4_IO13"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 108,
   "lga": "A12",
   "signal": "NC",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 109,
   "lga": "A11",
   "signal": "ENET1_MDIO",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "ENET_QOS_MDIO",
+   "ALT1": "LPUART3_RIN_B",
+   "ALT2": "I3C2_SDA",
+   "ALT3": "HSIOMIX_OTG_PWR1",
+   "ALT4": "FLEXIO2_FLEXIO01",
+   "ALT5": "GPIO4_IO01"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 110,
   "lga": "A10",
   "signal": "ENET1_MDC",
-  "power_group": null
+  "power_group": null,
+  "alts": {
+   "ALT0": "ENET_QOS_MDC",
+   "ALT1": "LPUART3_DCB_B",
+   "ALT2": "I3C2_SCL",
+   "ALT3": "HSIOMIX_OTG_ID1",
+   "ALT4": "FLEXIO2_FLEXIO00",
+   "ALT5": "GPIO4_IO00"
+  },
+  "alt_source": "HRM 90002549 rev 4P pp.29-42"
  },
  {
   "pad": 111,
   "lga": "A9",
   "signal": "USB_OTG2_P",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 112,
   "lga": "A8",
   "signal": "USB_OTG2_N",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 113,
   "lga": "A7",
   "signal": "USB_OTG1_P",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 114,
   "lga": "A6",
   "signal": "USB_OTG1_N",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 115,
   "lga": null,
   "signal": "GND",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 116,
   "lga": "B6",
   "signal": "USB1_VBUS",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  },
  {
   "pad": 117,
   "lga": "D4",
   "signal": "GND",
-  "power_group": null
+  "power_group": null,
+  "alts": {},
+  "alt_source": "none - supply/ground/not-connected"
  },
  {
   "pad": 118,
   "lga": "C6",
   "signal": "USB_OTG1_ID",
-  "power_group": "3V3"
+  "power_group": "3V3",
+  "alts": {},
+  "alt_source": "none - dedicated function, no ALT column in HRM"
  }
 ]

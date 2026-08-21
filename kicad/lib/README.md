@@ -227,3 +227,49 @@ Deepest bottom-side protrusion is **0.700 mm** below the SOM's PCB, across 105 s
   where they are power rails, and empty Footprint/Datasheet/Description properties.
 - Digi's *"ConnectCore 91 and 93 — Host PCB footprint and cutout drawing"* asset still ships
   ConnectCore **8X** files. Worth reporting to Digi; the HRM page 83 drawing is the usable source.
+
+---
+
+# 2026-08-21 (later still) · CORRECTION — the pad table was primary-function only
+
+**I claimed the castellated CC93 has no SPI. That was wrong.** Peter challenged it and he was right.
+
+The claim came from grepping the `signal` field of `cc93_pads.json` for `SPI`. That field holds only
+each pad's **primary** function. The HRM's pad tables (pp.29–42) carry a full **multiplexing column**
+— up to eight ALT functions per pad — and the original extraction dropped all of it. A confident
+negative produced by an instrument that could not have found a positive.
+
+`cc93_pads.json` has been rebuilt: **296 ALT entries across 47 pads**, every one of the 118 pads now
+classified, no unexplained gaps. Each record gains `alts` (an ALT0–ALT7 map) and `alt_source`.
+
+## LPSPI3 is a complete 4-wire SPI master
+
+All four lines are ALT1 of one block — the UART7 pins:
+
+| Function | Pad | Primary signal | Mux |
+|---|---|---|---|
+| `LPSPI3_SCK` | 80 | UART7_RTS | ALT1 |
+| `LPSPI3_SIN` (MISO) | 14 | UART7_RX | ALT1 |
+| `LPSPI3_SOUT` (MOSI) | 81 | UART7_CTS | ALT1 |
+| `LPSPI3_PCS0` (CS) | 13 | UART7_TX | ALT1 |
+
+**Cost: using LPSPI3 consumes UART7**, the flow-control UART. UART6 (the U-Boot console, pads 74/75)
+is unaffected.
+
+The other six LPSPI instances are reachable but **incomplete** — verify before relying on any of them:
+
+| Instance | Missing | Note |
+|---|---|---|
+| LPSPI6 | `SIN` | has SCK (pad 89) + SOUT (pad 88) — **cannot read**, write-only |
+| LPSPI7 | `SCK` | everything else present, no clock |
+| LPSPI4, LPSPI5 | `SCK`, `SOUT` | chip-select and SIN only |
+| LPSPI1, LPSPI2 | `SCK`, `SIN`, `SOUT` | a single PCS1 each |
+
+Nine GPIO are free for extra chip-selects and interrupts: pads 2, 19, 20, 35, 90, 91, 92 at 3V3, and
+25, 26 at **1V8** — do not drive those two from 3.3 V logic.
+
+## The 22 pads with no ALT column are genuinely dedicated
+
+Confirmed against the HRM text, not assumed: MIPI-DSI1 pairs (37/38/40/41/43/44/46/47/49/50), USB PHY
+(111–114, 116, 118), ADC_IN0/1 (82/83), TAMPER0/1 (86/87), SYS_RESET (56), NVCC_SD2 (12). These have
+no multiplexing row in the manual at all.
