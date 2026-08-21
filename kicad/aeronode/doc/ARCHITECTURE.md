@@ -121,9 +121,60 @@ The i.MX93 FlexCAN supports CAN FD. `SN65HVD23x` is **classic CAN, 1 Mbps** — 
 phases. If FD is wanted, substitute an FD-rated transceiver (MCP2562FD / MCP2542FD class) and check
 the logic-supply pin: parts without a `VIO` pin present 5 V logic to a 3.3 V module input.
 
+## Decisions taken 2026-08-21 (later)
+
+- **PD sink negotiates 9 V.** Already reaches the pack's 0.5C ceiling; higher voltages buy nothing
+  for charging and only worsen Hazard 2.
+- **No CAN.** Neither FD nor classic. The CAN1/CAN2 pads (76-79) are free for other use.
+- **A2B transceiver instead** — see the blocker below.
+
+## 🛑 BLOCKER — A2B cannot run on the castellated variant
+
+An A2B main node (ADI AD242x) needs **two** host interfaces, both mandatory `[fetched]`: **I2C** for
+control and readback, and a multichannel **I2S/TDM** link for audio. There is no alternative host
+interface on the part.
+
+I2C is fine — I2C2 (pads 17/18) and I2C4 (pads 88/89) are both available.
+
+**I2S/TDM is not.** The complete SAI inventory of the castellated pinout `[measured]` from the HRM
+mux tables:
+
+| Instance | Available | Verdict |
+|---|---|---|
+| SAI1 | `RX_BCLK` pad 18, `RX_SYNC` pad 17 | no data, no MCLK |
+| SAI2 | `RX_BCLK` pad 26, `RX_SYNC` pad 25 | no data, no MCLK — and both are **1V8** pads |
+| SAI3 | `MCLK` pad 93, `RX_BCLK` pad 35, `RX_SYNC` **pad 2**, `TX_DATA00` **pad 2** | see below |
+
+**`SAI3_TX_DATA00` is the only SAI data line anywhere on the 118 castellated pads, and it shares
+pad 2 with `SAI3_RX_SYNC`, the only frame sync.** A pad carries one function at a time, so the best
+achievable is MCLK + BCLK + *either* sync *or* data. Neither combination is a working I2S port, and
+there is no RX data line at all.
+
+Fallbacks considered and rejected: MQS1/MQS2 (pads 8/9) is PWM output only, not a bus; PDM is
+microphone input, not I2S; FlexIO can synthesise I2S but Linux support is thin and an A2B TDM frame
+is not a sensible bit-bang target for flight hardware.
+
+### The LGA variant resolves it completely
+
+`[measured]` from the same manual, LGA pad tables pp.43-82: full **SAI1**, **SAI2** and **SAI3** with
+MCLK, TX_BCLK, TX_SYNC, RX_BCLK, RX_SYNC and data — SAI2 alone brings out **four TX and four RX data
+lanes**, which is a genuine multichannel TDM interface and exactly what A2B wants.
+
+**The footprint cost of switching is already paid.** Digi's own `CC93_DVK.PcbLib` converts cleanly to
+a KiCad `.kicad_mod` through KiCad's built-in Altium importer — 474 pads plus 6 mounting holes,
+vendor-authoritative, no transcription. Verified 2026-08-21.
+
+**The real cost is the PCB.** A 474-pad LGA on 1.27 mm pitch needs escape routing under the module —
+realistically 8+ layers, likely via-in-pad — where the castellated part escapes around its perimeter
+on 4. That is a board-cost and fabrication-capability decision, not a schematic one.
+
+The LGA also relieves the LPSPI3/UART7 conflict noted above, since it brings out far more I/O.
+
+**Open decision for Peter: switch AeroNode to the LGA variant, or drop A2B.** Nothing further should
+be drawn until this is settled — it determines the module footprint, the layer count and the board cost.
+
 ## Not yet settled
 
-- PD sink target voltage — recommend 9 V (see budget).
-- CAN FD or classic.
+- **Module variant — blocking, see above.**
 - Whether the console UART gets a USB-serial bridge or a bare header.
 - Board outline, connector placement, enclosure.
