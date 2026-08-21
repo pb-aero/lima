@@ -273,3 +273,76 @@ Nine GPIO are free for extra chip-selects and interrupts: pads 2, 19, 20, 35, 90
 Confirmed against the HRM text, not assumed: MIPI-DSI1 pairs (37/38/40/41/43/44/46/47/49/50), USB PHY
 (111–114, 116, 118), ADC_IN0/1 (82/83), TAMPER0/1 (86/87), SYS_RESET (56), NVCC_SD2 (12). These have
 no multiplexing row in the manual at all.
+
+---
+
+# 2026-08-21 · LGA footprint — `Digi_ConnectCore93_LGA`
+
+Built for AeroNode, which needs A2B and therefore a complete I2S/TDM port the castellated variant
+cannot provide. Both footprints are kept; they are different products.
+
+**Source:** Digi's own `CC93_DVK.PcbLib` (`CC93-LGArevA`), converted with **KiCad's built-in Altium
+importer** driven from KiCad's bundled Python — no transcription, no hand-measurement:
+
+```python
+pi = pcbnew.PCB_IO_MGR.FindPlugin(pcbnew.PCB_IO_MGR.ALTIUM_DESIGNER)
+fp = pi.FootprintLoad(lib_path, "CC93_DVK")
+pcbnew.PCB_IO_MGR.FindPlugin(pcbnew.PCB_IO_MGR.KICAD_SEXP).FootprintSave(out_pretty, fp)
+```
+
+474 pads, 0.70 mm square, 1.27 mm pitch, array 40.640 x 35.560 mm centred on the origin. Rows A..AN
+run along +X, numbers along -Y. Body **45.000 x 40.000 mm** — the module's 45 mm axis lies along X in
+this orientation, i.e. rotated 90 deg from the castellated footprint.
+
+## ⚠ A vendor footprint carries the vendor's board, not just the part
+
+The converted footprint arrived with the DVK's own artwork, which had to be stripped:
+
+| Layer | What was in it | Action |
+|---|---|---|
+| **Edge.Cuts** | a 21.5 x 34 mm rounded polygon | **deleted — this would have cut a hole in the AeroNode board** |
+| F.SilkS | +/-43.5 x +/-36.5 mm rectangle (the DVK outline, not the module) | replaced |
+| Dwgs.User | 31 items of DVK routing artwork | deleted |
+| User.3 / User.20 | 13 items of DVK frame and origin marks | deleted |
+| pads MH1-6 | zero-size pads at +/-37, +/-27 — DVK board mounting holes, far outside the 45 x 40 module | removed |
+
+There was **no courtyard at all**. Replaced with a proper F.Fab body (chamfered at the A1 corner),
+F.SilkS outline at +/-22.65 x +/-20.15, and F.CrtYd at +/-22.75 x +/-20.25.
+
+## The 3D model orientation, and how it was actually settled
+
+The model is the same STEP as the castellated footprint, rotated. Getting this right is harder than
+it looks: **the module outline is a plain rectangle, so a 180 deg error renders perfectly plausibly.**
+A visual check cannot catch it. Two of six swept candidates seated the module on the pads.
+
+Settled numerically instead. `cc93_pads.json` maps each castellated pad to its LGA pad, giving **108
+pads whose real coordinates are known in both footprint files**. Correlating the two coordinate sets
+under each candidate rotation:
+
+| Mapping | corr X | corr Y |
+|---|---|---|
+| identity | +0.044 | -0.044 |
+| rot +90 | **-0.9982** | **-0.9976** |
+| **rot -90** | **+0.9982** | **+0.9976** |
+| rot 180 | -0.044 | +0.044 |
+
+The LGA frame is the castellated frame rotated **-90 deg**. Note the +90 row: a near-perfect
+*anti*-correlation. That is precisely the 180 deg error the eye cannot see, and it shows up here as a
+sign flip across 108 points.
+
+**KiCad negates the Z value in `(rotate (xyz ...))`.** `[measured]` — the file value that produces a
+geometric -90 deg is `+90`. Final transform:
+
+```
+(model "${KIPRJMOD}/../lib/Digi.3dshapes/Digi_ConnectCore93.step"
+  (offset (xyz -22.5 20 1.547)) (scale (xyz 1 1 1)) (rotate (xyz 0 0 90)))
+```
+
+Verified: `kicad-cli pcb render` seats the module on the array; `kicad-cli pcb drc` **0 violations**.
+Evidence in `doc/cc93_lga_3dmodel_top.png`.
+
+**Residual, stated honestly:** this establishes the LGA model orientation is *consistent with* the
+castellated one. Whether the STEP's own orientation is correct in absolute terms — that the modelled
+U.FL connector really sits where a physical module's does relative to pad A1 — is **not verified**.
+Digi's 2D model asset would settle it; the endpoint returned HTTP 504 on 2026-08-21, and the 3D PDF's
+poster page is blank. Check it against a real module before trusting the model for enclosure fit.

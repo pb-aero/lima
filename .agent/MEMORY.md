@@ -302,3 +302,41 @@ it — a wrong presence shows up as a nonsense value, a wrong absence looks exac
    which have no ALT column at all. A table that cannot say what it does not know will mislead again.
 4. **When the human contradicts a measurement, re-measure before defending it.** The challenge cost
    one tool call to check and would have cost a carrier board's worth of rework to ignore.
+
+## KiCAD scar — a symmetric part hides a 180 degree error from every visual check (2026-08-21)
+`[measured]` while placing the ConnectCore 93 STEP on Digi's LGA land pattern. Six rotate/offset
+candidates were swept and rendered. **Two of them seated the module perfectly on the pads.** They
+differed by 180 degrees. The module outline is a plain rectangle, so both renders looked right — and
+one of them was wrong.
+
+**A visual check cannot verify rotational orientation on a symmetric outline.** It verifies position
+only. I nearly shipped a coin-flip.
+
+What settled it: `cc93_pads.json` maps castellated pads to LGA pads, giving 108 pads whose real
+coordinates exist in *both* footprint files. Correlating the coordinate sets under each candidate
+rotation gave +0.998 for -90 deg and **-0.998 for +90 deg** — the wrong answer shows up as a clean
+*anti*-correlation across 108 points, which no render could have shown.
+
+**Rules:**
+1. **To verify an orientation, correlate many known point pairs — never eyeball an outline.** Any part
+   whose body is symmetric (BGA, LGA, QFN, most modules) will render identically at 180 degrees.
+2. **`(rotate (xyz ...))` in a .kicad_mod is NEGATED by KiCad.** A file value of `+90` produces a
+   geometric -90. Determine it empirically from where the model lands, never from the sign you wrote.
+3. **A 3D-model sweep needs `${KIPRJMOD}` to resolve.** My first sweep rendered six boards from the
+   scratchpad; the model silently failed to load in all six and every render looked identically
+   model-less. Pass `kicad-cli pcb render -D KIPRJMOD=<dir>`. *An absent model and a mispositioned
+   model look the same when the answer is "nothing there".*
+
+## KiCAD scar — a vendor footprint ships the vendor's whole board (2026-08-21)
+`[measured]`. Digi's `CC93_DVK.PcbLib`, converted through KiCad's Altium importer, produced a
+footprint containing **an `Edge.Cuts` polygon** (21.5 x 34 mm), a silkscreen rectangle of the DVK's
+own outline (+/-43.5 x +/-36.5, far larger than the 45 x 40 module), 31 items of routing artwork on
+`Dwgs.User`, DVK frame marks on `User.3`/`User.20`, and six zero-size pads named MH1-6 at +/-37,+/-27
+— board mounting holes well outside the module.
+
+**Edge.Cuts inside a footprint cuts the board it is placed on.** Dropped in unexamined, that vendor
+library would have punched a hole through AeroNode. There was also no courtyard whatsoever.
+
+**Rule: after importing any vendor footprint, enumerate its graphics BY LAYER before use.**
+`get_footprint_info(include_graphics=True)`. Ask of every item: is this the *part*, or the vendor's
+own *board*? Anything on Edge.Cuts, or larger than the component body, is the latter.
