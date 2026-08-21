@@ -94,3 +94,35 @@ Peter asked whether a 3D model could go on the CC93 footprint. It can, and doing
 `kicad/imu-board/` and `kicad/lib/TDK.kicad_sym` appeared untracked in the working tree during this
 session; they were not there at boot and are not my work. **Left alone, not staged.** Another session
 is live in this checkout — check before assuming the tree is yours.
+
+---
+
+## 2026-08-21 · imu-board — two IMUs added (ICM-45686 + BMI088)
+
+Peter asked for an ICM-45686 and a BMI088 on "my kicad schematic". There wasn't one — the only
+`.kicad_sch` in the repo was the empty 9-line `_modeltest` stub — so this is a new project.
+Peter ruled: new project in lima, SPI with one CS per die, 3V3 for both VDD and VDDIO.
+
+- **Done.** `kicad/imu-board/` created. U1 ICM-45686 (symbol authored at `kicad/lib/TDK.kicad_sym`,
+  registered project-scoped), U2 BMI088 (stock `Sensor_Motion:BMI088`), C1-C5 decoupling,
+  PWR_FLAGs on both rails. Shared SPI bus, three chip selects, four interrupts brought out to
+  labels. Netlist verified per pin — all 30 land correctly. 0 shorts, 0 overlaps.
+  Notes at `kicad/imu-board/doc/imu-board-notes.md`.
+- **ICM-45686 pinout is solid** — `[fetched]` from two independent TDK documents that agree on
+  all 14 pins (EVB guide AN-000484 Figure 2, and the SM-ICM45686 module datasheet's U1 symbol).
+
+### Open — needs Peter's ruling before layout
+
+1. **U1 has no footprint, deliberately.** DS-000577's package drawing could not be retrieved
+   (TDK redirects to marketing; LCSC serves a title-only shell; SnapEDA 403s). The stock
+   `LGA-14_3x2.5mm_P0.5mm_LayoutBorder3x4y` is a **trap** — right size and pin count, but a 3x4
+   perimeter pattern from an ST part where the ICM-45686 is dual-row 7+7. Best next lead: the
+   ICM-45605 sibling datasheet `DS-000576`, same package, reportedly reachable.
+2. **SDO1+SDO2 tied to one MISO is `[practice]`, not proven.** ERC flags output-output. Standard
+   in every BMI088 design and implied by the datasheet's shared-SDI/separate-CSB architecture,
+   but the tri-state sentence lives only in an image (Figure 8, p53). Held open, not rounded to green.
+3. **RESV termination unconfirmed** — U1 pins 2,3,7,10,11 are no-connected; some InvenSense parts
+   require RESV tied to GND. DS-000577's pin table settles it.
+
+Four of the five ERC errors are just "input pin not driven" on SCLK/CS — the host doesn't exist
+on the sheet yet. They clear when a host or connector is added.

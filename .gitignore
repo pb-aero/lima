@@ -15,3 +15,4 @@ kicad/lib/*.3dshapes/*.stp
 
 # throwaway 3D-render verification harness
 kicad/_modeltest/
+*.kicad_prl

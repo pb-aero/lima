@@ -233,3 +233,46 @@ pad-overlap, DRC, pad-count reconciliation against the datasheet — passed anyw
   on its own and agrees with an independent source is close to proof.
 - **When correcting a document, mark the old claim superseded in place — do not delete it.** The
   wrong reasoning is what stops the next session repeating it.
+
+## KiCAD/Konnect scars — the dual-IMU build (2026-08-21)
+`[measured]` building `kicad/imu-board` (ICM-45686 + BMI088).
+
+**A stock footprint that matches on name, size and pin count can still be the wrong land pattern.**
+`Package_LGA:LGA-14_3x2.5mm_P0.5mm_LayoutBorder3x4y` looks like a perfect fit for the ICM-45686's
+14-pin 2.5x3.0mm LGA. It is not — it is a **3x4 perimeter** pattern whose `descr` field names an ST
+LSM6DS3TR-C, while the ICM-45686 is **dual-row 7+7**. Nothing but reading the footprint's own pad
+layout and `descr` would catch it. **Always open the .kicad_mod and read `descr` + pad positions
+before assigning a generic package footprint** — the filename describes the package, not the part.
+
+**When the datasheet is ungettable, author the symbol and leave the footprint OFF.** TDK gates
+DS-000577 behind a redirect; LCSC's `/datasheet/<code>.pdf` returns a title-only shell; SnapEDA
+403s. The pinout was still fully recoverable from **two independent secondary TDK documents that
+agreed** (an EVB user guide's pinout figure, and a sensor-module datasheet whose schematic embeds
+the part as U1 with pin numbers). Pinout sourced, land pattern not — so the symbol shipped and the
+footprint field stayed empty with a `Footprint_Status` property saying why. Half a part, honestly
+labelled, beats a whole one with invented geometry.
+
+**WebFetch's PDF summariser invents values when the document does not contain them.** Asked for
+BMI088 decoupling values it produced "VDD decoupling in the 10-100 µF range" and "pull-ups
+typically 2.2-10 kΩ" — **numbers that appear nowhere in the datasheet**, which shows them only
+inside a raster connection diagram. It failed toward a plausible-looking answer, exactly the way
+§3 warns. **Fix: WebFetch saves the raw PDF to the tool-results dir — parse it locally with
+`pypdf` and grep it yourself.** (`pypdf` needs `cryptography` for AES-encrypted PDFs; Bosch's is.)
+
+**Konnect bugs found this session, both silent:**
+- **`annotate_schematic` assigns bare numeric references to power symbols.** Two `power:PWR_FLAG`
+  instances came out referenced `"1"` and `"2"` instead of `#FLG01`/`#FLG02`.
+- **`edit_schematic_component(new_reference=...)` renames the property but not the instances
+  path.** It *does* report this — `"the property was renamed but the netlist still reads the old
+  designator"` — so read the `errors` array even when the call looks like it worked. **Fix: pass
+  `reference` to `add_schematic_component` at creation time**; deleting and re-adding was cleaner
+  than repairing it.
+
+**`find_orphan_items` counts the pin end of every `connect_to_net` stub as a dangling wire.**
+34 stubs, 34 "orphans", zero real. The netlist showed every one of those pins on its correct net.
+Don't chase them — cross-check against `export_netlist_summary`, which is the authoritative read.
+
+**BMI088 accel/gyro mapping is the reverse of what the numbering implies** — CSB1/SDO1 are the
+**accelerometer**, CSB2/SDO2 are the **gyroscope** (datasheet §6 Table 10). Also: the accel always
+boots in I2C regardless of the PS pin and needs a rising edge on CSB1 to enter SPI, and its SPI
+reads return a leading dummy byte. The gyro does neither.
