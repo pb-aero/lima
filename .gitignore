@@ -8,3 +8,10 @@ id_*
 .DS_Store
 node_modules/
 __pycache__/
+
+# Large vendor 3D models — restore with scripts/fetch-3d-models.sh
+kicad/lib/*.3dshapes/*.step
+kicad/lib/*.3dshapes/*.stp
+
+# throwaway 3D-render verification harness
+kicad/_modeltest/

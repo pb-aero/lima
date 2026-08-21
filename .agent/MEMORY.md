@@ -169,3 +169,33 @@ own centre-span put pad 32 and pad 33 at the identical coordinate, at all four c
 Now guarded by an explicit pairwise overlap assert before the footprint is written. **For any
 generated footprint, test every pad pair for overlap and look at the render; a correct pad
 *count* says nothing about pad *positions*.**
+
+## KiCAD scar — attach the 3D model EARLY; it is a geometry check, not decoration (2026-08-21)
+`[measured]` on the ConnectCore 93 footprint. The footprint was DRC-clean, had zero pad overlaps,
+118 pads at the right pitch and right counts — and was **geometrically impossible**. Digi's STEP
+proved the module is **40.000 × 45.000 mm**; the side pad columns had been placed at x = ±16.51 off
+a misread "33.56 mm" HRM dimension, putting all 64 of them **2.49 mm underneath the module body**
+where no castellation can reach. The top/bottom rows, derived the same way, happened to be right.
+
+**Every instrument we had said the footprint was fine.** Pad-overlap checks pass — non-overlapping
+pads in the wrong place still don't overlap. DRC passes. Pad count and pitch reconcile against the
+datasheet (32+27+32+27 = 118). None of them know where the part's *body* is. The vendor 3D model is
+the only artefact that carries the outline, so it is the only thing that can catch this class of bug.
+
+**Rules taken from this:**
+1. **Attach the vendor 3D model when you create the footprint, not later.** For any part whose pads
+   reference a body edge — castellated, LGA, connectors, anything with a mechanical interface — the
+   model is a *verification instrument*. One render answered a question three checks could not.
+2. **Render headlessly to verify:** `kicad-cli pcb render` needs no running KiCad. Place the
+   footprint on a throwaway board, render `--side top` and `--side front`, and look. Cheap, and it
+   is a real point-of-use test rather than a belief.
+3. **Do not regex a STEP file for geometry.** A naive `CARTESIAN_POINT` sweep mixes each component's
+   *local* frame with the assembly frame — it reported a 62.5 mm span for a 40 mm module. Tessellate
+   with a real kernel (`pip install cascadio trimesh`, `cascadio.step_to_glb`, apply `scene.graph`
+   transforms) and remember cascadio emits glTF **metres** — multiply by 1000.
+4. **A vendor's own documents are not automatically about your part.** Digi's asset titled
+   "ConnectCore 91 and 93 — Host PCB footprint and cutout drawing" contains **ConnectCore 8X** files
+   dated 2022. The one document we were told to trust for corner geometry is the wrong module.
+5. **Read the whole model, not just the outline.** 105 solids hang 0.700 mm below the SOM's PCB
+   bottom face — the module cannot seat flat on a plain host board. A footprint with no keepout for
+   that looks perfectly correct in 2D and is unbuildable.
