@@ -41,3 +41,29 @@ Scars and hard-won facts. Read before acting.
   Workaround `[measured]` 2026-08-20: generate `~/.ssh/id_ed25519` by hand first, register it,
   then take both files from the clone. `bootstrap-agent.sh` is idempotent and finds the existing
   key — it only creates `id_ed25519_aerosense` when `ssh -T git@github.com` fails outright.
+
+## Konnect (KiCAD MCP) — installed 2026-08-21
+- **Binary:** `~/.konnect/bin/konnect` v0.7.0, aarch64-apple-darwin, from the GitHub release.
+  Tarball `sha256 589d5611c25f84e8ca5a290c5b2ad88fb0419287915d7d67f53a3463d46bdb65`. Registered
+  project-scoped in `lima/.mcp.json`. Requires KiCad 10 (have 10.0.3) and `kicad-cli` for
+  ERC/DRC/export.
+- **It answers RULE 1 properly.** Only 2 of 19 toolsets load at startup (`project`, `config`);
+  the rest come in via `load_toolset(name)` and can be pruned with `unload_toolset`. So the
+  standing context cost is ~7 tools, not 203. `[measured]` via a stdio MCP handshake.
+- **Most PCB tools need KiCad running with the board open** (IPC API, protobuf over NNG).
+  `flip_component` is the inverse — it needs the board *closed*. Not a headless/batch tool.
+- **`konnect install` writes to `~/.claude/`** — skills, agents, and one `PreToolUse` hook
+  patched into `~/.claude/settings.json`. **Deliberately NOT run.** The hook itself is benign
+  (prints a reminder string), but `CLAUDE.md` §6 says an agent must not be able to rewrite its
+  own guards, and registering via `.mcp.json` gets the tools without touching global config.
+  Their own issue #238: `konnect init --help` once ran the installer and rewrote `~/.claude`
+  because unknown args were silently skipped. Fixed, but it shows the blast radius.
+- **Review findings** `[measured]` by reading the source at `2183267`: no telemetry. Network is
+  confined to one module (`tools/integration.rs`) — LCSC part lookup and the JLCPCB parts DB from
+  `bouni.github.io/kicad-jlcpcb-tools`, both opt-in. Subprocesses use argv, never a shell, so no
+  injection through `kicad-cli` args. **The parts-DB download has no checksum** — TLS only, and
+  the size caps are 1 GiB archive / 8 GiB database, so watch the disk if you ever pull it.
+- **License is AGPL-3.0-only** (a `COMMERCIAL.md` exists). Matters if Aerosense ever modifies it
+  or ships it inside a product — raise with Chris before that happens, not after.
+- **Beta, and macOS is the less-tested platform** — upstream says Windows has the mileage. v0.7.0
+  was published 2026-08-21, the same day it was installed, with single-digit download counts.
