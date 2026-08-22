@@ -568,6 +568,53 @@ Konnect cannot delete one of a coincident pair, so it wants a one-click tidy in 
 `pin_not_driven`, 4 `power_pin_not_driven`, 1 `isolated_pin_label` (`VSYS_CHG`, single-ended until the
 buck exists). No `pin_to_pin` conflicts.
 
+## Environmental sensor — U6 BME690, 2026-08-22
+
+Bosch BME690: gas / temperature / humidity / pressure, LGA-8 3x3x0.93 mm. **Not in the KiCad
+libraries**, so the symbol was authored at `kicad/lib/Bosch.kicad_sym` from the datasheet
+(BST-BME690-DS001-00 Rev 1.0), Table 26.
+
+| Pin | Name | Wired to | Why |
+|---|---|---|---|
+| 1, 7 | GND | `GND` | |
+| 2 | CSB | **`+3V3`** | selects I2C — see below |
+| 3 | SDI | `ENV_SDA` | = SDA |
+| 4 | SCK | `ENV_SCL` | = SCL |
+| 5 | SDO | **`GND`** | address LSB = 0 -> **I2C address 0x76** |
+| 6 | VDDIO | `+3V3` | 1.2-3.6 V |
+| 8 | VDD | `+3V3` | 1.71-3.6 V |
+
+Bus: **I2C4** (CC93 pads E29/F28). **I2C3 stays reserved for A2B control.**
+R25/R26 4.7k pull-ups; C13/C14 100 nF on VDD and VDDIO.
+
+### ⚠ CSB must be at VDDIO *before* power-on-reset
+
+The datasheet is explicit: *"If CSB is pulled down, the SPI interface is activated. After CSB has been
+pulled down once (regardless of whether any clock cycle occurred), the I2C interface is disabled until
+the next power-on-reset."* And: *"if I2C is to be used and CSB is not directly connected to VDDIO but
+is instead connected to a programmable pin, it must be ensured that this pin already outputs the VDDIO
+level during power-on-reset. If this is not the case, the device will be locked in SPI mode and not
+respond to I2C commands."*
+
+**CSB is therefore hard-wired to `+3V3`, not to a GPIO.** There is also an internal 70-190 kOhm pull-up
+to VDDIO, but the hard wire removes any dependence on GPIO state at reset.
+
+`SDI` is open-drain and **must** be externally pulled up — that is what R25 is for, not merely bus
+convention.
+
+### No interrupt line
+
+The 8-pin package has no interrupt output, so the BME690 is **polled over I2C**. That is why no GPIO
+was consumed, and **U29 (ex-CAN1_RX) remains the last free 3V3 GPIO.**
+
+### Verified `[measured]`
+
+Symbol pin numbers **1-8 match the footprint pads exactly, both directions**
+(`Package_LGA:Bosch_LGA-8_3x3mm_P0.8mm_ClockwisePinNumbering` — the datasheet notes the unusual
+clockwise-from-top numbering, which is why that specific footprint variant is correct).
+`ENV_SDA` and `ENV_SCL` land on 3 endpoints each (sensor + module + pull-up). ERC 180, no isolated
+labels, no `pin_to_pin`.
+
 ## Not yet settled
 - Whether the console UART gets a USB-serial bridge or a bare header.
 - Board outline, connector placement, enclosure.

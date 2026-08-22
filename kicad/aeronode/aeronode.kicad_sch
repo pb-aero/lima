@@ -15397,6 +15397,227 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Bosch:BME690"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "U"
+				(at 0 10.1600 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "BME690"
+				(at 0 -10.1600 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "BME690_0_1"
+				(rectangle
+					(start -10.1600 -7.6200)
+					(end 10.1600 7.6200)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin input line
+					(at -12.7 5.08 0)
+					(length 2.54)
+					(name "CSB"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -12.7 2.54 0)
+					(length 2.54)
+					(name "SDI"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -12.7 0 0)
+					(length 2.54)
+					(name "SCK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -12.7 -2.54 0)
+					(length 2.54)
+					(name "SDO"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 12.7 5.08 180)
+					(length 2.54)
+					(name "VDD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 12.7 2.54 180)
+					(length 2.54)
+					(name "VDDIO"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 12.7 -2.54 180)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 12.7 -5.08 180)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(junction
 		(at 867.41 337.82)
@@ -18425,6 +18646,132 @@
 		)
 		(uuid "3ad34967-3a52-4ff0-88fb-3a48260e5c01")
 	)
+	(wire
+		(pts
+			(xy 1037.59 614.68)
+			(xy 1035.05 614.68)
+		)
+		(uuid "d7ddf3df-e5ad-43ea-959d-9e5e9a71757d")
+	)
+	(wire
+		(pts
+			(xy 1037.59 617.22)
+			(xy 1035.05 617.22)
+		)
+		(uuid "a169510c-dc55-44d8-96d9-951e5247cee3")
+	)
+	(wire
+		(pts
+			(xy 1037.59 619.76)
+			(xy 1035.05 619.76)
+		)
+		(uuid "a5afdbca-c28b-40e3-8bfa-8a70f55f2432")
+	)
+	(wire
+		(pts
+			(xy 1037.59 622.3)
+			(xy 1035.05 622.3)
+		)
+		(uuid "e2d27c0a-66e4-45ae-91fe-d42dffd3009f")
+	)
+	(wire
+		(pts
+			(xy 1062.99 614.68)
+			(xy 1065.53 614.68)
+		)
+		(uuid "c56cb1ae-4e7b-4259-8478-e6c9b6f12a88")
+	)
+	(wire
+		(pts
+			(xy 1062.99 617.22)
+			(xy 1065.53 617.22)
+		)
+		(uuid "b964cbbf-f997-4f82-ac80-1eecf7499621")
+	)
+	(wire
+		(pts
+			(xy 1062.99 622.3)
+			(xy 1065.53 622.3)
+		)
+		(uuid "e91b7e92-a5ba-4640-9219-7b50027fb4de")
+	)
+	(wire
+		(pts
+			(xy 1062.99 624.84)
+			(xy 1065.53 624.84)
+		)
+		(uuid "b707bf55-4fd2-4830-a803-1e4941518ea4")
+	)
+	(wire
+		(pts
+			(xy 266.7 335.28)
+			(xy 264.16 335.28)
+		)
+		(uuid "4efb6f77-7e88-4af1-bcd5-64ac6bc63442")
+	)
+	(wire
+		(pts
+			(xy 332.74 312.42)
+			(xy 335.28 312.42)
+		)
+		(uuid "79683d4b-44b8-4b47-8e1f-5be3522a264e")
+	)
+	(wire
+		(pts
+			(xy 999.49 566.42)
+			(xy 999.49 563.88)
+		)
+		(uuid "7276c3a8-83c8-4f00-ab80-7b55966689ee")
+	)
+	(wire
+		(pts
+			(xy 999.49 574.04)
+			(xy 999.49 576.58)
+		)
+		(uuid "f64a6054-60b7-4bb3-bba3-f2d2ae931331")
+	)
+	(wire
+		(pts
+			(xy 1029.97 566.42)
+			(xy 1029.97 563.88)
+		)
+		(uuid "de9c2e9c-3973-4ca5-a6c8-0ace33bf819a")
+	)
+	(wire
+		(pts
+			(xy 1029.97 574.04)
+			(xy 1029.97 576.58)
+		)
+		(uuid "b57387dc-87ba-41c6-a25e-77fd11873a61")
+	)
+	(wire
+		(pts
+			(xy 1109.98 595.63)
+			(xy 1109.98 593.09)
+		)
+		(uuid "2a093251-3ddd-44c7-b64b-25637df53fc2")
+	)
+	(wire
+		(pts
+			(xy 1109.98 603.25)
+			(xy 1109.98 605.79)
+		)
+		(uuid "ed8a5d4d-71a7-4d55-832a-569c98d57744")
+	)
+	(wire
+		(pts
+			(xy 1140.46 595.63)
+			(xy 1140.46 593.09)
+		)
+		(uuid "af3460e9-46ed-40b8-8d70-d1f68861f917")
+	)
+	(wire
+		(pts
+			(xy 1140.46 603.25)
+			(xy 1140.46 605.79)
+		)
+		(uuid "7f69c571-11ae-4466-8a13-646205c160df")
+	)
 	(label "+3V3"
 		(at 892.81 149.86 180)
 		(effects
@@ -20434,6 +20781,186 @@
 			(justify right bottom)
 		)
 		(uuid "800ecd73-68d6-4a6b-b205-5054df196b60")
+	)
+	(label "+3V3"
+		(at 1035.05 614.68 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "6915ef60-1f8f-41b0-973c-c97fc8412c61")
+	)
+	(label "ENV_SDA"
+		(at 1035.05 617.22 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "2228c930-f0eb-42fa-a03d-4158b61ff754")
+	)
+	(label "ENV_SCL"
+		(at 1035.05 619.76 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "9a8d2b6c-77f0-4721-acfd-b0eccf997742")
+	)
+	(label "GND"
+		(at 1035.05 622.3 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "6ce16b94-501f-4ea5-bf4f-0828d04dd443")
+	)
+	(label "+3V3"
+		(at 1065.53 614.68 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "13bae198-aa82-4774-a750-93bd356d1bdd")
+	)
+	(label "+3V3"
+		(at 1065.53 617.22 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "d7126f10-d08f-4bfc-979a-32b272164c6b")
+	)
+	(label "GND"
+		(at 1065.53 622.3 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "57c4c1e5-db80-441f-b8b5-2defc35c4985")
+	)
+	(label "GND"
+		(at 1065.53 624.84 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "aef2049e-f3f2-4cd4-91a2-bb862d3297d9")
+	)
+	(label "ENV_SDA"
+		(at 264.16 335.28 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "4bbf6cf2-62bf-47ee-a083-8892b4027e02")
+	)
+	(label "ENV_SCL"
+		(at 335.28 312.42 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "d78a1796-c6b4-4228-aabb-78b6030c3ebd")
+	)
+	(label "+3V3"
+		(at 999.49 563.88 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "5c912a27-19e9-4563-91d8-90ed174c6c32")
+	)
+	(label "ENV_SDA"
+		(at 999.49 576.58 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "7b2ee7f0-2b0a-469c-97ea-6f154bffb907")
+	)
+	(label "+3V3"
+		(at 1029.97 563.88 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "477b0493-a9e7-489f-bfa9-bb53db65e3ac")
+	)
+	(label "ENV_SCL"
+		(at 1029.97 576.58 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b0284cde-95b8-49ef-aee2-773f5bb6a8d6")
+	)
+	(label "+3V3"
+		(at 1109.98 593.09 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "0ea29e6a-bf98-4c10-a425-b57b30b08282")
+	)
+	(label "GND"
+		(at 1109.98 605.79 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4c764b26-5a46-4725-a305-e61df6bd13f4")
+	)
+	(label "+3V3"
+		(at 1140.46 593.09 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "c314b6c0-97be-497e-b9cc-ec4cd315be2a")
+	)
+	(label "GND"
+		(at 1140.46 605.79 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "968836aa-b4dc-48ad-acfe-0123e6c50e05")
 	)
 	(symbol
 		(lib_id "Digi:ConnectCore93_LGA")
@@ -23423,6 +23950,292 @@
 			(project "aeronode"
 				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
 					(reference "R24")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Bosch:BME690")
+		(at 1050.29 619.76 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4bbda78e-d4e8-4639-ba18-56d0dadc8a70")
+		(property "Reference" "U6"
+			(at 1050.29 609.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "BME690"
+			(at 1050.29 629.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Package_LGA:Bosch_LGA-8_3x3mm_P0.8mm_ClockwisePinNumbering"
+			(at 1050.29 619.76 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme690-ds001-00.pdf"
+			(at 1050.29 619.76 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "aeronode"
+				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
+					(reference "U6")
+					(unit 1)
+				)
+			)
+		)
+	
+		(property "Description" "Bosch BME690 gas / temperature / humidity / pressure sensor, LGA-8 3x3mm. I2C addr 0x76 (SDO=GND)"
+			(at 1050.29 619.76 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "BME690"
+			(at 1050.29 619.76 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Bosch Sensortec"
+			(at 1050.29 619.76 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		))
+	(symbol
+		(lib_id "Device:C")
+		(at 1109.98 599.44 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3dd8de96-120f-47c8-848b-fed7d9c28625")
+		(property "Reference" "C13"
+			(at 1110.615 596.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 1110.615 601.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 1109.98 599.44 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 1109.98 599.44 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "aeronode"
+				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
+					(reference "C13")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 1140.46 599.44 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "11cb55f9-b547-4a0c-9007-81461156d1b2")
+		(property "Reference" "C14"
+			(at 1141.095 596.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 1141.095 601.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 1140.46 599.44 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 1140.46 599.44 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "aeronode"
+				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
+					(reference "C14")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 999.49 570.23 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f3949bd1-66e1-45d9-a48b-7c1a339c70d5")
+		(property "Reference" "R25"
+			(at 1001.522 570.23 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "4.7k"
+			(at 999.49 570.23 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 999.49 570.23 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 999.49 570.23 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "aeronode"
+				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
+					(reference "R25")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 1029.97 570.23 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "673dbdd4-70a5-4751-aa37-d3af5c95e519")
+		(property "Reference" "R26"
+			(at 1032.002 570.23 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "4.7k"
+			(at 1029.97 570.23 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 1029.97 570.23 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 1029.97 570.23 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "aeronode"
+				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
+					(reference "R26")
 					(unit 1)
 				)
 			)
