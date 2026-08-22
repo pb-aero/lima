@@ -194,9 +194,10 @@ lanes**, which is a genuine multichannel TDM interface and exactly what A2B want
 a KiCad `.kicad_mod` through KiCad's built-in Altium importer — 474 pads plus 6 mounting holes,
 vendor-authoritative, no transcription. Verified 2026-08-21.
 
-**The real cost is the PCB.** A 474-pad LGA on 1.27 mm pitch needs escape routing under the module —
-realistically 8+ layers, likely via-in-pad — where the castellated part escapes around its perimeter
-on 4. That is a board-cost and fabrication-capability decision, not a schematic one.
+**~~The real cost is the PCB. A 474-pad LGA on 1.27 mm pitch needs escape routing under the module —
+realistically 8+ layers, likely via-in-pad~~ — RETRACTED 2026-08-22, see "Board stackup" below.**
+That estimate was made from the pad count alone, before counting how many pads this design actually
+uses. It is wrong: **4 layers is sufficient.**
 
 The LGA also relieves the LPSPI3/UART7 conflict noted above, since it brings out far more I/O.
 
@@ -921,6 +922,57 @@ different domain than the sensors.
 
 `I2C4_SDA` and `I2C4_SCL` each land on **5 endpoints** (CC93, pull-up, BME690, MMC5983MA, BMP390);
 `BARO_SA0` on 2. ERC **186**, **no `pin_to_pin`**, no isolated labels.
+
+## Board stackup — 4 layers, 2026-08-22
+
+**Correction.** I previously stated this board needed **8+ layers with via-in-pad**, on the grounds
+that it carries a 474-pad LGA at 1.27 mm pitch. **That was wrong**, and it was wrong because I judged
+it from the pad count without counting the escape load. Actual census:
+
+| Category | Pads | Escape burden |
+|---|---|---|
+| GND | 166 | via straight down to the plane — no routing |
+| NC / RESERVED | 125 | nothing to connect |
+| Power (VSYS/VSYS2/3V3/1V8) | 18 | via to plane |
+| Signal pads left unused | 128 | not connected |
+| **Signals actually wired** | **37** | **the only real escape** |
+
+**37 signals out of 474 pads — 8%.** At **1.27 mm pitch** that is generous by BGA standards (0.8 mm
+and 0.5 mm are routine), so ordinary dogbone vias with 4/4 mil rules will do it. No via-in-pad needed.
+
+**Stackup as set:**
+
+| Layer | Use |
+|---|---|
+| F.Cu | signal + LGA escape |
+| In1.Cu | ground plane |
+| In2.Cu | power plane (split: +5V / +3V3 / +1V8) |
+| B.Cu | signal + remaining escape |
+
+The 166 GND pads are the reason this works so easily — each is a single via to In1, which also gives
+the switching converters a solid return directly beneath them.
+
+## Footprint assignment — 66 of 73 done, 2026-08-22
+
+Passives at 0402 (R and small C), 0603 for 1-10 uF and the LEDs, 0805 for the 47 uF bulk. R22 is
+1206 as a 15 mohm/3 A current sense. Inductors: L1 SRN6028 (4.7 uH buck), L2 SRN4018 (1.0 uH charger).
+
+### Three footprints deliberately left EMPTY
+
+An empty footprint is honest; a wrong land pattern looks finished and is not. These need real work:
+
+| Ref | Part | What is needed |
+|---|---|---|
+| **U7** | DAN-F10N | **Author from scratch.** 56 pads, 20 x 20 mm module. Nothing comparable in stock. |
+| **U9** | MMC5983MA | `Package_LGA:LGA-16_3x3mm_P0.5mm` is the right envelope but is a *generic* pattern — verify against MEMSIC's land drawing before use. |
+| **U10** | BMP390 | No Bosch LGA-10 2 x 2 in stock. `ST_HLGA-10_2x2mm_P0.5mm` matches size and pin count but is **ST's** land pattern, not Bosch's. Verify or author. |
+
+### Two assigned but provisional
+
+- **Q1** — `SOT-23` is a **placeholder package only.** The OVP pass FET must still be selected on SOA
+  (it dissipates (7.3 - 5.0) x I during a clamped surge), and the real part may well not be SOT-23.
+- **L1 / L2** — packages chosen for the inductance and expected current, but **saturation current has
+  not been checked** against 3 A load plus ripple.
 
 ## Not yet settled
 - Whether the console UART gets a USB-serial bridge or a bare header.
