@@ -411,3 +411,23 @@ thermal pads.
 **Verified:** 56/56 pin numbers match the `ublox:DAN-F10N` symbol, no gaps, no extras, 0 overlapping
 pad pairs, min copper gap 0.300 mm, paste margin confirmed live through pcbnew.
 **Not verified:** no 3D model available.
+
+## U9 MMC5983MA — stock `Package_LGA:LGA-16_3x3mm_P0.5mm` VERIFIED, not authored [measured]
+
+Checked against MEMSIC's own LAND PATTERN drawing (MMC5983MA Rev A, p20) by colour-separated
+connected-component measurement. Stock matches exactly: pad 0.45 x 0.30 (measured 0.454 x 0.306),
+radial centre offset 1.275 (measured 1.275 +/- 0.000), tangential +/-0.25 / +/-0.75, body 3 x 3.
+
+**Why it matches:** the stock footprint's `descr` cites `MMC5883MA-RevC` — a sibling MEMSIC
+magnetometer in the same package. It is not a generic guess. It was still verified, because a
+sibling part is not the same part.
+
+**Misreading caught:** the drawing's `2.550` is centre-to-centre, NOT outer-edge to outer-edge.
+The outer-edge reading gives 1.050 instead of 1.275 — 0.225 mm wrong on all 16 pads, and it would
+have looked finished. At 1.275 the pad outer edge is flush with the 3.0 mm body, normal for a
+leadless LGA.
+
+**Measurement scar (same class as DAN-F10N, different cause):** the first run pooled the package
+drawing and the land pattern, because BOTH figures sit on p20 and I rendered the whole page —
+20 blobs instead of 16, an 11 mm "package", nonsense offsets. Crop to the one figure being measured
+before believing any number from a datasheet page.

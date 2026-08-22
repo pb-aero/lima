@@ -28236,7 +28236,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Package_LGA:LGA-16_3x3mm_P0.5mm"
 			(at 1060.45 539.75 0)
 			(hide yes)
 			(effects

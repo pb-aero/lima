@@ -952,18 +952,17 @@ and 0.5 mm are routine), so ordinary dogbone vias with 4/4 mil rules will do it.
 The 166 GND pads are the reason this works so easily — each is a single via to In1, which also gives
 the switching converters a solid return directly beneath them.
 
-## Footprint assignment — 81 of 83 done, 2026-08-22
+## Footprint assignment — 82 of 83 done, 2026-08-22
 
 Passives at 0402 (R and small C), 0603 for 1-10 uF and the LEDs, 0805 for the 47 uF bulk. R22 is
 1206 as a 15 mohm/3 A current sense. Inductors: L1 SRN6028 (4.7 uH buck), L2 SRN4018 (1.0 uH charger).
 
-### Two footprints still deliberately left EMPTY
+### One footprint still deliberately left EMPTY
 
 An empty footprint is honest; a wrong land pattern looks finished and is not. These need real work:
 
 | Ref | Part | What is needed |
 |---|---|---|
-| **U9** | MMC5983MA | `Package_LGA:LGA-16_3x3mm_P0.5mm` is the right envelope but is a *generic* pattern — verify against MEMSIC's land drawing before use. |
 | **U10** | BMP390 | No Bosch LGA-10 2 x 2 in stock. `ST_HLGA-10_2x2mm_P0.5mm` matches size and pin count but is **ST's** land pattern, not Bosch's. Verify or author. |
 
 ### U7 DAN-F10N — authored, `ublox:ublox_DAN-F10N` [measured]
@@ -1021,6 +1020,39 @@ recommendations, not specifications.
 **Still open:** no 3D model (u-blox does not publish a STEP for DAN-F10N in the assets fetched).
 The module has an integrated patch antenna and a 21 x 21 keepout, so placement is constrained by
 sky view, not just courtyard.
+
+### U9 MMC5983MA — verified, `Package_LGA:LGA-16_3x3mm_P0.5mm` [measured]
+
+The stock KiCad footprint was flagged as a *generic* pattern needing verification. It was checked
+against MEMSIC's own LAND PATTERN drawing (datasheet Rev A p20) by colour-separated
+connected-component measurement, and it is **exactly right** — assigned as-is, no authoring needed.
+
+| | MEMSIC measured | Stock KiCad | Spec on drawing |
+|---|---|---|---|
+| Pad size | 0.454 x 0.306 | 0.45 x 0.30 | 0.450 x 0.300 |
+| Radial pad-centre offset | 1.275 +/- 0.000 | 1.275 | 2.550 / 2 |
+| Tangential offsets | +/-0.251, +/-0.756 | +/-0.25, +/-0.75 | 0.500 pitch |
+| Body | 3.002 x 3.024 | 3 x 3 | 3.0 x 3.0 |
+
+Not actually a generic pattern: the stock footprint's `descr` cites **MMC5883MA-RevC**, a sibling
+MEMSIC magnetometer in the same package — so it was drawn from a MEMSIC land drawing, not guessed.
+That is why it matches. Verified rather than assumed, because the two parts are not the same part.
+
+**One misreading caught.** The drawing's `2.550` is **centre-to-centre**, not outer-edge to
+outer-edge. Read as outer-edge it gives a pad-centre offset of 1.050 instead of 1.275 — a 0.225 mm
+error on all 16 pads, which would have looked like a plausible finished footprint. Measurement
+settled it: 1.275 +/- 0.000. At 1.275 the pad outer edge sits flush with the 3.0 mm body edge, which
+is normal for a leadless LGA.
+
+**Numbering** confirmed CCW viewed from top, pins 1 and 16 flanking one corner, from the datasheet's
+marking illustration ("The black dot on top-right marks the location of pin one"). All 16 symbol pins
+match the datasheet table, and the I2C address 0110000 = **0x30** matches the schematic.
+
+**Placement constraint, from the datasheet's own words (p12), not inference.** MEMSIC state: do not
+route current-carrying traces under the sensor *or on the opposite side of the PCB*, and keep away
+from inductors and any magnetisable material. AeroNode carries 1.5 MHz / 400 kHz switchers, a 3 A
+charger path and two power inductors. **This strengthens the standing recommendation to move U9 to
+the imu-board** rather than place it here; the part is correct either way, but the board may not be.
 
 ### Two assigned but provisional
 
