@@ -208,6 +208,55 @@ pull-down discipline, no holding the transceiver in reset through POR, no buffer
 SAI2 is also strap-free but sits entirely on the **1V8** rail (muxed onto ENET2), so it would need
 level shifting to a 3.3 V transceiver and would cost the second Ethernet MAC.
 
+## IMU interconnect — J1, wired 2026-08-22
+
+`J1` (`Conn_02x10_Odd_Even`, value `IMU_BOARD`) carries the two IMUs on **independent SPI buses**,
+one per chip. The IMUs live on `kicad/imu-board`; see its notes for why the buses are split.
+
+| J1 | net | CC93 pad | function | | J1 | net | CC93 pad | function |
+|---|---|---|---|---|---|---|---|---|
+| 1 | `+3V3` | — | *pending power sheet* | | 2 | `GND` | — | *pending* |
+| 3 | `ICM_SCLK` | **D17** | LPSPI8_SCK | | 4 | `GND` | — | |
+| 5 | `ICM_MOSI` | **E18** | LPSPI8_SOUT | | 6 | `ICM_MISO` | **E22** | LPSPI8_SIN |
+| 7 | `ICM_CS` | **E19** | LPSPI8_CS0 | | 8 | `GND` | — | |
+| 9 | `ICM_INT1` | **E28** | GPIO2_IO22 | | 10 | `ICM_INT2` | **E27** | GPIO2_IO23 |
+| 11 | `BMI_SCLK` | **N29** | LPSPI3_SCK | | 12 | `GND` | — | |
+| 13 | `BMI_MOSI` | **M29** | LPSPI3_SOUT | | 14 | `BMI_SDO` | **R1** | LPSPI3_SIN |
+| 15 | `BMI_SDO` | **R1** | *(tied — see below)* | | 16 | `BMI_ACC_CS` | **P1** | LPSPI3_PCS0 |
+| 17 | `BMI_GYR_CS` | **C24** | GPIO2_IO24 | | 18 | `GND` | — | |
+| 19 | `BMI_ACC_INT` | **AA1** | GPIO2_IO06 | | 20 | `BMI_GYR_INT` | **Y1** | GPIO1_IO10 |
+
+Grounds are interleaved between the SPI groups rather than bunched at one end — a ribbon or FFC needs
+a return conductor adjacent to each clock, not one at the far end of the connector.
+
+### Why these two SPI instances
+
+- **LPSPI8** sits on **dedicated primary pads** (D17/E18/E19/E22) — no mux conflict, no boot strap.
+- **LPSPI3** sits on the UART7 pads (P1/R1/M29/N29), clean, and costs only UART7.
+- **LPSPI4 and LPSPI5 were rejected** — both land on SAI3's pads, which the A2B link owns.
+- **LPSPI1 and LPSPI2 were rejected** — both touch BOOT_MODE straps.
+
+### J1 pins 14 and 15 are the same net, deliberately
+
+The BMI088's accel and gyro dies have separate data outputs (`SDO1`, `SDO2`) but **share `SCK` and
+`SDI`**, so they cannot have independent buses. `imu-board` brings both SDOs out separately; AeroNode
+ties them onto `LPSPI3_SIN` (R1), which is Bosch's own topology — the chip selects arbitrate which die
+drives the line.
+
+**The tie lives here, on the host, not on the sensor board.** That is deliberate: cutting it is a
+board-edit on AeroNode if the two dies ever need genuinely separate readback, and it keeps the ERC
+output-conflict off the sensor board where it would have to be permanently excluded.
+
+### Verified `[measured]` 2026-08-22
+
+All 13 IMU nets land on exactly the intended endpoints (`BMI_SDO` on three: two J1 pins + R1);
+`find_shorted_nets` **0**; ERC unconnected-pin count fell **349 -> 336**, exactly the 13 module pins
+wired and no others disturbed.
+
+**`+3V3` and `GND` on J1 are not yet tied to the module** — the CC93's 3V3/1V8 outputs and its 166 GND
+pads belong to the power sheet, which is the next piece of work. Until then `+3V3` is legitimately a
+single-pin net and ERC says so.
+
 ## Not yet settled
 - Whether the console UART gets a USB-serial bridge or a bare header.
 - Board outline, connector placement, enclosure.
