@@ -18243,6 +18243,188 @@
 		)
 		(uuid "8f1903dc-9456-44ec-8dcd-ad0694c5fce3")
 	)
+	(wire
+		(pts
+			(xy 570.23 601.98)
+			(xy 572.77 601.98)
+		)
+		(uuid "b1db044b-81d2-413c-8e0d-c129581f09cf")
+	)
+	(wire
+		(pts
+			(xy 570.23 612.14)
+			(xy 572.77 612.14)
+		)
+		(uuid "49ba4775-8723-40cc-9cab-0c58bfe6c3f4")
+	)
+	(wire
+		(pts
+			(xy 570.23 596.9)
+			(xy 572.77 596.9)
+		)
+		(uuid "977d78ca-df62-4581-9976-be84f361d860")
+	)
+	(wire
+		(pts
+			(xy 570.23 617.22)
+			(xy 572.77 617.22)
+		)
+		(uuid "964e7019-ad4a-4dc1-81b1-93603d2f899f")
+	)
+	(wire
+		(pts
+			(xy 560.07 556.26)
+			(xy 560.07 553.72)
+		)
+		(uuid "b84ce4f3-e6ad-4bf2-a32d-e7e04e04ca69")
+	)
+	(wire
+		(pts
+			(xy 560.07 563.88)
+			(xy 560.07 566.42)
+		)
+		(uuid "6e38147d-2a48-4e97-b938-7e0c4f91223d")
+	)
+	(wire
+		(pts
+			(xy 510.54 556.26)
+			(xy 510.54 553.72)
+		)
+		(uuid "e4465345-dc3e-41bb-a770-8fd0a4dbf0a2")
+	)
+	(wire
+		(pts
+			(xy 510.54 563.88)
+			(xy 510.54 566.42)
+		)
+		(uuid "2f6f2ef0-69fd-4c8b-8bef-eb87b9d893f8")
+	)
+	(wire
+		(pts
+			(xy 609.6 556.26)
+			(xy 609.6 553.72)
+		)
+		(uuid "66e294ac-25d6-4159-b7ba-65eb7b3de620")
+	)
+	(wire
+		(pts
+			(xy 609.6 563.88)
+			(xy 609.6 566.42)
+		)
+		(uuid "f72be8f5-d353-46fc-8869-6417a72e65ac")
+	)
+	(wire
+		(pts
+			(xy 469.9 595.63)
+			(xy 469.9 593.09)
+		)
+		(uuid "6dc2fdad-53d7-4c5e-bebb-001b093e688a")
+	)
+	(wire
+		(pts
+			(xy 469.9 603.25)
+			(xy 469.9 605.79)
+		)
+		(uuid "96963289-ddab-4757-ac76-d78cc74d3a80")
+	)
+	(wire
+		(pts
+			(xy 469.9 556.26)
+			(xy 469.9 553.72)
+		)
+		(uuid "1b60ab42-04de-48ac-87b1-350d698d7f59")
+	)
+	(wire
+		(pts
+			(xy 469.9 563.88)
+			(xy 469.9 566.42)
+		)
+		(uuid "acc9e14c-d038-4135-be13-a801c2ac8335")
+	)
+	(wire
+		(pts
+			(xy 570.23 591.82)
+			(xy 572.77 591.82)
+		)
+		(uuid "81b6cb29-c222-4174-83dc-5e21e32b0dd8")
+	)
+	(wire
+		(pts
+			(xy 660.4 556.26)
+			(xy 660.4 553.72)
+		)
+		(uuid "8169d6ca-6145-44c7-a3f8-d6f33f047078")
+	)
+	(wire
+		(pts
+			(xy 660.4 563.88)
+			(xy 660.4 566.42)
+		)
+		(uuid "9964e23c-2b39-4733-9809-d6fdbd5271ad")
+	)
+	(wire
+		(pts
+			(xy 699.77 595.63)
+			(xy 699.77 593.09)
+		)
+		(uuid "696ddfb7-6b16-48b5-a863-3efda821c306")
+	)
+	(wire
+		(pts
+			(xy 699.77 603.25)
+			(xy 699.77 605.79)
+		)
+		(uuid "ff027b51-9d63-4d5d-8d7a-4a3bb5860b0a")
+	)
+	(wire
+		(pts
+			(xy 660.4 595.63)
+			(xy 660.4 593.09)
+		)
+		(uuid "4ef0156f-4541-4fc0-a446-b654bb17b488")
+	)
+	(wire
+		(pts
+			(xy 660.4 603.25)
+			(xy 660.4 605.79)
+		)
+		(uuid "d35f6b71-1879-4545-acff-8ffc3506f852")
+	)
+	(wire
+		(pts
+			(xy 740.41 546.1)
+			(xy 740.41 543.56)
+		)
+		(uuid "1f5a3849-517c-42a8-b71f-24e706d52fb1")
+	)
+	(wire
+		(pts
+			(xy 740.41 553.72)
+			(xy 740.41 556.26)
+		)
+		(uuid "c4e401fc-d11e-423e-94a1-506456f1be4d")
+	)
+	(wire
+		(pts
+			(xy 740.41 586.74)
+			(xy 740.41 584.2)
+		)
+		(uuid "99acd79e-1c91-4c60-a247-b8a09735610f")
+	)
+	(wire
+		(pts
+			(xy 740.41 594.36)
+			(xy 740.41 596.9)
+		)
+		(uuid "bd7f0146-68ae-49b7-8278-b107b83da0c4")
+	)
+	(wire
+		(pts
+			(xy 549.91 596.9)
+			(xy 547.37 596.9)
+		)
+		(uuid "3ad34967-3a52-4ff0-88fb-3a48260e5c01")
+	)
 	(label "+3V3"
 		(at 892.81 149.86 180)
 		(effects
@@ -19993,6 +20175,266 @@
 		)
 		(uuid "76fb508a-dc9f-49b0-966b-da4129e2cc6e")
 	)
+	(label "CHG_SW1"
+		(at 572.77 601.98 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "1250ff50-7e36-4804-8a29-f8fd7f1095fc")
+	)
+	(label "CHG_SW2"
+		(at 572.77 612.14 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "47f2d991-8aaf-47e7-be5e-8ed8ec68d29f")
+	)
+	(label "CHG_BTST1"
+		(at 572.77 596.9 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "5551511c-2b8f-4b68-bfe1-19ef8f8734f7")
+	)
+	(label "CHG_BTST2"
+		(at 572.77 617.22 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "835df800-2b54-4cef-a73f-a7a8674ee6dc")
+	)
+	(label "CHG_SW1"
+		(at 560.07 553.72 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3e72ea05-e2b3-4a6c-8726-2c926dc4a542")
+	)
+	(label "CHG_SW2"
+		(at 560.07 566.42 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "2377ec70-b8a5-46fb-b21b-3af84187edc1")
+	)
+	(label "CHG_BTST1"
+		(at 510.54 553.72 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "5a701697-3574-43b1-8fc1-0a21a78478ad")
+	)
+	(label "CHG_SW1"
+		(at 510.54 566.42 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3f5f81f9-2e78-47db-b00c-0c6ad0082a70")
+	)
+	(label "CHG_BTST2"
+		(at 609.6 553.72 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "8ce1f2e3-53b2-4be2-9cdd-ac50d216bdd1")
+	)
+	(label "CHG_SW2"
+		(at 609.6 566.42 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "090f879c-56c2-48e4-b6f2-49019c3fb6c6")
+	)
+	(label "REGN"
+		(at 469.9 593.09 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "c8458de5-1878-43fc-b6a5-970d8b99837d")
+	)
+	(label "GND"
+		(at 469.9 605.79 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "78747274-dd95-4966-89f0-f97e5a41b00f")
+	)
+	(label "VBUS"
+		(at 469.9 553.72 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "451b78e8-ec03-47d2-834c-f67a20c41100")
+	)
+	(label "GND"
+		(at 469.9 566.42 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "1ce2faa9-aa4d-483b-aef6-819307131047")
+	)
+	(label "CHG_PMID"
+		(at 572.77 591.82 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a0c0c4de-f243-419d-8fea-6235d596fdcb")
+	)
+	(label "CHG_PMID"
+		(at 660.4 553.72 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4844ae92-9968-44ef-8da8-64f0d81feeb3")
+	)
+	(label "GND"
+		(at 660.4 566.42 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "bf2feca2-ac79-4d03-b757-0223784547be")
+	)
+	(label "VBAT"
+		(at 699.77 593.09 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "6968d2eb-2a93-4d71-ae1b-bcaadc71b8d8")
+	)
+	(label "GND"
+		(at 699.77 605.79 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ade66224-7027-4d38-b6eb-85508a97ccc3")
+	)
+	(label "VSYS_CHG"
+		(at 660.4 593.09 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a8fa2409-36cb-4baa-8f82-f3da00675aa9")
+	)
+	(label "GND"
+		(at 660.4 605.79 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "1abfc0f0-fd47-46a4-a15f-9c885f69e908")
+	)
+	(label "REGN"
+		(at 740.41 543.56 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "25138785-becb-4e8c-ad01-a470656b724a")
+	)
+	(label "BAT_TS"
+		(at 740.41 556.26 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "c36f158f-b250-43bd-bd5b-ac1b62cd5f47")
+	)
+	(label "BAT_TS"
+		(at 740.41 584.2 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "7fa29915-db21-4c54-894f-f9a5d55e710c")
+	)
+	(label "GND"
+		(at 740.41 596.9 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "6fcbb5c5-7ee8-4700-ba9b-41b7ab0b7f18")
+	)
+	(label "VBUS"
+		(at 547.37 596.9 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "800ecd73-68d6-4a6b-b205-5054df196b60")
+	)
 	(symbol
 		(lib_id "Digi:ConnectCore93_LGA")
 		(at 129.54 119.38 0)
@@ -20876,7 +21318,7 @@
 				)
 			)
 		)
-		(property "Value" "PROG 2S - TBD"
+		(property "Value" "6.04k"
 			(at 519.43 699.77 90)
 			(effects
 				(font
@@ -20894,6 +21336,15 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 519.43 699.77 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "PROG: sets POR 1.5MHz / 2s cell count (BQ25798 Table 7-1)"
 			(at 519.43 699.77 0)
 			(hide yes)
 			(effects
@@ -22448,6 +22899,530 @@
 			(project "aeronode"
 				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
 					(reference "C5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:L")
+		(at 560.07 560.07 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0493299a-153d-45bb-ae8f-b7a0280a1436")
+		(property "Reference" "L2"
+			(at 558.8 560.07 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "1.0uH"
+			(at 561.975 560.07 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 560.07 560.07 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 560.07 560.07 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "aeronode"
+				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
+					(reference "L2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 510.54 560.07 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5d9aaba7-a5dd-4f78-bfbc-ed4df0bc73dd")
+		(property "Reference" "C6"
+			(at 511.175 557.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "47nF"
+			(at 511.175 562.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 510.54 560.07 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 510.54 560.07 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "aeronode"
+				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
+					(reference "C6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 609.6 560.07 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "94d4317e-4eef-409a-8cb8-1cfbc2d5c9b6")
+		(property "Reference" "C7"
+			(at 610.235 557.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "47nF"
+			(at 610.235 562.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 609.6 560.07 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 609.6 560.07 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "aeronode"
+				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
+					(reference "C7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 469.9 599.44 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4afd1c37-1f46-4c44-8527-a86c7516d3e5")
+		(property "Reference" "C8"
+			(at 470.535 596.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "4.7uF"
+			(at 470.535 601.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 469.9 599.44 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 469.9 599.44 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "aeronode"
+				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
+					(reference "C8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 469.9 560.07 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0f0a117e-96db-4bc5-a74e-c3d1746afb49")
+		(property "Reference" "C9"
+			(at 470.535 557.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10uF"
+			(at 470.535 562.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 469.9 560.07 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 469.9 560.07 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "aeronode"
+				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
+					(reference "C9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 660.4 560.07 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a9824591-e291-4ff3-a0f1-b7be1ef88e16")
+		(property "Reference" "C10"
+			(at 661.035 557.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10uF"
+			(at 661.035 562.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 660.4 560.07 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 660.4 560.07 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "aeronode"
+				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
+					(reference "C10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 699.77 599.44 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5473baa9-d5d4-4608-80af-e01cf693e88d")
+		(property "Reference" "C11"
+			(at 700.405 596.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10uF"
+			(at 700.405 601.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 699.77 599.44 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 699.77 599.44 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "aeronode"
+				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
+					(reference "C11")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 660.4 599.44 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "cf5be834-da7a-4986-bd75-130e1270654d")
+		(property "Reference" "C12"
+			(at 661.035 596.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10uF"
+			(at 661.035 601.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 660.4 599.44 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 660.4 599.44 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "aeronode"
+				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
+					(reference "C12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 740.41 549.91 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7b215c8a-8814-461a-af5f-b9b1d55d7eed")
+		(property "Reference" "R23"
+			(at 742.442 549.91 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "5.24k"
+			(at 740.41 549.91 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 740.41 549.91 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 740.41 549.91 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "aeronode"
+				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
+					(reference "R23")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 740.41 590.55 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5dbac8fd-0277-42d3-ab87-a26c6d50666d")
+		(property "Reference" "R24"
+			(at 742.442 590.55 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "30.31k"
+			(at 740.41 590.55 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 740.41 590.55 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 740.41 590.55 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "aeronode"
+				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
+					(reference "R24")
 					(unit 1)
 				)
 			)

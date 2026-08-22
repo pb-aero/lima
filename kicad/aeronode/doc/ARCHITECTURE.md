@@ -489,9 +489,61 @@ Margin: buck nominal 5.016 V (+2% = 5.116) -> OV trip 5.500 V -> VSYS absolute m
    need a symbol authoring. **Worth doing before this goes to fabrication.**
 4. `ENOUT` (pin 14) is unused.
 
+## Power sheet — stage 6: charger power stage and TS network, 2026-08-22
+
+All values `[fetched]` from the BQ25798 datasheet's own application diagram and Table 7-1.
+
+| Ref | Value | Role |
+|---|---|---|
+| **R2** | **6.04k** | PROG — Table 7-1: sets POR **1.5 MHz / 2s**. Was TBD |
+| L2 | **1.0 uH** | buck-boost inductor, `CHG_SW1` to `CHG_SW2`. 1.0 uH pairs with 1.5 MHz (2.2 uH is the 750 kHz option) |
+| C6 / C7 | 47 nF | bootstraps, `BTST1`->`SW1` and `BTST2`->`SW2` |
+| C8 | 4.7 uF | `REGN` internal LDO |
+| C9 | 10 uF | `VBUS` input |
+| C10 | 10 uF | `PMID` |
+| C11 | 10 uF | `BAT` |
+| C12 | 10 uF | `SYS` |
+| R23 / R24 | 5.24k / 30.31k | TS thermistor divider, `REGN`->`TS`->`GND` |
+
+`VAC1` (pin 9) tied to `VBUS` as the adapter-present sense.
+
+**Table 7-1 also confirms an assumption made earlier rather than checked:** the 2s POR defaults are
+ICHG 1 A, **VSYSMIN 7 V**, VREG 8.4 V, with VREG programmable over 5-9.99 V. The 7 V VSYSMIN is what
+puts the SYS rail at 7.0-7.3 V, which is why the buck and the OVP both exist. 7.20 V is comfortably
+inside the allowed VREG range.
+
+### ⚠ The TS divider values are the datasheet's **Li-ion** example, not LiFePO4
+
+R23/R24 = 5.24k/30.31k come straight from the datasheet, where they are derived for
+**T1 = 0 degC and T5 = 60 degC — the Li-ion/Li-polymer JEITA window.**
+
+**LiFePO4 does not charge to 60 degC.** Its usual charge window is roughly **0 to 45 degC**; charging a
+LiFePO4 cell at 60 degC degrades it. Left as-is, the hardware would permit charging well outside the
+pack's safe temperature range.
+
+Two ways to fix it, and one must be chosen before fabrication:
+
+1. **Recompute R23/R24** for T1/T5 = 0/45 degC using the datasheet's equations (2) and (3) with the
+   103AT NTC curve, or
+2. **Tighten the JEITA thresholds over I2C** (`TS_COOL` / `TS_WARM` and the VREG/ICHG derating
+   registers), leaving the divider as the coarse mapping.
+
+This is the **third** LiFePO4-versus-Li-ion default to bite this design, after the 8.4 V VREG and the
+watchdog revert. The pattern is consistent: **every charger default assumes Li-ion.** Anything on this
+part that has a chemistry-dependent default should be treated as wrong until checked.
+
+### ERC after stage 6 `[measured]`
+
+182: 169 `pin_not_connected`, 8 `pin_not_driven`, 5 `power_pin_not_driven`. No isolated labels, no
+`pin_to_pin`. All ten charger power-stage nets matched their predicted endpoint counts.
+
+The 5 `power_pin_not_driven` are because no `PWR_FLAG` symbols have been placed yet — the rails are
+fed by real regulators, but ERC cannot see a "source" without the flag. Worth adding on `+5V_RAW`,
+`+3V3`, `+1V8`, `VBUS` and `GND` when the sheet is tidied.
+
 ### Still to do on this sheet
 
-- BQ25798 switching components: inductor, `BTST1`/`BTST2`, `SW1`/`SW2`, `PMID`, input/output bulk.
+- `ILIM_HIZ`, `QON`, `ACDRV1`/`ACDRV2`, `SDRV`, `VAC2`, `D+`/`D-` on the charger: inductor, `BTST1`/`BTST2`, `SW1`/`SW2`, `PMID`, input/output bulk.
 - R2 PROG value from the BQ25798 PROG resistance table.
 - TS thermistor divider on the battery connector.
 - `VAC1`/`VAC2`, `ACDRV1`/`ACDRV2`, `SDRV`, `ILIM_HIZ`, `QON` on the charger.
