@@ -4,4 +4,5 @@
   (lib (name "Digi") (type "KiCad") (uri "${KIPRJMOD}/../lib/Digi.kicad_sym") (options "") (descr ""))
   (lib (name "Bosch") (type "KiCad") (uri "${KIPRJMOD}/../lib/Bosch.kicad_sym") (options "") (descr ""))
   (lib (name "ublox") (type "KiCad") (uri "${KIPRJMOD}/../lib/ublox.kicad_sym") (options "") (descr ""))
-  (lib (name "MEMSIC") (type "KiCad") (uri "${KIPRJMOD}/../lib/MEMSIC.kicad_sym") (options "") (descr "")))
+  (lib (name "MEMSIC") (type "KiCad") (uri "${KIPRJMOD}/../lib/MEMSIC.kicad_sym") (options "") (descr ""))
+  (lib (name "AeroNode") (type "KiCad") (uri "${KIPRJMOD}/../lib/AeroNode.kicad_sym") (options "") (descr "")))

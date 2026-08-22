@@ -1,0 +1,9 @@
+(version 1)
+
+# J2 USB-C receptacle (HC-TYPE-C-16P-01A): the connector's own GND through-holes sit
+# 0.1847 mm from its NPTH mounting holes. That spacing is fixed by the connector's
+# mechanics and cannot be changed in layout. Scoped to J2 ONLY so the 0.25 mm global
+# hole clearance still applies everywhere else. Fab must confirm 0.18 mm hole-to-hole.
+(rule "USB-C receptacle internal hole spacing"
+	(condition "A.memberOfFootprint('J2') && B.memberOfFootprint('J2')")
+	(constraint hole_clearance (min 0.15mm)))

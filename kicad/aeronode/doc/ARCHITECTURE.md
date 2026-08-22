@@ -952,7 +952,7 @@ and 0.5 mm are routine), so ordinary dogbone vias with 4/4 mil rules will do it.
 The 166 GND pads are the reason this works so easily — each is a single via to In1, which also gives
 the switching converters a solid return directly beneath them.
 
-## Footprint assignment — 83 of 83 done, 2026-08-22
+## Footprint assignment — 73 of 73 components done, 2026-08-22
 
 Passives at 0402 (R and small C), 0603 for 1-10 uF and the LEDs, 0805 for the 47 uF bulk. R22 is
 1206 as a 15 mohm/3 A current sense. Inductors: L1 SRN6028 (4.7 uH buck), L2 SRN4018 (1.0 uH charger).
@@ -1030,6 +1030,77 @@ above the metal lid (section 7.6). This is an enclosure constraint, not just a P
   (it dissipates (7.3 - 5.0) x I during a clamped surge), and the real part may well not be SOT-23.
 - **L1 / L2** — packages chosen for the inductance and expected current, but **saturation current has
   not been checked** against 3 A load plus ripple.
+
+
+## PCB: netlist imported, outline drawn — 2026-08-22 [measured]
+
+**State: 73 footprints on the board, 385 nets, DRC 0 violations, schematic parity 0, 466 unconnected
+(nothing routed yet).** Five anchor parts placed; the other 68 are staged off-board at x >= 155.
+
+### Correction: the design has 73 components, not 83
+
+Earlier entries said "83 of 83 footprints". That counted symbol **units**, not components — U1 (the
+CC93) is an 11-unit symbol, and 83 - 73 = 10 is exactly its extra units. Every component was and is
+assigned; only the headline number was wrong. Corrected above.
+
+### Import route
+
+`kicad-cli` has no "update PCB from schematic", and KiCad 10's `pcbnew` SWIG bindings expose no
+`NETLIST` / `BOARD_NETLIST_UPDATER`. So the import is a scripted one: export `kicadsexpr` netlist,
+resolve every footprint through the project `fp-lib-table` plus the stock library, load, place, and
+bind pads by pad number. **Verified by re-reading the saved board**: 806 netlist nodes checked,
+0 mismatches, and `kicad-cli pcb drc` reports **schematic_parity: 0** — which is the real proof the
+custom import did what KiCad's own updater would have done.
+
+### Q1 could never have worked — fixed
+
+Q1 used `Device:Q_NMOS`, KiCad's **generic** MOSFET symbol whose pin *numbers* are literally
+`D`, `G`, `S`. A SOT-23 footprint has pads `1`, `2`, `3`, so the three pads bound to **nothing** —
+the OVP pass FET sat unconnected in the netlist. This was silent in ERC (the schematic is
+electrically fine); it only surfaced when pads were matched to pins.
+
+KiCad 10 ships **no** `Q_NMOS_*` pin-numbered variants (JFETs kept theirs, MOSFETs did not), so
+there was nothing stock to swap to. Authored `AeroNode:NMOS_GSD` in a new project library
+(`kicad/lib/AeroNode.kicad_sym`) — Q_NMOS's exact graphics with pins numbered **1=G, 2=S, 3=D**, the
+standard SOT-23 N-MOSFET pinout. Pin geometry is unchanged, so existing wires stayed attached.
+Q1 now binds 3->+5V_RAW, 1->OVP_HGATE, 2->OVP_SENSE.
+
+*Deliberately NOT patched in the schematic's cached `lib_symbols`* — that would have been reverted by
+"Update Symbols from Library", which is precisely the class of fix that looks done and isn't.
+
+**Still open, unchanged:** the actual FET must be selected on SOA. Both the GSD pinout *and* the
+SOT-23 footprint are provisional and must be re-checked against whatever part is chosen.
+
+### Outline — 90 x 70 mm, ASSUMED
+
+Rounded rectangle, corner R3, at (20,20)-(110,90). 4x M3 NPTH holes 5 mm in from each edge, on an
+80 x 60 pattern. **The size is my assumption, not a requirement you gave** — chosen because total
+component courtyard is 3010 mm2 over 73 parts, so 90 x 70 = 6300 mm2 gives ~48% density, comfortable
+for 4 layers. If an enclosure dictates otherwise, changing it now is cheap; after placement it is not.
+
+Anchors placed (provisional): U1 CC93 centred (52,51); U7 GNSS top-right (91.5,41) — corner sited for
+sky view and distance from the switchers; J1 IMU header on the right edge; J2 USB-C **flush with the
+bottom edge** so the plug can mate; J3 battery bottom-centre. Verified all inside the outline, 0
+courtyard overlaps, tightest gap 1.21 mm (J1<->U7).
+
+**Placement scar:** two anchors were wrong on the first pass and both were caught only by measuring,
+not by inspection. J1 was rotated 90 deg on the assumption it was a wide part — its native courtyard
+is already tall, so the rotation threw it **18.7 mm off the right edge**. J3 hung 0.89 mm past the
+bottom edge because a pin header's footprint **origin is pin 1, not the courtyard centre**. Placement
+is now done by targeting courtyard centres and computing the origin offset, never by assuming they
+coincide.
+
+### DRC: 0 violations, with one accepted residual
+
+Two were found and both are footprint-internal, not layout:
+
+- **U10 BMP390 silk text** was 0.7 mm against an 0.8 mm minimum — mine, fixed in the library and on
+  the board instance.
+- **J2 USB-C, 4x hole clearance at 0.1847 mm vs 0.25 mm.** These are the receptacle's own GND
+  through-holes against its own NPTH mounting holes. The spacing is fixed by the connector's
+  mechanics and cannot be changed in layout. Added `aeronode.kicad_dru` with a rule **scoped to J2
+  only**, so the 0.25 mm global constraint still applies everywhere else. **The fab must confirm it
+  can hold 0.18 mm hole-to-hole** — this is a real manufacturing constraint, not a suppressed warning.
 
 ## Not yet settled
 - Whether the console UART gets a USB-serial bridge or a bare header.

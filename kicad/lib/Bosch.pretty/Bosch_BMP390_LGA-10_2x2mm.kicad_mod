@@ -5,7 +5,7 @@
 	(layer "F.Cu")
 	(descr "Bosch Sensortec BMP390 barometric pressure sensor, 10-pin metal-lid LGA 2.0 x 2.0 x 0.75 mm. Land pattern per datasheet BST-BMP390-DS002-07 Rev 1.7 section 7.2, which directs that the package outline dimensions (Fig 26 bottom view) be used AS the landing pattern - so copper is 1:1 with the package pads, no expansion. Pads at radial offset 0.7625 (=1.525/2); 6x 0.275 x 0.250 on the left/right columns, 4x 0.250 x 0.275 on the top/bottom rows. Drawn in TOP view per Fig 23; pin 1 (VDDIO) at TOP RIGHT. F.Fab circle marks the 0.25mm port hole - it must not be obstructed.")
 	(tags "Bosch BMP390 BMP388 LGA-10 barometer pressure sensor")
-	(property "Reference" "REF**" (at 0 -1.9 0) (layer "F.SilkS") (uuid "3004196a-557b-4e73-8585-e77b304601fc") (effects (font (size 0.7 0.7) (thickness 0.11))))
+	(property "Reference" "REF**" (at 0 -1.9 0) (layer "F.SilkS") (uuid "3004196a-557b-4e73-8585-e77b304601fc") (effects (font (size 0.8 0.8) (thickness 0.12))))
 	(property "Value" "Bosch_BMP390_LGA-10_2x2mm" (at 0 1.9 0) (layer "F.Fab") (uuid "63fb07a9-1f7e-4ede-82b7-59509bf13a18") (effects (font (size 0.7 0.7) (thickness 0.11))))
 	(property "Datasheet" "" (at 0 0 0) (layer "F.Fab") (hide yes) (uuid "d33bf640-437d-43af-8a83-6a5c2181b2b0") (effects (font (size 1 1) (thickness 0.15))))
 	(property "Description" "" (at 0 0 0) (layer "F.Fab") (hide yes) (uuid "e41761a0-05a6-46ed-a3a1-a76151738c98") (effects (font (size 1 1) (thickness 0.15))))

@@ -462,3 +462,24 @@ obstructed; Bosch also require >= 0.1 mm clearance above the metal lid. Enclosur
 
 **Verified:** 10/10 pad positions vs Fig 23, 10/10 symbol pin names vs Table 52, 0 overlaps,
 min copper gap 0.250 mm. **Not verified:** no 3D model.
+
+## AeroNode.kicad_sym — project-generic symbols, created 2026-08-22
+
+### `NMOS_GSD` — why it exists
+
+Q1 (the LTC4364 OVP pass FET) used `Device:Q_NMOS`, KiCad's **generic** MOSFET symbol whose pin
+*numbers* are the letters `D`, `G`, `S`. A SOT-23 footprint has pads `1`/`2`/`3`, so all three pads
+bound to **nothing** during netlist import — the pass FET was electrically absent from the board.
+ERC never saw it: the schematic is fine, the defect only exists at the symbol-to-footprint boundary.
+
+KiCad 10 ships **no** `Q_NMOS_*` pin-numbered variants (JFETs kept theirs, MOSFETs did not), so there
+was nothing stock to swap to. `NMOS_GSD` is `Device:Q_NMOS`'s exact graphics with pins renumbered
+**1=G, 2=S, 3=D** — the standard SOT-23 N-MOSFET pinout. Pin at-positions are unchanged, so existing
+schematic wires stay attached through the swap.
+
+**Do not "fix" this class of problem by editing the cached `lib_symbols` block in the .kicad_sch** —
+"Update Symbols from Library" silently reverts it. It is a fix that looks done and isn't.
+
+**Lesson worth generalising:** a generic symbol with letter pin numbers is a schematic-only
+placeholder. It will pass ERC and produce an unconnected part on the board. Check pin *numbers*, not
+just pin names, whenever a symbol comes from a `Device:`-style generic library.
