@@ -1263,36 +1263,6 @@
 		)
 		(uuid "4673d7d0-30b7-4efa-bc3e-ab21d08ac9fa")
 	)
-	(label "IMU_SCLK"
-		(at 77.47 102.87 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "f2d3d292-9923-4778-9f1a-b6aa7ba920f5")
-	)
-	(label "IMU_MOSI"
-		(at 77.47 105.41 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "529d77fd-dc2b-4859-86d1-fc0de2bed469")
-	)
-	(label "IMU_MISO"
-		(at 77.47 107.95 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "f0338f20-769a-4f3b-99d7-a5e8c15406ff")
-	)
 	(label "ICM_CS"
 		(at 77.47 110.49 180)
 		(effects
@@ -1352,46 +1322,6 @@
 			(justify left bottom)
 		)
 		(uuid "43c69ebd-67ff-4687-b2f0-4d9e19d6a768")
-	)
-	(label "IMU_SCLK"
-		(at 264.16 107.95 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "df536e7b-6a2b-468e-9b95-197e9f177cc4")
-	)
-	(label "IMU_MOSI"
-		(at 264.16 110.49 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "a455abe1-c0e0-4b69-9ac7-d8d80f971316")
-	)
-	(label "IMU_MISO"
-		(at 264.16 113.03 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "00aec4dd-aaa3-4966-baa7-2ad692352d4d")
-	)
-	(label "IMU_MISO"
-		(at 264.16 115.57 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "ea9fc26b-f4d8-46df-a098-3c356a1c35c0")
 	)
 	(label "BMI_ACC_CS"
 		(at 264.16 102.87 180)
@@ -1603,6 +1533,76 @@
 		)
 		(uuid "f9232c4a-2fc9-4128-96a9-9b581e3f0211")
 	)
+	(label "ICM_SCLK"
+		(at 77.47 102.87 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "499b4655-0fe9-4681-8978-019e0d7a4e1d")
+	)
+	(label "ICM_MOSI"
+		(at 77.47 105.41 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "0eefd493-335b-4d86-848c-015d02057604")
+	)
+	(label "ICM_MISO"
+		(at 77.47 107.95 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "c397b08c-f31b-4c6a-9de0-7c711c3cdc86")
+	)
+	(label "BMI_SCLK"
+		(at 264.16 107.95 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "da92c7a4-ed5e-4e42-97c0-4cc0d98c8ad4")
+	)
+	(label "BMI_MOSI"
+		(at 264.16 110.49 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "81599bd1-697c-4c11-ba96-dd582626fa3e")
+	)
+	(label "BMI_ACC_SDO"
+		(at 264.16 113.03 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "810435cd-07d2-4849-b35a-6b8847b1cf57")
+	)
+	(label "BMI_GYR_SDO"
+		(at 264.16 115.57 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "0a34254b-587e-40cb-8240-c9dae6d0ddd2")
+	)
 	(symbol
 		(lib_id "TDK:ICM-45686")
 		(at 110.49 110.49 0)
@@ -1645,15 +1645,6 @@
 				)
 			)
 		)
-		(instances
-			(project "imu-board"
-				(path "/f32db8d4-f0f6-4096-bc9e-d2653f2d6051"
-					(reference "U1")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "Description" "6-axis IMU, 4000dps/32g, SPI/I2C/I3C + AUX, LGA-14 2.5x3.0x0.81mm"
 			(at 110.49 110.49 0)
 			(hide yes)
@@ -1689,7 +1680,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "imu-board"
+				(path "/f32db8d4-f0f6-4096-bc9e-d2653f2d6051"
+					(reference "U1")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Sensor_Motion:BMI088")
 		(at 279.4 110.49 0)
@@ -1732,15 +1732,6 @@
 				)
 			)
 		)
-		(instances
-			(project "imu-board"
-				(path "/f32db8d4-f0f6-4096-bc9e-d2653f2d6051"
-					(reference "U2")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "Description" "6-axis IMU, separate accel + gyro dies, SPI/I2C, LGA-16 4.5x3mm"
 			(at 279.4 110.49 0)
 			(hide yes)
@@ -1767,7 +1758,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "imu-board"
+				(path "/f32db8d4-f0f6-4096-bc9e-d2653f2d6051"
+					(reference "U2")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:C")
 		(at 90.17 149.86 0)

@@ -174,3 +174,75 @@ description table settles it; check before layout.
   appear nowhere in the document. Everything in this file was extracted from the PDFs locally
   with `pypdf` instead. A summariser asked for a fact a document does not contain will supply a
   plausible one.
+
+
+---
+
+# 2026-08-22 · Rewired: shared bus -> two independent SPI buses
+
+**Change requested by Peter:** the IMUs stay on this separate PCB, but connect to the host over
+**individual SPIs**, not one shared bus.
+
+## What changed
+
+Previously all three dies sat on one 3-wire bus (`IMU_SCLK` / `IMU_MOSI` / `IMU_MISO`) with three chip
+selects. That is a common-mode failure path: one device latching a line kills readback from the
+others, which defeats the point of carrying two independent IMUs.
+
+Now each **chip** has its own bus:
+
+| ICM-45686 (U1) | | BMI088 (U2) | |
+|---|---|---|---|
+| `ICM_SCLK` | pin 13 | `BMI_SCLK` | pin 8 |
+| `ICM_MOSI` | pin 14 | `BMI_MOSI` | pin 9 (SDI) |
+| `ICM_MISO` | pin 1 | `BMI_ACC_SDO` | pin 15 (SDO1) |
+| `ICM_CS` | pin 12 | `BMI_GYR_SDO` | pin 10 (SDO2) |
+| `ICM_INT1` | pin 4 | `BMI_ACC_CS` | pin 14 (CSB1) |
+| `ICM_INT2` | pin 9 | `BMI_GYR_CS` | pin 5 (CSB2) |
+| | | `BMI_ACC_INT` | pin 16 (INT1) |
+| | | `BMI_GYR_INT` | pin 12 (INT3) |
+
+**The only nets now shared between the two chips are `+3V3` and `GND`.** `[measured]` via per-pin net
+readback, not inferred from the drawing.
+
+## Why the BMI088's two SDO pins are kept separate
+
+The BMI088's accelerometer and gyroscope are separate dies that **share `SCK` (8) and `SDI` (9)** but
+have **separate data outputs** — `SDO1` (15, accel) and `SDO2` (10, gyro) — and separate chip selects.
+So "one bus per die" is not physically possible for this part; one bus per *chip* is the real limit.
+
+Bosch's reference topology ties SDO1 and SDO2 together onto a single MISO, arbitrated by the chip
+selects `[fetched]`. **We deliberately do not.** Two reasons:
+
+1. **Isolation.** Tying them reinstates the common-mode failure the split was made to remove — a
+   latched-high SDO on one die would block readback from the other.
+2. **It is an honest ERC error.** With both pins typed `Output`, tying them raises
+   `[pin_to_pin]: Pins of type Output and Output are connected` — a real warning about a real
+   contention risk that only the chip-select protocol prevents. Suppressing it would have meant
+   carrying a standing ERC error, which masks the next one.
+
+Bringing both out separately also **moves the decision to the host board**, where it belongs: AeroNode
+can tie them and use one SPI peripheral, or drive two peripherals sharing SCK/MOSI for full isolation.
+Costs one extra conductor in the interconnect.
+
+## Verification `[measured]` 2026-08-22
+
+- Per-pin net readback on both parts — every pin lands on the intended net.
+- `find_shorted_nets`: **0**.
+- `PS` (U2 pin 7) confirmed tied to `GND` — the part is in SPI mode, not I2C. This was already correct
+  in the original design.
+- ERC: 19 violations, all expected for a board with no host present —
+  **5 errors** `pin_not_driven` (SCLK and the three CS inputs have no driver on this board) and
+  **14 warnings** `isolated_pin_label` (each host-facing net has a single pin). The
+  `pin_to_pin` output conflict present before this change is **gone**.
+
+## Interconnect to AeroNode — 15 signals + power
+
+`ICM_SCLK` `ICM_MOSI` `ICM_MISO` `ICM_CS` `ICM_INT1` `ICM_INT2` ·
+`BMI_SCLK` `BMI_MOSI` `BMI_ACC_SDO` `BMI_GYR_SDO` `BMI_ACC_CS` `BMI_GYR_CS` `BMI_ACC_INT`
+`BMI_GYR_INT` · `+3V3` `GND`
+
+On the CC93 LGA, **LPSPI8 sits on dedicated primary pads** (`SPI8_SCK` D17, `SPI8_SIN` E22,
+`SPI8_SOUT` E18, `SPI8_CS0` E19, all 3V3) with no boot straps and no clash with SAI3 — the natural
+choice for one of the two buses. LPSPI3 (on the UART7 pads) is the clean second. Avoid LPSPI4/LPSPI5,
+which land on SAI3's pads, and LPSPI1/LPSPI2, which touch boot straps.
