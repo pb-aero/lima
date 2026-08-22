@@ -257,6 +257,58 @@ wired and no others disturbed.
 pads belong to the power sheet, which is the next piece of work. Until then `+3V3` is legitimately a
 single-pin net and ERC says so.
 
+## Power sheet — stage 1: module rails, wired 2026-08-22
+
+The SOM's own power distribution, sourced from HRM pp.13-15. Upstream (charger, buck, PD sink) is
+stage 2 and not yet drawn.
+
+### What the HRM actually says
+
+**Only three rails must be fed externally:** `VSYS` (3.7-6.0 V), `VSYS2` (2.7-6.0 V) and
+**`NVCC_SD2`** — the last is easy to miss; it is the i.MX93's uSDHC2 I/O supply and appears in the
+*input* rail table, not the output one.
+
+Outputs available to the carrier: `3V3` (BUCK4, from VSYS), `1V8` (BUCK5, from VSYS2),
+`MUX_3V3_1V8` (LDO5, 150 mA, **not** used internally) and `SWOUT` (load switch, 2.8-5.5 V, 400 mA,
+also not used internally).
+
+### Connections made
+
+| Net | Pads | Note |
+|---|---|---|
+| `+5V` | VSYS AL6/AL7/AL8, VSYS2 AJ2/AJ3/AJ4/AK2/AK3/AK4 | 9 pads. Tied as one supply — the Design Guidelines call VSYS/VSYS2 "the one and only input supply" |
+| `+3V3` | AK1, AL2, AL3, AM3, AM4 | module output; also feeds J1 pin 1 |
+| `+1V8` | AH1, AH2, AH3, E5 | module output |
+| `NVCC_SD2` | F20 (`MUX_3V3_1V8`) + N1 (`NVCC_SD2`) | LDO5 powers the SD I/O rail, per Digi's note |
+| `SD_VSELECT` | AH13 + AN5 (`SD2_VSELECT`) | Digi's explicit recommendation — LDO5 auto-tracks SDIO speed |
+| `GND` | **all 166 pads** | two rail wires + 162 junctions + 2 labels |
+
+### Deliberately left unconnected
+
+- **`3V3_RF` (F17, F18)** — appears **exactly once in 103 pages**, as a bare pad name. No description,
+  no power group, no comment; in neither the input nor the output rail table. **Direction unknown, so
+  it is not wired.** Ask Digi before assuming.
+- `SWIN` / `SWOUT` / `SW_EN` — the PMIC load switch, unused so far.
+- `CLKIN1`, `CLKIN2`, `PMIC_STANDBY` — no requirement identified yet.
+
+### Symbol pin types corrected
+
+Regenerating exposed a real error and a false one:
+
+- **`NVCC_SD2` was typed `power_out`. It is an input.** Corrected to `power_in`.
+- `3V3` x5 and `1V8` x4 are multiple pads of **one internal rail**; typing them all `power_out` made
+  KiCad flag 8 output-to-output conflicts. One driver kept per rail, duplicates set `passive`.
+- `3V3_RF` set `passive` — asserting a direction on an undocumented supply pin would be a guess.
+- Load switch typed properly: `SWIN` power_in, `SWOUT` power_out, `SW_EN` input.
+
+### ERC after stage 1 `[measured]`
+
+154 violations: 148 `pin_not_connected` (peripherals not yet wired), 3 `power_pin_not_driven`
+(`+5V` and `GND` have no source until stage 2; `SWIN` unconnected), 3 `pin_not_driven`
+(`SW_EN`, `ON_OFF`, `SYS_RESET`). **All 8 `pin_to_pin` conflicts cleared.**
+
+Progression, each step matching its prediction exactly: 514 -> 170 (166 GND) -> 148 (22 rail pads).
+
 ## Not yet settled
 - Whether the console UART gets a USB-serial bridge or a bare header.
 - Board outline, connector placement, enclosure.

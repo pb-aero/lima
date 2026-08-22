@@ -358,3 +358,44 @@ back, I would have committed a file that silently destroyed a working symbol.
 4. **The cross-check that actually matters for a new part is symbol-pin-numbers == footprint-pad-names,
    asserted in BOTH directions.** A symbol and footprint that disagree still pass ERC and DRC
    individually, and produce a netlist that wires the wrong pads. 474/474 exact match, both ways.
+
+## KiCAD scar — a pin's `at` IS the connection point; do not add the pin length (2026-08-22)
+`[measured]` wiring the ConnectCore93's 166 GND pads. I computed each pin's connection point as
+`at + length` along its rotation, drew two rail wires through those coordinates, added 162 junctions,
+labelled both rails — and **connected nothing.** The rails sat 2.54 mm inside the pins.
+
+In a `.kicad_sym`, `(pin ... (at x y rot) (length L))` gives the **connection point** at `(x,y)`; the
+graphic extends from there *into* the body. There is nothing to add.
+
+**What made it detectable, and what did not:**
+- `add_wire` returned success. `batch_add_junction` returned `added: 81` twice. Both were true and
+  both were useless — they built a correct rail in the wrong place.
+- **The tell was the ERC count not moving.** `pin_not_connected` stayed at exactly 336 when it should
+  have fallen to 170. Two `unconnected_wire_endpoint` warnings appeared, which is the only reason the
+  rails were visibly wrong at all.
+
+**Rules:**
+1. **Predict the ERC delta before a bulk connection, then check it.** "336 should become 170" is a
+   test; "it succeeded" is not. Every bulk edit since has been checked this way and each matched.
+2. **Measure the geometry, don't derive it.** One `connect_to_net` call on a single pin reports the
+   exact stub coordinates it used. That is ground truth and costs one call — do it before computing
+   167 coordinates from a formula.
+3. To bulk-connect a column of pins: one wire from first to last pin coordinate, junctions on the
+   **interior** pins only (the two end pins land on the wire's own endpoints), one label. 166 pins in
+   six calls.
+
+## KiCAD scar — module supply pins: check direction, and don't multi-drive one rail (2026-08-22)
+`[measured]` on the ConnectCore93_LGA symbol. Two separate mistakes, one real and one cosmetic:
+
+1. **`NVCC_SD2` was typed `power_out`. It is an INPUT** — the HRM lists it in the *input power rails*
+   table (the CPU's uSDHC2 I/O supply, fed externally), not the output table. My generator classified
+   it by name pattern (`*_SD2` looked like a rail) instead of by what the manual said. **Classify
+   supply pins from the datasheet's own input/output tables, never from the pin name.**
+2. **`3V3` on 5 pads and `1V8` on 4 pads are ONE internal rail each.** Typing every pad `power_out`
+   made ERC raise 8 `pin_to_pin` output-to-output conflicts on a perfectly correct connection. KiCad
+   cannot express "these pads are internally the same node" — the convention is **one `power_out` per
+   rail, duplicates `passive`.**
+
+Corollary: **when a datasheet mentions a supply pin exactly once, in a pad list, with no direction —
+leave it unconnected and say so.** `3V3_RF` appears once in 103 pages. A guess on a supply pin is
+destructive; an unconnected pin with a written question is not.
