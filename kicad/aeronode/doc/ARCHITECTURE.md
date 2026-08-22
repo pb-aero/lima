@@ -748,6 +748,52 @@ different feature from SW1 and has not been added — flagged as a decision, not
 `ON_OFF_N` lands on 3 endpoints (module, R27, C17), `ON_OFF_SW` on 2 (R27, SW1). ERC **185**, down
 from 187 because `ON_OFF` was previously an undriven input. No isolated labels, no `pin_to_pin`.
 
+## Status LEDs — D2 red, D3 green, D4 blue, 2026-08-22
+
+Driven directly from CC93 GPIO, **no I/O expander** (Peter's call). LEDs **sink** into the GPIO —
+anode to `+3V3` through the resistor, cathode to the pin — so they are **active low** and the pin
+sinks rather than sources, which is the stronger direction on i.MX I/O.
+
+| LED | Colour | Net | CC93 pad | GPIO | R |
+|---|---|---|---|---|---|
+| D2 | red | `LED_RED_N` | **C18** | GPIO1_IO12 | R28 160R |
+| D3 | green | `LED_GRN_N` | **D18** | GPIO1_IO14 | R29 150R |
+| D4 | blue | `LED_BLU_N` | **R29** | GPIO2_IO27 | R30 68R |
+
+### Finding the three pins was the hard part
+
+**There were zero free 3V3 GPIO left.** Every other GPIO-capable pad is on the **1V8** rail, and 1.8 V
+cannot forward-bias a blue LED at all (Vf ~3 V). Sinking a 3V3 LED into a 1V8 pad would inject current
+into that rail when the pin drove high.
+
+- **C18 and D18** were recovered by re-examining an earlier over-broad exclusion: they are `SPI1_SIN`
+  and `SPI1_SOUT`, and **SPI1 is unused in this design** (the IMUs are on LPSPI3 and LPSPI8). Neither
+  is a boot strap — only `SPI1_CS0` (C17) and `SPI1_SCK` (E17) are.
+- **R29 was reallocated from `PG_5V`.** That signal reported the 5 V rail was good, but if it were
+  not, the module reading it would not be running — it is close to tautological on this topology. The
+  genuinely dangerous case, overvoltage, is covered by `OVP_FLT_N`, which is retained. `PG_5V` remains
+  as U4 pin 4 plus its R14 pull-up, so it is still probeable as a test point.
+
+**AeroNode now has no spare GPIO of any kind at 3.3 V.** Anything further needs a 1V8 pad with a level
+shifter or FET, the SD2 pads (costing microSD), or dropping an existing function.
+
+### ⚠ Blue LED headroom on a 3.3 V rail
+
+| | Vf | R | I |
+|---|---|---|---|
+| red | ~2.0 V | 160R | 8.1 mA |
+| green | ~2.1 V | 150R | 8.0 mA |
+| **blue** | ~2.9 V typ | 68R | **5.9 mA** |
+| **blue, worst case** | **3.2 V** | 68R | **1.5 mA** |
+
+Blue InGaN parts run Vf ~2.8-3.2 V, so on a 3.3 V rail the resistor sees only 0.1-0.5 V. The current
+is therefore **very sensitive to Vf spread** — a 4x brightness variation across the tolerance band.
+
+**Specify a blue LED with Vf max <= 3.0 V at the operating current**, and treat R30 as provisional
+until a specific part is chosen. If consistent brightness matters, the alternative is to drive the
+blue from `+5V` through a small FET — the PCA9536-style trick of sinking 5 V into the pin is *not*
+available here, and driving 5 V into a 3.3 V CC93 pad would be worse.
+
 ## Not yet settled
 - Whether the console UART gets a USB-serial bridge or a bare header.
 - Board outline, connector placement, enclosure.
