@@ -16703,6 +16703,172 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Switch:SW_Push"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "SW"
+				(at 1.27 2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "SW_Push"
+				(at 0 -1.524 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Push button switch, generic, two pins"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "switch normally-open pushbutton push-button"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "SW_Push_0_1"
+				(circle
+					(center -2.032 0)
+					(radius 0.508)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 1.27)
+						(xy 0 3.048)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 2.032 0)
+					(radius 0.508)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 1.27)
+						(xy -2.54 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at -5.08 0 0)
+					(length 2.54)
+					(name "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 5.08 0 180)
+					(length 2.54)
+					(name "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(junction
 		(at 867.41 337.82)
@@ -20302,6 +20468,55 @@
 		)
 		(uuid "fab85d38-4eb2-45a5-8bf6-94843f7b09b6")
 	)
+	(wire
+		(pts
+			(xy 607.06 346.71)
+			(xy 604.52 346.71)
+		)
+		(uuid "ce5faab9-7c2e-4a9c-9442-aa8fea5a368f")
+	)
+	(wire
+		(pts
+			(xy 720.09 445.77)
+			(xy 720.09 443.23)
+		)
+		(uuid "9a9f056a-321a-4a79-a935-7a58290df758")
+	)
+	(wire
+		(pts
+			(xy 720.09 453.39)
+			(xy 720.09 455.93)
+		)
+		(uuid "adbd40bb-646f-4524-92c0-b91770395fc1")
+	)
+	(wire
+		(pts
+			(xy 754.38 449.58)
+			(xy 751.84 449.58)
+		)
+		(uuid "64c5c356-3682-439b-a252-ac2cc349bf32")
+	)
+	(wire
+		(pts
+			(xy 764.54 449.58)
+			(xy 767.08 449.58)
+		)
+		(uuid "6bcec8e9-30a7-4b08-a660-562bb8fb5860")
+	)
+	(wire
+		(pts
+			(xy 689.61 466.09)
+			(xy 689.61 463.55)
+		)
+		(uuid "6a534876-97e0-4cbb-8873-3218f37f74ef")
+	)
+	(wire
+		(pts
+			(xy 689.61 473.71)
+			(xy 689.61 476.25)
+		)
+		(uuid "74625d94-0c74-4237-833d-587fb58ec880")
+	)
 	(label "+3V3"
 		(at 892.81 149.86 180)
 		(effects
@@ -22641,6 +22856,76 @@
 			(justify right bottom)
 		)
 		(uuid "37f76f46-6fbb-4f16-9119-62951c9d1a17")
+	)
+	(label "ON_OFF_N"
+		(at 604.52 346.71 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "224eb58f-b074-4069-8a9d-b5f3f8d45eaf")
+	)
+	(label "ON_OFF_N"
+		(at 720.09 443.23 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "2ab64321-a825-4693-9af0-ad290e6bac72")
+	)
+	(label "ON_OFF_SW"
+		(at 720.09 455.93 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ea6ad8e3-67cf-4838-bb76-c0d0fd6b089c")
+	)
+	(label "ON_OFF_SW"
+		(at 751.84 449.58 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "98ac21fd-8917-48b7-b6e5-f94325f9d299")
+	)
+	(label "GND"
+		(at 767.08 449.58 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "778e0414-6d6d-41cd-9bcd-51940d0ee540")
+	)
+	(label "ON_OFF_N"
+		(at 689.61 463.55 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ef33ef77-fd64-476e-8f2e-1973140709bd")
+	)
+	(label "GND"
+		(at 689.61 476.25 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "1797015a-81c6-4791-926d-aec6e38f9c7d")
 	)
 	(symbol
 		(lib_id "Digi:ConnectCore93_LGA")
@@ -25963,15 +26248,6 @@
 				)
 			)
 		)
-		(instances
-			(project "aeronode"
-				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
-					(reference "U7")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "Description" "u-blox DAN-F10N L1/L5 dual-band GNSS module with integrated 20x20x8mm patch antenna, UART only"
 			(at 1060.45 720.09 0)
 			(hide yes)
@@ -25998,7 +26274,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "aeronode"
+				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
+					(reference "U7")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:C")
 		(at 1130.3 699.77 0)
@@ -26100,6 +26385,162 @@
 			(project "aeronode"
 				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
 					(reference "C16")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 759.46 449.58 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "50d9dee5-3083-4bd1-b807-afaea891d3cd")
+		(property "Reference" "SW1"
+			(at 760.73 447.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "ON/OFF"
+			(at 759.46 451.104 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 759.46 449.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 759.46 449.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "aeronode"
+				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
+					(reference "SW1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 720.09 449.58 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "fb610049-9634-4f51-be33-9fc6f08d1cd4")
+		(property "Reference" "R27"
+			(at 722.122 449.58 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "100R"
+			(at 720.09 449.58 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 720.09 449.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 720.09 449.58 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "aeronode"
+				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
+					(reference "R27")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 689.61 469.9 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a791769d-f327-4668-b18f-231d7eae33db")
+		(property "Reference" "C17"
+			(at 690.245 467.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 690.245 472.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 689.61 469.9 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 689.61 469.9 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "aeronode"
+				(path "/8b380004-2f60-4d50-a123-4263db3b1b73"
+					(reference "C17")
 					(unit 1)
 				)
 			)

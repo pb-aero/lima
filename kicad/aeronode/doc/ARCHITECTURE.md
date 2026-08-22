@@ -698,6 +698,56 @@ string and silently missed it.
 Nothing in the design touches any of them, so there is no rework — but the record was wrong, and the
 same name mismatch would recur for anyone grepping the two Digi documents against each other.
 
+## On/off switch — SW1, 2026-08-22
+
+**SW1** is a momentary push button from `ON_OFF` (**AG18**) to GND, with R27 100R in series and C17
+100 nF for debounce.
+
+`[fetched]` HRM: AG18 is *"ON/OFF signal from the CPU (active low)"* on the module's **internal 1.8 V
+supply**; the Design Guidelines add *"ON_OFF is the default power-on/off line of the ConnectCore 93.
+It is active low and has an internal pull-up."*
+
+**That 1.8 V reference is why the button goes to GND and nothing pulls it up.** An external pull-up to
+3V3 would over-drive a 1.8 V-referenced input. The module's internal pull-up already defines the
+idle state.
+
+The PMIC watches this line even when the SOM is off, so one momentary button gives both power-on and
+shutdown — it is a true on/off, not just a wake.
+
+`PWR_ON` (**AJ12**) is deliberately left unconnected. The pad table is explicit: *"Output signal. Do
+not drive this line externally."* It reports PMIC state (high = ON) and could drive a power LED, but
+it too sits on an internal supply, so a buffer would be needed rather than a direct LED.
+
+### ⚠ This is a SOFT off — the battery still drains
+
+SW1 shuts down the SOM's PMIC. It does **not** disconnect the battery. The charger, the buck and the
+OVP all keep running off the pack.
+
+The dominant known term is the **LTC4364 at 370 uA typical** `[fetched]`; the LMR33630 adds ~25 uA in
+regulation, and the BQ25798's quiescent has not been quantified yet. Call it order-1 mA, which drains
+a 6 Ah pack over a period of months — **acceptable for daily use, not acceptable for storage.**
+
+### The complement: true zero-drain off via ship mode
+
+The BQ25798 already supports this and the pins are on the schematic, unwired:
+
+- **`SDRV` (pin 24)** drives an external **ship FET** in series with the battery. *"When the device is
+  in ship mode or in the shutdown mode, the SDRV turns off the external ship FET to minimize the
+  battery leakage current."*
+- **`QON` (pin 12)**: *"A logic low on this pin with tSM_EXIT duration turns on ship FET to force the
+  device to exit the ship mode"* — typical **1 s** (or 15 ms, per `WKUP_DLY`).
+- Ship mode is **entered** by writing `SDRV_CTRL[1:0] = 01` over I2C, and only with no adapter present.
+  It exits on QON low, on `SDRV_CTRL` = 00, or on adapter plug-in.
+
+So a complete storage-grade power control would be: **a second button on QON** (press to wake from
+ship mode) plus **a ship FET on SDRV**, with software entering ship mode on a long press. That is a
+different feature from SW1 and has not been added — flagged as a decision, not an oversight.
+
+### Verified `[measured]`
+
+`ON_OFF_N` lands on 3 endpoints (module, R27, C17), `ON_OFF_SW` on 2 (R27, SW1). ERC **185**, down
+from 187 because `ON_OFF` was previously an undriven input. No isolated labels, no `pin_to_pin`.
+
 ## Not yet settled
 - Whether the console UART gets a USB-serial bridge or a bare header.
 - Board outline, connector placement, enclosure.
