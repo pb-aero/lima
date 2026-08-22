@@ -431,3 +431,34 @@ leadless LGA.
 drawing and the land pattern, because BOTH figures sit on p20 and I rendered the whole page —
 20 blobs instead of 16, an 11 mm "package", nonsense offsets. Crop to the one figure being measured
 before believing any number from a datasheet page.
+
+## Bosch.pretty/Bosch_BMP390_LGA-10_2x2mm.kicad_mod — authored 2026-08-22 [measured]
+
+Bosch Sensortec BMP390 barometer, 10-pin metal-lid LGA 2.0 x 2.0 x 0.75 mm.
+
+**Rejected the obvious candidate.** `ST_HLGA-10_2x2mm_P0.5mm_LayoutBorder3x2y` is ST's pattern for
+the **LPS22HH**: a *3-2-3-2* layout with 0.425 x 0.35 pads. The BMP390 is **2-3-2-3** with
+0.275 x 0.250 pads — same envelope, same 0.7625 radial offset, completely different part. It would
+have looked placed and would not have soldered.
+
+**Bosch publish no separate land pattern.** Datasheet section 7.2 directs that the package outline
+dimensions (Fig 26 bottom view) be used AS the landing pattern: copper 1:1 with the package pads,
+no expansion. Same philosophy as u-blox DAN-F10N.
+
+- radial offset 0.7625 (= 1.525/2)
+- left/right columns: 3 pads each, 0.275 x 0.250, at tangential 0, +/-0.5
+- top/bottom rows: 2 pads each, 0.250 x 0.275, at tangential +/-0.25
+
+**Closure beats measurement here.** 0.7625 + 0.1375 + 0.100 = 1.000 = half the 2.00 package. Three
+independently-stated dimensions agreeing exactly is stronger evidence than a bitmap measurement, so
+this footprint was built from the numbers, not from pixels. Built file reproduces it: max pad extent
+0.9000, edge gap 0.100.
+
+**Orientation:** drawn in TOP view per Fig 23, so **pin 1 (VDDIO) is at TOP RIGHT** — deliberately
+not the usual top-left, so the footprint stays directly comparable to the datasheet figure.
+
+**Port hole:** 0.25 mm vent on the top face, marked on F.Fab at (+0.40, -0.40). Must not be
+obstructed; Bosch also require >= 0.1 mm clearance above the metal lid. Enclosure constraint.
+
+**Verified:** 10/10 pad positions vs Fig 23, 10/10 symbol pin names vs Table 52, 0 overlaps,
+min copper gap 0.250 mm. **Not verified:** no 3D model.

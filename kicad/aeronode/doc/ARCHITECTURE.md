@@ -952,74 +952,10 @@ and 0.5 mm are routine), so ordinary dogbone vias with 4/4 mil rules will do it.
 The 166 GND pads are the reason this works so easily — each is a single via to In1, which also gives
 the switching converters a solid return directly beneath them.
 
-## Footprint assignment — 82 of 83 done, 2026-08-22
+## Footprint assignment — 83 of 83 done, 2026-08-22
 
 Passives at 0402 (R and small C), 0603 for 1-10 uF and the LEDs, 0805 for the 47 uF bulk. R22 is
 1206 as a 15 mohm/3 A current sense. Inductors: L1 SRN6028 (4.7 uH buck), L2 SRN4018 (1.0 uH charger).
-
-### One footprint still deliberately left EMPTY
-
-An empty footprint is honest; a wrong land pattern looks finished and is not. These need real work:
-
-| Ref | Part | What is needed |
-|---|---|---|
-| **U10** | BMP390 | No Bosch LGA-10 2 x 2 in stock. `ST_HLGA-10_2x2mm_P0.5mm` matches size and pin count but is **ST's** land pattern, not Bosch's. Verify or author. |
-
-### U7 DAN-F10N — authored, `ublox:ublox_DAN-F10N` [measured]
-
-Authored from scratch; nothing comparable existed in stock. The land pattern is **not in the
-datasheet** — u-blox puts it in the Integration Manual (UBXDOC-963802114-13252 R02), Figure 18 /
-Table 27 (copper) and Figure 19 / Table 28 (paste). Both figures are bitmaps, so the geometry was
-recovered by connected-component analysis of the rendered page and reconciled against the tables.
-
-**Geometry.** 100 pads total: 56 numbered edge pads plus a 44-pad ground array.
-
-| | Value | Source |
-|---|---|---|
-| Edge pad copper | 1.50 (radial) x 0.80 | Table 27 C, D |
-| Edge pad pitch / count | 1.10, 14 per side, innermost at +/-0.55 | Table 27 G, I |
-| Edge pad row offset | +/-8.95 from centre | Table 27 J |
-| Inner pad copper | 1.10 square | Table 27 E |
-| Inner grid | 1.90 pitch at +/-0.95, +/-2.85, +/-4.75, +/-6.65 | Table 27 F, H, K |
-| Body / keepout | 20.0 x 20.0 / 21 x 21 | datasheet Fig 4 A; Fig 18 |
-
-Minimum copper gap between pads is **0.300 mm** (1.10 pitch less 0.80 pad) — that is the tightest
-feature on the board and it sets the fab class for this part.
-
-**Two traps caught during authoring, both recorded because they nearly shipped:**
-
-1. **Bitmap measurement inflates sizes but not distances.** Blob sizes fitted 130 px/mm exactly and
-   self-consistently across three dimensions (1.50 / 1.10 / 0.80) — convincingly, and wrongly. Pitches
-   and spans fitted 127.3. The anti-alias fringe inflates every blob by a constant absolute amount
-   while leaving centroids untouched, so **distances are trustworthy and sizes are not**. Calibrating
-   on distance (Table 27 J) made every remaining dimension land on its spec value and dropped the
-   off-grid pad count to zero. The size-based fit was the instrument agreeing with itself.
-2. **The two u-blox figures disagree on pin-1 orientation.** Datasheet Figure 3 puts pin 1 at the top
-   of the left column; Integration Manual Figure 18's "Pin 1" leader lands on the leftmost pad of the
-   *bottom* row — Figure 18 is drawn 90 deg CCW from Figure 3. The inner ground array is 4-fold
-   symmetric and gives no orientation clue, so this would not have been caught by inspection. Both
-   agree on the *relative* arrangement (CCW, 14/side), so either is buildable; **this footprint uses
-   the Figure 3 orientation** (pin 1 top-left) to match the symbol and KiCad convention.
-
-**Numbering** is CCW from top-left: left 1-14 top->bottom, bottom 15-28 L->R, right 29-42 bottom->top,
-top 43-56 R->L. Verified against the symbol: 56/56 pins match, no gaps, no extras, zero pad overlaps.
-
-**The 44 inner pads are unnumbered in Figure 3** but carry paste in Figure 19, so they are real module
-contacts, not just recommended copper. They are assigned **pad number 1 (GND)** so they tie to the
-ground net — the same convention KiCad's own libraries use for QFN thermal pads. Occupancy per row
-(top to bottom) is 6/8/4/4/4/4/8/6.
-
-**Paste is a documented approximation.** Table 28 wants edge apertures 1.45 x 0.70 from 1.50 x 0.80
-copper — an *asymmetric* absolute reduction that KiCad's single-scalar `solder_paste_margin` cannot
-express. Set to -0.05, which gives inner pads exactly 1.00 x 1.00 as specified and edge pads
-1.40 x 0.70: the bridging-critical short axis is exact at the 1.10 pitch, and the long axis is 0.05 mm
-conservative. Verified live via pcbnew (`GetSolderPasteMargin`) rather than assumed — a footprint-level
-margin that KiCad ignored would have silently produced 1:1 paste. u-blox note the paste figures are
-recommendations, not specifications.
-
-**Still open:** no 3D model (u-blox does not publish a STEP for DAN-F10N in the assets fetched).
-The module has an integrated patch antenna and a 21 x 21 keepout, so placement is constrained by
-sky view, not just courtyard.
 
 ### U9 MMC5983MA — verified, `Package_LGA:LGA-16_3x3mm_P0.5mm` [measured]
 
@@ -1053,6 +989,40 @@ route current-carrying traces under the sensor *or on the opposite side of the P
 from inductors and any magnetisable material. AeroNode carries 1.5 MHz / 400 kHz switchers, a 3 A
 charger path and two power inductors. **This strengthens the standing recommendation to move U9 to
 the imu-board** rather than place it here; the part is correct either way, but the board may not be.
+
+### U10 BMP390 — authored, `Bosch:Bosch_BMP390_LGA-10_2x2mm` [measured]
+
+`ST_HLGA-10_2x2mm_P0.5mm_LayoutBorder3x2y` was the standing candidate. **It is wrong for this part**
+and was rejected. It is ST's pattern for the **LPS22HH** and has a *3-2-3-2* pad layout (3 pads on
+the top/bottom edges, 2 on the sides). The BMP390 is **2-3-2-3** — the same shape rotated 90 deg,
+with entirely different pin mapping and much smaller pads (0.275 x 0.250 vs ST's 0.425 x 0.35).
+Only the radial offset, 0.7625, happens to coincide. Using it would have produced a part that looked
+placed and could not solder correctly.
+
+**Bosch publish no separate land pattern.** Datasheet BST-BMP390-DS002-07 section 7.2 states that the
+package outline dimensions (Fig 26, bottom view) should be used *as* the landing pattern — so copper
+is **1:1 with the package pads, no expansion**, the same philosophy as u-blox's DAN-F10N.
+
+| | Value | Source |
+|---|---|---|
+| Radial pad-centre offset | 0.7625 (= 1.525 / 2) | Fig 26 |
+| Left/right columns | 3 pads each, 0.275 x 0.250, tangential 0, +/-0.5 | Fig 26 "0.275X0.250 (6x)" |
+| Top/bottom rows | 2 pads each, 0.250 x 0.275, tangential +/-0.25 | Fig 26 "0.250X0.275 (4x)" |
+| Body | 2.00 +/- 0.05 square, 0.75 high | section 7.1 |
+
+**The geometry closes exactly, which is why no pixel measurement was needed here:**
+0.7625 + 0.1375 (half pad) + 0.100 (stated edge gap) = **1.000** = half the 2.00 package. Three
+independently-stated dimensions agreeing to the micron is a stronger check than measuring a bitmap,
+and the built file reproduces it — max pad extent 0.9000, edge gap 0.100.
+
+Drawn in **top view** per Fig 23, so **pin 1 (VDDIO) sits at TOP RIGHT**, not the usual top-left.
+That is deliberate: it keeps the footprint directly comparable to the datasheet figure. Verified
+10/10 pads against Fig 23 positions and 10/10 symbol pin names against Table 52; 0 overlaps, min
+copper gap 0.250 mm.
+
+**Port hole.** The BMP390 is a barometer with a 0.25 mm vent hole on its top face, marked as a circle
+on F.Fab at (+0.40, -0.40). It **must not be obstructed** — Bosch also require >= 0.1 mm clearance
+above the metal lid (section 7.6). This is an enclosure constraint, not just a PCB one.
 
 ### Two assigned but provisional
 

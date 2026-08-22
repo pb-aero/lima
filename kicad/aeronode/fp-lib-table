@@ -2,4 +2,5 @@
   (version 7)
 
   (lib (name "Digi") (type "KiCad") (uri "${KIPRJMOD}/../lib/Digi.pretty") (options "") (descr ""))
-  (lib (name "ublox") (type "KiCad") (uri "${KIPRJMOD}/../lib/ublox.pretty") (options "") (descr "")))
+  (lib (name "ublox") (type "KiCad") (uri "${KIPRJMOD}/../lib/ublox.pretty") (options "") (descr ""))
+  (lib (name "Bosch") (type "KiCad") (uri "${KIPRJMOD}/../lib/Bosch.pretty") (options "") (descr "")))

@@ -28473,7 +28473,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Bosch:Bosch_BMP390_LGA-10_2x2mm"
 			(at 1060.45 459.74 0)
 			(hide yes)
 			(effects
