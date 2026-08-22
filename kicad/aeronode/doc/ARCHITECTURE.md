@@ -794,6 +794,72 @@ until a specific part is chosen. If consistent brightness matters, the alternati
 blue from `+5V` through a small FET — the PCA9536-style trick of sinking 5 V into the pin is *not*
 available here, and driving 5 V into a 3.3 V CC93 pad would be worse.
 
+## Magnetometer — U9 MEMSIC MMC5983MA, 2026-08-22
+
+3-axis AMR magnetometer, LGA-16 3x3x1 mm, 18-bit. Not in the KiCad libraries; symbol authored at
+`kicad/lib/MEMSIC.kicad_sym` from the datasheet (Rev A), pin description table.
+
+| Pin | Name | Wired to |
+|---|---|---|
+| 1 | SCL/SPI_SCK | `I2C4_SCL` |
+| 16 | SDA/SPI_SDI | `I2C4_SDA` |
+| 4 | SPI_CS | **`+3V3`** — the datasheet: *"Tie to VDDIO for I2C Interface"* |
+| 10 | **CAP** | **C18 10 uF to GND** — see below |
+| 2, 13 | VDD, VDDIO | `+3V3` |
+| 9, 11 | GND | `GND` |
+| 15 | INT | left open — polled, no GPIO available |
+| 5 | SPI_SDO | left open — unused in I2C mode |
+| 3,6,7,8,12,14 | NC | no-connect |
+
+I2C address **0x30** (fixed, `0b0110000`). No clash with the BME690 at 0x76. Supply 2.8-3.5 V,
+absolute maximum 3.6 V — our regulated 3V3 (3.234-3.366 V with the PMIC's +/-2%) sits inside that,
+but the margin to abs max is only ~0.23 V, so `+3V3` must not be allowed to rise.
+
+### C18 is not decoupling
+
+Pin 10 is `CAP`: *"Connect a 10uF capacitor for SET/RESET"*. It is the energy store for the
+degaussing coil that performs the SET/RESET offset-cancellation cycle — the mechanism by which an AMR
+sensor removes its own offset drift. **Omit it and SET/RESET does not work**, which quietly costs the
+sensor its accuracy over temperature rather than failing outright. C19/C20 are the actual decoupling.
+
+### ⚠ Magnetic interference — the real design constraint
+
+A magnetometer on this board has to compete with:
+
+- the **BQ25798 buck-boost at 1.5 MHz** with a 1.0 uH inductor, switching **battery-scale currents**
+- the **LMR33630 buck at 400 kHz** with a 4.7 uH inductor, up to 3 A
+- battery and charge currents of up to 3 A through the pack wiring
+- three LED currents at ~8 mA
+- the DAN-F10N's own supply currents
+
+All of those are changing magnetic fields, and the field from a current loop falls off slowly. **A
+magnetometer placed near them measures the board, not the Earth.**
+
+This is a *placement* problem that the schematic cannot solve. Options, in decreasing order of
+effectiveness:
+
+1. **Put the magnetometer on the IMU board**, not AeroNode. It already goes off-board for the IMUs;
+   the magnetometer belongs with them, away from the power stage. This is the strongest option and it
+   costs nothing — `imu-board` has spare interface capacity.
+2. Keep it on AeroNode but place it at the far corner from the charger and buck, with the inductors'
+   loop area minimised and no high-current traces routed beneath it.
+3. Accept it and calibrate — hard-iron and soft-iron calibration can remove *static* offsets, but
+   **not** the time-varying field from a switching converter whose duty cycle follows the load.
+
+**As wired it is on AeroNode. Flagging this as a decision worth taking before layout**, because
+moving it later means changing two boards.
+
+### Verified `[measured]`
+
+`I2C4_SDA` and `I2C4_SCL` each land on 4 endpoints (CC93, pull-up, BME690, MMC5983MA); `MAG_CAP` on 2.
+ERC 185, no isolated labels, no `pin_to_pin`. The two unconnected outputs (`INT`, `SPI_SDO`) account
+for the rise from 183.
+
+### Bus renamed
+
+`ENV_SDA`/`ENV_SCL` are now **`I2C4_SDA`/`I2C4_SCL`**. Naming a shared bus after one device on it was
+misleading once the magnetometer joined, and A2B control is still to come.
+
 ## Not yet settled
 - Whether the console UART gets a USB-serial bridge or a bare header.
 - Board outline, connector placement, enclosure.
