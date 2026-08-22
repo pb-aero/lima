@@ -615,6 +615,89 @@ clockwise-from-top numbering, which is why that specific footprint variant is co
 `ENV_SDA` and `ENV_SCL` land on 3 endpoints each (sensor + module + pull-up). ERC 180, no isolated
 labels, no `pin_to_pin`.
 
+## GNSS — U7 u-blox DAN-F10N, 2026-08-22
+
+L1/L5 dual-band with an **integrated 20 x 20 x 8 mm RHCP patch antenna**. Not in the KiCad libraries;
+symbol authored at `kicad/lib/ublox.kicad_sym` from the datasheet (UBXDOC-963802114-13074 R04),
+Table 11. 56 pins, of which 36 are GND and 7 Reserved.
+
+**The DAN-F10N has no I2C and no SPI — it is UART only.** That drove the pin allocation.
+
+| Function | Pin | Net | CC93 pad |
+|---|---|---|---|
+| module TXD | 10 | `GNSS_TXD` | **AK25** (LPUART5_RX, ALT5) |
+| module RXD | 9 | `GNSS_RXD` | **AK24** (LPUART5_TX, ALT5) |
+| TIMEPULSE (PPS) | 20 | `GNSS_PPS` | **U29** (GPIO) |
+| ANT_CTRL | 32 | `GND` | selects the internal patch antenna (default) |
+| VCC, V_BCKP | 52, 53, 55 | `+3V3` | |
+| GND | 36 pins | `GND` | one rail + 34 junctions |
+
+Left open per the datasheet: `RESET_N` (internal pull-up), `EXTINT`, `SAFEBOOT_N`, `VCC_RF`,
+`EXT_RF_IN`, `LNA_EN`, and all 7 Reserved pins. C15 10 uF + C16 100 nF on VCC.
+
+### Why LPUART5, and what it cost
+
+**LPUART5 (AK24/AK25) was the only free 3.3 V UART.** The alternatives were all disqualified:
+
+- LPUART6 — the U-Boot console. Not available.
+- LPUART7, LPUART8 — already consumed by LPSPI3 and LPSPI8 for the IMUs.
+- LPUART1 — on E13/E12, the **Bluetooth pads**, and E13 is a boot strap (see correction below).
+- LPUART2 — TX lands on F11, BOOT_MODE1.
+- LPUART3, LPUART4 — reachable only on **1V8** ENET pads. The DAN-F10N's `V_PIO` is referenced to VCC
+  (abs max 3.6 V), so 1.8 V logic would not meet its input-high threshold; these would need level
+  shifting.
+
+**Cost: I2C3 is consumed.** A2B control now shares **I2C4** with the BME690 — no clash, since the
+BME690 is 0x76 and the AD242x is a different address.
+
+**`U29` was the last free 3V3 GPIO and PPS took it.** There is now no spare GPIO without muxing a
+peripheral pad.
+
+### ⚠ TIMEPULSE and SAFEBOOT_N share a pin internally
+
+Datasheet: *"The SAFEBOOT_N pin is internally connected to TIMEPULSE pin through a 1 kOhm series
+resistor"*, and *"The receiver enters safeboot mode if this pin is low at startup."*
+
+`GNSS_PPS` therefore goes to a CC93 GPIO that **must not drive low at reset.** If U29 comes out of
+reset as an output-low, it will drag SAFEBOOT_N through that 1 kOhm and put the receiver into safeboot
+on every power-up. **Configure U29 as an input (or high-Z) in the device tree**, and verify its
+power-on state.
+
+### ⚠ The datasheet contradicts itself on pin numbers
+
+**Table 11** (pin assignment) gives RXD=9, TXD=10, RESET_N=16, EXTINT=17, SAFEBOOT_N=18, TIMEPULSE=20,
+LNA_EN=39. **Table 12** (pin state) on the very next page gives RXD=21, TXD=20, SAFEBOOT_N=1,
+TIMEPULSE=3, RESET_N=8, EXTINT=4, LNA_EN=14 — numbers that look copied from a different module.
+
+**The symbol follows Table 11**, which is self-consistent with the 56-pin package and the pin-out
+figure. Worth confirming against the integration manual before fabrication.
+
+### Mechanical
+
+The integrated patch antenna makes this a **20 x 20 x 8 mm** component that must face the sky with a
+clear view. It is by far the tallest part on the board and will drive the enclosure and the board
+orientation — worth settling early rather than at layout.
+
+### Verified `[measured]`
+
+Symbol pin numbers **1-56 complete, no gaps or duplicates** (asserted at generation). `GNSS_TXD`,
+`GNSS_RXD`, `GNSS_PPS` land on 2 endpoints each. U7's GND run reaches y=811.5 mm on an 841 mm sheet —
+inside the frame. ERC 187, no isolated labels, no `pin_to_pin`.
+
+## CORRECTION — the LGA boot-strap list was incomplete
+
+Earlier work reported the boot straps on the LGA as **F11, C17, E17**. That was wrong: there are
+**four**, and the fourth is **E13**.
+
+The Design Guidelines name the straps `BT_UART1_TX`, `BT_UART1_RTS`, `SPI1_CS0`, `SPI1_SCK`. The LGA
+pad table names that first pad **`BT_UART1_TXD`** — with a D. My strap detection matched the exact
+string and silently missed it.
+
+**Complete list: BOOT_MODE0 = E13, BOOT_MODE1 = F11, BOOT_MODE2 = C17, BOOT_MODE3 = E17.**
+
+Nothing in the design touches any of them, so there is no rework — but the record was wrong, and the
+same name mismatch would recur for anyone grepping the two Digi documents against each other.
+
 ## Not yet settled
 - Whether the console UART gets a USB-serial bridge or a bare header.
 - Board outline, connector placement, enclosure.
