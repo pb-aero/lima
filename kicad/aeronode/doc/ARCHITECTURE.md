@@ -860,6 +860,68 @@ for the rise from 183.
 `ENV_SDA`/`ENV_SCL` are now **`I2C4_SDA`/`I2C4_SCL`**. Naming a shared bus after one device on it was
 misleading once the magnetometer joined, and A2B control is still to come.
 
+## Barometer — U10 Bosch BMP390, 2026-08-22
+
+LGA-10, 2 x 2 x 0.75 mm, +/-3 Pa relative accuracy (~0.25 m). Not in the KiCad libraries; symbol
+authored into the existing `kicad/lib/Bosch.kicad_sym` from the datasheet (BST-BMP390-DS002-07),
+Table 52.
+
+| Pin | Name | Wired to |
+|---|---|---|
+| 2 | SCK | `I2C4_SCL` |
+| 4 | SDI | `I2C4_SDA` |
+| 5 | SDO | `BARO_SA0` -> **R31 10k -> +3V3** (address bit = 1) |
+| 6 | CSB | **`+3V3`** — selects I2C |
+| 1, 10 | VDDIO, VDD | `+3V3` |
+| 3, 8, 9 | VSS | `GND` |
+| 7 | INT | left open — polled, no GPIO available |
+
+### ⚠ Address clash avoided deliberately
+
+Bosch pressure sensors default to **0x76 — which the BME690 already occupies on this bus.**
+`SDO` is therefore tied **high** for **0x77**: *"Connecting SDO to GND results in slave address
+1110110 (0x76); connecting it to VDDIO results in slave address 1110111 (0x77)"*.
+
+The datasheet also warns: *"The SDO pin cannot be left floating; if left floating, the I2C address
+will be undefined."* So it is strapped, not left open.
+
+**I2C4 address map — check this before adding anything else to the bus:**
+
+| Address | Device |
+|---|---|
+| 0x30 | MMC5983MA magnetometer |
+| 0x76 | BME690 environmental |
+| **0x77** | **BMP390 barometer** |
+
+A2B control is still to be added to this bus; AD242x parts sit around 0x68, so no further conflict is
+expected — but verify against the chosen transceiver.
+
+### Why R31 rather than a direct strap
+
+`SDO` is **bidirectional** — an output in SPI mode. Tying it hard to the rail would be a short if the
+part ever left I2C. ERC flagged exactly this (`pin_to_pin`: bidirectional against power output), and
+the 10k series resistor is the correct fix rather than an exclusion: `SDO` is high-impedance in I2C
+mode, so 10k still sets the address cleanly.
+
+**Note for consistency:** the BME690's `SDO` (pin 5) is currently a *direct* tie to GND — the same
+pattern, benign while `CSB` holds the part in I2C mode, but it could be given the same 10k treatment
+if you want the two to match.
+
+### Interface selection, same trap as the BME690
+
+*"If CSB is pulled down, the SPI interface is activated. After CSB has been pulled down once...
+the I2C interface is disabled until the next power-on-reset."* `CSB` is hard-wired to `+3V3`.
+
+Also recorded from the datasheet: *"Holding any interface pin (SDI, SDO, SCK or CSB) at a logical high
+level when VDDIO is switched off can permanently damage the device."* Everything here shares `+3V3`,
+so the rails collapse together — but this rules out any future scheme that powers the bus from a
+different domain than the sensors.
+
+### Verified `[measured]`
+
+`I2C4_SDA` and `I2C4_SCL` each land on **5 endpoints** (CC93, pull-up, BME690, MMC5983MA, BMP390);
+`BARO_SA0` on 2. ERC **186**, **no `pin_to_pin`**, no isolated labels.
+
 ## Not yet settled
 - Whether the console UART gets a USB-serial bridge or a bare header.
 - Board outline, connector placement, enclosure.
