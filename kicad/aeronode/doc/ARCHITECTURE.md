@@ -347,16 +347,60 @@ charger, **J3** 2S LiFePO4 + BMS connector, **R1** `/CE` pull-up, **R2** PROG.
 Power path nets: `VBUS` (J2 -> U2 -> U3) · `CC1`/`CC2` (J2 -> U2) · `VBAT` (U3 <-> J3) ·
 `BAT_TS` (U3 <-> J3 thermistor) · `REGN` · `CHG_CE_N` · `CHG_PROG` · `VSYS_CHG` · `GND`.
 
+## Power sheet — stage 3: buck and setpoints, 2026-08-22
+
+### `VSYS_CHG` -> `+5V` buck — U4 LMR33630ADDA
+
+The charger's SYS rail sits at roughly **7.0-7.3 V** for a 2S pack (VSYSMIN POR default 7 V), which is
+**above the CC93's 6.0 V absolute maximum** — this buck is not optional.
+
+`[fetched]` LMR33630 datasheet: V_IN 3.8-36 V, V_OUT 1-24 V, 3 A, **V_FB = 1.000 V** (0.985-1.015),
+"A" variant = 400 kHz.
+
+| Ref | Value | Role |
+|---|---|---|
+| U4 | LMR33630ADDA | synchronous buck, EN tied to `VSYS_CHG` (always on with input) |
+| L1 | **4.7 uH** | 7.3->5.0 V at 3 A, 400 kHz, 30% ripple gives 4.4 uH -> 4.7 uH standard |
+| R9 / R10 | **100k / 24.9k** | feedback divider. V_OUT = 1.000 x (1 + 100/24.9) = **5.016 V** |
+| C1 | 10 uF | input bulk on `VSYS_CHG` |
+| C2 | 47 uF | output bulk on `+5V` |
+| C3 | 100 nF | bootstrap, `BOOT_5V` to `SW_5V` |
+| C4 | 1 uF | `VCC_BUCK`, the internal 5 V LDO |
+
+5.016 V sits comfortably inside VSYS's 3.7-6.0 V window with ~1 V of headroom to the absolute maximum.
+
+### PD setpoints — sourced, not guessed
+
+`[fetched]` EZ-PD BCR datasheet (002-25383 Rev *B), Tables 2 and 3. These four pins are **resistor
+dividers from `VDDD`** (the chip's own 3.3 V LDO), not single pulldowns.
+
+| Pin | Setting | Pull-up | Pull-down | Refs |
+|---|---|---|---|---|
+| `VBUS_MIN` | **9 V** | 5.1k | 1k | R3 / R4 |
+| `VBUS_MAX` | **9 V** | 5.1k | 1k | R5 / R6 |
+| `ISNK_COARSE` | **3 A** | 5.1k | 5.1k | R7 / R8 |
+| `ISNK_FINE` | 0 A | open | 0 | tied directly to GND |
+
+Min and max are **deliberately both 9 V**. The datasheet's Note 3: *"VBUS_MIN and VBUS_MAX can be set
+to the same value to select one specific voltage level from the Type-C power adapter."* That makes the
+sink demand exactly 9 V rather than accept a range.
+
+**⚠ Note 2 of that datasheet matters:** *"EZ-PD BCR device does not monitor the current on VBUS_IN and
+enforce it within ISNK limits. It is the responsibility of the system to not consume more current than
+what the power adapter can provide."* The ISNK setting is a **request, not a limit** — the BQ25798's
+own input current limit has to do the actual enforcing. Do not treat R7/R8 as protection.
+
+`FAULT` (U2 pin 9) is brought out as `PD_FAULT`; it goes high if the adapter cannot meet the
+voltage/current request, or if VBUS drifts 20% outside the window. It wants a CC93 GPIO.
+
 ### Still to do on this sheet
 
-- **`VSYS_CHG` -> `+5V` buck.** The charger's SYS rail sits at roughly 7.0-7.3 V for a 2S pack
-  (VSYSMIN POR default is 7 V), which is **above the CC93's 6.0 V absolute maximum** — the buck is not
-  optional. Part not yet chosen; needs a real selection with its datasheet.
-- **VSYS overvoltage protection** (Hazard: 7.3 V available behind a 6.0 V abs-max input).
-- Setpoint resistors: `VBUS_MIN`/`VBUS_MAX` (these program the 9 V request), `ISNK_COARSE`/`ISNK_FINE`.
-- Switching components: inductor, `BTST1`/`BTST2`, `SW1`/`SW2`, `PMID`, input/output bulk.
-- I2C from the CC93 to U3 (`SCL`/`SDA`/`INT`/`STAT`) — needed for the VREG and watchdog writes above.
-- R2 PROG value from the datasheet's PROG resistance table.
+- **VSYS overvoltage protection** (7.3 V available behind a 6.0 V abs-max input).
+- BQ25798 switching components: inductor, `BTST1`/`BTST2`, `SW1`/`SW2`, `PMID`, input/output bulk.
+- I2C from the CC93 to U3 (`SCL`/`SDA`/`INT`/`STAT`) — required for the VREG and watchdog writes.
+- `PD_FAULT` and buck `PG` to CC93 GPIOs.
+- R2 PROG value from the BQ25798 PROG resistance table.
+- TS thermistor divider on the battery connector.
 
 ### Known cosmetic item
 
