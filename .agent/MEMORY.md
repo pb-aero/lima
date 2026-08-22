@@ -399,3 +399,30 @@ graphic extends from there *into* the body. There is nothing to add.
 Corollary: **when a datasheet mentions a supply pin exactly once, in a pad list, with no direction —
 leave it unconnected and say so.** `3V3_RF` appears once in 103 pages. A guess on a supply pin is
 destructive; an unconnected pin with a written question is not.
+
+## Scar — a charger's watchdog can undo a safety setting at RUNTIME (2026-08-22)
+`[fetched]` from the BQ25798 datasheet while designing AeroNode's LiFePO4 charger. I had already
+flagged the hazard as "2S LiFePO4 charges at 7.2 V, not the 8.4 V a 2S Li-ion charger defaults to —
+so set VREG at boot before enabling charge." **That framing was incomplete and would have cooked the
+pack anyway.**
+
+The datasheet: *"when the REG_RST bit is set **or the watchdog timer expires**, the registers are
+reset to default values with ICHG, VSYSMIN and VREG automatically returning to 1A, 7V and 8.4V."*
+
+So VREG reverts to the Li-ion default **on every watchdog expiry** — 40/80/160 s — with no host
+involvement. A crash, a hang, a suspend, or a driver paused for a firmware update silently applies
++1.2 V of overcharge. Setting the register once at boot is not a fix; it is a fix that expires.
+
+**Rules:**
+1. **When a part has a safety-critical register, ask what RESETS it, not just what sets it.** Search
+   the datasheet for "watchdog", "REG_RST", "POR default", "reverts". A setting that can be undone by
+   a timer is not a setting, it is a lease.
+2. **A hardware choice can create a firmware obligation.** Disabling that watchdog is now a
+   *hardware-imposed* requirement on the Linux driver. Write it into the bring-up notes at design
+   time — it will not be rediscovered by whoever writes the driver.
+3. **Pins that select a safe state must be resistor-defined, not host-defined.** `/CE` pulled high
+   from the charger's own `REGN` rail means charging is off before any host exists. The datasheet also
+   says outright: *"CE pin must be pulled HIGH or LOW, do not leave floating."*
+4. **Verify quotes like this in the actual PDF.** The first hint came from a web-search summary; the
+   wording that mattered (that the *watchdog*, not just REG_RST, triggers it) was only confirmed by
+   fetching the 151-page datasheet and grepping it.

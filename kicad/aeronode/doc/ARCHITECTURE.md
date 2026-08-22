@@ -53,7 +53,7 @@ directions, so the charger must do both.
 below 5.0 V, so boosting is never required. A synchronous buck that supports 100% duty simply passes
 the pack through at deep discharge (~4.9 V), still well inside the VSYS window.
 
-## ⚠ Hazard 1 — LiFePO4 charge voltage is 7.2 V, not 8.4 V
+## ⚠ Hazard 1 — LiFePO4 charge voltage is 7.2 V, not 8.4 V  · **REVISED 2026-08-22, worse than first stated**
 
 Two-cell **Li-ion** charges at 4.20 V/cell = 8.40 V. Two-cell **LiFePO4** charges at 3.60 V/cell =
 **7.20 V**. Nearly every 2S charger IC defaults to the Li-ion figure.
@@ -68,6 +68,36 @@ if it cannot be made safe at POR, choose a charger with a resistor-programmed ch
 
 **The BMS is the backstop, never the control.** A design that relies on the protection board to stop
 routine overcharge is a design that cooks the pack every cycle until the BMS wears out.
+
+### REVISION — the watchdog reverts VREG on its own
+
+`[fetched]` from the BQ25798 datasheet (SLUSDV2C), verified in the document, not from a summary:
+
+> "Assuming that the CELL bits remain at the 2s battery configuration, then when the REG_RST bit is
+> set **or the watchdog timer expires**, the registers are reset to default values with ICHG, VSYSMIN
+> and **VREG automatically returning to 1A, 7V and 8.4V** respectively."
+
+**This is the dangerous part, and it is not a power-on problem — it is a runtime one.** Setting
+`VREG = 7.2 V` once at boot is *not sufficient*. Every watchdog expiry silently restores **8.4 V**:
++1.2 V of overcharge into a LiFePO4 pack, applied automatically, with no host involvement. The
+watchdog fires in **40 / 80 / 160 s** depending on setting. A host crash, hang, suspend, or a firmware
+update that pauses the driver is enough to trigger it.
+
+**Required mitigations, all three:**
+
+1. **`/CE` pulled HIGH by a resistor** so charging is disabled at power-on until the host explicitly
+   enables it. The datasheet is explicit that this pin must not float: *"CE pin must be pulled HIGH or
+   LOW, do not leave floating."* Implemented as **R1 (100k) from `REGN` to `CHG_CE_N`** — REGN is the
+   charger's own LDO, so the pull-up exists whenever the charger is powered, before any host boots.
+2. **The I2C watchdog must be DISABLED** (`WATCHDOG` bits = 0) by the host immediately after it writes
+   `VREG = 7.2 V` — or serviced without fail forever, which is a far weaker guarantee. **This is a
+   firmware requirement created by the hardware, and it must be written into the driver bring-up
+   notes, not left to be discovered.**
+3. **`PROG` resistor sets the 2S POR profile** so the cell count is right before the host says
+   anything. R2 — value still to be read from the datasheet's PROG table.
+
+Note the POR default for 2S is VREG **8.4 V**, i.e. Li-ion. The part will happily do the wrong thing
+out of reset; that is exactly what mitigation 1 is for.
 
 ## ⚠ Hazard 2 — PD VBUS must not reach the module's USB1_VBUS pin
 
@@ -308,6 +338,37 @@ Regenerating exposed a real error and a false one:
 (`SW_EN`, `ON_OFF`, `SYS_RESET`). **All 8 `pin_to_pin` conflicts cleared.**
 
 Progression, each step matching its prediction exactly: 514 -> 170 (166 GND) -> 148 (22 rail pads).
+
+## Power sheet — stage 2: supply chain, partial 2026-08-22
+
+Placed and wired: **J2** USB-C receptacle, **U2** CYPD3177-24LQ PD sink, **U3** BQ25798 buck-boost
+charger, **J3** 2S LiFePO4 + BMS connector, **R1** `/CE` pull-up, **R2** PROG.
+
+Power path nets: `VBUS` (J2 -> U2 -> U3) · `CC1`/`CC2` (J2 -> U2) · `VBAT` (U3 <-> J3) ·
+`BAT_TS` (U3 <-> J3 thermistor) · `REGN` · `CHG_CE_N` · `CHG_PROG` · `VSYS_CHG` · `GND`.
+
+### Still to do on this sheet
+
+- **`VSYS_CHG` -> `+5V` buck.** The charger's SYS rail sits at roughly 7.0-7.3 V for a 2S pack
+  (VSYSMIN POR default is 7 V), which is **above the CC93's 6.0 V absolute maximum** — the buck is not
+  optional. Part not yet chosen; needs a real selection with its datasheet.
+- **VSYS overvoltage protection** (Hazard: 7.3 V available behind a 6.0 V abs-max input).
+- Setpoint resistors: `VBUS_MIN`/`VBUS_MAX` (these program the 9 V request), `ISNK_COARSE`/`ISNK_FINE`.
+- Switching components: inductor, `BTST1`/`BTST2`, `SW1`/`SW2`, `PMID`, input/output bulk.
+- I2C from the CC93 to U3 (`SCL`/`SDA`/`INT`/`STAT`) — needed for the VREG and watchdog writes above.
+- R2 PROG value from the datasheet's PROG resistance table.
+
+### Known cosmetic item
+
+J2's `A4`/`B4` VBUS pins are **stacked at one coordinate** in the KiCad symbol, so wiring both left
+two identical `VBUS` labels at the same point. Electrically it is one net with a redundant glyph;
+Konnect cannot delete one of a coincident pair, so it wants a one-click tidy in eeschema.
+
+### ERC after stage 2 (partial) `[measured]`
+
+209: 190 `pin_not_connected` (U2/U3 setpoints, switching node and I2C not yet wired), 14
+`pin_not_driven`, 4 `power_pin_not_driven`, 1 `isolated_pin_label` (`VSYS_CHG`, single-ended until the
+buck exists). No `pin_to_pin` conflicts.
 
 ## Not yet settled
 - Whether the console UART gets a USB-serial bridge or a bare header.
