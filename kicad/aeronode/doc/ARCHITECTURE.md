@@ -393,14 +393,60 @@ own input current limit has to do the actual enforcing. Do not treat R7/R8 as pr
 `FAULT` (U2 pin 9) is brought out as `PD_FAULT`; it goes high if the adapter cannot meet the
 voltage/current request, or if VBUS drifts 20% outside the window. It wants a CC93 GPIO.
 
+## Power sheet — stage 4: charger control link, 2026-08-22
+
+**This is the link the whole LiFePO4 mitigation depends on.** Without it the host cannot write
+`VREG = 7.2 V`, cannot disable the watchdog, and cannot enable charging at all.
+
+| Net | CC93 pad | Function | Charger |
+|---|---|---|---|
+| `CHG_SCL` | **V1** | I2C2_SCL | U3 pin 14 |
+| `CHG_SDA` | **W1** | I2C2_SDA | U3 pin 15 |
+| `CHG_CE_N` | **AN4** | GPIO2_IO18 | U3 pin 13 — host pulls LOW to enable |
+| `CHG_INT_N` | **E3** | GPIO2_IO19 | U3 pin 21 |
+| `PD_FAULT` | **P29** | GPIO2_IO25 | U2 pin 9 |
+| `PG_5V` | **R29** | GPIO2_IO27 | U4 pin 4 |
+
+Pull-ups: R11/R12 **10k** on SCL/SDA (the BQ25798 datasheet specifies 10k to the logic rail), R13 10k
+on the open-drain `INT`, R14 100k on the open-drain `PG`. `CHG_STAT_N` drives **D1** through R15 1k
+from +3V3 — cathode to the charger's open drain, so the LED lights while charging.
+
+### GPIO came from dropping CAN
+
+Only two 3V3 pads with a GPIO alt were genuinely unallocated (AN4, E3). `PD_FAULT` and `PG_5V` use
+**P29 and R29 — the CAN2 pads** — which are free because CAN was dropped in favour of A2B. Worth
+knowing: **if CAN is ever reinstated, these two GPIOs go with it.** CAN1's pads (T29/U29) remain as
+the next spare pair.
+
+`CHG_CE_N` now has three connections — R1's pull-up (disable at POR), the charger, and the CC93 GPIO
+that pulls it low to enable. That completes mitigation 1: the part is off until software deliberately
+turns it on.
+
+### Firmware obligations created by this hardware
+
+Written here because they are hardware-imposed and will not be obvious from the driver's point of view:
+
+1. Write `CELLS` = 2s, then **`VREG` = 7.20 V** (not the 8.4 V POR default).
+2. **Disable the I2C watchdog** (`WATCHDOG` = 0). If it is left running, every expiry silently restores
+   `VREG` to 8.4 V. See Hazard 1.
+3. Only then drive `CHG_CE_N` low to enable charging.
+4. Order matters. Enabling charge before setting VREG charges a LiFePO4 pack at the Li-ion voltage.
+
 ### Still to do on this sheet
 
 - **VSYS overvoltage protection** (7.3 V available behind a 6.0 V abs-max input).
 - BQ25798 switching components: inductor, `BTST1`/`BTST2`, `SW1`/`SW2`, `PMID`, input/output bulk.
-- I2C from the CC93 to U3 (`SCL`/`SDA`/`INT`/`STAT`) — required for the VREG and watchdog writes.
-- `PD_FAULT` and buck `PG` to CC93 GPIOs.
 - R2 PROG value from the BQ25798 PROG resistance table.
 - TS thermistor divider on the battery connector.
+- `VAC1`/`VAC2`, `ACDRV1`/`ACDRV2`, `SDRV`, `ILIM_HIZ`, `QON` on the charger.
+
+### ERC after stage 4 `[measured]`
+
+187: 174 `pin_not_connected`, 9 `pin_not_driven`, 4 `power_pin_not_driven`. **Zero isolated labels** —
+every net now reaches at least two pins. No `pin_to_pin` conflicts.
+
+Progression across the whole power sheet, each step matching prediction:
+514 -> 170 -> 148 -> 209 -> 204 -> 200 -> 188 -> **187**.
 
 ### Known cosmetic item
 
