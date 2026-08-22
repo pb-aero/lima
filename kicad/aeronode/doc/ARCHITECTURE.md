@@ -170,11 +170,44 @@ on 4. That is a board-cost and fabrication-capability decision, not a schematic 
 
 The LGA also relieves the LPSPI3/UART7 conflict noted above, since it brings out far more I/O.
 
-**Open decision for Peter: switch AeroNode to the LGA variant, or drop A2B.** Nothing further should
-be drawn until this is settled — it determines the module footprint, the layer count and the board cost.
+### RESOLVED 2026-08-21 — LGA variant adopted
+
+Footprint `Digi:Digi_ConnectCore93_LGA` is built and verified (see `kicad/lib/README.md`).
+
+## A2B link — SAI3, on dedicated pads
+
+AeroNode **transmits** as well as receives audio, so the host needs a full-duplex I2S/TDM port.
+
+**SAI3 is used, not SAI1.** All five signals are *dedicated primary pads* — they carry no other
+function, so nothing is sacrificed and nothing conflicts:
+
+| A2B role | SAI3 signal | LGA pad | Rail | Mux |
+|---|---|---|---|---|
+| bit clock | `SAI3_TXC` | E23 | 3V3 | primary |
+| frame sync | `SAI3_TXFS` | C19 | 3V3 | primary |
+| host -> A2B (DRX) | `SAI3_TXD` | E20 | 3V3 | primary |
+| A2B -> host (DTX) | `SAI3_RXD` | E21 | 3V3 | primary |
+| master clock | `SAI3_MCLK` | B24 | 3V3 | primary |
+
+Control bus: I2C2 (V1/W1), I2C3 (AK24/AK25) or I2C4 (E29/F28) — all free.
+
+### Why not SAI1 — a boot hazard avoided
+
+SAI1 was the original choice, carried over from the castellated analysis where it was the only
+instance with both a clock and a sync. **That reasoning did not survive the variant change** and was
+re-derived. On the LGA, SAI1's transmit path is muxed onto the SPI1 block:
+
+- `SAI1_TX_DATA00` -> **E17 = SPI1_SCK = BOOT_MODE3**
+- `SAI1_TX_DATA01` -> **C17 = SPI1_CS0 = BOOT_MODE2**
+
+There is no third TX data pad, so **transmitting over SAI1 always lands on a boot-mode strap.**
+BOOT_MODE is sampled on the rising edge of POR_B, and Digi warns that peripherals on those lines can
+change the sampled value and make boot fail. Choosing SAI3 removes the hazard outright — no 100k
+pull-down discipline, no holding the transceiver in reset through POR, no buffer with output-enable.
+
+SAI2 is also strap-free but sits entirely on the **1V8** rail (muxed onto ENET2), so it would need
+level shifting to a 3.3 V transceiver and would cost the second Ethernet MAC.
 
 ## Not yet settled
-
-- **Module variant — blocking, see above.**
 - Whether the console UART gets a USB-serial bridge or a bare header.
 - Board outline, connector placement, enclosure.
