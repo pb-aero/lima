@@ -432,9 +432,65 @@ Written here because they are hardware-imposed and will not be obvious from the 
 3. Only then drive `CHG_CE_N` low to enable charging.
 4. Order matters. Enabling charge before setting VREG charges a LiFePO4 pack at the Li-ion voltage.
 
+## Power sheet — stage 5: VSYS overvoltage protection, 2026-08-22
+
+### The threat
+
+`VSYS` has a **6.0 V absolute maximum** and the buck output is 5.016 V — a window of under a volt.
+Behind it sits `VSYS_CHG` at **7.0-7.3 V**. Two realistic faults put that straight onto the module:
+
+1. The buck's high-side FET fails short — input appears on the output.
+2. **The feedback lower leg (R10) goes open** — FB reads 0 V, the buck drives to maximum duty, and the
+   output runs up toward V_IN. This is a classic and it needs no exotic failure, just one bad joint.
+
+**A TVS cannot do this job.** A 5 V TVS clamps around 9 V, far past the 6.0 V limit. Neither can a
+Zener-referenced discrete: the usable window is 5.12 V (buck nominal +2%) to 6.0 V, and Zener
+tolerance of +/-5% would either nuisance-trip or miss. This needs a precision reference.
+
+### Implementation — U5 LTC4364CMS surge stopper
+
+Inserted **between the buck and the module**. The buck's own output is now `+5V_RAW`; `+5V` is the
+protected rail that feeds VSYS, so no module-side rework was needed.
+
+**The feedback divider (R9/R10) deliberately senses `+5V_RAW`, not the protected side.** If it sensed
+downstream and the OVP opened, the buck would lose feedback and drive to full duty — the protection
+would cause the very fault it exists to stop.
+
+| Ref | Value | Role | Result |
+|---|---|---|---|
+| Q1 | N-FET, **TBD** | series pass element, driven by HGATE | see open items |
+| R22 | 15 mohm | current sense (`SENSE`-`OUT`) | 50 mV threshold / 3 A = 16.7 mohm |
+| R16 / R17 | **34k / 10k** | OV divider | trip **5.500 V** |
+| R18 / R19 | **22.1k / 10k** | UV divider | trip **4.013 V** |
+| R20 / R21 | **30.1k / 10k** | FB divider | clamps output to **5.013 V** during a surge |
+| C5 | 0.22 uF | TMR fault timer | |
+
+`[fetched]` LTC4364 datasheet: OV, UV and FB all reference **1.25 V** (FB servo 1.22/1.25/1.28), VCC
+operating range 4-80 V, overcurrent threshold ~50 mV. All three dividers land on E96 1% values almost
+exactly. `OVP_FLT_N` goes to CC93 pad **T29** (ex-CAN1_TX).
+
+Because this is a *surge stopper* rather than a plain disconnect, during an overvoltage it **regulates
+the output down to 5.013 V and keeps the module running**, rather than dropping the system. The TMR
+timer then shuts it off if the fault persists.
+
+Margin: buck nominal 5.016 V (+2% = 5.116) -> OV trip 5.500 V -> VSYS absolute max 6.0 V.
+
+### ⚠ Open items on this block — do not fabricate without closing these
+
+1. **Q1 is unspecified.** During a clamped surge it dissipates (7.3 - 5.0) x I_load continuously until
+   the TMR expires. It needs selecting on **SOA**, not just R_DS(on) and V_DS.
+2. **`DGATE` (pin 4) is left unconnected.** That is the ideal-diode FET, which a single-source design
+   does not need — but *whether the LTC4364 tolerates DGATE open* is not confirmed. Check the
+   datasheet before layout.
+3. **The part is used near the bottom of its range.** The LTC4364 is designed for 12-80 V rails and
+   most of its specifications are characterised at 12 V. 5.016 V is above the guaranteed 4 V minimum
+   but well below its design centre. A purpose-built low-voltage OVP switch with an adjustable
+   threshold (TPS2596 class) would be the better part — it is not in the KiCad libraries, so it would
+   need a symbol authoring. **Worth doing before this goes to fabrication.**
+4. `ENOUT` (pin 14) is unused.
+
 ### Still to do on this sheet
 
-- **VSYS overvoltage protection** (7.3 V available behind a 6.0 V abs-max input).
 - BQ25798 switching components: inductor, `BTST1`/`BTST2`, `SW1`/`SW2`, `PMID`, input/output bulk.
 - R2 PROG value from the BQ25798 PROG resistance table.
 - TS thermistor divider on the battery connector.
