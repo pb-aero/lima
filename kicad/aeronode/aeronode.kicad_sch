@@ -27590,7 +27590,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "ublox:ublox_DAN-F10N"
 			(at 1060.45 720.09 0)
 			(hide yes)
 			(effects

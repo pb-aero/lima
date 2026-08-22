@@ -952,20 +952,75 @@ and 0.5 mm are routine), so ordinary dogbone vias with 4/4 mil rules will do it.
 The 166 GND pads are the reason this works so easily — each is a single via to In1, which also gives
 the switching converters a solid return directly beneath them.
 
-## Footprint assignment — 66 of 73 done, 2026-08-22
+## Footprint assignment — 81 of 83 done, 2026-08-22
 
 Passives at 0402 (R and small C), 0603 for 1-10 uF and the LEDs, 0805 for the 47 uF bulk. R22 is
 1206 as a 15 mohm/3 A current sense. Inductors: L1 SRN6028 (4.7 uH buck), L2 SRN4018 (1.0 uH charger).
 
-### Three footprints deliberately left EMPTY
+### Two footprints still deliberately left EMPTY
 
 An empty footprint is honest; a wrong land pattern looks finished and is not. These need real work:
 
 | Ref | Part | What is needed |
 |---|---|---|
-| **U7** | DAN-F10N | **Author from scratch.** 56 pads, 20 x 20 mm module. Nothing comparable in stock. |
 | **U9** | MMC5983MA | `Package_LGA:LGA-16_3x3mm_P0.5mm` is the right envelope but is a *generic* pattern — verify against MEMSIC's land drawing before use. |
 | **U10** | BMP390 | No Bosch LGA-10 2 x 2 in stock. `ST_HLGA-10_2x2mm_P0.5mm` matches size and pin count but is **ST's** land pattern, not Bosch's. Verify or author. |
+
+### U7 DAN-F10N — authored, `ublox:ublox_DAN-F10N` [measured]
+
+Authored from scratch; nothing comparable existed in stock. The land pattern is **not in the
+datasheet** — u-blox puts it in the Integration Manual (UBXDOC-963802114-13252 R02), Figure 18 /
+Table 27 (copper) and Figure 19 / Table 28 (paste). Both figures are bitmaps, so the geometry was
+recovered by connected-component analysis of the rendered page and reconciled against the tables.
+
+**Geometry.** 100 pads total: 56 numbered edge pads plus a 44-pad ground array.
+
+| | Value | Source |
+|---|---|---|
+| Edge pad copper | 1.50 (radial) x 0.80 | Table 27 C, D |
+| Edge pad pitch / count | 1.10, 14 per side, innermost at +/-0.55 | Table 27 G, I |
+| Edge pad row offset | +/-8.95 from centre | Table 27 J |
+| Inner pad copper | 1.10 square | Table 27 E |
+| Inner grid | 1.90 pitch at +/-0.95, +/-2.85, +/-4.75, +/-6.65 | Table 27 F, H, K |
+| Body / keepout | 20.0 x 20.0 / 21 x 21 | datasheet Fig 4 A; Fig 18 |
+
+Minimum copper gap between pads is **0.300 mm** (1.10 pitch less 0.80 pad) — that is the tightest
+feature on the board and it sets the fab class for this part.
+
+**Two traps caught during authoring, both recorded because they nearly shipped:**
+
+1. **Bitmap measurement inflates sizes but not distances.** Blob sizes fitted 130 px/mm exactly and
+   self-consistently across three dimensions (1.50 / 1.10 / 0.80) — convincingly, and wrongly. Pitches
+   and spans fitted 127.3. The anti-alias fringe inflates every blob by a constant absolute amount
+   while leaving centroids untouched, so **distances are trustworthy and sizes are not**. Calibrating
+   on distance (Table 27 J) made every remaining dimension land on its spec value and dropped the
+   off-grid pad count to zero. The size-based fit was the instrument agreeing with itself.
+2. **The two u-blox figures disagree on pin-1 orientation.** Datasheet Figure 3 puts pin 1 at the top
+   of the left column; Integration Manual Figure 18's "Pin 1" leader lands on the leftmost pad of the
+   *bottom* row — Figure 18 is drawn 90 deg CCW from Figure 3. The inner ground array is 4-fold
+   symmetric and gives no orientation clue, so this would not have been caught by inspection. Both
+   agree on the *relative* arrangement (CCW, 14/side), so either is buildable; **this footprint uses
+   the Figure 3 orientation** (pin 1 top-left) to match the symbol and KiCad convention.
+
+**Numbering** is CCW from top-left: left 1-14 top->bottom, bottom 15-28 L->R, right 29-42 bottom->top,
+top 43-56 R->L. Verified against the symbol: 56/56 pins match, no gaps, no extras, zero pad overlaps.
+
+**The 44 inner pads are unnumbered in Figure 3** but carry paste in Figure 19, so they are real module
+contacts, not just recommended copper. They are assigned **pad number 1 (GND)** so they tie to the
+ground net — the same convention KiCad's own libraries use for QFN thermal pads. Occupancy per row
+(top to bottom) is 6/8/4/4/4/4/8/6.
+
+**Paste is a documented approximation.** Table 28 wants edge apertures 1.45 x 0.70 from 1.50 x 0.80
+copper — an *asymmetric* absolute reduction that KiCad's single-scalar `solder_paste_margin` cannot
+express. Set to -0.05, which gives inner pads exactly 1.00 x 1.00 as specified and edge pads
+1.40 x 0.70: the bridging-critical short axis is exact at the 1.10 pitch, and the long axis is 0.05 mm
+conservative. Verified live via pcbnew (`GetSolderPasteMargin`) rather than assumed — a footprint-level
+margin that KiCad ignored would have silently produced 1:1 paste. u-blox note the paste figures are
+recommendations, not specifications.
+
+**Still open:** no 3D model (u-blox does not publish a STEP for DAN-F10N in the assets fetched).
+The module has an integrated patch antenna and a 21 x 21 keepout, so placement is constrained by
+sky view, not just courtyard.
 
 ### Two assigned but provisional
 

@@ -382,3 +382,32 @@ nothing in it.
 
 **Always read a generated library back and assert the count.** The file was restored with
 `git checkout` and regenerated; the paren balance is now asserted as part of generation.
+
+## ublox.pretty/ublox_DAN-F10N.kicad_mod — authored 2026-08-22 [measured]
+
+u-blox DAN-F10N GNSS module, 56-pad LGA + 44-pad ground array (100 pads), 20 x 20 mm body,
+21 x 21 mm keepout.
+
+**Source.** The land pattern is NOT in the datasheet. It is in the Integration Manual
+`UBXDOC-963802114-13252 R02`, Fig 18 / Table 27 (copper) and Fig 19 / Table 28 (paste).
+Both figures are bitmaps; geometry was recovered by connected-component analysis of the
+rendered page and cross-checked against the dimension tables until every symbol reconciled.
+
+**Calibration scar.** Blob *sizes* fitted 130 px/mm exactly across 1.50 / 1.10 / 0.80 — and were
+wrong. Pitches fitted 127.3. The anti-alias fringe inflates blob sizes by a constant amount but
+leaves centroids alone, so **calibrate on distances, never on measured feature sizes**. Calibrating
+on Table 27 J made every other dimension land on spec and zeroed the off-grid count.
+
+**Orientation scar.** Datasheet Fig 3 puts pin 1 top-left of the left column; Integration Manual
+Fig 18's "Pin 1" leader points at the leftmost pad of the *bottom* row — the two figures are 90 deg
+apart. The inner ground array is 4-fold symmetric, so nothing in the drawing reveals the conflict.
+**This footprint uses the Fig 3 orientation** (pin 1 top-left), CCW: left 1-14, bottom 15-28,
+right 29-42, top 43-56.
+
+**Ground array.** The 44 inner pads carry no pin number in Fig 3 but do carry paste in Fig 19, so
+they are real contacts. Assigned pad number **1 (GND)**, the same convention KiCad uses for QFN
+thermal pads.
+
+**Verified:** 56/56 pin numbers match the `ublox:DAN-F10N` symbol, no gaps, no extras, 0 overlapping
+pad pairs, min copper gap 0.300 mm, paste margin confirmed live through pcbnew.
+**Not verified:** no 3D model available.
