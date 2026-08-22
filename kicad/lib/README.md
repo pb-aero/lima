@@ -346,3 +346,39 @@ castellated one. Whether the STEP's own orientation is correct in absolute terms
 U.FL connector really sits where a physical module's does relative to pad A1 — is **not verified**.
 Digi's 2D model asset would settle it; the endpoint returned HTTP 504 on 2026-08-21, and the 3D PDF's
 poster page is blank. Check it against a real module before trusting the model for enclosure fit.
+
+## `ConnectCore93_LGA` symbol — 474 pins, 11 units
+
+Generated deterministically from the HRM's LGA pad tables (pp.43-82, 518/518 ALT entries captured),
+not typed. Units:
+
+| # | Unit | Pins | | # | Unit | Pins |
+|---|---|---|---|---|---|---|
+| 1 | POWER | 29 | | 7 | SERIAL | 33 |
+| 2 | GND | 166 | | 8 | DISPLAY | 26 |
+| 3 | ENET1 | 14 | | 9 | WIRELESS | 9 |
+| 4 | ENET2 | 12 | | 10 | GPIO_CTRL | 27 |
+| 5 | USB_SD | 23 | | 11 | NC | 125 |
+| 6 | AUDIO | 10 | | | **total** | **474** |
+
+Electrical types: 175 `power_in` (166 GND + VSYS/VSYS2), 13 `power_out` (3V3, 1V8, NVCC_SD2, 3V3_RF),
+125 `no_connect` (NC + RESERVED), 158 `bidirectional`, 2 `input` (SYS_RESET, ON_OFF), 1 `output`
+(PWR_ON — Digi says never drive it externally).
+
+**Verified `[measured]`:**
+- 474 pins parsed back out; every pad number present, **zero name mismatches** against the HRM table.
+- **Symbol pin numbers == footprint pad names, exactly, both directions.** This is the check that
+  matters: a symbol and footprint that disagree produce a netlist that silently wires the wrong pads.
+- All 11 units placed in `kicad/aeronode` sit inside the A0 frame.
+- ERC 526 violations, all reconciled: 349 `pin_not_connected` (474 − 125 no-connect), 175
+  `power_pin_not_driven` (166 GND + 9 VSYS), 2 `pin_not_driven` (the two input pins). No structural errors.
+
+### ⚠ A malformed .kicad_sym reports as EMPTY, not as an error
+
+The first generation attempt left **one extra closing paren** at end of file. Nothing raised an error.
+`list_symbols_in_library` simply returned `count: 0` — and the pre-existing `ConnectCore93` symbol
+vanished from the listing too. A library that fails to parse looks exactly like a library with
+nothing in it.
+
+**Always read a generated library back and assert the count.** The file was restored with
+`git checkout` and regenerated; the paren balance is now asserted as part of generation.

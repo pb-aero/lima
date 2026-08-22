@@ -340,3 +340,21 @@ library would have punched a hole through AeroNode. There was also no courtyard 
 **Rule: after importing any vendor footprint, enumerate its graphics BY LAYER before use.**
 `get_footprint_info(include_graphics=True)`. Ask of every item: is this the *part*, or the vendor's
 own *board*? Anything on Edge.Cuts, or larger than the component body, is the latter.
+
+## KiCAD scar — a corrupt .kicad_sym reports EMPTY, never an error (2026-08-21)
+`[measured]` while generating the 474-pin ConnectCore93_LGA symbol. My merge left **one extra closing
+paren** at end of file. Nothing errored. `list_symbols_in_library` returned **`count: 0`** — and the
+*existing, previously-good* `ConnectCore93` symbol disappeared from the listing with it.
+
+**A library that will not parse is indistinguishable from a library that is empty.** Had I not read it
+back, I would have committed a file that silently destroyed a working symbol.
+
+**Rules:**
+1. **After writing any generated library file, read it back and assert the expected count.** Not "did
+   the write succeed" — the write always succeeds. `count == n_expected`, or it is broken.
+2. **Assert paren balance before writing** an s-expression file (strip string literals first).
+3. **Keep the file in git before generating into it**, so `git checkout --` is a one-command undo.
+   That is what saved this one.
+4. **The cross-check that actually matters for a new part is symbol-pin-numbers == footprint-pad-names,
+   asserted in BOTH directions.** A symbol and footprint that disagree still pass ERC and DRC
+   individually, and produce a netlist that wires the wrong pads. 474/474 exact match, both ways.
