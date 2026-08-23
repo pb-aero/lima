@@ -21447,6 +21447,26 @@
 		)
 		(uuid "de81e1c5-a20b-4ca8-a63d-c709097f6640")
 	)
+	(label "GND"
+		(at 149.86 642.62 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "8d1c1f12-6d34-4eb3-8e71-92f46c4b71d8")
+	)
+	(label "GND"
+		(at 142.24 642.62 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f05f5619-a9ea-4c4f-a3bc-660e30cb13a8")
+	)
 	(label "ICM_SCLK"
 		(at 892.81 152.4 180)
 		(effects

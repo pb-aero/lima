@@ -6877,7 +6877,7 @@
 			(size 0.6 1.3)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
-			(net "Net-(J2-GND-PadA1)")
+			(net "/GND")
 			(uuid "3edd47ee-af25-4b60-bf1f-06f52d035b9c")
 		)
 		(pad "A4" smd roundrect
@@ -6933,7 +6933,7 @@
 			(size 0.6 1.3)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
-			(net "Net-(J2-GND-PadA1)")
+			(net "/GND")
 			(uuid "95344c61-c6d0-4893-a36f-a65e41508ded")
 		)
 		(pad "B1" smd roundrect
@@ -6941,7 +6941,7 @@
 			(size 0.6 1.3)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
-			(net "Net-(J2-GND-PadA1)")
+			(net "/GND")
 			(uuid "6ce2fb05-e436-4c36-a2c1-88a62d962e32")
 		)
 		(pad "B4" smd roundrect
@@ -6997,7 +6997,7 @@
 			(size 0.6 1.3)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
-			(net "Net-(J2-GND-PadA1)")
+			(net "/GND")
 			(uuid "bd5614cc-c031-4d30-acc1-58c3b3be5431")
 		)
 		(pad "SH" thru_hole oval
@@ -7007,7 +7007,7 @@
 			(property pad_prop_mechanical)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net "unconnected-(J2-SHIELD-PadSH)")
+			(net "/GND")
 			(uuid "9f43d0fc-d0b6-4e00-a669-3880e54eb58f")
 		)
 		(pad "SH" thru_hole oval
@@ -7017,7 +7017,7 @@
 			(property pad_prop_mechanical)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net "unconnected-(J2-SHIELD-PadSH)")
+			(net "/GND")
 			(uuid "af2c1c5f-3d14-4b05-8eb5-098170abd6ce")
 		)
 		(pad "SH" thru_hole oval
@@ -7027,7 +7027,7 @@
 			(property pad_prop_mechanical)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net "unconnected-(J2-SHIELD-PadSH)")
+			(net "/GND")
 			(uuid "f4adade5-a395-4676-a246-b213844b3f50")
 		)
 		(pad "SH" thru_hole oval
@@ -7037,7 +7037,7 @@
 			(property pad_prop_mechanical)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net "unconnected-(J2-SHIELD-PadSH)")
+			(net "/GND")
 			(uuid "976ab666-18a0-47c0-9f13-3054efaae0b1")
 		)
 		(embedded_fonts no)
