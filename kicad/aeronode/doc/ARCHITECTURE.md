@@ -1270,6 +1270,71 @@ how many ways a naive geometric router gets it wrong. Options are freerouting vi
 hand routing in KiCad. **Passive rotations are still unoptimised (all 0 deg)** and should be fixed
 during routing, not before.
 
+
+## PCB routing — autorouted, 2026-08-23 [measured]
+
+**DRC 0 violations, schematic parity 0, unconnected 468 -> 59.** 525 tracks (1171 mm total),
+234 vias, 4 filled zones. Tracks: F.Cu 436, In2.Cu 82, B.Cu 7.
+
+### Toolchain installed
+
+Freerouting **v2.3.0** (`freerouting-2.3.0.jar`, 62,995,156 bytes, SHA-256
+`3cf18d608437740bc497db6b8ef5888e2e60a08de0def20691d1bad0c0e0ee24`) from the project's official
+GitHub releases; not in Homebrew. Needs **Java 25** specifically (class file version 69) - Java 21
+is rejected. Wrapper: `~/tools/freerouting/freeroute <in.dsn> <out.ses> [passes]`.
+
+**`kicad-cli` cannot export Specctra DSN** - it is absent from `pcb export` entirely. But pcbnew's
+Python API exposes `ExportSpecctraDSN` / `ImportSpecctraSES`, so the round-trip works headlessly.
+
+### Three runs, and only the third had a valid input
+
+| Run | Input | Result |
+|---|---|---|
+| 1 | my 297 stitching vias + 31 tracks seeded in | 116 violations, **frozen from pass 1**, stalled |
+| 2 | pre-routing stripped, but **no net classes** | 31 unrouted / 20 violations - and **unusable** |
+| 3 | clean + all 3 net classes | 41 unrouted / 70 violations -> **0 DRC after cleanup** |
+
+**Run 1 - pre-routing is not protection.** The DSN exports existing tracks/vias as `(type route)`,
+i.e. rippable. My 297 stitching vias were not preserved; they were 96 of the 116 violations the
+router then had to work around on every pass. Hence the frozen count and passes ballooning to 28
+minutes. **Stitching vias belong AFTER routing.**
+
+**Run 2 - net classes live in the .kicad_pro, not the .kicad_pcb.** The test copy was made by
+copying only the board file to a scratch dir, so pcbnew found no project file and fell back to a
+single `kicad_default` class. Everything routed at 0.2 mm - including **VBUS, +5V_RAW and VSYS_CHG,
+which need 1.0 mm for the 3 A charger path**. A power net at a fifth of its width is a thermal
+hazard, and KiCad surfaced it only as 63 generic `track_width` violations. Run 3's width histogram
+confirms the fix: 36 tracks at 1.0 mm and 125 at 0.5 mm now exist.
+
+**A retraction of my own retraction.** After run 1 I asserted the bottleneck was the layer strategy -
+both inner layers committed to planes leaving two signal layers. **I then measured it and it was
+wrong:** three signal layers gave 49.2% fanout vs 49.9% for two. The layer count was never the
+constraint. In2 remains typed `signal` (it carries 82 tracks plus its +3V3 pour) because that is
+harmless and mildly useful, but it did not fix anything. Asserting before measuring cost ~90 minutes
+of compute.
+
+### Post-import cleanup (all measured, DRC-verified at each step)
+
+36 -> 13 -> 4 -> 1 -> 0 violations: widened 32 sub-minimum (0.15 mm) tracks to 0.20 mm, removed 4
+dangling vias and 9 orphaned track stubs, refilled zones between each. Removing a dangling item can
+orphan its neighbour, so the cleanup **must iterate to a fixed point** rather than run once.
+
+### Stitching, done in the right order this time
+
+214 GND vias placed after routing on a 4 mm grid, avoiding pads, the router's tracks AND its vias.
+45 landed where the pour does not reach and were removed by the same iterate-to-zero loop. Net 169
+live stitching vias.
+
+### What remains: 59 unconnected across 34 nets
+
+/GND 36, /+3V3 8, /+5V_RAW 6, /VBUS 6, /CHG_INT_N 4, then singles. The router plateaued at 41
+unrouted with 70 of its own violations and could not improve past pass 24. These need hand routing -
+they are concentrated in the charger corner where 1.0 mm HighCurrent tracks compete for space.
+
+**Not done:** passive rotations are still all 0 deg; the remaining 59 connections; and no
+review of the autorouter's choices for the switching loops, which deserve hand attention regardless
+of what DRC says.
+
 ## Not yet settled
 - Whether the console UART gets a USB-serial bridge or a bare header.
 - Board outline, connector placement, enclosure.
