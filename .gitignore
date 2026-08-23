@@ -20,3 +20,5 @@ fp-info-cache
 *-backups/
 *.kicad_sch-bak
 *.kicad_pcb-bak
+# KiCad editor lock files
+~*.lck

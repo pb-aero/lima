@@ -1335,6 +1335,57 @@ they are concentrated in the charger corner where 1.0 mm HighCurrent tracks comp
 review of the autorouter's choices for the switching loops, which deserve hand attention regardless
 of what DRC says.
 
+
+## Routing refinement — 0.125 mm signal tracks, 2026-08-23 [measured]
+
+**DRC 0 violations, parity 0, unconnected 59 -> 37.** 680 tracks (1902 mm), 320 vias.
+
+Peter's suggestion to narrow the signal tracks was correct and the effect is large. Only the
+**Default** class was narrowed; Power (0.5 mm) and HighCurrent (1.0 mm) were deliberately left alone
+so the 3 A charger path (VBUS, +5V_RAW, VSYS_CHG) keeps its width. Narrowing that to win routing
+space would trade a routing problem for a thermal one.
+
+| | 0.20 mm signals | 0.125 mm signals |
+|---|---|---|
+| Unrouted, pass 1 | 56 | **36** |
+| Unrouted, final | 41 (24 passes) | **18 (18 passes)** |
+| Router wall time | 87 min | **12.5 min** |
+| KiCad unconnected after cleanup | 59 | **37** |
+| Signal nets unconnected | ~25 | **3** |
+
+The narrowed run beat the previous run's *best 24-pass result* on its **first pass**, and finished
+seven times faster. Signal nets went from ~25 unconnected to 3.
+
+**Settings:** Default 0.125 mm track / 0.125 mm clearance (5/5 mil) / via 0.45-0.25; board minimums
+lowered to match. Geometry checked against the CC93 LGA before committing: 0.70 mm pads on 1.27 mm
+pitch leave a **0.570 mm** gap, and one 0.125 mm track with clearance either side needs **0.425 mm**.
+
+**Fab note:** 0.25 mm drill in a 0.45 mm via is a **0.10 mm annular ring**, and 5/5 mil trace/space.
+Standard at JLCPCB-class fabs but it is fine-geometry territory - confirm with the chosen fab.
+
+**A self-inflicted inconsistency:** Default clearance was first set to 0.15 mm while the *board*
+minimum was 0.125 mm. Freerouting honoured the board rule, KiCad checked the class rule, and two
+clearance violations appeared at U6 that were nobody's fault but mine. Keep class clearance and board
+minimum consistent.
+
+### What the remaining 37 actually are
+
+| Kind | Count | Fixable by narrowing? |
+|---|---|---|
+| `/GND` pour-region to pour-region | **19** | **No** - not a routing problem |
+| Power (+5V_RAW, VBUS, +3V3, REGN, VSYS_CHG, +5V) | 13 | No - these must stay wide |
+| Signal (I2C4_SDA, CHG_BTST2, BAT_TS) | 3 | Possibly |
+
+**The `/GND` items are not missing tracks.** They are regions of the F.Cu pour that each contain a
+GND pad (so island-removal keeps them, mode is already ALWAYS) but have no via tying them to the In1
+plane. An attempt to place vias into them failed: 0 of 36 at 0.32 mm margin, and only 4 of 36 at
+0.22 mm - and that attempt *raised* unconnected to 60 and added 2 violations, so it was reverted.
+These regions are too tight for a 0.5 mm via and need hand attention in the PCB editor, or a
+different zone strategy (priorities, or letting the pour reach further before tracks are laid).
+
+**Still not done:** passive rotations all 0 deg; the 37 connections above; and no human review of the
+switching loops on U3/U4, which DRC cannot judge.
+
 ## Not yet settled
 - Whether the console UART gets a USB-serial bridge or a bare header.
 - Board outline, connector placement, enclosure.
