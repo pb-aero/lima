@@ -1206,6 +1206,70 @@ No CAD kernel is available in this environment (cadquery/OCP absent, trimesh is 
 ships no `.wrl` to copy a scale convention from, so generating exact STEP solids is not a quick fix.
 The right route for U7/U10/L1/J2 is vendor STEP downloads.
 
+
+## PCB routing — planes and stitching done, signals outstanding, 2026-08-23 [measured]
+
+**DRC 0 violations, schematic parity 0, unconnected 468 -> 141.** 297 vias, 31 tracks, 4 filled zones.
+
+### Stackup in use (SIG / GND / PWR / SIG)
+
+| Layer | Contents | Filled |
+|---|---|---|
+| F.Cu | signals + GND pour | 5337 mm2 |
+| In1.Cu | **solid GND plane** | 5970 mm2 |
+| In2.Cu | **+3V3 plane** | 5781 mm2 |
+| B.Cu | signals + GND pour | 5970 mm2 |
+
+GND on In1 sits directly under F.Cu so top-layer signals reference an unbroken return. +3V3 was
+chosen for In2 because it is the only rail that must reach across the whole board (37 pads spanning
+x 26.8..102.7). The localised rails - +5V, +5V_RAW, VBUS, VSYS_CHG - stay as traces in the power
+corner where they belong.
+
+### Net classes
+
+Default 0.20 mm / via 0.6-0.3; **Power** 0.50 mm (GND, +3V3, +5V, +1V8, REGN, VDDD);
+**HighCurrent** 1.00 mm (VBUS, +5V_RAW, VSYS_CHG, VSYS, BAT*, SW*). Clearance is 0.20 mm on all
+three: HighCurrent was initially given 0.25 mm and that failed against **fixed IC pin pitch** inside
+U3 and U5 - current is carried by track *width*, not clearance, so the over-spec was mine to undo.
+
+### Vias
+
+266 GND stitching vias on a 4 mm grid tie F.Cu pour <-> In1 plane <-> B.Cu pour. 31 of 37 +3V3 pads
+have a fanout via to In2. **6 failed** (U10.1, U10.10, U9.2, U9.4, U9.13, U6.6) - the sensor cluster
+is too tight for a 0.6 mm via at the clearance now enforced. Those 12 unconnected items need hand
+routing or a local via-size reduction.
+
+### Four bugs in my own via placement, all caught by DRC
+
+1. **Drill 0.25 mm** against the board's 0.30 mm minimum - 37 violations.
+2. **Hole-to-hole ignored same-net pads.** My collision check skipped pads on the same net, but
+   hole-to-hole spacing is **net-independent**: two GND holes still cannot overlap. GND stitching
+   vias landed 0.08 mm from J1's GND through-holes.
+3. **Track paths were never checked.** I validated the via *position* but not the pad->via segment,
+   so tracks ran straight across intervening pads and shorted /+3V3 to /BAT_TS and to U10's INT pin.
+4. **Dangling vias** where the pour did not reach - 53 of them.
+
+The lesson worth keeping: *validating an endpoint is not validating a connection.* A via can be legal
+where it sits and still arrive by an illegal path.
+
+### A KiCad SWIG trap
+
+`board.Remove(item)` in a loop leaves the container in a state where `GetTracks()` /
+`GetFootprints()` return raw `SwigPyObject`s with no methods. Two scripts died on it - the second
+silently, because stderr was routed to /dev/null and stdout never flushed, so it *looked* like the
+run had simply changed nothing. **Save and reload the board between bulk deletion and rebuild.**
+
+### What is NOT done
+
+**Signal routing.** 141 unconnected items across ~70 nets remain: /+5V (22), /GND (14),
+/+5V_RAW (14), /+3V3 (12), /VBUS (12), /VSYS_CHG (8), I2C4 (16), and the rest.
+
+No autorouter is available - freerouting is not installed, and KiCad ships none. Escape-routing a
+474-pad LGA plus the power chain is not something to hand-script blindly; the via work above shows
+how many ways a naive geometric router gets it wrong. Options are freerouting via a DSN export, or
+hand routing in KiCad. **Passive rotations are still unoptimised (all 0 deg)** and should be fixed
+during routing, not before.
+
 ## Not yet settled
 - Whether the console UART gets a USB-serial bridge or a bare header.
 - Board outline, connector placement, enclosure.
