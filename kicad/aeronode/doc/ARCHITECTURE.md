@@ -1171,6 +1171,41 @@ fab layer and the pick-and-place file.
   set when the tracks and ground return are drawn, and that wants hand attention.
 - The placement is algorithmic, not hand-tuned. It is a sound starting point, not a finished layout.
 
+
+## 3D models — 68 of 77 resolve, 2026-08-23 [measured]
+
+Missing 3D models are **cosmetic only**: they do not affect the netlist, DRC, gerbers or assembly
+data. They matter for one real thing — **enclosure fit and clearance checking** — so the gaps are
+recorded rather than ignored.
+
+### Fixed
+
+- **U4 LMR33630** — this is a **bug in KiCad's own library**: the footprint references
+  `HTSOP-8-1EP_3.9x4.9mm_Pitch1.27mm.step` but the shipped file is `...P1.27mm.step`. Same part,
+  filename mismatch. Repointed on the board instance.
+- **U2 CYPD3177** — footprint wanted `QFN-24-1EP_4x4mm_P0.5mm_EP2.75x2.75mm`; shipped set has
+  `EP2.7x2.7mm`. The exposed pad is *underneath* the package, so the external body is identical.
+  Dimensionally safe.
+
+### Still missing, and why each was NOT substituted
+
+| Ref | Part | Why no substitute |
+|---|---|---|
+| **U7** | DAN-F10N | Footprint authored here; u-blox publish no STEP in the assets fetched. |
+| **U10** | BMP390 | Footprint authored here; no model attached. Bosch do publish STEP - worth fetching. |
+| **U3** | BQ25798 VQFN-29 | **No VQFN-29 model exists** in the shipped set. A QFN-24 has the right 4x4 body but the wrong pin count - a visual lie. |
+| **L1** | Bourns SRN6028 | Only `SRN6045TA` exists: same 6.0 x 6.0 footprint but **4.5 mm tall vs 2.8 mm**. Substituting would overstate height by 1.7 mm. Conservative for clearance, but wrong. |
+| **J2** | USB-C HC-TYPE-C-16P-01A | Only other-vendor receptacles available. **Connector geometry drives the enclosure cutout**, so a lookalike from a different vendor is the worst possible substitution here. |
+| **H1-H4** | M3 mounting holes | Correctly have no model. Not a gap. |
+
+**The rule applied:** substitute only where the *external* body is dimensionally identical. A model
+that is visually plausible but dimensionally wrong is worse than no model, because it will be
+trusted during enclosure design.
+
+No CAD kernel is available in this environment (cadquery/OCP absent, trimesh is mesh-only) and KiCad
+ships no `.wrl` to copy a scale convention from, so generating exact STEP solids is not a quick fix.
+The right route for U7/U10/L1/J2 is vendor STEP downloads.
+
 ## Not yet settled
 - Whether the console UART gets a USB-serial bridge or a bare header.
 - Board outline, connector placement, enclosure.
