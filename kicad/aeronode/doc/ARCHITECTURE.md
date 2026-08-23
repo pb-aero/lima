@@ -1386,6 +1386,59 @@ different zone strategy (priorities, or letting the pour reach further before tr
 **Still not done:** passive rotations all 0 deg; the 37 connections above; and no human review of the
 switching loops on U3/U4, which DRC cannot judge.
 
+
+## Stackup rework — SIG / GND / PWR / SIG, 2026-08-23 [measured]
+
+Peter's call: **In1 = GND, In2 = voltage planes, F/B = signal routing only.** Implemented as
+specified. **DRC 0 violations, parity 0, unconnected 53.** 811 tracks (2045 mm), 380 vias.
+
+| Layer | Type | Contents |
+|---|---|---|
+| F.Cu | signal | 687 tracks + GND pour 4582 mm2 |
+| In1.Cu | **power** | solid GND plane 5909 mm2 |
+| In2.Cu | **power** | +3V3 4859, +5V_RAW 412, VBUS 246, +5V 236 mm2 - **no signals** |
+| B.Cu | signal | 124 tracks + GND pour 5621 mm2 |
+
+Previously In2 was typed `signal` and carried **108 signal tracks across the power layer**. Those
+were removed and the layer rebuilt as a multi-rail plane. Plane regions were derived from measured
+pad clusters, not guessed - e.g. VBUS's 9 pads sit at x 34-48, y 73-82 around J2/U2. Overlaps are
+resolved by **zone priority, highest current first**: +5V_RAW 30, VBUS 28, +5V 20, +3V3 base 5.
+
+### The cost, stated plainly
+
+| | In2 as signal | In2 as power plane |
+|---|---|---|
+| Unconnected | **37** | **53** |
+| Signals on the power layer | 108 | **0** |
+
+Giving up In2 as a routing layer costs ~16 connections. That is the right trade: every one of those
+108 tracks was a slot cut in the +3V3 plane and a discontinuity in its return path, on a board
+carrying a GNSS receiver and a magnetometer. A less complete autoroute over intact planes beats a
+fuller one over a perforated power layer.
+
+### VSYS_CHG plane removed deliberately
+
+It held a fill region containing a pad but no via, producing a persistent `isolated_copper`
+violation that resisted several fixes. With only **5 pads** on a short charger-output-to-buck-input
+hop in the most congested corner, a plane was never worth it - the router already carries it on
+1.0 mm HighCurrent tracks. Removed; +3V3 reclaims the area. That took DRC to 0.
+
+### Fanout results (pads needing a via down to their In2 plane)
+
++5V_RAW 8/8, +5V 10/12, VBUS 4/9, +3V3 45/74. VBUS initially failed **9 of 9** because the first
+attempt used 0.8 mm vias with 0.6 mm tracks in the USB-C corner; retrying at 0.6/0.3 placed 4.
+Oversized vias in congested areas fail silently and leave a plane **completely isolated** - which is
+exactly what `isolated_copper` was reporting.
+
+### API notes
+
+`ZONE.SetMinThermalReliefSpokeCount` does not exist; minimum spoke count is a *board* setting,
+`min_resolved_spokes` in the `.kicad_pro` (set to 1 for J1's PTH pads, which only fit one spoke).
+
+**Unchanged and still open:** 36 of the 53 unconnected are the `/GND` pour-region items - regions
+holding a GND pad but no via to In1, too tight for a 0.5 mm via. They need hand work. Passive
+rotations are still all 0 deg, and the switching loops still want human review.
+
 ## Not yet settled
 - Whether the console UART gets a USB-serial bridge or a bare header.
 - Board outline, connector placement, enclosure.
