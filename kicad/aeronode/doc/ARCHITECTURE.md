@@ -1102,6 +1102,75 @@ Two were found and both are footprint-internal, not layout:
   only**, so the 0.25 mm global constraint still applies everywhere else. **The fab must confirm it
   can hold 0.18 mm hole-to-hole** — this is a real manufacturing constraint, not a suppressed warning.
 
+
+## PCB placement — all 73 parts placed, 2026-08-23 [measured]
+
+**DRC 0 violations, schematic parity 0, 466 unconnected (nothing routed).** Board 90 x 70 mm
+confirmed by you; U9 stays on this board.
+
+### Floorplan
+
+| Zone | Contents | Why there |
+|---|---|---|
+| Top band | U6 BME690, U9 MMC5983MA, U10 BMP390 + passives | as far as this board allows from the switchers |
+| Left strip | SW1, D2/D3/D4 LEDs, R27/R28/R29/R30, C17 | user-facing, board edge |
+| Centre | U1 CC93 | dominant part, 45.6 x 40.6 |
+| Top-right | U7 DAN-F10N + C15/C16 | corner sited for sky view, far from power |
+| Right-mid | U5 LTC4364 + Q1 + R16-R22 | OVP between charger and buck |
+| Right-lower | U4 LMR33630 + L1 + caps | buck, kept below the GNSS |
+| Bottom-left | J2 USB-C + U2 CYPD3177 + R3-R8 | PD sink at the cable entry |
+| Bottom-centre | U3 BQ25798 + L2 + caps, J3 battery | charger beside its battery connector |
+| Right edge | J1 IMU header | mates to imu-board |
+
+### A stray keepout that would have blocked routing
+
+U1's footprint carried **6 rule-area keepout zones** inherited from Digi's `CC93_DVK.PcbLib`, each
+spanning **all 32 copper layers** with tracks/vias/pads/copperpour disallowed. They sit at +/-37 mm
+from the module centre — well outside its 45 x 40 body — because they are the *development kit's*
+mounting-hole keepouts. The earlier import stripped the DVK's pads and silk but missed these.
+
+They were invisible until a buck-inductor pad landed in one and DRC said "keepout area of U1". Left
+in, they would have silently blocked routing over large parts of the board and been very hard to
+diagnose. Removed from the library footprint and the board instance; 474 pads verified unchanged.
+
+### Two-pass placement, because the first pass was electrically wrong
+
+Pass 1 packed each functional block into its zone largest-first. DRC-clean, and **wrong**: it left
+U4's input caps **13-18 mm** from the IC and U3's up to **21 mm**. A 20 mm high-di/dt loop on a
+switching regulator is an EMI defect, not an aesthetic one. Zone packing gets the *grouping* right
+and says nothing about the connection that matters.
+
+Pass 2 re-placed every passive at the nearest free position to **the centroid of the owner IC's pads
+it actually shares a net with** (GND excluded, so decoupling targets the supply pin rather than the
+ground pour), processing switcher caps first so they win the best positions.
+
+| | before | after |
+|---|---|---|
+| U4 caps (C1/C3/C4/C12) | 13.0 - 18.4 mm | **4.1 - 5.0 mm** |
+| U3 caps (C6/C7/C8/C10/C11) | 10.4 - 20.9 mm | **3.4 - 5.0 mm** |
+
+Those packages are 5-7 mm across, so 3.4-5.0 mm centre-to-centre means the caps now sit against the
+package edge — about as tight as a centre-to-centre metric can express.
+
+### Silkscreen strategy
+
+Auto-placement produced 118 silk violations (overlapping reference designators). On 90 x 70 mm with
+53 passives at 0402 there is no room for silk refs, so refs for passives, ICs, Q1 and the inductors
+were moved to **F.Fab**. Silk retains **J1, J2, J3, SW1, H1-H4** plus footprint polarity and pin-1
+marks — connectors and user controls, the things a human needs to identify by eye. Assembly uses the
+fab layer and the pick-and-place file.
+
+### Honest limits of this placement
+
+- **Rotations were not optimised.** Every passive sits at 0 deg. Many will want rotating 90 deg at
+  routing time so their pads face the IC pins they serve. This is the biggest remaining gap.
+- **GNSS to buck is 29.4 mm** (U7 to L1). Acceptable with a solid ground plane and the module's own
+  shield, but it is the tightest noise-coupling margin on the board. U9 is 70.3 mm from L1 and
+  55.2 mm from L2, which is genuinely good.
+- **Loop *areas* are not yet minimised** — only centre distances. The real switching-loop geometry is
+  set when the tracks and ground return are drawn, and that wants hand attention.
+- The placement is algorithmic, not hand-tuned. It is a sound starting point, not a finished layout.
+
 ## Not yet settled
 - Whether the console UART gets a USB-serial bridge or a bare header.
 - Board outline, connector placement, enclosure.
