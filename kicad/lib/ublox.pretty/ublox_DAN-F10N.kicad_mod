@@ -625,4 +625,9 @@
 		(layers "F.Cu" "F.Mask" "F.Paste")
 		(uuid "17e79545-2210-496b-97f8-b92972ef8636")
 	)
+	(model "${KIPRJMOD}/../lib/ublox.3dshapes/u-blox_DAN-F10N.step"
+		(offset (xyz 1.1231 -13.8943 0))
+		(scale (xyz 1 1 1))
+		(rotate (xyz 0 0 0))
+	)
 )

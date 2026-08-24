@@ -483,3 +483,40 @@ schematic wires stay attached through the swap.
 **Lesson worth generalising:** a generic symbol with letter pin numbers is a schematic-only
 placeholder. It will pass ERC and produce an unconnected part on the board. Check pin *numbers*, not
 just pin names, whenever a symbol comes from a `Device:`-style generic library.
+
+## ublox.3dshapes/u-blox_DAN-F10N.step — added 2026-08-24 [measured]
+
+Source: **Sparkfun-KiCad-Libraries** GitHub repo (`3dmodels/GNSS.3dshapes/u-blox_DAN-F10N.step`),
+CC-BY 4.0. Not from u-blox directly — u-blox publish no STEP for this part. SparkFun's file traces
+back to u-blox's own SolidWorks engineering assembly (`DAN_with_Taoglas_Antenna_110225.STEP`).
+5,119,414 bytes, SHA-256 `ac4e12deeab905551cd0424d0b4f7989850cd446ad4ea172667a5f08f06ca568`.
+
+**Scar: text-parsing a multi-part STEP assembly gives nonsense bounding boxes.** Summing every
+`CARTESIAN_POINT` in the raw file suggested a 337 x 245 mm part — the file has 10 sub-parts
+(interposer, PCB layers, antenna, solder mask), each in its own local coordinate frame, and pooling
+coordinates across frames without composing the assembly transforms mixes unrelated geometry. Don't
+trust a STEP bounding box computed by regex; render it through a real kernel (KiCad's OCCT via
+`kicad-cli pcb render`) and measure the rendered pixels instead.
+
+**Scar: `--quality high` renders are unsuitable for pixel-based measurement.** Its floor/shadow
+layer produces a thin anti-aliased line (from silk/keepout geometry) that bridges two unrelated
+regions under 4-connectivity, inflating a measured bounding box by ~15x. Use `--quality basic`
+(orthographic, no perspective, no floor) for anything measurement-based, and apply a light
+morphological erosion (keep only pixels whose 3x3 neighbourhood is mostly the target color) to kill
+1px anti-aliasing bridges before connected-component analysis.
+
+**Scar: two symmetric diagonal calibration points are ambiguous under swap.** A pair at local
+(-25,-25)/(25,25) can't distinguish "correct assignment, no flip" from "swapped assignment, Y
+flipped" — both fit the same |scale| ratio. Use three axis-aligned, distinctly-sized markers
+instead: one at the origin, one purely on +X, one purely on +Y. This resolves scale, sign, and
+assignment simultaneously with no ambiguity.
+
+**Real KiCad quirk, confirmed empirically: a footprint 3D model's `offset.y` is inverted relative
+to board-frame Y; `offset.x` is not.** Verified by measuring the required board-frame shift, applying
+it directly (wrong direction, ~2x error), then negating only Y (exact). Document this before anyone
+next hand-computes a model offset from a rendered image.
+
+**Board footprints are copies of the library footprint, not live references.** Adding the model to
+the library `.kicad_mod` alone did not update the footprint instance already placed on
+`aeronode.kicad_pcb`; the board's own U7 instance needed the same `(model ...)` block inserted
+directly. `pcbnew.LoadBoard`/`SaveBoard` round-trip is instant to check this on any given footprint.

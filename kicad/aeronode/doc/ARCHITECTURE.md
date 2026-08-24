@@ -1172,7 +1172,7 @@ fab layer and the pick-and-place file.
 - The placement is algorithmic, not hand-tuned. It is a sound starting point, not a finished layout.
 
 
-## 3D models — 68 of 77 resolve, 2026-08-23 [measured]
+## 3D models — 69 of 77 resolve, 2026-08-23/24 [measured]
 
 Missing 3D models are **cosmetic only**: they do not affect the netlist, DRC, gerbers or assembly
 data. They matter for one real thing — **enclosure fit and clearance checking** — so the gaps are
@@ -1187,11 +1187,49 @@ recorded rather than ignored.
   `EP2.7x2.7mm`. The exposed pad is *underneath* the package, so the external body is identical.
   Dimensionally safe.
 
+### U7 DAN-F10N — added 2026-08-24, `[measured]`
+
+u-blox publish no STEP for the DAN-F10N. Found one on the **Sparkfun-KiCad-Libraries** GitHub repo
+(`3dmodels/GNSS.3dshapes/u-blox_DAN-F10N.step`, CC-BY 4.0, commercial use explicit in their README),
+sourced from u-blox's own SolidWorks engineering assembly
+(`DAN_with_Taoglas_Antenna_110225.STEP` — interposer, PCB layers, Taoglas antenna, solder mask,
+10 sub-parts). Downloaded and verified before trusting it: `curl` + SHA-256, 5,119,414 bytes.
+
+**A naive check nearly rejected a good file.** Summing every `CARTESIAN_POINT` in the raw STEP text
+gave a bounding box of 337 x 245 mm — wildly wrong for a 20 x 20 mm part. The file is a multi-part
+SolidWorks assembly; each sub-part carries its own local coordinate frame, and summing coordinates
+across sub-parts without composing their assembly transforms mixes unrelated frames into nonsense.
+Text-parsing a multi-body STEP assembly is not a substitute for a real kernel. The only trustworthy
+check is letting one (here, KiCad's own OCCT via `kicad-cli pcb render`) compose the transforms.
+
+**Offset/rotation solved by measurement, not guessed.** `--quality high`'s floor/shadow layer was
+corrupting pixel-color detection in an early attempt (a 1px anti-aliased silk/keepout line bridged
+two unrelated regions under 4-connectivity, inflating the measured body by 15x) — switched to
+`--quality basic` (orthographic, no perspective, no shadows). Purpose-built axis-aligned calibration
+pads (distinct sizes at local (0,0)/(40,0)/(0,40) — a symmetric diagonal pair is ambiguous under
+swap) gave an exact px<->mm mapping; a morphological erosion then isolated the true solid body from
+the anti-aliasing artifact. Final residual error after fitting: 0.04 mm.
+
+**One real KiCad quirk found and confirmed empirically: the 3D model's `offset.y` field is inverted
+relative to board-frame Y — `offset.x` is not.** Applying the raw measured board-frame delta moved
+the model the wrong way by 2x the required distance; negating only Y fixed it. Final transform:
+`(offset (xyz 1.1231 -13.8943 0))`, no rotation.
+
+**Verified 4 ways:** body measures 19.7 x 19.68 mm against the datasheet's 20.0 x 20.0 mm; the
+model's own physical chamfer (a real case feature, not silkscreen) lands on the same corner as the
+footprint's pin-1 marker, with the other three corners showing plain fillets; a side render shows
+the body sitting flush on the board surface, no gap or embedding; DRC unchanged at 0 violations /
+0 parity after attaching (cosmetic-only, as expected).
+
+Stored at `kicad/lib/ublox.3dshapes/u-blox_DAN-F10N.step` (SHA-256 `ac4e12de...6ca568`), referenced
+from both the library footprint and U7's board instance — **board footprints are copies, not live
+references to the library**, so the library file alone was not enough; the board's own U7 instance
+needed the same `(model ...)` block added separately.
+
 ### Still missing, and why each was NOT substituted
 
 | Ref | Part | Why no substitute |
 |---|---|---|
-| **U7** | DAN-F10N | Footprint authored here; u-blox publish no STEP in the assets fetched. |
 | **U10** | BMP390 | Footprint authored here; no model attached. Bosch do publish STEP - worth fetching. |
 | **U3** | BQ25798 VQFN-29 | **No VQFN-29 model exists** in the shipped set. A QFN-24 has the right 4x4 body but the wrong pin count - a visual lie. |
 | **L1** | Bourns SRN6028 | Only `SRN6045TA` exists: same 6.0 x 6.0 footprint but **4.5 mm tall vs 2.8 mm**. Substituting would overstate height by 1.7 mm. Conservative for clearance, but wrong. |

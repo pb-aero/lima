@@ -17653,7 +17653,12 @@
 			(uuid "a77ab727-6eaf-4761-9f89-490f2e22dc50")
 		)
 		(embedded_fonts no)
+	(model "${KIPRJMOD}/../lib/ublox.3dshapes/u-blox_DAN-F10N.step"
+		(offset (xyz 1.1231 -13.8943 0))
+		(scale (xyz 1 1 1))
+		(rotate (xyz 0 0 0))
 	)
+)
 	(footprint "LED_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "d5ec9a91-011d-42b6-86be-2b9500efe553")
