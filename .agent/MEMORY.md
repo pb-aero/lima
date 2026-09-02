@@ -453,3 +453,28 @@ Detail at `linux/adau1860-pi5/` (NOTES.md, DATA_OVER_I2S.md). Related: audio-DSP
 samples are read as fractions in [-1,+1), so linear blocks are scale-invariant but limiters and
 compressors have absolute dBFS thresholds; and any rate crossing inserts an interpolator or ASRC
 that filters the payload.
+
+## Scar — a register that reads back correctly can still do nothing (2026-09-02)
+
+First hardware run of the ADAU1860 on Peter's Pi 5. `SPT0_CTRL2 = 0x02` means "generate BCLK at
+6.144 MHz". It wrote, it read back `0x02`, and **no clock came out** — because `PLL_EN`
+(`PLL_PGA_PWR` bit 0, reset 0) was never set, so the generator had no source to divide. Readback
+proves the write landed. It does not prove the function works. **Verify at the point of use** meant,
+here, sampling the actual pin: GPIO18/19 as inputs, 200 samples each, `hi=0 lo=200` — dead. That
+measurement is what turned "driver problem?" into "no source clock" in one step.
+
+I had marked `PLL_PGA_PWR` `[gap]` in my own write-up and shipped anyway. **A `[gap]` sitting in the
+middle of an init sequence is not a footnote, it is the bug you have not found yet.** Close it or
+say the sequence is untested — I said the latter, which is why this cost an hour and not a day.
+
+Two more, both generalisable:
+
+- **Config-before-power.** `CLK_CTRL1`, `PLL_PGA_PWR` and `CHIP_PWR` go read-only once the power
+  domains come up, writes are accepted silently, and `SOFT_FULL_RESET` does not clear them — only a
+  power cycle does. Vendor power-up sequences order things for a reason; deviating cost a trip to
+  the bench. When a datasheet gives numbered power-up steps, follow the numbers.
+- **Ask what "I2S0" refers to.** On Pi 5 `rp1_i2s0`/`rp1_i2s1` both reach GPIO18-21 and the choice
+  *is* the clock direction; on the codec, SPT0/SPT1 are its two serial ports. "I'm using I2S0" is
+  ambiguous across the two chips and the readings are contradictory.
+
+Detail: `linux/adau1860-pi5/RESULTS-2026-09-02.md`. Related: [[rp1-i2s-clock-direction]].

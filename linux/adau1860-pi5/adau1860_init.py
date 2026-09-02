@@ -52,6 +52,9 @@ REVISION       = 0x4000C003   # reset 0x01, R
 ADC_DAC_HP_PWR = 0x4000C004   # reset 0x00, R/W  Table 125
 PLL_PGA_PWR    = 0x4000C005   # reset 0x02, R/W  Table 126: [1] XTAL_EN, [0] PLL_EN
 DAC_ROUTE0     = 0x4000C053   # reset 0x00, R/W  Table 190 -- reset IS "SPT0 Channel 0"
+PMU_CTRL2      = 0x4000C071   # reset 0x00, R/W  [0] STARTUP_DLYCNT_BYP
+STATUS2        = 0x4000C402   # R  [7] POWER_UP_COMPLETE [4] SPT0_LOCK [0] PLL_LOCK
+RESETS         = 0x4000C200   # W  [4] SOFT_RESET [0] SOFT_FULL_RESET
 SAI_CLK_PWR    = 0x4000C007   # reset 0x00, R/W  Table 128
 CHIP_PWR       = 0x4000C00E   # reset 0x00, R/W  Table 135
 CLK_CTRL1      = 0x4000C010   # reset 0xC8, R/W  Table 136
@@ -112,6 +115,21 @@ def plan(fs, slots, slot_width=32, dac_test=False):
 
     return bclk, [
         # (addr, value, why)
+        #
+        # ORDER MATTERS. [measured 2026-09-02 on hardware] CLK_CTRL1, PLL_PGA_PWR
+        # and CHIP_PWR become READ-ONLY once the power domains are up, and
+        # SOFT_FULL_RESET does NOT clear them -- only a power cycle does. So the
+        # clock source must be configured BEFORE CHIP_PWR goes active, which is
+        # also the order UG-2257's power-up sequence gives (step 5 then step 7).
+        (PMU_CTRL2,   0x01, "STARTUP_DLYCNT_BYP=1 -- UG-2257 power-up step 3a, "
+                            "required in non-self-boot mode"),
+        (CLK_CTRL1,   0xC8, "XTAL_MODE=1 crystal, PLL_SOURCE=000 MCLKIN/XTAL. "
+                            "Clear bit 3 (0xC0) if MCLKIN is a logic-level clock."),
+        # THIS IS THE ONE THAT WAS WRONG. Reset 0x02 leaves PLL_EN=0, so the
+        # BCLK/LRCLK generators have no source and the part cannot be master --
+        # the symptom is a PCM that opens perfectly then EIO with hw_ptr=0.
+        (PLL_PGA_PWR, 0x03, "XTAL_EN=1 | PLL_EN=1 (Table 126). MEASURED: this is "
+                            "what makes STATUS2 report PLL_LOCK=1."),
         (CHIP_PWR,    0x07, "MASTER_BLOCK_EN=1, PWR_MODE=11 Active (Table 135)"),
         (SAI_CLK_PWR, 0x01, "SPT0_IN_EN=1 -- codec's serial port INPUT side, "
                             "because the Pi transmits into it (Table 128). "
@@ -196,11 +214,31 @@ def main():
 
         if not args.apply:
             return
+        import time
         for a, v, why in writes:
             wr(bus, a, v)
             back = rd(bus, a)
-            print(f"0x{a:08X} <= 0x{v:02X}  readback 0x{back:02X}  "
-                  f"{'OK' if back == v else 'MISMATCH'}   # {why}")
+            flag = "OK" if back == v else "MISMATCH"
+            print(f"0x{a:08X} <= 0x{v:02X}  readback 0x{back:02X}  {flag}   # {why}")
+            if flag == "MISMATCH" and a in (CLK_CTRL1, PLL_PGA_PWR, CHIP_PWR):
+                print("    ^ this register is latched. The part has already been "
+                      "powered up\n      since its last reset and these three go "
+                      "read-only. SOFT_FULL_RESET\n      does NOT clear them -- "
+                      "POWER CYCLE the ADAU1860 and run this again.")
+            if a == CHIP_PWR:
+                time.sleep(0.4)
+
+        s2 = rd(bus, STATUS2)
+        print(f"\nSTATUS2 0x{STATUS2:08X} = 0x{s2:02X}   "
+              f"POWER_UP_COMPLETE={(s2>>7)&1}  SPT0_LOCK={(s2>>4)&1}  "
+              f"PLL_LOCK={s2&1}")
+        if not (s2 >> 7) & 1:
+            print("  POWER_UP_COMPLETE=0 -- the digital domains never came up. "
+                  "Nothing will clock.")
+        if not s2 & 1:
+            print("  PLL_LOCK=0 -- NO SOURCE CLOCK. The BCLK/LRCLK generators have "
+                  "nothing to\n  divide, so the part cannot be master and the Pi "
+                  "will see EIO with hw_ptr=0.")
 
     if args.dac_test:
         print("\nSlot 0 now feeds the DAC. Put a scope (or headphones) on the\n"
