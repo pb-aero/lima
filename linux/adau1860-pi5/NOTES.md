@@ -95,34 +95,38 @@ pin 2–3 to become an I2C part `[fetched]`. Worth checking what our board actua
 
 ## 4. What is in this directory
 
-`adau1860-pi5-overlay.dts` — a device-tree overlay that brings up `rp1_i2s1` on GPIO 18–21 with the
-**codec as bitclock and frame master**, using the in-tree `linux,spdif-dit` dummy codec as a stand-in
-for the missing driver.
+| File | Purpose |
+|---|---|
+| `adau1860-pi5-tx-overlay.dts` | Pi **transmits** on GPIO21, codec master. Dummy codec `linux,spdif-dit`. |
+| `adau1860-pi5-rx-overlay.dts` | Pi **receives** on GPIO20, codec master. Dummy codec `linux,spdif-dir`. |
+| `DATA_OVER_I2S.md` | **Read this first** if the payload is sensor data rather than audio. |
 
-`[measured]` It compiles: `dtc 1.8.1 -@ -I dts -O dtb` exits 0, 1427 bytes, and the resulting
-`__fixups__` node references exactly two external labels — `i2s_clk_consumer` and `sound` — both of
-which are confirmed present in `bcm2712-rpi.dtsi` (lines 387 and 373). So the overlay will resolve
-on a Pi 5. **Compiling is not running**: it has not been loaded on hardware.
+Both take `slots=` and `width=` overlay parameters (`dtoverlay=adau1860-pi5-tx,slots=4,width=32`).
 
-## 5. Known limitation — this gets you playback only
+`[measured]` Both compile: `dtc 1.8.1 -@ -I dts -O dtb` exits 0, 1673 bytes each. The `__fixups__`
+node of each references exactly two external labels — `i2s_clk_consumer` and `sound` — both confirmed
+present in `bcm2712-rpi.dtsi` (lines 387 and 373), so they will resolve on a Pi 5. **Compiling is not
+running**: neither has been loaded on hardware.
 
-`[measured]` `sound/soc/codecs/spdif_transmitter.c` declares `dit_stub_dai` with `.playback` and
-**no `.capture` member**. The dummy codec is a sink. The capture-only twin is `linux,spdif-dir`
-(`spdif_receiver.c`, `.capture` at line 51), and you cannot hang both on one `simple-audio-card`
-DAI link because there is a single cpu DAI.
+## 5. One direction at a time
 
-So the ADAU1860's three analog inputs and eight PDM mic channels are **not reachable through this
-overlay**. Getting simultaneous play and capture needs a real codec driver declaring one DAI with
-both directions. That is the next piece of work if capture matters.
+`[measured]` `sound/soc/codecs/spdif_transmitter.c` declares `dit_stub_dai` with `.playback` and no
+`.capture`; `spdif_receiver.c` is the mirror image (`.capture` at line 51). A single
+`simple-audio-card` link has a single cpu DAI, so you cannot hang both dummies on one link.
+
+Pick the overlay that matches your data direction. **Simultaneous TX and RX needs a real ADAU1860
+codec driver** declaring one DAI with both directions — that is the trigger for writing one, not the
+missing mic support.
 
 ## 6. Suggested bring-up order
 
 1. `i2cdetect -y 1` → expect a device at `0x64`–`0x67`. If nothing: the part is strapped for SPI or
    UART, not I2C (§3).
-2. Read a known register over `i2c-dev` and check it against the reset value. **`[gap]` — I do not
-   have the ADAU1860 register map.** ADI's datasheet PDF is blocked to me (analog.com HTTP/2
-   `INTERNAL_ERROR`, Mouser's mirror serves a 13 KB HTML block page in place of the PDF). Someone
-   needs to fetch `adau1860.pdf` by hand.
+2. Read a known register over `i2c-dev` and check it against the reset value. **`[gap]` — the
+   datasheet I obtained (Rev. 0, 30 pp) is the abridged one and carries **no register map**. ADI's
+   own PDF host returns HTTP/2 `INTERNAL_ERROR` and Mouser's mirror serves a 13 KB HTML block page
+   in place of the PDF; a third-party mirror gave me the 30-page version. The register map lives in
+   ADI's hardware reference manual, or falls out of a LARK Studio register dump. Still needed.
 3. Program the serial port for master mode and let it free-run BCLK/FS off its 24.576 MHz MCLK.
    Confirm on a scope **before** blaming Linux — a Pi in consumer mode with no incoming clock looks
    exactly like a broken driver.
@@ -136,12 +140,17 @@ both directions. That is the next piece of work if capture matters.
   bench Pi looks a lot like a prototype of that. If it is, these notes belong against the aeronode
   design and the register work is reusable. If it is a separate experiment, say so and I will keep
   the two apart.
-- **Playback only, or do you need the mics?** That is the difference between the overlay above and
-  writing an ADAU1860 codec driver.
+- **Which direction does the accelerometer data travel?** Pi -> ADAU1860, or ADAU1860 -> Pi? That
+  picks the overlay, and it is the one thing I could not infer. See `DATA_OVER_I2S.md`.
+- **What ODR and how many axes?** If fS can be set equal to the ODR, one I2S frame = one sample set
+  and most of the framing problem disappears.
 - **Which I2C bus and what is strapped on ADDR0/ADDR1?**
 
 ## Sources
 
+- ADAU1860 datasheet Rev. 0, 30 pp — serial ports 8 kHz-768 kHz, up to TDM16, two 16-channel ports,
+  24-bit converters, optional 1/4/8 Hz high-pass, 4-channel ASRCs, master-mode timing (`tTS`).
+  **Abridged: no register map.**
 - <https://www.analog.com/en/products/adau1860.html> — part overview (3 in / 1 out, 8 PDM mic in,
   two 16-channel serial ports to TDM16, dual Tensilica HiFi 3z DSP, 106 dB ADC / 110 dB DAC SNR).
 - UG-2017, EVAL-ADAU1860 user guide (26 pp) — control port and address straps, on-board 24.576 MHz.

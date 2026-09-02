@@ -1,0 +1,84 @@
+// SPDX-License-Identifier: GPL-2.0
+//
+// ADAU1860 <-> Raspberry Pi 5 / CM5 (RP1) on GPIO 18-21, CODEC IS CLOCK MASTER.
+// Intended use here is NOT audio: it is a fixed-rate data pipe for
+// accelerometer samples. See DATA_OVER_I2S.md before using it.
+//
+// Clock direction is chosen by picking the right RP1 block, not by configuring
+// one (dwc-i2s.c sets DW_I2S_MASTER or DW_I2S_SLAVE exclusively from a
+// synthesis parameter):
+//     i2s_clk_producer -> rp1_i2s0   Pi drives BCLK/LRCLK
+//     i2s_clk_consumer -> rp1_i2s1   codec drives BCLK/LRCLK   <-- used here
+// Both aliases, and their GPIO18-21 pinctrl, are in bcm2712-rpi.dtsi.
+//
+// The ADAU1860 has no ASoC driver (verified against sound/soc/codecs/Kconfig
+// in mainline and in ADI's fork), so a dummy codec stands in and the chip is
+// configured entirely over I2C from userspace.
+//
+// DIRECTION: CAPTURE -- Pi receives on GPIO20 (SDIN) from the ADAU1860.
+// This is the one you want if the accelerometer is analog into an ADAU1860 ADC
+// input, or digital into its DSP, and the Pi is reading samples back.
+//
+// Build:   dtc -@ -I dts -O dtb -o adau1860-pi5-rx.dtbo adau1860-pi5-rx-overlay.dts
+// Install: sudo cp adau1860-pi5-rx.dtbo /boot/firmware/overlays/
+// config.txt:
+//     dtparam=i2c_arm=on
+//     dtoverlay=adau1860-pi5-rx
+//     dtoverlay=adau1860-pi5-rx,slots=4,width=32     # TDM4, e.g. X/Y/Z/seq
+
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "brcm,bcm2835";
+
+	fragment@0 {
+		target = <&i2s_clk_consumer>;
+		__overlay__ {
+			status = "okay";
+		};
+	};
+
+	fragment@1 {
+		target-path = "/";
+		__overlay__ {
+			adau1860_stub: adau1860_stub {
+				// Capture-only dummy: spdif_receiver.c declares
+				// .capture and no .playback.
+				compatible = "linux,spdif-dir";
+				#sound-dai-cells = <0>;
+				status = "okay";
+			};
+		};
+	};
+
+	fragment@2 {
+		target = <&sound>;
+		__overlay__ {
+			compatible = "simple-audio-card";
+			i2s-controller = <&i2s_clk_consumer>;
+			status = "okay";
+
+			simple-audio-card,name = "adau1860-rx";
+			simple-audio-card,format = "i2s";
+
+			simple-audio-card,bitclock-master = <&snd_codec>;
+			simple-audio-card,frame-master = <&snd_codec>;
+
+			sai_cpu: simple-audio-card,cpu {
+				sound-dai = <&i2s_clk_consumer>;
+				dai-tdm-slot-num = <2>;
+				dai-tdm-slot-width = <32>;
+			};
+
+			snd_codec: simple-audio-card,codec {
+				sound-dai = <&adau1860_stub>;
+			};
+		};
+	};
+
+	__overrides__ {
+		slots = <&sai_cpu>,"dai-tdm-slot-num:0";
+		width = <&sai_cpu>,"dai-tdm-slot-width:0";
+	};
+};
