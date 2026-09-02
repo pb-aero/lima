@@ -477,4 +477,9 @@ Two more, both generalisable:
   *is* the clock direction; on the codec, SPT0/SPT1 are its two serial ports. "I'm using I2S0" is
   ambiguous across the two chips and the readings are contradictory.
 
+**And there is no software way out.** All three `RESETS` variants (`0x01` full, `0x10` soft, `0x11`
+both) were ACKed by the chip and changed nothing, including when raced with 40 immediate back-to-back
+writes to catch a re-latch window. Once an ADAU1860's power domains are up, only a power cycle or a
+`PD` toggle restores the clock registers. Do not spend time hunting a software reset.
+
 Detail: `linux/adau1860-pi5/RESULTS-2026-09-02.md`. Related: [[rp1-i2s-clock-direction]].
