@@ -426,3 +426,30 @@ involvement. A crash, a hang, a suspend, or a driver paused for a firmware updat
 4. **Verify quotes like this in the actual PDF.** The first hint came from a web-search summary; the
    wording that mattered (that the *watchdog*, not just REG_RST, triggers it) was only confirmed by
    fetching the 151-page datasheet and grepping it.
+
+## Scar — RP1/Pi 5 I2S: clock direction is a BLOCK CHOICE, and 3 channels is illegal (2026-09-02)
+
+Bringing an ADAU1860 up on a Pi 5 as a data pipe. Four things that are not guessable and cost real
+time if you assume the obvious:
+
+1. **You do not configure clock direction on RP1 — you pick a different peripheral.** `dwc-i2s.c`
+   sets `DW_I2S_MASTER` *or* `DW_I2S_SLAVE` exclusively, from a hardware synthesis parameter read
+   out of COMP1. `dw_i2s_set_fmt()` then rejects `SND_SOC_DAIFMT_BC_FC` unless SLAVE is set. Pi 5
+   ships two blocks muxable to GPIO18-21 and aliases them in `bcm2712-rpi.dtsi`:
+   `i2s_clk_producer` -> `rp1_i2s0` (Pi drives the clocks), `i2s_clk_consumer` -> `rp1_i2s1`
+   (codec drives them). Point a codec-master card at `&i2s` and you get `-EINVAL` from `set_fmt`,
+   which looks nothing like a clocking problem and sends you to the scope for an afternoon.
+2. **Channel count must be 2, 4, 6 or 8.** Three is `-EINVAL` (`designware_i2s.h`). A 3-axis sensor
+   physically cannot be sent as three channels. The ceiling is 8 even when the codec does TDM16.
+3. **Any `dai-tdm-slot-num` forces `data_width = 32`**, overriding the requested format. Use S32_LE.
+4. **In consumer mode the driver never touches the clock**, so the rate you hand ALSA is never
+   checked against the wire. Codec clocking a different fS than ALSA was told = no error at all,
+   just unexplained XRUNs later. Scope the frame rate; do not trust the ALSA rate as evidence.
+
+Generalises: **when a peripheral seems to refuse a legal configuration, check whether the SoC
+exposes a *second instance* wired for that mode rather than a register that switches it.**
+
+Detail at `linux/adau1860-pi5/` (NOTES.md, DATA_OVER_I2S.md). Related: audio-DSP data transport —
+samples are read as fractions in [-1,+1), so linear blocks are scale-invariant but limiters and
+compressors have absolute dBFS thresholds; and any rate crossing inserts an interpolator or ASRC
+that filters the payload.
