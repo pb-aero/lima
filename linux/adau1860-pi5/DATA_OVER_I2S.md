@@ -2,6 +2,10 @@
 
 **Date:** 2026-09-02 · **Agent:** LIMA · companion to [NOTES.md](NOTES.md)
 
+**Direction confirmed 2026-09-02: Pi -> ADAU1860, samples going into the DSP for processing.**
+Use `adau1860-pi5-tx-overlay.dts`. Read §7 first — it carries hard limits that constrain the
+design, and §8, which is about what your integers *mean* once they are inside an audio DSP.
+
 The goal is not audio. I2S/TDM is being used as a **dumb, fixed-rate, unframed sample pipe** for
 accelerometer data. That is a legitimate and fairly common use of the interface, and it removes most
 of the work in [NOTES.md](NOTES.md) — no codec driver, no mixer, no mics. What it does *not* remove
@@ -113,14 +117,123 @@ your magic word before trusting data again. Size periods generously and pin the 
    worth debugging.
 5. Only then put real accelerometer samples in, and check DC by tilting (§4).
 
-## 7. Worth asking out loud
+## 7. Hard limits the Linux side imposes — measured, not guessed
 
-If the accelerometer is read by the Pi over SPI anyway, I2S is a longer road than a ring buffer in
-memory — so presumably the point is that the samples have to **reach the ADAU1860** (its DSP, or an
-A2B backbone beyond it), rather than reach the Pi. `kicad/aeronode/doc/ARCHITECTURE.md` commits
-AeroNode to an A2B main node on SAI3, which would make this bench rig a prototype of that path.
-If that is right, this file should be read alongside the aeronode architecture doc and the framing
-scheme in §2 wants to survive the A2B hop too. **Not yet confirmed with Peter.**
+These come from reading `sound/soc/dwc/dwc-i2s.c` and `include/sound/designware_i2s.h` at
+`rpi-6.12.y`. They are not negotiable from device tree and they will bite at `hw_params` time.
+
+**Channel count must be 2, 4, 6 or 8. Nothing else.** `[measured]`
+
+```c
+switch (config->chan_nr) {
+case EIGHT_CHANNEL_SUPPORT:  /* 8 */
+case SIX_CHANNEL_SUPPORT:    /* 6 */
+case FOUR_CHANNEL_SUPPORT:   /* 4 */
+case TWO_CHANNEL_SUPPORT:    /* 2 */
+        break;
+default:
+        dev_err(dev->dev, "channel count %d not supported\n", config->chan_nr);
+        return -EINVAL;
+}
+```
+
+**So you cannot ask for 3 channels.** X/Y/Z alone is rejected outright. This is not a limitation to
+work around — it is the argument for the TDM4 layout in §2 arriving for free: three axes plus a
+sequence/magic word is exactly 4. Take the fourth slot and use it.
+
+Note also the ceiling is **8, not 16**. The ADAU1860 supports TDM16 `[fetched]`, but the RP1 driver
+will not go past 8 slots. Plan the frame around 8 channels maximum.
+
+**Setting any TDM slot count forces 32-bit slots.** `[measured]`
+
+```c
+if (dev->tdm_slots)
+        config->data_width = 32;
+```
+
+Whatever `params_format()` said is overridden. Since our overlay sets `dai-tdm-slot-num`, slots are
+32 bits wide, full stop — so use **`SNDRV_PCM_FORMAT_S32_LE`** and stop thinking about it. (For the
+record the driver accepts only S16_LE, S24_LE and S32_LE; `S20_3LE` is rejected even though the
+dummy codec advertises it.)
+
+**In consumer mode the driver never touches the clock — so ALSA's rate is a *declaration*, not a
+check.** `[measured]` The entire rate-setting block, `clk_set_rate()` and the CCR frame-length write
+included, sits inside `if (dev->capability & DW_I2S_MASTER)`. On `rp1_i2s1` that is false and the
+whole block is skipped.
+
+The good part: the 32/48/64-only `frame_length` restriction does not apply to us. The bad part, and
+it is the fifth silent failure mode: **if you tell ALSA 32000 and the ADAU1860 is actually clocking
+48000, nothing errors.** You get a rate mismatch that surfaces later as inexplicable XRUNs. The
+codec's actual fS is the truth; ALSA is only being told a story. **Scope the frame rate.**
+
+## 8. Your integers become fractions inside the DSP
+
+`[derived]` — standard fixed-point DSP reasoning, not stated in the ADAU1860 datasheet, but it
+governs every number you get back.
+
+An audio DSP treats a sample as a **fraction in [-1, +1)**, not an integer. A 24-bit word `v` is
+the value `v / 2^23`. Your accelerometer counts will be interpreted that way whether you intend it
+or not. Two consequences:
+
+**Linear processing does not care.** Biquads, FIR, gains, mixing — all scale-invariant. A filter
+designed for audio does exactly the right thing to accelerometer data. You rescale on the way out
+and the maths is untouched. This is why the whole idea works.
+
+**Non-linear blocks absolutely do care.** Limiters, compressors, noise gates, soft-clip and the ANC
+blocks all have *absolute* thresholds expressed in dBFS. Feed them accelerometer counts and the
+thresholds mean something arbitrary. Either keep them out of the path or set them knowing your
+scaling.
+
+**Leave headroom.** If you left-justify a full-scale 16-bit reading into the top of a 24-bit word
+you are sitting at ±1.0 and any gain above unity clips. Shift left by 6 rather than 8 and you keep
+~12 dB of headroom for the DSP to work in. Clipping in a fixed-point audio DSP is saturation, not
+wraparound — so it looks like a plausible flattened peak rather than an obvious fault.
+
+## 9. Match the serial port rate to the DSP rate
+
+`[fetched]` The datasheet's own worked example runs **FastDSP at 192 kHz and the Tensilica core at
+48 kHz** simultaneously, and Table 6's documented path from the serial input reads
+*"SDATAI_x to Interpolator to FastDSP"*. There are 8 interpolators and 8 decimators "with flexible
+routing", plus 4 ASRC channels.
+
+`[derived]` Every one of those rate-crossing blocks is a filter. **If the serial port fS differs
+from the rate of the DSP core doing your processing, something in that list gets inserted to bridge
+the gap, and it will filter your data.** So:
+
+> Set the serial port fS equal to the rate of the DSP core you are processing on, route
+> serial-in straight to that core, and confirm no interpolator, decimator or ASRC appears in the
+> LARK Studio signal flow.
+
+If your accelerometer ODR can also equal that rate, one I2S frame is one sample set and the whole
+chain is rate-coherent end to end. That is the configuration to aim for.
+
+## 10. Recommended starting configuration
+
+| Setting | Value | Why |
+|---|---|---|
+| Overlay | `dtoverlay=adau1860-pi5-tx,slots=4,width=32` | TX; 4 slots is the smallest legal count ≥3 (§7) |
+| ALSA device | `hw:adau1860-tx,0` — **never `plughw:`** | §1 |
+| Format | `S32_LE` | TDM forces 32-bit slots (§7) |
+| Channels | 4 | 3 is `-EINVAL` (§7) |
+| Rate | = ADAU1860 fS = DSP core rate = accelerometer ODR if possible | §9 |
+| Slot 0/1/2 | X / Y / Z, left-justified, ~12 dB headroom | §8 |
+| Slot 3 | `0xA5 << 24 \| (seq & 0xFFFFFF)` | slip detection (§2) |
+| Payload width | ≤ 24 bits per slot | 24-bit internal path (§3) |
+
+`[gap]` Actual ADAU1860 register values for any of this. The 30-page datasheet has no register map;
+you need ADI's hardware reference manual or a LARK Studio dump.
+
+## 11. Worth asking out loud
+
+Confirmed: the samples have to **reach the ADAU1860's DSP**, which is why I2S rather than a ring
+buffer in memory. Still open: `kicad/aeronode/doc/ARCHITECTURE.md` commits AeroNode to an A2B main
+node on SAI3, and if this bench rig is a prototype of that path then the framing scheme in §2 wants
+to survive the A2B hop too, and these notes belong against the aeronode design. **Not confirmed.**
+
+Also open: **do processed results need to come back to the Pi?** If they do, that is simultaneous
+TX and RX on one DAI, which the dummy codecs cannot express — it is the trigger for writing a real
+ADAU1860 codec driver. If the results leave over A2B or the PDM outputs instead, TX-only is enough
+and no driver is needed.
 
 ## Which overlay
 

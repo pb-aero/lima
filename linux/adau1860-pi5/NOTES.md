@@ -97,7 +97,7 @@ pin 2–3 to become an I2C part `[fetched]`. Worth checking what our board actua
 
 | File | Purpose |
 |---|---|
-| `adau1860-pi5-tx-overlay.dts` | Pi **transmits** on GPIO21, codec master. Dummy codec `linux,spdif-dit`. |
+| `adau1860-pi5-tx-overlay.dts` | **The one in use.** Pi **transmits** on GPIO21, codec master, TDM4 default. Dummy codec `linux,spdif-dit`. |
 | `adau1860-pi5-rx-overlay.dts` | Pi **receives** on GPIO20, codec master. Dummy codec `linux,spdif-dir`. |
 | `DATA_OVER_I2S.md` | **Read this first** if the payload is sensor data rather than audio. |
 
@@ -140,10 +140,14 @@ missing mic support.
   bench Pi looks a lot like a prototype of that. If it is, these notes belong against the aeronode
   design and the register work is reusable. If it is a separate experiment, say so and I will keep
   the two apart.
-- **Which direction does the accelerometer data travel?** Pi -> ADAU1860, or ADAU1860 -> Pi? That
-  picks the overlay, and it is the one thing I could not infer. See `DATA_OVER_I2S.md`.
-- **What ODR and how many axes?** If fS can be set equal to the ODR, one I2S frame = one sample set
-  and most of the framing problem disappears.
+- ~~Which direction?~~ **Answered 2026-09-02: Pi -> ADAU1860, into the DSP for processing.**
+  Use `adau1860-pi5-tx-overlay.dts`. See `DATA_OVER_I2S.md` for what that implies.
+- **What ODR and how many axes?** If fS can be set equal to the ODR *and* to the DSP core rate, the
+  chain is rate-coherent end to end and no interpolator or ASRC has to sit in the path.
+- **Do processed results need to come back to the Pi?** TX-only needs no codec driver. Simultaneous
+  TX+RX cannot be expressed with the single-direction dummy codecs and is the one thing that would
+  justify writing a real ADAU1860 ASoC driver.
+- **Register map still missing** — the datasheet I have is abridged.
 - **Which I2C bus and what is strapped on ADDR0/ADDR1?**
 
 ## Sources

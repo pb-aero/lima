@@ -16,15 +16,20 @@
 // configured entirely over I2C from userspace.
 //
 // DIRECTION: PLAYBACK -- Pi transmits on GPIO21 (SDOUT) into the ADAU1860.
-// This is the one you want if the accelerometer is read by the Pi (SPI/I2C)
-// and the samples are being pushed out over I2S.
+// CONFIRMED IN USE 2026-09-02: Pi reads the accelerometer and pushes samples
+// into the ADAU1860 DSP for processing.
+//
+// Defaults to TDM4 because dwc-i2s.c accepts a channel count of ONLY 2, 4, 6
+// or 8 -- three channels is -EINVAL -- so X/Y/Z needs a 4th slot anyway. Use
+// it for a magic word + sequence counter; I2S carries no framing of its own
+// and a one-slot slip silently permutes your axes. See DATA_OVER_I2S.md.
 //
 // Build:   dtc -@ -I dts -O dtb -o adau1860-pi5-tx.dtbo adau1860-pi5-tx-overlay.dts
 // Install: sudo cp adau1860-pi5-tx.dtbo /boot/firmware/overlays/
 // config.txt:
 //     dtparam=i2c_arm=on
-//     dtoverlay=adau1860-pi5-tx
-//     dtoverlay=adau1860-pi5-tx,slots=4,width=32     # TDM4, e.g. X/Y/Z/seq
+//     dtoverlay=adau1860-pi5-tx                      # TDM4 X/Y/Z/seq (default)
+//     dtoverlay=adau1860-pi5-tx,slots=8              # 8 slots if you need more
 
 /dts-v1/;
 /plugin/;
@@ -70,7 +75,11 @@
 
 			sai_cpu: simple-audio-card,cpu {
 				sound-dai = <&i2s_clk_consumer>;
-				dai-tdm-slot-num = <2>;
+				// 2, 4, 6 or 8 ONLY (designware_i2s.h). Max 8, despite
+				// the ADAU1860 supporting TDM16.
+				dai-tdm-slot-num = <4>;
+				// Setting tdm_slots at all forces data_width to 32 in
+				// dw_i2s_hw_params(), so use S32_LE.
 				dai-tdm-slot-width = <32>;
 			};
 
