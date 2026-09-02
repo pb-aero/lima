@@ -49,7 +49,9 @@ VENDOR_ID      = 0x4000C000   # reset 0x41, R
 DEVICE_ID1     = 0x4000C001   # reset 0x60, R
 DEVICE_ID2     = 0x4000C002   # reset 0x18, R
 REVISION       = 0x4000C003   # reset 0x01, R
-PLL_PGA_PWR    = 0x4000C005   # reset 0x02, R/W
+ADC_DAC_HP_PWR = 0x4000C004   # reset 0x00, R/W  Table 125
+PLL_PGA_PWR    = 0x4000C005   # reset 0x02, R/W  Table 126: [1] XTAL_EN, [0] PLL_EN
+DAC_ROUTE0     = 0x4000C053   # reset 0x00, R/W  Table 190 -- reset IS "SPT0 Channel 0"
 SAI_CLK_PWR    = 0x4000C007   # reset 0x00, R/W  Table 128
 CHIP_PWR       = 0x4000C00E   # reset 0x00, R/W  Table 135
 CLK_CTRL1      = 0x4000C010   # reset 0xC8, R/W  Table 136
@@ -75,7 +77,7 @@ LRCLK_SRC = {8_000: 0b1000, 12_000: 0b0100, 16_000: 0b1001, 24_000: 0b0101,
 LEGAL_SLOTS = (2, 4, 6, 8)   # dwc-i2s.c rejects anything else with -EINVAL
 
 
-def plan(fs, slots, slot_width=32):
+def plan(fs, slots, slot_width=32, dac_test=False):
     """Return the register writes for a codec-master TDM config, or explain
     why the requested combination is impossible."""
     if slots not in LEGAL_SLOTS:
@@ -117,7 +119,17 @@ def plan(fs, slots, slot_width=32):
         (SPT0_CTRL1,  ctrl1, f"TDM, {slot_width} BCLK/slot, I2S delay-by-1 (Table 276)"),
         (SPT0_CTRL2,  ctrl2, f"generate BCLK {bclk/1e6:.3f} MHz => CODEC IS MASTER (Table 277)"),
         (SPT0_CTRL3,  ctrl3, f"generate LRCLK {fs} Hz => CODEC IS MASTER (Table 278)"),
-    ]
+    ] + ([
+        # Presence test: prove samples physically arrive by making the chip
+        # play slot 0 out of its own DAC. DAC_ROUTE0 can source a serial port
+        # input channel DIRECTLY -- no DSP program, no interpolator, no ASRC.
+        # (SPT0_ROUTE* cannot do the reverse: its source list is FastDSP/TDSP/
+        # ASRC/ADC/DMIC/decimator/EQ only, with no serial port input, so a
+        # pure digital loopback is NOT available.)
+        (DAC_ROUTE0,     0x00, "DAC channel 0 <- Serial Port 0 Channel 0 (Table 190). "
+                               "This is the reset value; written explicitly to be sure."),
+        (ADC_DAC_HP_PWR, 0x10, "PB0_EN=1 -- DAC + headphone/line-out channel 0 on (Table 125)"),
+    ] if dac_test else [])
 
 
 def main():
@@ -130,11 +142,15 @@ def main():
     ap.add_argument("--slots", type=int, default=4)
     ap.add_argument("--width", type=int, default=32, choices=(16, 24, 32))
     ap.add_argument("--probe", action="store_true", help="read ID registers and stop")
+    ap.add_argument("--dac-test", action="store_true",
+                    help="also route slot 0 to the DAC so arriving samples come "
+                         "out of the analog output -- the simplest proof that "
+                         "data physically reaches the chip")
     ap.add_argument("--apply", action="store_true",
                     help="actually write. Without it, the plan is printed only.")
     args = ap.parse_args()
 
-    bclk, writes = plan(args.fs, args.slots, args.width)
+    bclk, writes = plan(args.fs, args.slots, args.width, args.dac_test)
 
     print(f"# ADAU1860 @ I2C 0x{args.addr:02x} on bus {args.bus}")
     print(f"# TDM{args.slots}, {args.width}-bit slots, fS={args.fs} Hz, "
@@ -186,6 +202,13 @@ def main():
             print(f"0x{a:08X} <= 0x{v:02X}  readback 0x{back:02X}  "
                   f"{'OK' if back == v else 'MISMATCH'}   # {why}")
 
+    if args.dac_test:
+        print("\nSlot 0 now feeds the DAC. Put a scope (or headphones) on the\n"
+              "analog output and send the test pattern:\n"
+              "  python3 send_test_pattern.py --seconds 10 | \\\n"
+              f"    aplay -D hw:$CARD,0 -f S32_LE -c {args.slots} "
+              f"-r {args.fs} -t raw\n"
+              "A 1 kHz tone at the output means the samples arrived.")
     print("\nNow scope BCLK and FSYNC. The Pi cannot tell you whether the codec\n"
           "is actually clocking -- in consumer mode the driver never checks.")
 

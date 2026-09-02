@@ -131,7 +131,8 @@ missing mic support.
    Confirm on a scope **before** blaming Linux — a Pi in consumer mode with no incoming clock looks
    exactly like a broken driver.
 4. Install the overlay, `dtoverlay=adau1860-pi5`, reboot, `aplay -l`.
-5. `speaker-test -D hw:adau1860 -c 2 -r 48000 -F S32_LE`.
+5. Send the test pattern — see `TESTING.md`. Card id comes from `aplay -l`, not from the
+   overlay's `simple-audio-card,name`.
 
 ## 7. Open questions for Peter
 

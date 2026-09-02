@@ -220,7 +220,7 @@ chain is rate-coherent end to end. That is the configuration to aim for.
 | Setting | Value | Why |
 |---|---|---|
 | Overlay | `dtoverlay=adau1860-pi5-tx,slots=4,width=32` | TX; 4 slots is the smallest legal count ≥3 (§7) |
-| ALSA device | `hw:adau1860-tx,0` — **never `plughw:`** | §1 |
+| ALSA device | `hw:$CARD,0` (id from `aplay -l`) — **never `plughw:`** | §1 |
 | Format | `S32_LE` | TDM forces 32-bit slots (§7) |
 | Channels | 4 | 3 is `-EINVAL` (§7) |
 | Rate | = ADAU1860 fS = DSP core rate = accelerometer ODR if possible | §9 |
