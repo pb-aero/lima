@@ -147,7 +147,12 @@ missing mic support.
 - **Do processed results need to come back to the Pi?** TX-only needs no codec driver. Simultaneous
   TX+RX cannot be expressed with the single-direction dummy codecs and is the one thing that would
   justify writing a real ADAU1860 ASoC driver.
-- **Register map still missing** — the datasheet I have is abridged.
+- ~~Register map missing~~ **Obtained 2026-09-02: UG-2257, ADAU186x Hardware Reference Manual,
+  337 pp.** Transport registers written up in `REGISTER_CONFIG.md`. Note you already had this at
+  `~/Downloads/aeronode-design-docs-20260813-full/library/adau1860-hardware-reference.pdf`.
+- **Open: can the interpolator be bypassed on the path into FastDSP?** There is no `FDSP_ROUTE`
+  register; `FINT_ROUTE*` sources are literally "Serial Port 0 Channel N", so the documented path
+  in is through a rate-converting filter. Constrains the design; settle it early.
 - **Which I2C bus and what is strapped on ADDR0/ADDR1?**
 
 ## Sources

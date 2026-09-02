@@ -207,6 +207,14 @@ the gap, and it will filter your data.** So:
 If your accelerometer ODR can also equal that rate, one I2S frame is one sample set and the whole
 chain is rate-coherent end to end. That is the configuration to aim for.
 
+> **CORRECTION, 2026-09-02, from UG-2257.** Earlier I said to set fS equal to your ODR. That is only
+> available if the ODR is on a fixed menu. `[fetched]` the ADAU1860 generates LRCLK at **8, 12, 16,
+> 24, 48, 96, 192, 384 or 768 kHz only** (Table 278) and BCLK at **3.072, 6.144, 12.288 or
+> 24.576 MHz only** (Table 277). With Linux's 2/4/6/8 slot restriction on top, only thirteen
+> (fS, slots) pairs exist at 32-bit slots — table in [REGISTER_CONFIG.md](REGISTER_CONFIG.md) §2.
+> **Pick the ODR from that list**, or accept that fS and ODR differ and handle it in the framing.
+> 44.1 kHz does not exist on this part at all.
+
 ## 10. Recommended starting configuration
 
 | Setting | Value | Why |
@@ -220,8 +228,10 @@ chain is rate-coherent end to end. That is the configuration to aim for.
 | Slot 3 | `0xA5 << 24 \| (seq & 0xFFFFFF)` | slip detection (§2) |
 | Payload width | ≤ 24 bits per slot | 24-bit internal path (§3) |
 
-`[gap]` Actual ADAU1860 register values for any of this. The 30-page datasheet has no register map;
-you need ADI's hardware reference manual or a LARK Studio dump.
+**Register values: see [REGISTER_CONFIG.md](REGISTER_CONFIG.md)** and the runnable
+[`adau1860_init.py`](adau1860_init.py). Sourced from UG-2257 (337 pp), **not** captured from working
+silicon and not yet run on hardware. The DSP program itself stays `[gap]` and always will from here —
+it comes out of LARK Studio, not out of a register manual.
 
 ## 11. Worth asking out loud
 
