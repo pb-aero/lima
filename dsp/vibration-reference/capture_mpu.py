@@ -93,3 +93,33 @@ print(f"# captured {nsamp} samples at {fs:.1f} Hz = {nsamp/fs:.2f} s -> {args.ou
 print(f"# FIFO overflow: {overflow}", file=sys.stderr)
 print(f"# mean g: {d.mean(axis=0)}  |a|={np.linalg.norm(d.mean(axis=0)):.4f}", file=sys.stderr)
 print(f"# AC rms (mg): {d.std(axis=0)*1000}", file=sys.stderr)
+# Clipping check. A saturated accelerometer produces convincing but entirely
+# false harmonics, so this must be checked before any spectrum is believed.
+lim = args.fs_g * 0.995
+nclip = int((np.abs(d) >= lim).sum())
+print(f"# peak g: min {d.min(axis=0)}  max {d.max(axis=0)}", file=sys.stderr)
+print(f"# samples at >={lim:.3f} g (clipping): {nclip}", file=sys.stderr)
+if nclip:
+    print(f"# WARNING: CLIPPED at +/-{args.fs_g} g -- recapture with a larger --fs-g. "
+          f"Spectrum from clipped data is fiction.", file=sys.stderr)
+
+# Stationarity. Steady machine vibration has roughly constant RMS; handling the
+# rig, or the motor starting/stopping mid-run, produces bursts. A Welch spectrum
+# of a bursty record looks like a perfectly plausible vibration spectrum and is
+# not one, so this is checked and reported rather than left to the eye.
+ac = d - d.mean(axis=0)
+blocks = np.array([ac[int(k*fs):int((k+1)*fs)].std(axis=0)
+                   for k in range(int(len(ac)/fs))]) * 1000
+if len(blocks) >= 4:
+    per = blocks.max(axis=1)
+    ratio = per.max() / max(per.min(), 1e-9)
+    print(f"# per-second RMS (mg, worst axis): "
+          f"min {per.min():.1f}, median {np.median(per):.1f}, max {per.max():.1f}",
+          file=sys.stderr)
+    if ratio > 5:
+        print(f"# WARNING: NON-STATIONARY -- loudest second is {ratio:.0f}x the quietest.",
+              file=sys.stderr)
+        print(f"#          This is bursts (handling, or the motor cycling), not steady",
+              file=sys.stderr)
+        print(f"#          vibration. A spectrum from it will look plausible and be wrong.",
+              file=sys.stderr)
