@@ -37,7 +37,16 @@ with SMBus(args.bus) as b:
     b.write_byte_data(A, ACCEL_CONFIG,  afs << 3)
     # Accel anti-alias filter chosen against the actual sample rate, so the
     # analogue band always sits below Nyquist.
-    a_dlpf = 0x00 if fs >= 500 else (0x02 if fs >= 250 else 0x03)   # 218 / 99 / 45 Hz
+    # A_DLPF_CFG 7 = 420 Hz, 0 = 218.1 Hz, 2 = 99 Hz, 3 = 44.8 Hz.
+    # At fs=1000 (Nyquist 500) the 420 Hz setting is the correct anti-alias choice;
+    # 218 Hz would throw away real harmonics. At fs=500 the 218 Hz setting is NOT
+    # a sufficient anti-alias filter for a source with strong harmonics -- content
+    # at 287/359/431 Hz folds back onto 212/140/69 Hz. [measured 2026-09-03]
+    # A_DLPF_CFG 7 (nominally 420 Hz) RETURNS CORRUPT DATA on this part: mean |a|
+    # reads 0.248 g instead of 0.990 g, at both 500 Hz and 1 kHz, while the sample
+    # count stays correct. Isolated 2026-09-03 by running all four combinations.
+    # Do not use it. 0x00 (218 Hz) is the widest usable setting.
+    a_dlpf = 0x00 if fs >= 500 else (0x02 if fs >= 250 else 0x03)
     a_dlpf_hz = {0x00:218.1, 0x02:99.0, 0x03:44.8}[a_dlpf]
     b.write_byte_data(A, ACCEL_CONFIG2, a_dlpf)
     print(f"# accel DLPF {a_dlpf_hz} Hz vs Nyquist {fs/2:.0f} Hz", file=sys.stderr)
