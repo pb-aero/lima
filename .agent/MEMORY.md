@@ -483,3 +483,43 @@ writes to catch a re-latch window. Once an ADAU1860's power domains are up, only
 `PD` toggle restores the clock registers. Do not spend time hunting a software reset.
 
 Detail: `linux/adau1860-pi5/RESULTS-2026-09-02.md`. Related: [[rp1-i2s-clock-direction]].
+
+## Scar — a cross-compiler you never use can change what the machine boots (2026-09-04)
+
+Installing ArduPilot on `scopenode` (Pi 5). `Tools/environment_install/install-prereqs-ubuntu.sh`
+installs `g++-arm-linux-gnueabihf` unconditionally — most ArduPilot Linux boards are 32-bit ARM
+cross targets. On Raspberry Pi OS that package's dependency chain is
+`g++-arm-linux-gnueabihf` -> `linux-libc-dev-armhf-cross` -> `linux-headers-rpi-*` ->
+**`linux-image-rpi-*`**, and the kernel meta-packages pull the current Pi kernel and rewrite
+`/boot/firmware/kernel_2712.img` and `kernel8.img`. `[measured]` 6.12.47 -> 6.18.39 installed;
+`uname -r` unchanged; **the change lands silently at the next reboot.**
+
+The cross-compiler was never used — `hwdef/linux` sets `TOOLCHAIN native` and we compiled aarch64
+on the Pi. So a package with no role in the build changed what the machine will boot.
+
+Generalises, and this is the part to remember:
+
+- **A toolchain package is not inert.** On distros where the kernel ships as an apt package, a
+  `*-cross` or `*-headers` dependency can reach the boot partition. Check `apt-get -s install`
+  (simulate) before letting an unfamiliar prereqs script run on a machine whose kernel is load-bearing.
+- **`uname -r` is not evidence that nothing happened.** The running kernel is the *old* state; the
+  damage is in `/boot/firmware` and `dpkg -l | grep linux-image`. Look at what will boot, not what
+  is booted. A machine can be already-changed and look fine indefinitely.
+- **Bench results are pinned to a kernel version.** Everything in `linux/adau1860-pi5/` was measured
+  on `6.12.47+rpt-rpi-2712`. Peter ruled 2026-09-04 to accept 6.18.39, so those results need
+  re-verifying after the next reboot. Related: [[rp1-i2s-clock-direction]].
+
+## Scar — a control that returns punctuation is a broken instrument, not a null result (2026-09-04)
+
+Testing whether ArduPilot claimed GPIO18-21 from the ADAU1860. My negative control printed
+`18:=| 19:=| 20:=| 21:=|` for every sample — I had parsed `pinctrl get`'s `$4`, which is the
+literal `|` separator, instead of `$5`. Six identical rows of punctuation read very easily as
+"nothing changed, all clear."
+
+Fixed to `$5` and the control immediately produced the finding: GPIO19 flips `lo`->`hi` **on its
+own** with no ArduPilot process running, because it is `I2S1_WS`, a live frame clock. So the
+before/after difference that looked like ArduPilot claiming a pin was a sampling artefact.
+
+Two lessons: **the mux and pull columns are the evidence of a claim, not the level column** — a
+level is a sample of a moving signal; and per §3, the broken instrument failed *toward* the answer
+I was hoping for. Distrust a clean result that arrives too conveniently.

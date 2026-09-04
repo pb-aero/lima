@@ -81,6 +81,18 @@ prereqs() {
   echo "Skipping the SITL graphics stack, coverage tools and the STM32 cross-toolchain:"
   echo "none of it is needed for a native Linux-HAL build, and wxPython/opencv build"
   echo "from source on ARM and take hours."
+  echo
+  echo "!! WARNING -- READ THIS ON A MACHINE WHOSE KERNEL MATTERS !!"
+  echo "The upstream prereqs script installs g++-arm-linux-gnueabihf unconditionally."
+  echo "On Raspberry Pi OS that drags in linux-libc-dev-armhf-cross -> linux-headers-rpi-*"
+  echo "-> linux-image-rpi-*, which installs the CURRENT Pi kernel and rewrites"
+  echo "/boot/firmware/kernel_2712.img and kernel8.img. The running kernel does not change,"
+  echo "but THE NEXT REBOOT BOOTS THE NEW ONE. Measured on scopenode 2026-09-04:"
+  echo "6.12.47+rpt-rpi-2712 -> 6.18.39+rpt-rpi-2712 pending reboot."
+  echo "That cross-compiler is not used by --board=linux (TOOLCHAIN native). See RESULTS."
+  echo "Current kernel : $(uname -r)"
+  echo "Boot kernel now: $(ls -l --time-style=+%Y-%m-%d /boot/firmware/kernel_2712.img 2>/dev/null | awk '{print $6}')"
+  echo
   cd "$AP_DIR"
   SKIP_AP_GRAPHIC_ENV=1 \
   SKIP_AP_COV_ENV=1 \

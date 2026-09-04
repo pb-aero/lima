@@ -126,3 +126,35 @@ Peter ruled: new project in lima, SPI with one CS per die, 3V3 for both VDD and 
 
 Four of the five ERC errors are just "input pin not driven" on SCLK/CS — the host doesn't exist
 on the sheet yet. They clear when a host or connector is added.
+
+## 2026-09-04 · ArduPilot installed on scopenode — DONE
+
+Peter: *"install ardupilot for linux on the pi"*. Delivered and verified on hardware.
+
+- **Built and running.** `arduplane V4.8.0-dev (ff37fde6)`, native aarch64, at
+  `node@scopenode.local:~/ardupilot/build/linux/bin/arduplane`. `./waf configure --board=linux`
+  + `./waf plane`, 4m52s. `[measured]`
+- **Peter's rulings this session:** bare Pi 5 (no HAT) so `--board=linux`; `plane` only;
+  **accept kernel 6.18.39** rather than roll back.
+- **Kit:** `linux/ardupilot-pi5/` — `install_ardupilot.sh` (preflight/clone/prereqs/build/verify),
+  `NOTES.md` (upstream analysis), `RESULTS-2026-09-04.md` (what actually happened).
+
+### Carried forward — needs action before the ADAU1860 work is trusted again
+
+**`scopenode` will boot kernel 6.18.39+rpt-rpi-2712 at the next restart** (was 6.12.47). Pulled in
+as an apt dependency of `g++-arm-linux-gnueabihf`, which the ArduPilot prereqs script installs
+unconditionally and which this build never uses. Running kernel is still 6.12.47 — the change is
+latent, not active.
+
+Everything in `linux/adau1860-pi5/` — the RP1 I2S clock-direction findings, the 4-lane duplex
+bring-up, the register work — was measured on 6.12.47. **Re-verify on 6.18.39 after the next
+reboot before building on any of it.** Device-tree node names, `dwc-i2s` behaviour and overlay
+compatibility all sit on that version.
+
+### Open
+
+1. `[gap]` The 6.18.39 re-verification above. Not started; needs a reboot Peter chooses.
+2. Upstream bug found, not reported: `Util_RPI.cpp:62` uses `strncmp(d_name, "soc", 4)`, an exact
+   match where a prefix match was intended, so Pi 5 detection fails on kernels that name the node
+   `soc@107c000000`. Harmless for `--board=linux` (GPIO_RPI not compiled) but an `AP_HAL::panic`
+   at startup for `navio2`/`pilotpi`/`navigator64`. One-character fix. Worth a PR if Peter wants it.
