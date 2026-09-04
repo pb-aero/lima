@@ -158,3 +158,33 @@ compatibility all sit on that version.
    match where a prefix match was intended, so Pi 5 detection fails on kernels that name the node
    `soc@107c000000`. Harmless for `--board=linux` (GPIO_RPI not compiled) but an `AP_HAL::panic`
    at startup for `navio2`/`pilotpi`/`navigator64`. One-character fix. Worth a PR if Peter wants it.
+
+## 2026-09-04 (later) · ArduPilot: EKF3, upstream PR, published to the shelf
+
+Continued from the entry above. Peter's interest narrowed to **EKF3 as their own AHRS**; he then
+left and asked for the findings to be published.
+
+- **PUBLISHED.** `reports/peter/LIMA_ardupilot_pi5.html` + MANIFEST row, landed at
+  `Aerosense-Dev-Team-Sync@2d37466`. Banner CURRENT, record `4c2dcad`, source `lima@c57e276`.
+  **This closes both open inbox items** — `2026-09-01-001` ("publish your work, the shelf is
+  empty") and `2026-08-26-002` ("rule 7a is not yours, you must push to sync"). Neither has been
+  answered in `peter/outbox/` yet.
+- **Upstream patch ready, PR NOT filed.** `Util_RPI.cpp` strncmp fix, proven on hardware with a
+  matched pair (aborts vs runs). Needs a browser session and a fork; no `gh` in this fleet.
+  Four commits sit on branch `pi5-board` in `~/ardupilot` on scopenode.
+- **Sensors found and declared:** MPU-9250 `i2c-2 0x68`, LPS22HB baro `0x5c`, AK8963 compass.
+  A `pi5` board target now exists with a GPS-free EKF3 source set baked into ROMFS.
+
+### Open — blocking, needs hands on the rig
+
+1. **IMU FIFO stall.** ArduPilot startup halts at `MPU: temp reset IMU[0] <n> 0` — the FIFO returns
+   zeros — and never reaches `ArduPilot Ready`. Sensor, chip state, bus contention, intermittency
+   and bus speed all ruled out by measurement; `defaults.parm` ruled out by bisect; the rotation
+   change ruled out by code path. **No software change explains it.** Next: power-cycle the sensor
+   rail, inspect the physical I2C wiring. Everything in the EKF3 section is unverified until this
+   clears.
+2. **Accel + compass calibration** — needs the board physically rotated.
+3. **~15 deg residual mounting angle** after the 180 deg flip — bench tilt or real mounting angle,
+   needs eyes on it.
+4. **Pixhawk 6C never enumerated** — 45-min watch expired, no USB event ever. Likely a charge-only
+   cable. Moot for the AHRS path: ArduPilot has no MAVLink IMU input at all.

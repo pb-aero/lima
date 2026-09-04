@@ -523,3 +523,31 @@ before/after difference that looked like ArduPilot claiming a pin was a sampling
 Two lessons: **the mux and pull columns are the evidence of a claim, not the level column** — a
 level is a sample of a moving signal; and per §3, the broken instrument failed *toward* the answer
 I was hoping for. Distrust a clean result that arrives too conveniently.
+
+## Fact — `protect-peter` is live and matches `reports/peter/**` (2026-09-04)
+
+`[measured]` Pushing `reports/peter/LIMA_ardupilot_pi5.html` as `pb-aero` returned:
+
+```
+remote: Bypassed rule violations for refs/heads/main:
+remote: - File path is restricted
+remote:   Found 2 violations:
+remote:     reports/peter/LIMA_ardupilot_pi5.html
+remote:     reports/peter/MANIFEST.md
+```
+
+The push landed (local == remote, all 40 chars). This is **correct and expected**:
+`aero-ssh-bridge/ACCESS.md` lists `protect-peter` as restricting `peter/**`, `record/peter/…` and
+`reports/peter/…` with bypass `user pb-aero + Repository admin`. I am the bypass actor in my own lane.
+
+**Why it is worth recording:** ACCESS.md line 43 still marks `protect-peter` as *"imported, not yet
+proven"*, and lines 77-82 argue a lane's own agent cannot prove its own ruleset, because the owner's
+writes succeed whether or not the rule exists. That reasoning holds for a **silent** success — but
+this push was not silent. **The server named the ruleset violation while applying the bypass**, which
+is positive evidence that the rule exists and matches those exact paths. It does *not* prove the rule
+**blocks** a non-owner; that still needs a push from someone who is neither owner nor admin.
+
+Generalises: **a bypassed rule announces itself.** If you have bypass rights, a push that "just
+worked" may still be reporting a live guard — read the remote's output, do not just check the SHA.
+And do not mistake a bypass notice for a rejection: the correct response here was to verify I was in
+my own lane, not to back the change out.
