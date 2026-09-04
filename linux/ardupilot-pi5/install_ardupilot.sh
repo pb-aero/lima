@@ -12,14 +12,14 @@
 # Knobs (env):
 #   AP_DIR    where to clone            default $HOME/ardupilot
 #   BOARD     waf --board target        default linux   (generic; see NOTES.md for HATs)
-#   VEHICLES  waf targets to build      default copter
+#   VEHICLES  waf targets to build      default plane
 #   BRANCH    git branch/tag to check out  default master
 #   JOBS      parallel compile jobs     default nproc
 set -euo pipefail
 
 AP_DIR="${AP_DIR:-$HOME/ardupilot}"
 BOARD="${BOARD:-linux}"
-VEHICLES="${VEHICLES:-copter}"
+VEHICLES="${VEHICLES:-plane}"
 BRANCH="${BRANCH:-master}"
 JOBS="${JOBS:-$(nproc)}"
 VENV="$HOME/venv-ardupilot"

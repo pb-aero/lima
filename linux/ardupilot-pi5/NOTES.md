@@ -90,11 +90,9 @@ therefore sets `SKIP_AP_GRAPHIC_ENV=1 SKIP_AP_COV_ENV=1 SKIP_AP_EXT_ENV=1 DO_AP_
 
 ## 4. Open questions — do not proceed past these blind
 
-1. **`[gap]` Is there an autopilot HAT on `scopenode`?** If a Navio2, PilotPi or Blue Robotics
-   Navigator is fitted, `--board=linux` is the wrong answer and you want `navio2` / `pilotpi` /
-   `navigator64`, which bring real IMU/baro/compass definitions. Set `BOARD=` accordingly.
-2. **`[gap]` Which vehicle(s).** Default is `copter`. `plane`, `rover`, `sub`, `antennatracker`
-   are each a separate build.
+1. ~~Is there an autopilot HAT?~~ **Closed 2026-09-04 — Peter: bare Pi 5, no HAT.**
+   Target is `--board=linux`, and `HAL_INS_NONE` above therefore applies: this build cannot arm.
+2. ~~Which vehicle?~~ **Closed 2026-09-04 — Peter: `plane` only.** Script default set to match.
 3. **`[gap]` Does this collide with the ADAU1860 work?** ArduPilot's Linux HAL probes I2C and SPI
    buses and, on boards that use them, drives GPIO18-21. `scopenode` currently has an ADAU1860
    overlay on **GPIO18-21** (`linux/adau1860-pi5/`). With `--board=linux` and `HAL_INS_NONE`
