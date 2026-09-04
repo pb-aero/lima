@@ -177,3 +177,111 @@ therefore sets `SKIP_AP_GRAPHIC_ENV=1 SKIP_AP_COV_ENV=1 SKIP_AP_EXT_ENV=1 DO_AP_
 - `libraries/AP_HAL_Linux/{GPIO_RPI.cpp,Util_RPI.cpp}`, `libraries/AP_HAL_Linux/hwdef/`,
   `Tools/ardupilotwaf/boards.py`, `Tools/environment_install/install-prereqs-ubuntu.sh`
   — all at master `ff37fde6f13c02fb5ae32abdd07ff4f4e132cb76`
+
+---
+
+## 6. The `pi5` board — running ArduPilot with the RP1 GPIO backend live (2026-09-04)
+
+Peter asked for ArduPilot *running on the Pi as RPI_5*, i.e. with the board actually detected and
+`GPIO_RPI_RP1` driving the RP1 pads — which `--board=linux` never does (§1b).
+
+**Why not just build `navio2`/`pilotpi`/`navigator64`.** Those are the existing targets that set
+`HAL_LINUX_GPIO_RPI_ENABLED 1`, but each declares HAT sensors and probes I2C and SPI on startup.
+`scopenode` has an ADAU1860 live on `i2c-1` at `0x67` and I2S1 on GPIO18-21. Running a HAT
+firmware on this bench is an unnecessary risk to unrelated hardware.
+
+**So: a minimal board that adds exactly one thing.** `libraries/AP_HAL_Linux/hwdef/pi5/hwdef.dat`:
+
+```
+include ../linux/hwdef.dat
+define HAL_LINUX_GPIO_RPI_ENABLED 1
+```
+
+waf registers Linux boards dynamically from that directory
+(`boards.py:669` — `add_dynamic_boards_from_hwdef_dir(LinuxBoard, 'libraries/AP_HAL_Linux/hwdef')`),
+so no build-system change is needed. Generated config confirms it `[measured]`:
+
+```
+build/pi5/hwdef.h:#define HAL_INS_DEFAULT HAL_INS_NONE
+build/pi5/hwdef.h:#define HAL_LINUX_GPIO_RPI_ENABLED 1
+```
+
+Sensors stay absent; only the GPIO backend changes. It still will not arm.
+
+**Preconditions checked before building** `[measured]`:
+
+- `GPIO_RPI_RP1::init()` opens `PATH_DEV_GPIOMEM = "/dev/gpiomem0"` and `mmap`s `IO_BANK0` — and
+  **writes nothing**. Pin state changes only via explicit `pinMode`/`write`, which nothing calls
+  when no RCOutput/RCInput backend is configured.
+- `/dev/gpiomem0` exists, mode `crw-rw---- root:gpio`; `node` is in the `gpio` group. **No root
+  required.**
+- Baseline, three consecutive samples of the columns that actually prove a claim — mux and pull,
+  not the level (see `RESULTS-2026-09-04.md`):
+
+  ```
+  18: a4/pn  19: a4/pn  20: a4/pn  21: a4/pn
+  ```
+
+**This build requires the `Util_RPI` fix.** Without it detection returns `UNKNOWN_BOARD` and
+`GPIO_RPI::init()` panics. That makes `pi5` the safe vehicle for the end-to-end control the PR
+was missing: build it twice, with and without the one-character fix, and observe the panic
+directly instead of deriving it from source.
+
+### 6a. Two things the `pi5` board needed beyond the hwdef `[measured]`
+
+The first build failed at link:
+
+```
+GPIO_RPI_BCM.cpp: undefined reference to `Linux::UtilRPI::detect_linux_board_type() const'
+```
+
+`HAL_LINUX_GPIO_RPI_ENABLED` alone is **not sufficient**. `Util_RPI.cpp` is wrapped in a
+`CONFIG_HAL_BOARD_SUBTYPE ==` list (11 subtypes, none of them generic), and
+`HAL_Linux_Class.cpp:53` uses the *same* list to decide whether `hal.util` is a `UtilRPI` at all.
+Enable the GPIO backend without being on that list and the code compiles out from under it.
+
+So the board also needs a subtype. `HAL_BOARD_SUBTYPE_LINUX_RPI` (1031) already exists and is
+tempting — but it is unused by any hwdef and `HAL_Linux_Class.cpp:236` makes it select
+`RCOutput_RPI`, a PWM driver that drives pins. On a bench with I2S live on GPIO18-21 that is the
+wrong tool. Added `HAL_BOARD_SUBTYPE_LINUX_PI5` (1032) instead, referenced in exactly two guards
+and nothing else.
+
+**Instrument note.** After the negative-control run I restored the fix with
+`git checkout libraries/AP_HAL_Linux/Util_RPI.cpp` — which reverted *both* edits in that file, the
+strncmp change **and** the PI5 guard line, silently putting the link error back. A whole-file
+checkout is not an undo of one edit. Use a targeted `sed` when a file carries two independent
+changes.
+
+## 7. RESULT — ArduPilot runs on `scopenode` and detects RPI_5 `[measured]`
+
+```
+$ timeout 8 stdbuf -o0 ./build/pi5/bin/arduplane
+RPI 5
+AP_Logger_File: buffer size=204800
+Config Error: Baro: unable to initialise driver
+rc=124   (still running when killed)
+```
+
+Matched controls, same binary, one character apart:
+
+| `strncmp(..., N)` | output | exit |
+|---|---|---|
+| `4` (upstream) | `"ranges" file not found` / `Unknown rpi_version, cannot locate peripheral base address` | **1 — aborts** |
+| `3` (fixed) | `RPI 5` | 124 — alive |
+
+Linker-level control on the two binaries: `RPI 5`, `Cannot detect board-type` and
+`Unknown rpi_version` appear in `build/pi5/bin/arduplane` and in **none** of
+`build/linux/bin/arduplane`.
+
+**ADAU1860 pins untouched.** Mux and pull identical before and after the run, with the RP1 GPIO
+backend live and `/dev/gpiomem0` mapped:
+
+```
+before: 18 a4/pn  19 a4/pn  20 a4/pn  21 a4/pn
+after : 18 a4/pn  19 a4/pn  20 a4/pn  21 a4/pn
+```
+
+**Buffering gotcha:** `RPI 5` is a plain `printf`. Redirected, stdout is fully buffered, so a run
+killed by `timeout` loses it and the detection looks like it never happened. Use `stdbuf -o0`.
+My first three runs showed no detection line for exactly this reason — the run was fine, the
+capture was not.

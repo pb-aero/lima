@@ -1,0 +1,94 @@
+From 5b0fd773d1abf3bbe2e6a4e5a65ad6050a35a772 Mon Sep 17 00:00:00 2001
+From: Peter Bruce <peter@aerosenseaviation.com>
+Date: Fri, 4 Sep 2026 17:52:20 +0200
+Subject: [PATCH] AP_HAL_Linux: add a generic pi5 board
+
+Adds a board for a bare Raspberry Pi 5 with no autopilot HAT: the generic
+linux hwdef plus HAL_LINUX_GPIO_RPI_ENABLED, so the RP1 GPIO backend is
+active and the board is detected as RPI_5.
+
+Every existing target that enables the RPi GPIO backend (navio2, pilotpi,
+navigator64, ...) also declares HAT sensors and probes I2C/SPI at startup,
+so there was no way to exercise GPIO_RPI_RP1 on a bare Pi 5.
+
+A new subtype HAL_BOARD_SUBTYPE_LINUX_PI5 gates only the two places that
+select UtilRPI -- the Util_RPI.cpp compile guard and the utilInstance
+choice in HAL_Linux_Class.cpp. It deliberately does not reuse
+HAL_BOARD_SUBTYPE_LINUX_RPI, which additionally selects RCOutput_RPI and
+would drive pins.
+
+No sensors are declared, so the board keeps HAL_INS_NONE and will not arm.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+---
+ libraries/AP_HAL/AP_HAL_Boards.h           |  1 +
+ libraries/AP_HAL_Linux/HAL_Linux_Class.cpp |  3 ++-
+ libraries/AP_HAL_Linux/Util_RPI.cpp        |  3 ++-
+ libraries/AP_HAL_Linux/hwdef/pi5/hwdef.dat | 15 +++++++++++++++
+ 4 files changed, 20 insertions(+), 2 deletions(-)
+ create mode 100644 libraries/AP_HAL_Linux/hwdef/pi5/hwdef.dat
+
+diff --git a/libraries/AP_HAL/AP_HAL_Boards.h b/libraries/AP_HAL/AP_HAL_Boards.h
+index 0270859d79..2083272d03 100644
+--- a/libraries/AP_HAL/AP_HAL_Boards.h
++++ b/libraries/AP_HAL/AP_HAL_Boards.h
+@@ -52,6 +52,7 @@
+ #define HAL_BOARD_SUBTYPE_LINUX_T3_GEM_O1  1029
+ #define HAL_BOARD_SUBTYPE_LINUX_RSAXVC_V1  1030
+ #define HAL_BOARD_SUBTYPE_LINUX_RPI        1031
++#define HAL_BOARD_SUBTYPE_LINUX_PI5        1032
+ 
+ /* HAL CHIBIOS sub-types, starting at 5000
+ 
+diff --git a/libraries/AP_HAL_Linux/HAL_Linux_Class.cpp b/libraries/AP_HAL_Linux/HAL_Linux_Class.cpp
+index 0a20a51134..a26f44ebc5 100644
+--- a/libraries/AP_HAL_Linux/HAL_Linux_Class.cpp
++++ b/libraries/AP_HAL_Linux/HAL_Linux_Class.cpp
+@@ -60,7 +60,8 @@ using namespace Linux;
+     CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_NAVIGATOR ||  \
+     CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_OBAL_V1 || \
+     CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_CANZERO || \
+-    CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_PILOTPI
++    CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_PILOTPI || \
++    CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_PI5
+ static UtilRPI utilInstance;
+ #else
+ static Util utilInstance;
+diff --git a/libraries/AP_HAL_Linux/Util_RPI.cpp b/libraries/AP_HAL_Linux/Util_RPI.cpp
+index 541a5aba37..d625867b87 100644
+--- a/libraries/AP_HAL_Linux/Util_RPI.cpp
++++ b/libraries/AP_HAL_Linux/Util_RPI.cpp
+@@ -10,7 +10,8 @@
+     CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_NAVIGATOR || \
+     CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_OBAL_V1 || \
+     CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_CANZERO || \
+-    CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_PILOTPI
++    CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_PILOTPI || \
++    CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_PI5
+ 
+ #include <dirent.h>
+ #include <errno.h>
+diff --git a/libraries/AP_HAL_Linux/hwdef/pi5/hwdef.dat b/libraries/AP_HAL_Linux/hwdef/pi5/hwdef.dat
+new file mode 100644
+index 0000000000..10ab795c61
+--- /dev/null
++++ b/libraries/AP_HAL_Linux/hwdef/pi5/hwdef.dat
+@@ -0,0 +1,15 @@
++# Generic Raspberry Pi 5 (RP1), no autopilot HAT.
++#
++# Identical to the generic "linux" board -- native toolchain, no IMU/baro/compass
++# declared -- but with the RPi GPIO backend enabled so the board is detected as
++# RPI_5 and GPIO_RPI_RP1 drives the RP1 pads through /dev/gpiomem0.
++#
++# Requires the Util_RPI soc-node fix: on kernels that name the node
++# soc@<addr> rather than plain "soc", detection returns UNKNOWN_BOARD and
++# GPIO_RPI::init() panics.
++
++include ../linux/hwdef.dat
++
++define HAL_LINUX_GPIO_RPI_ENABLED 1
++
++define CONFIG_HAL_BOARD_SUBTYPE HAL_BOARD_SUBTYPE_LINUX_PI5
+-- 
+2.47.3
+
