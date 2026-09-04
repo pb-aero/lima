@@ -78,10 +78,32 @@ $ od -A d -t x1 -N 16 /proc/device-tree/soc@107c000000/ranges
 `base = buf[4..7] = 0x00000010` -> the `case 0x10:` arm -> `RPI_5`. **If the code reaches the
 file it gets the right answer.** The bug is purely in finding the file.
 
-`[gap]` This is a prediction from source reading, not yet a measurement. The `verify` stage
-settles it: if the binary prints `RPI 5` I am wrong and the note gets retracted; if it prints
-`"ranges" file not found` the prediction holds and any GPIO-dependent feature on this board is
-unsafe until the strncmp is fixed (a one-character change, `4` -> `3`).
+### 1b. ...but a `--board=linux` build never reaches that code, so it does not bite us
+
+`[measured]` in the cloned tree on `scopenode`:
+
+- `libraries/AP_HAL/board/linux.h:136` — `#define HAL_LINUX_GPIO_RPI_ENABLED 0` is the default.
+- `hwdef/linux/hwdef.dat` does not override it (the boards that do are `bhat canzero dark
+  erlebrain2 navigator obal pxfmini`).
+- `GPIO_RPI.cpp:3` is wrapped in `#if HAL_LINUX_GPIO_RPI_ENABLED`, so **the file compiles to
+  nothing** for our target.
+- With every `HAL_LINUX_GPIO_*_ENABLED` at 0, `HAL_Linux_Class.cpp:145` falls through to
+  `static Empty::GPIO gpioDriver;`.
+
+`[derived]` Therefore, for `--board=linux`: `Util_RPI::detect_linux_board_type()` is never
+called, **the binary will not print `RPI 5`, and that absence is correct rather than a fault.**
+The original `verify` stage grepped for `RPI 5` and would have raised a false alarm on a healthy
+build; it has been rewritten to read `HAL_LINUX_GPIO_RPI_ENABLED` out of the generated
+`ap_config.h` and judge accordingly.
+
+**Where the bug does bite:** any target that sets `HAL_LINUX_GPIO_RPI_ENABLED 1` and runs on a
+Pi 5 with a kernel that names the node `soc@107c000000`. There, detection returns
+`UNKNOWN_BOARD` and `GPIO_RPI.cpp:35` executes
+`AP_HAL::panic("Unknown rpi_version, cannot locate peripheral base address")` — the process dies
+at startup. That is the failure to expect if this Pi ever gets a HAT and moves to `navio2`,
+`pilotpi` or `navigator64`. The fix is one character: `strncmp(entry->d_name, "soc", 4)` -> `3`.
+
+`[gap]` The panic path is derived from source, not executed — our build cannot reach it.
 
 ## 2. The board target is `--board=linux`
 
@@ -132,11 +154,18 @@ therefore sets `SKIP_AP_GRAPHIC_ENV=1 SKIP_AP_COV_ENV=1 SKIP_AP_EXT_ENV=1 DO_AP_
 1. ~~Is there an autopilot HAT?~~ **Closed 2026-09-04 — Peter: bare Pi 5, no HAT.**
    Target is `--board=linux`, and `HAL_INS_NONE` above therefore applies: this build cannot arm.
 2. ~~Which vehicle?~~ **Closed 2026-09-04 — Peter: `plane` only.** Script default set to match.
-3. **`[gap]` Does this collide with the ADAU1860 work?** ArduPilot's Linux HAL probes I2C and SPI
-   buses and, on boards that use them, drives GPIO18-21. `scopenode` currently has an ADAU1860
-   overlay on **GPIO18-21** (`linux/adau1860-pi5/`). With `--board=linux` and `HAL_INS_NONE`
-   nothing should be claimed, but this is asserted, not tested. Check `pinctrl` before and after
-   the first run.
+3. **Does this collide with the ADAU1860 work?** Largely answered by section 1b: with
+   `Empty::GPIO` there is no `/dev/mem` mapping and no pin claim, so GPIO18-21 should be
+   untouched. Baseline captured before anything was built `[measured]`:
+
+   ```
+   18: a4 pn | hi // GPIO18 = I2S1_SCLK      card 2: i2s1x4  (dummy-duplex, 4-lane)
+   19: a4 pn | lo // GPIO19 = I2S1_WS
+   20: a4 pn | lo // GPIO20 = I2S1_SDI0
+   21: a4 pn | lo // GPIO21 = I2S1_SDO0
+   ```
+
+   `verify` now prints `pinctrl get 18-21` either side of the first run. `[gap]` until that runs.
 4. **`[gap]` Nothing in this document has been run on the hardware.** No SSH access at time of
    writing (see `RESULTS` below when it exists). Every claim above is about upstream source, not
    about `scopenode`.

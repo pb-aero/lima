@@ -109,30 +109,44 @@ verify() {
   say "artefacts in build/$BOARD/bin"
   ls -la "build/$BOARD/bin/" || fail "no build/$BOARD/bin -- the build did not produce binaries"
 
-  local ok=0
+  say "which GPIO backend was compiled in"
+  # For BOARD=linux every HAL_LINUX_GPIO_*_ENABLED defaults to 0 (AP_HAL/board/linux.h),
+  # so HAL_Linux_Class.cpp falls through to Empty::GPIO. That means GPIO_RPI is NOT compiled,
+  # Util_RPI::detect_linux_board_type() is never called, and the binary will NOT print "RPI 5".
+  # Absence of that string is therefore EXPECTED here, not a fault. See NOTES.md section 1a.
+  local rpi_gpio="no"
+  grep -q "HAL_LINUX_GPIO_RPI_ENABLED 1" "build/$BOARD/ap_config.h" 2>/dev/null && rpi_gpio="yes"
+  echo "GPIO_RPI compiled in : $rpi_gpio"
+  if [ "$rpi_gpio" = "yes" ]; then
+    echo "  -> this build DOES call the Pi-5 detector. It must print 'RPI 5' or it will"
+    echo "     AP_HAL::panic(\"Unknown rpi_version\"). Watch the startup output below."
+  else
+    echo "  -> Empty::GPIO. No /dev/mem mapping, no pin claims, no Pi-5 detector call."
+  fi
+
+  say "GPIO18-21 BEFORE running the binary (ADAU1860 I2S1 lives here)"
+  pinctrl get 18-21 2>/dev/null || sudo pinctrl get 18-21 2>/dev/null || echo "(pinctrl unavailable)"
+
   for b in "build/$BOARD/bin/"*; do
     [ -x "$b" ] || continue
     say "$b"
     file "$b"
-    file "$b" | grep -q "aarch64" || echo "WARNING: not an aarch64 binary -- wrong toolchain for this Pi"
-    echo "--- it starts and reports the board it thinks it is on ---"
-    # HAL_INS_NONE means it will not arm; we only want the startup banner.
-    timeout 8 "$b" -h >/tmp/ap_help.$$ 2>&1 || true
-    timeout 8 "$b"    >/tmp/ap_run.$$  2>&1 || true
-    head -20 /tmp/ap_help.$$ /tmp/ap_run.$$ 2>/dev/null || true
-    if grep -qi "RPI 5" /tmp/ap_run.$$ /tmp/ap_help.$$ 2>/dev/null; then
-      echo ">>> CONFIRMED: ArduPilot detected LINUX_BOARD_TYPE::RPI_5 (RP1 GPIO backend)"
-      ok=1
-    fi
-    rm -f /tmp/ap_help.$$ /tmp/ap_run.$$
+    file "$b" | grep -q "aarch64" \
+      && echo "OK -- native aarch64" \
+      || echo "WARNING: not an aarch64 binary -- wrong toolchain for this Pi"
+    echo "--- startup output (8 s, then killed; HAL_INS_NONE means it cannot arm) ---"
+    timeout 8 "$b" 2>&1 | head -25 || true
   done
+
+  say "GPIO18-21 AFTER running the binary"
+  pinctrl get 18-21 2>/dev/null || sudo pinctrl get 18-21 2>/dev/null || echo "(pinctrl unavailable)"
+  echo "Any change from the BEFORE block above means ArduPilot touched the ADAU1860 pins."
+
   say "summary"
   echo "board target : $BOARD"
   echo "vehicles     : $VEHICLES"
   echo "source HEAD  : $(git -C "$AP_DIR" rev-parse HEAD)"
   echo "binaries     : $AP_DIR/build/$BOARD/bin/"
-  [ "$ok" -eq 1 ] && echo "Pi 5 detection: PROVEN at runtime" \
-                  || echo "Pi 5 detection: NOT OBSERVED -- see NOTES.md §4 before trusting this build on hardware"
 }
 
 case "${1:-}" in
