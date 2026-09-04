@@ -1,0 +1,20 @@
+/dts-v1/;
+/plugin/;
+/ {
+	compatible = "brcm,bcm2835";
+	fragment@0 { target = <&i2s_clk_consumer>; __overlay__ { status = "okay"; }; };
+	fragment@1 { target-path = "/"; __overlay__ {
+		dup: dup { compatible = "lima,dummy-duplex"; #sound-dai-cells = <0>; status = "okay"; }; }; };
+	fragment@2 { target = <&sound>; __overlay__ {
+		compatible = "simple-audio-card";
+		status = "okay";
+		simple-audio-card,name = "adauduplex";
+		simple-audio-card,dai-link {
+			format = "i2s";
+			bitclock-master = <&c0>;
+			frame-master = <&c0>;
+			cpu { sound-dai = <&i2s_clk_consumer>; dai-tdm-slot-num = <2>; dai-tdm-slot-width = <32>; };
+			c0: codec { sound-dai = <&dup>; };
+		};
+	}; };
+};
