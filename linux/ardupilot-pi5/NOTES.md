@@ -44,6 +44,45 @@ That gives a **free positive control**: the binary prints `RPI 5` on startup. If
 `Cannot detect board-type`, the build is running blind and nothing GPIO-related can be trusted.
 `install_ardupilot.sh verify` greps for exactly this.
 
+### 1a. And on `scopenode` I predict that detection FAILS — an off-by-one in the fallback
+
+`[measured]` on the hardware, before building anything:
+
+```
+$ ls -1 /proc/device-tree/ | grep -i '^soc\|^axi'
+axi
+soc@107c000000                     <- no plain "soc" node, and no "soc/ranges"
+```
+
+So the primary `fopen("/proc/device-tree/soc/ranges")` returns NULL and the fallback scan runs.
+The fallback is `Util_RPI.cpp:62`:
+
+```c
+if (strncmp(entry->d_name, "soc", 4) == 0) {
+```
+
+`[derived]` **`n = 4` compares the NUL terminator too, so this is an exact-match test for the
+string `"soc"`, not a prefix test.** `"soc@107c000000"` differs at byte 3 (`'@'` vs `'\0'`), so it
+never matches, `ranges_path` stays empty, and the function prints `"ranges" file not found` and
+returns `UNKNOWN_BOARD`. The author's own comment says the method was *"successfully tested at RPi
+5"*, so their Pi 5 evidently exposed a plain `soc` node — kernel `6.12.47+rpt-rpi-2712` on this
+board does not.
+
+The address arithmetic itself is fine. Reading the file by hand:
+
+```
+$ od -A d -t x1 -N 16 /proc/device-tree/soc@107c000000/ranges
+0000000 00 00 00 00 00 00 00 10 00 00 00 00 80 00 00 00
+```
+
+`base = buf[4..7] = 0x00000010` -> the `case 0x10:` arm -> `RPI_5`. **If the code reaches the
+file it gets the right answer.** The bug is purely in finding the file.
+
+`[gap]` This is a prediction from source reading, not yet a measurement. The `verify` stage
+settles it: if the binary prints `RPI 5` I am wrong and the note gets retracted; if it prints
+`"ranges" file not found` the prediction holds and any GPIO-dependent feature on this board is
+unsafe until the strncmp is fixed (a one-character change, `4` -> `3`).
+
 ## 2. The board target is `--board=linux`
 
 ArduPilot's Linux boards are hwdef directories under `libraries/AP_HAL_Linux/hwdef/`. The full
