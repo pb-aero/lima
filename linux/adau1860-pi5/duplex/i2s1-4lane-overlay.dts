@@ -1,0 +1,46 @@
+// RP1 i2s1 across ALL FOUR data lanes: SDI0-3 / SDO0-3 on GPIO18-27.
+// 4 stereo lanes = 8 channels with an ordinary 50%-duty frame sync, so the
+// TDM frame-sync limitation does not apply. Bit clock stays at the stereo rate
+// (2 x 32 x fs) because each lane carries its own pair.
+/dts-v1/;
+/plugin/;
+/ {
+	compatible = "brcm,bcm2835";
+
+	fragment@0 {
+		target = <&rp1_gpio>;
+		__overlay__ {
+			i2s1_all: i2s1_all {
+				function = "i2s1";
+				pins = "gpio18","gpio19","gpio20","gpio21","gpio22",
+				       "gpio23","gpio24","gpio25","gpio26","gpio27";
+				bias-disable;
+			};
+		};
+	};
+
+	fragment@1 {
+		target = <&i2s_clk_consumer>;
+		__overlay__ {
+			pinctrl-names = "default";
+			pinctrl-0 = <&i2s1_all>;
+			status = "okay";
+		};
+	};
+
+	fragment@2 { target-path = "/"; __overlay__ {
+		dup4: dup4 { compatible = "lima,dummy-duplex"; #sound-dai-cells = <0>; status = "okay"; }; }; };
+
+	fragment@3 { target = <&sound>; __overlay__ {
+		compatible = "simple-audio-card";
+		status = "okay";
+		simple-audio-card,name = "i2s1x4";
+		simple-audio-card,dai-link {
+			format = "i2s";
+			bitclock-master = <&c4>;
+			frame-master = <&c4>;
+			cpu { sound-dai = <&i2s_clk_consumer>; };
+			c4: codec { sound-dai = <&dup4>; };
+		};
+	}; };
+};
