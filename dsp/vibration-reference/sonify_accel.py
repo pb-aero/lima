@@ -74,7 +74,7 @@ def drain(bus, lsb):
     return np.frombuffer(bytes(raw[:k * 6]), dtype=">i2").reshape(-1, 3).astype(np.float64) / lsb
 
 
-def gate(y, fs, gate_db, win_s, pad_s):
+def gate(y, fs, gate_db, win_s, pad_s, peak_db=None):
     """Keep only the stretches that rise gate_db above the noise floor.
 
     The floor is the MEDIAN window RMS, not the mean: the events are exactly what
@@ -89,8 +89,15 @@ def gate(y, fs, gate_db, win_s, pad_s):
     blocks = y[:n].reshape(-1, w)
     rms = np.sqrt((blocks ** 2).mean(axis=1))
     floor = float(np.median(rms)) or 1e-9
-    thresh = floor * 10 ** (gate_db / 20.0)
     peak = float(rms.max())
+    if peak_db is not None:
+        # Relative to the LOUDEST window, not the floor. Guarantees the biggest
+        # events survive whatever the bench happens to be doing -- the floor-
+        # relative gate cannot promise that, because it does not know in advance
+        # how loud the loudest thing will be.
+        thresh = peak * 10 ** (-peak_db / 20.0)
+    else:
+        thresh = floor * 10 ** (gate_db / 20.0)
     hot = rms > thresh
     pad = max(1, int(round(pad_s / win_s)))
     if hot.any():                                  # widen each event by pad windows
@@ -135,6 +142,16 @@ def main():
                    help="pitch: keep only what rises this many dB above the measured noise floor. "
                         "The floor is the MEDIAN short-window RMS, which is robust to the events "
                         "themselves -- a mean would be dragged up by them and raise the bar.")
+    p.add_argument("--gate-peak-db", type=float, default=None,
+                   help="pitch: keep every window within this many dB of the LOUDEST one. Unlike "
+                        "--gate-db this always yields something, because the bar is set by what "
+                        "actually happened rather than by a figure chosen in advance.")
+    p.add_argument("--loop-gap", type=float, default=0.0,
+                   help="pitch: seconds of silence between loop repeats. A gated event is SHORT -- "
+                        "0.33 s of vibration is 7 ms at x48 -- and looping it back to back turns "
+                        "the loop period itself into an audible pitch (7 ms = 145 Hz), which is an "
+                        "artefact of the looping, not the vibration. A gap separates the repeats "
+                        "so you hear discrete events instead of a buzz.")
     p.add_argument("--gate-window", type=float, default=0.025, help="pitch: gate window in seconds")
     p.add_argument("--gate-pad", type=float, default=0.100,
                    help="pitch: seconds kept either side of each event, so attacks are not clipped")
@@ -181,8 +198,9 @@ def main():
             y = np.zeros_like(x); prev_x = x[0]; prev_y = 0.0
             for i, xi in enumerate(x):                       # one-pole HPF
                 prev_y = a * (prev_y + xi - prev_x); prev_x = xi; y[i] = prev_y
-            if args.gate_db is not None:
-                y, kept = gate(y, fs, args.gate_db, args.gate_window, args.gate_pad)
+            if args.gate_db is not None or args.gate_peak_db is not None:
+                y, kept = gate(y, fs, args.gate_db or 0, args.gate_window, args.gate_pad,
+                               args.gate_peak_db)
                 if y.size == 0:
                     sys.exit(f"NOTHING ABOVE THE GATE. Floor {kept['floor']*1000:.2f} mg, "
                              f"threshold {kept['thresh']*1000:.2f} mg (+{args.gate_db:.0f} dB), "
@@ -190,7 +208,9 @@ def main():
                              f"(+{kept['peak_db']:.1f} dB). Nothing was played -- that is a "
                              f"result, not a failure. Tap the bench during the capture, run the "
                              f"machine, or lower --gate-db.")
-                print(f"# gate +{args.gate_db:.0f} dB: floor {kept['floor']*1000:.2f} mg, "
+                label = (f"within {args.gate_peak_db:.0f} dB of peak"
+                         if args.gate_peak_db is not None else f"+{args.gate_db:.0f} dB over floor")
+                print(f"# gate {label}: floor {kept['floor']*1000:.2f} mg, "
                       f"threshold {kept['thresh']*1000:.2f} mg, loudest {kept['peak']*1000:.2f} mg "
                       f"(+{kept['peak_db']:.1f} dB) -> kept {kept['kept_s']:.2f} s of "
                       f"{kept['total_s']:.1f} s ({100*kept['kept_s']/kept['total_s']:.1f}%) "
@@ -203,11 +223,20 @@ def main():
                 print("# WARNING: the bench is essentially still. Expect near-silence "
                       "-- tap it, or run a machine.", file=sys.stderr)
             peak = [max(float(np.abs(y).max()), 1e-6)]
+            gap = np.zeros(int(args.loop_gap * OUT_RATE))
+            if args.loop_gap and y.size:
+                print(f"# each repeat is {y.size/OUT_RATE*1000:.1f} ms of audio; "
+                      f"{args.loop_gap*1000:.0f} ms of silence between repeats, so the loop "
+                      f"period is not heard as a pitch", file=sys.stderr)
             need = int(args.play * OUT_RATE)
             while need > 0:
                 take = y[:need]
                 emit(take, peak, args.dbfs)
                 need -= take.size
+                if need > 0 and gap.size:
+                    g = gap[:need]
+                    emit(g, peak, args.dbfs)
+                    need -= g.size
         else:
             print(f"# live: DSB about {args.carrier:.0f} Hz. Tap the bench.", file=sys.stderr)
             phase, prev_x, prev_y, carry = 0.0, None, 0.0, None
