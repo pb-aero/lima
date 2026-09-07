@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>John's bit map — A2B TDM slot allocation (Rev G + rulings)</title>
+<style>
+  :root{
+    --bg:#0e1116; --panel:#161b22; --panel2:#1c232c; --line:#2b333d;
+    --ink:#e6edf3; --dim:#9aa7b4; --faint:#6e7b8a;
+    --down:#4f9ee8; --up:#59c78a; --amber:#e8b04f; --red:#e8685f; --violet:#a684e8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+  .wrap{max-width:1060px;margin:0 auto;padding:40px 26px 80px}
+  h1{font-size:27px;margin:0 0 6px;letter-spacing:-.3px}
+  .sub{color:var(--dim);margin:0 0 4px}
+  .prov{color:var(--faint);font-size:12.5px;margin:0 0 34px}
+  h2{font-size:18px;margin:44px 0 12px;padding-bottom:7px;border-bottom:1px solid var(--line)}
+  h3{font-size:14px;margin:26px 0 8px;color:var(--dim);text-transform:uppercase;letter-spacing:.7px}
+  p{margin:0 0 14px}
+  code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em}
+  code{background:#20272f;padding:1px 5px;border-radius:4px;color:#cfe3f5}
+  .lede{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--down);
+        border-radius:8px;padding:16px 18px;margin:0 0 8px}
+  table{width:100%;border-collapse:collapse;margin:10px 0 18px;font-size:14px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--dim);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.6px}
+  .slots{display:flex;gap:5px;flex-wrap:wrap;margin:10px 0 6px}
+  .slot{flex:1 1 150px;min-width:140px;border-radius:7px;padding:10px 11px;background:var(--panel2);
+        border:1px solid var(--line);border-top:3px solid var(--down)}
+  .slot.u{border-top-color:var(--up)}
+  .slot.spare{opacity:.55;border-top-color:var(--faint)}
+  .slot .n{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--faint)}
+  .slot .t{font-weight:600;margin:2px 0 2px}
+  .slot .d{font-size:12px;color:var(--dim);line-height:1.45}
+  .bar{display:flex;height:26px;border-radius:5px;overflow:hidden;border:1px solid var(--line);margin:6px 0 4px}
+  .bar .used{background:linear-gradient(90deg,#2f6fae,#3f8f6f);flex:240}
+  .bar .free{background:#1a1f26;flex:784}
+  .barlab{font-size:12px;color:var(--faint);display:flex;justify-content:space-between}
+  .note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--amber);
+        border-radius:8px;padding:13px 16px;margin:14px 0;font-size:14px}
+  .note.open{border-left-color:var(--red)}
+  .note.ok{border-left-color:var(--up)}
+  .tag{display:inline-block;font-size:10.5px;letter-spacing:.6px;text-transform:uppercase;
+       padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--dim);
+       background:#1a2029;margin-right:6px;vertical-align:2px}
+  .tag.red{color:#f0a29b;border-color:#5a2f2c;background:#2a1a19}
+  .tag.green{color:#9fe0bd;border-color:#2b5240;background:#16241d}
+  .tag.blue{color:#a9d3f5;border-color:#2c4763;background:#161f29}
+  blockquote{margin:12px 0;padding:2px 0 2px 14px;border-left:2px solid var(--violet);
+             color:#d7c9f2;font-style:italic}
+  ul{margin:0 0 14px;padding-left:20px}
+  li{margin-bottom:7px}
+  .src{font-size:13px;color:var(--faint)}
+  .src code{background:#1a1f26}
+  footer{margin-top:50px;padding-top:16px;border-top:1px solid var(--line);
+         color:var(--faint);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>John's bit map</h1>
+<p class="sub">The A2B TDM slot allocation and bit-depth map for the H1 headset audio chain.</p>
+<p class="prov">Assembled by LIMA, 4 Sep 2026, from <code>aerosense-ops</code> and
+<code>Aerosense-Dev-Team-Sync</code> — read-only. The source document itself lives on Drive, not in either repo.</p>
+
+<div class="lede">
+<p style="margin:0"><strong>What it is.</strong> <em>“H1 headset — audio schematic and bit-depth map”</em>,
+<strong>Rev G, 19 Aug 2026</strong>, written by John and posted to <code>#dev</code> at 11:01 with
+<code>.md</code>, <code>.docx</code> and <code>.pdf</code> twins. It covers CM5 → audio board
+(ADAU1761 + AD2428W main node) → A2B → Cup A → Cup B, each cup carrying an AD2428W subnode and an
+ADAU1860-1. <strong>It is the first end-to-end slot allocation on file.</strong> Rev M (31 Aug) revised
+parts of it, and John ruled the remaining open width question on 31 Aug.</p>
+</div>
+<p class="src">Drive ID <code>1HCO046xqRkTIUGJtIin1X2GNnoPYzJoS</code> ·
+<code>H1_Audio_Bit_Depth_Report.docx</code> · ledger <code>[L-2026-W34-022]</code>.
+<strong>The file is not in ops or sync</strong> — if you want the document rather than this distillation,
+it has to come off the Drive.</p>
+
+<h2>The slot map</h2>
+
+<h3>Downstream · 4 × 24-bit</h3>
+<div class="slots">
+  <div class="slot"><div class="n">SLOT 0</div><div class="t">Program L</div><div class="d">Cup A</div></div>
+  <div class="slot"><div class="n">SLOT 1</div><div class="t">Program R</div><div class="d">Cup B</div></div>
+  <div class="slot"><div class="n">SLOT 2</div><div class="t">Aux / sidetone A</div><div class="d">Byte-packed DVNC™ parameter frames ride here at ~10% occupancy</div></div>
+  <div class="slot"><div class="n">SLOT 3</div><div class="t">Aux / sidetone B</div><div class="d">Same — see the conflict below</div></div>
+</div>
+
+<h3>Upstream · 6 × 24-bit</h3>
+<div class="slots">
+  <div class="slot u"><div class="n">SLOT 0</div><div class="t">Cup A — FF</div><div class="d">Feed-forward mic</div></div>
+  <div class="slot u"><div class="n">SLOT 1</div><div class="t">Cup A — FB</div><div class="d">Feedback / error mic</div></div>
+  <div class="slot u"><div class="n">SLOT 2</div><div class="t">Cup A — voice</div><div class="d">Boom mic uplink</div></div>
+  <div class="slot u"><div class="n">SLOT 3</div><div class="t">Cup B — FF</div><div class="d">Feed-forward mic</div></div>
+  <div class="slot u"><div class="n">SLOT 4</div><div class="t">Cup B — FB</div><div class="d">Feedback / error mic</div></div>
+  <div class="slot u spare"><div class="n">SLOT 5</div><div class="t">Cup B — spare</div><div class="d">Unallocated</div></div>
+</div>
+
+<h3>Superframe occupancy</h3>
+<div class="bar"><div class="used"></div><div class="free"></div></div>
+<div class="barlab"><span>240 bits used — ten 24-bit slots</span><span>1024-bit superframe</span></div>
+<p style="margin-top:8px">John: <em>“comfortably under a quarter of the frame.”</em></p>
+
+<h2>Widths, and why 24 and not 32</h2>
+
+<p>Rev G specifies A2B data slots at <strong>24 bits</strong>, not the 32-bit default, on an ENOB argument:
+ADAU1761 ENOB ≈ 16–16.5 bits, ADAU1860 ≈ 17–19, against 24-bit transport's 144 dB of range.</p>
+
+<blockquote>“The transport is never the bottleneck; the converters are.”</blockquote>
+
+<p>A 32-bit slot would carry <em>“8 LSBs of pure converter noise while consuming 33% more bus bandwidth
+per channel.”</em></p>
+
+<div class="note ok">
+<span class="tag green">Ruled 31 Aug</span><strong>A2B slot size is <code>DNSIZE=24</code>,
+<code>UPSIZE=24</code>.</strong> Rev M recommended 32; John ruled 24 <code>[L-2026-W36-001]</code>.
+The decisive reason is codec-independence: the ADAU1797A documents a 24-bit serial-port input limit
+(Rev 0 p.90), the ADAU1860-1 documents no serial-port bit limit at all. At <code>DNSIZE=24</code> the
+AD2428W truncates in the main node and zero-fills, so <em>both</em> candidate cup codecs receive 24
+significant bits followed by eight zeros — harmless on the 1797A, and never invoking undocumented
+behaviour on the 1860-1. <code>S32_LE</code> with no format conversion and no dither is unchanged.
+This supersedes the earlier <em>“widen the A2B slots to 32”</em> direction in
+<code>[L-2026-W35-016]</code>.
+</div>
+
+<table>
+  <tr><th>Link</th><th>Framing</th></tr>
+  <tr><td>CM5 ↔ A2B main node</td>
+      <td><strong>TDM8 at 48 kHz</strong>, <code>S24_LE</code> in 32-bit slots, MSB-justified,
+          CM5 PCM in <strong>slave</strong> mode</td></tr>
+  <tr><td>A2B bus</td>
+      <td><code>SLOTFMT</code> 0x10 — <code>DNSIZE[2:0]</code> = 24, <code>UPSIZE[6:4]</code> = 24
+          (the two are independent). Widths of 20–32 bits require
+          <code>A2B_I2SGCFG.TDMSS</code> set, so the TDM <em>channel</em> is 32-bit while the
+          <em>slot</em> is 24 — the <em>“24-in-32”</em> shorthand was recording exactly this</td></tr>
+  <tr><td>Cup serial ports</td>
+      <td>Rev M §4: <strong>TDM8</strong> — the Rev G TDM8 figure is cup-side, and it survives</td></tr>
+  <tr><td>Clock</td>
+      <td><strong>ADAU1761 is system clock master</strong> off a local <strong>12.288 MHz</strong>
+          oscillator with the <strong>PLL active</strong> <code>[L-2026-W36-002]</code>; the AD2428W
+          main-node PLL locks to SYNC and subnodes recover from the bus. One clock domain, no ASRC —
+          and the domain survives a CM5 hang</td></tr>
+</table>
+
+<h2>Precision discipline</h2>
+<ul>
+  <li><strong>≥ 24 bits wherever a signal moves</strong> — that is the converter depth and it is not negotiable.</li>
+  <li><strong>32 bits wherever a DSP touches it.</strong> Any 24-bit intermediate inside a DSP graph is
+      <em>“a defect.”</em></li>
+  <li><strong>Exactly two sanctioned dither points in the whole system</strong> — the CM5 TDM out, and the
+      ADAU1860 DAC.</li>
+  <li><strong>Upstream has none.</strong> The mic uplink is routed from the ADC output straight to the
+      serial port, DSP-bypassed, so it never enters a 32-bit domain.</li>
+</ul>
+<p>John's stated direction on the CM5 side, when asked to choose:
+<em>“I don't want to rely on the CM5 and dithering, would rather it stays as S32_LE.”</em></p>
+
+<h2>What the same document also fixes</h2>
+<p>Two things ride along with the bit map and are worth knowing, because they are safety statements:</p>
+<ul>
+  <li><strong>Fail-passive analog architecture.</strong> Each cup's changeover relay routes an analog pair
+      straight to the driver when de-energised. The coil is held by <strong>two conditions in series</strong>
+      — A2B bus power present in the cup, and a CM5 heartbeat — so bus-power loss, a DSP hang or a dead CM5
+      all drop the headset to wired analog with <strong>no software in the loop</strong>. A failsafe source
+      relay carries raw buffered radio RX through an always-powered buffer:
+      <em>“the pilot hears the radio in both ears… even with the CM5 completely down.”</em>
+      The failsafe leg carries program audio only — no ANC.</li>
+  <li><strong>The AD2428W has no SPI interface at all</strong> — I²C control plus I²S/TDM audio. SPI would
+      require an AD243x part and a board respin.</li>
+</ul>
+
+<h2>Status — read this before you use any of it</h2>
+
+<div class="note">
+<span class="tag">Rev G self-declaration</span><strong>It is a reasoned proposal, not a ratified
+decision.</strong> The document says so: <em>“No prior hardware schematic exists in the project files…
+built from the AD2428W, ADAU1761 and ADAU1860 datasheet characteristics and the CM5 pinout”</em>, and
+<em>“Verify pin names and I2C addresses against the exact datasheet revisions and the carrier board GPIO
+allocation before layout.”</em> Nothing in it is bench-measured; V3.4 remains <code>not_started</code>.
+</div>
+
+<div class="note open">
+<span class="tag red">Open</span><strong><code>L-2026-W34-008</code> — the bit-map dispute is still
+open, and it is open on you.</strong> The settling condition was <em>“John confirms the converter data
+handling and the two agree a bit map.”</em> John has done the first, twice over (Rev G, then the
+<code>DNSIZE=24</code> ruling). <strong>Peter's agreement is not on record.</strong> Your 18 Aug slot
+post assumed 16-bit throughout, and it is also still logged as unsourced — John's own open list carries
+<em>“Peter's 18 Aug post — still unsourced, still load-bearing.”</em> Until that closes it holds
+<code>[TODO: freeze the parameter-frame bit layout + timestamp epoch]</code> in the Sheet 3 ICD, and it
+gates <strong>V2.E4</strong> and <strong>V2.7</strong> together. Ops calls it
+<em>“the one worth overriding”</em> in the parking lot.
+</div>
+
+<div class="note">
+<span class="tag blue">Conflict, partially closed</span><strong>The DVNC™ PCM twin is not in the Rev G
+slot plan.</strong> The 6 Aug DRX1 pinning puts per-harmonic parameter frames on slot 2 and the same
+reference as PCM on slot 3 for fallback and A/B; John ruled that IN on 18 Aug. Rev G, one day later,
+allocated downstream slots 2 and 3 to aux/sidetone A and B with no twin anywhere in the document — it
+does not argue against it, mention it, or declare it out of scope. <strong>Ruled 26 Aug: the twin
+stays</strong> — the Rev G omission does not supersede the earlier ruling, and no lane is freed
+<code>[L-2026-W35-016]</code>. The slot allocation above has not been re-issued to reflect that.
+</div>
+
+<div class="note">
+<span class="tag">Amendment</span><strong>Rev M §6 corrects a description, not the pinning.</strong> The
+two-slot DRX1 pinning is correct, but the second slot carries the <strong>airframe reference mic</strong>
+— the cup's feed-forward input — not a redundant PCM twin. The cup cannot adapt without the reference.
+</div>
+
+<h2>Where this came from</h2>
+<ul class="src">
+  <li><code>aerosense-ops</code> · <code>dev-docs/h1-headset.md</code> — the 22 Aug daily pass carries the
+      slot plan, the ENOB argument and the precision discipline.</li>
+  <li><code>aerosense-ops</code> · <code>ledger/LEDGER.md</code> —
+      <code>L-2026-W34-008</code> (the dispute), <code>L-2026-W34-022</code> (Rev G ingested),
+      <code>L-2026-W34-023</code> (the PCM-twin omission), <code>L-2026-W36-001</code>
+      (<code>DNSIZE=24</code>), <code>L-2026-W36-002</code> (12.288 MHz + PLL).</li>
+  <li><code>aerosense-ops</code> · <code>queue/PARKING-LOT.md</code> item 1 · <code>dev-docs/dvnc.md</code>
+      · <code>dev-docs/aeronode.md</code>.</li>
+  <li><code>Aerosense-Dev-Team-Sync</code> ·
+      <code>john/outbox/2026-08-31-001_rev-m-ingested-safety-finding-first.md</code> (register-level
+      widths, TDM8 placement, the open list) and
+      <code>john/outbox/2026-08-24-004_john-rules-pcm-twin-stays-and-bit-depth-direction.md</code>.</li>
+  <li><strong>Not held anywhere in git:</strong> <code>H1_Audio_Bit_Depth_Report.docx</code> /
+      <code>.md</code> / <code>.pdf</code> — Drive only.</li>
+</ul>
+
+<footer>
+Everything above is quoted or distilled from documents in the two company repos; nothing here is my own
+engineering judgement, and no figure in it has been bench-measured. Read-only pass — no company repo was
+written to.
+</footer>
+
+</div>
+</body>
+</html>

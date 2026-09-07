@@ -10,7 +10,7 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
-ADDR="${ADDR:-0x64}"
+ADDR="${ADDR:-0x67}"
 BUS="${BUS:-1}"
 FS="${FS:-48000}"
 SLOTS="${SLOTS:-4}"

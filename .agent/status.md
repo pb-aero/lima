@@ -188,3 +188,85 @@ left and asked for the findings to be published.
    needs eyes on it.
 4. **Pixhawk 6C never enumerated** — 45-min watch expired, no USB event ever. Likely a charge-only
    cable. Moot for the AHRS path: ArduPilot has no MAVLink IMU input at all.
+
+---
+
+## 2026-09-07 · scopenode rebooted onto 6.18.39 · ADAU1860 is NOT connected
+
+Peter asked "can you connect to the adau1860". Probed the rig; the answer is no, and two facts
+changed underneath it.
+
+- **The latent kernel change has landed.** `uname -r` = **`6.18.39+rpt-rpi-2712`** `[measured]`
+  (was 6.12.47). `uptime` showed `up 0 min` — the machine had just been powered on. Open item 1
+  from 2026-09-04 is no longer *waiting on a reboot Peter chooses*; the reboot happened, so
+  **re-verifying `linux/adau1860-pi5/` on 6.18.39 is now due, not blocked.**
+- **The ADAU1860 does not answer on I2C.** `i2cdetect -y 1` is completely empty `[measured]`;
+  the part's address range is 0x64-0x67 (ADDR1/ADDR0 pins) and nothing is there.
+  **Positive control passed:** bus 2 shows `0x5c` (LPS22HB) and `0x68` (MPU-9250), so i2cdetect,
+  sudo and the I2C stack are all working. Buses 13/14 answer at every address — HDMI DDC, noise.
+- **The Pi is no longer configured for it either.** `dtparam=i2s=on` is commented out in
+  `/boot/firmware/config.txt` (line 7) and no `adau1860-pi5-*` overlay is loaded. GPIO18-21 read
+  `no` function, pull-down, low `[measured]` — and GPIO19 is **not** self-toggling, unlike the
+  2026-09-03 measurement where it was a live `I2S1_WS`. No I2S block is driving those pins.
+  `aplay -l` shows only the two vc4hdmi cards.
+
+So the codec is either unwired, unpowered, or absent from the bench. Needs eyes on the rig.
+Nothing was written to the Pi — read-only probe.
+
+### Same day, later — CONNECTED. At **0x67**, not 0x64, and in a pristine cold state
+
+Peter reconnected the board. `[measured]`
+
+- **`i2cdetect -y 1` now shows `0x67`.** The address is set by the ADDR1/ADDR0 pins over 0x64-0x67;
+  every earlier script and note in `linux/adau1860-pi5/` defaults to **0x64**. **Fix the default to
+  0x67 or the next session repeats this.**
+- **Identity confirmed, all four ID registers:** `VENDOR_ID=0x41`, `DEVICE_ID1=0x60`,
+  `DEVICE_ID2=0x18`, `REVISION=0x01`. That also re-confirms the `[derived]` 32-bit big-endian
+  subaddress framing is correct — **on kernel 6.18.39**, so I2C control survives the kernel change.
+- **The part is cold and every register is at its reset value.** `ADC_DAC_HP_PWR=0x00`,
+  `PLL_PGA_PWR=0x02` (XTAL_EN set, **PLL_EN clear** — this is exactly the 2026-09-02 bug),
+  `SAI_CLK_PWR=0x00`, `CHIP_PWR=0x00`, `CLK_CTRL1=0xC8`, `SPT0_CTRL1/2/3=0x00`.
+  **`STATUS2=0x00` -> POWER_UP_COMPLETE=0, SPT0_LOCK=0, PLL_LOCK=0.**
+
+**This is the pristine window the 2026-09-02 scar is about.** `CLK_CTRL1`, `PLL_PGA_PWR` and
+`CHIP_PWR` go read-only once the power domains come up and only a power cycle clears them. They are
+all writable right now. Any bring-up attempt should be made from this state, in the datasheet's
+numbered order, with `PLL_EN` set before anything expects a clock.
+
+Still true: `dtparam=i2s=on` is commented out and no overlay is loaded, so there is no I2S path yet
+— control only. Nothing has been written to the codec.
+
+### Same day — I2S TESTED AND WORKING on 6.18.39
+
+Peter: *"can you please test I2S to the adau1860"*. Done. Full write-up at
+`linux/adau1860-pi5/RESULTS-2026-09-07.md`.
+
+- **PASS.** `aplay` 4ch/S32_LE/48 kHz: requested 3s -> **3006 ms**, 5s -> 5061 ms, 3s -> 3023 ms;
+  2ch 3s -> 3017 ms. Exit 0, real time, clean dmesg. Real time is the proof — the Pi is the clock
+  consumer, so only the codec can pace it. Card `adau1860-tx` on `1f000a4000.i2s` = `rp1_i2s1`.
+- **Codec brought up from cold:** `STATUS2 = 0xF1` — POWER_UP_COMPLETE=1, SPT0_LOCK=1, **PLL_LOCK=1**.
+  The 2026-09-02 `PLL_EN` bug does not recur when the numbered order is followed.
+- Overlay `adau1860-pi5-tx` installed and enabled in `/boot/firmware/config.txt`; `config.txt`
+  backed up first. `dtparam=i2s=on` deliberately left commented — it would enable the producer block
+  on the same pins.
+
+**Three corrections that future sessions need:**
+
+1. **The I2C address is 0x67, not 0x64.** Defaults fixed in `adau1860_init.py` and `run_on_pi.sh`.
+2. **The machine is `aeronode` (192.168.0.99), not `scopenode`.** Same box — machine-id, `~/ardupilot`
+   and my own 3 Sep config backups all match — but `scopenode.local` no longer resolves and the
+   journal shows systemd renaming it to `aeronode` two seconds into every boot. All older notes
+   saying "scopenode" mean this machine.
+3. **A failed framing attempt poisons the whole boot.** After a TDM `EIO` the DMA channel sticks
+   (`dma2chan4 is non-idle!`) and even a correct STEREO attempt then fails. **One attempt per boot.**
+   The 2026-09-02 line "after a clean reboot" was load-bearing, and I first read it as incidental.
+
+**Instrument scar:** `pinctrl` level-sampling said `GPIO19 hi=0 lo=200` and I nearly reported LRCLK
+dead. It was a **narrow frame pulse** — 1 BCLK in 128. `gpiomon` caught falling edges 20.83 us apart
+= **48.0 kHz**. Count edges, never sample levels, when the question is "is this pin clocking".
+
+### Still open
+
+- Which slots the codec actually latches in STEREO mode is unverified (no read-back path); use the
+  `DAC_ROUTE0` + distinct-DC-per-slot method from `RESULTS-2026-09-02.md`.
+- RX / duplex not re-tested on 6.18.39 — only the TX path was exercised.

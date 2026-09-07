@@ -20,9 +20,9 @@ WHAT THIS IS NOT
     the LARK Studio half of the job.
 
 USAGE
-    sudo python3 adau1860_init.py --bus 1 --addr 0x64 --probe
-    sudo python3 adau1860_init.py --bus 1 --addr 0x64 --fs 48000 --slots 4
-    sudo python3 adau1860_init.py --bus 1 --addr 0x64 --fs 48000 --slots 4 --apply
+    sudo python3 adau1860_init.py --bus 1 --addr 0x67 --probe
+    sudo python3 adau1860_init.py --bus 1 --addr 0x67 --fs 48000 --slots 4
+    sudo python3 adau1860_init.py --bus 1 --addr 0x67 --fs 48000 --slots 4 --apply
 
 Requires: pip3 install smbus2
 """
@@ -58,6 +58,12 @@ RESETS         = 0x4000C200   # W  [4] SOFT_RESET [0] SOFT_FULL_RESET
 SAI_CLK_PWR    = 0x4000C007   # reset 0x00, R/W  Table 128
 CHIP_PWR       = 0x4000C00E   # reset 0x00, R/W  Table 135
 CLK_CTRL1      = 0x4000C010   # reset 0xC8, R/W  Table 136
+DAC_CTRL2      = 0x4000C051   # reset 0x44, R/W  [7] DAC0_FORCE_MUTE, [6] DAC0_MUTE,
+                              #                  [4] DAC0_HPF_EN, [2] DAC_VOL_ZC
+DAC0_VOL       = 0x4000C052   # reset 0x40, R/W  8-bit; dB = 24 - code*0.375, so 0x40 = 0 dB
+HPLDO_CTRL     = 0x4000C066   # reset 0x00, R/W  [3:2] HPLDO_VOUT_SET, [1] HPLDO_BYPASS,
+                              #                  [0] HPLDO_EN
+HP_CTRL        = 0x4000C060   # reset 0x00, R/W  [0] HP0_MODE 0=headphone 1=line-out
 SPT0_CTRL1     = 0x4000C0E0   # reset 0x00, R/W  Table 276
 SPT0_CTRL2     = 0x4000C0E1   # reset 0x00, R/W  Table 277
 SPT0_CTRL3     = 0x4000C0E2   # reset 0x00, R/W  Table 278
@@ -147,6 +153,12 @@ def plan(fs, slots, slot_width=32, dac_test=False):
         (DAC_ROUTE0,     0x00, "DAC channel 0 <- Serial Port 0 Channel 0 (Table 190). "
                                "This is the reset value; written explicitly to be sure."),
         (ADC_DAC_HP_PWR, 0x10, "PB0_EN=1 -- DAC + headphone/line-out channel 0 on (Table 125)"),
+        # [measured 2026-09-07] WITHOUT THESE TWO THE OUTPUT IS SILENT and every other
+        # register still reads back perfect. Both defaults are against you:
+        (DAC_CTRL2,      0x04, "clear DAC0_MUTE (bit 6). RESET IS 0x44 -- THE DAC IS "
+                               "MUTED OUT OF RESET. Keeps DAC_VOL_ZC (bit 2)."),
+        (HPLDO_CTRL,     0x01, "HPLDO_EN=1 -- the headphone amp has its OWN LDO and it "
+                               "is OFF at reset, so the output stage has no supply."),
     ] if dac_test else [])
 
 
@@ -154,7 +166,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--bus", type=int, default=1)
-    ap.add_argument("--addr", type=lambda s: int(s, 0), default=0x64,
+    ap.add_argument("--addr", type=lambda s: int(s, 0), default=0x67,
                     help="0x64..0x67, set by the ADDR1/ADDR0 pins (UG-2257 Table 23)")
     ap.add_argument("--fs", type=int, default=48000)
     ap.add_argument("--slots", type=int, default=4)
