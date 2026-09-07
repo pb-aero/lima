@@ -44,6 +44,30 @@ and scale, and it will.
 
 If any single sample comes back scaled by 0.9998 or interpolated, one of these is why.
 
+> ## ⚠ CORRECTION 2026-09-07 — the four-slot layout below DOES NOT WORK
+>
+> **Only two of the four slots ever reach the codec.** Measured by ear with
+> `slot_map_test.py`: a distinct octave in each Pi transmit slot, `DAC_ROUTE0` swept across
+> Serial Port 0 Channel 0-3. Result — **250 Hz, then 1000 Hz, then nothing, then nothing.**
+>
+> | Codec channel | receives | |
+> |---|---|---|
+> | 0 | **Pi slot 0** | 250 Hz heard |
+> | 1 | **Pi slot 2** | 1000 Hz heard |
+> | 2 | nothing | silent |
+> | 3 | nothing | silent |
+>
+> **Pi slots 1 and 3 are discarded.** The cause is in `RESULTS-2026-09-07.md`: RP1 will not lock
+> to the ADAU1860's narrow TDM frame sync, so the codec has to run `SAI_MODE=STEREO`, and a stereo
+> receiver takes only the first 32-bit word of each half-frame. The link still carries 4 x 32 bits
+> per frame — **half of it lands nowhere.**
+>
+> **The transport is 2 channels, not 4.** X/Y/Z + a magic word does not fit. What to do instead is
+> in the revised table below: pack two 16-bit axes per surviving 32-bit word, which fits 4 axes in
+> the 2 channels that do arrive. At 48 kHz frame rate against a 1 kHz sensor ODR there is 48x more
+> frame bandwidth than payload, so nothing is actually lost — but any slot map built on 4 arriving
+> channels is wrong.
+
 ## 2. There is no framing on the wire — add your own
 
 I2S/TDM has frame *sync*, but no packet boundary, no sequence number and no CRC. If the link slips
@@ -52,12 +76,27 @@ nothing reports an error.** X becomes Y forever, and the data looks plausible.
 
 Fix it in the payload. The cheapest scheme that works:
 
-| Slot | Contents |
-|---|---|
-| 0 | accel X |
-| 1 | accel Y |
-| 2 | accel Z |
-| 3 | **sequence counter + magic** — e.g. `0xA5 << 24 \| (seq & 0xFFFFFF)` |
+**Superseded — see the correction above.** The layout as originally written:
+
+| Slot | Contents | 2026-09-07 |
+|---|---|---|
+| 0 | accel X | **arrives** as codec channel 0 |
+| 1 | accel Y | **DISCARDED** |
+| 2 | accel Z | **arrives** as codec channel 1 |
+| 3 | **sequence counter + magic** — e.g. `0xA5 << 24 \| (seq & 0xFFFFFF)` | **DISCARDED** |
+
+What to send instead, packing into the two words that survive:
+
+| Pi slot | Contents | |
+|---|---|---|
+| 0 | `X << 16 \| (Y & 0xFFFF)` | arrives as codec channel 0 |
+| 1 | anything — not received | |
+| 2 | `Z << 16 \| (0xA5 << 8) \| (seq & 0xFF)` | arrives as codec channel 1 |
+| 3 | anything — not received | |
+
+Three 16-bit axes plus magic and an 8-bit counter, inside the 64 bits per frame that actually
+arrive. §3's "≤24 bits per slot" caution does not apply to the top half of each word, but the
+bottom 8 bits of each 32-bit slot remain unproven — keep the counter, not an axis, down there.
 
 `dtoverlay=adau1860-pi5-tx,slots=4,width=32`. Four 32-bit slots at fS = 32 kHz is a 4.096 MHz BCLK —
 undemanding. Now the receiver validates the magic byte every frame and the counter tells you exactly
@@ -224,8 +263,9 @@ chain is rate-coherent end to end. That is the configuration to aim for.
 | Format | `S32_LE` | TDM forces 32-bit slots (§7) |
 | Channels | 4 | 3 is `-EINVAL` (§7) |
 | Rate | = ADAU1860 fS = DSP core rate = accelerometer ODR if possible | §9 |
-| Slot 0/1/2 | X / Y / Z, left-justified, ~12 dB headroom | §8 |
-| Slot 3 | `0xA5 << 24 \| (seq & 0xFFFFFF)` | slip detection (§2) |
+| Slot 0 | `X << 16 \| Y` — **the only slots that arrive are 0 and 2** | §2 correction |
+| Slot 2 | `Z << 16 \| magic \| seq` | §2 correction |
+| Slots 1, 3 | discarded by the codec in STEREO framing — do not plan payload here | §2 correction |
 | Payload width | ≤ 24 bits per slot | 24-bit internal path (§3) |
 
 **Register values: see [REGISTER_CONFIG.md](REGISTER_CONFIG.md)** and the runnable
