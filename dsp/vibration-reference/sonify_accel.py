@@ -74,6 +74,39 @@ def drain(bus, lsb):
     return np.frombuffer(bytes(raw[:k * 6]), dtype=">i2").reshape(-1, 3).astype(np.float64) / lsb
 
 
+def gate(y, fs, gate_db, win_s, pad_s):
+    """Keep only the stretches that rise gate_db above the noise floor.
+
+    The floor is the MEDIAN window RMS, not the mean: the events are exactly what
+    we are looking for, and a mean is dragged upward by them, which raises the
+    bar in proportion to how much there was to find.
+    """
+    w = max(1, int(win_s * fs))
+    n = (y.size // w) * w
+    if n == 0:
+        return np.zeros(0), {"floor": 0, "thresh": 0, "peak": 0, "peak_db": 0,
+                             "kept_s": 0, "total_s": y.size / fs, "events": 0}
+    blocks = y[:n].reshape(-1, w)
+    rms = np.sqrt((blocks ** 2).mean(axis=1))
+    floor = float(np.median(rms)) or 1e-9
+    thresh = floor * 10 ** (gate_db / 20.0)
+    peak = float(rms.max())
+    hot = rms > thresh
+    pad = max(1, int(round(pad_s / win_s)))
+    if hot.any():                                  # widen each event by pad windows
+        idx = np.flatnonzero(hot)
+        keep = np.zeros_like(hot)
+        for i in idx:
+            keep[max(0, i - pad):min(hot.size, i + pad + 1)] = True
+    else:
+        keep = hot
+    events = int(np.count_nonzero(np.diff(np.concatenate(([0], keep.view(np.int8)))) > 0))
+    out = blocks[keep].reshape(-1) if keep.any() else np.zeros(0)
+    return out, {"floor": floor, "thresh": thresh, "peak": peak,
+                 "peak_db": 20 * np.log10(peak / floor) if peak > 0 else 0,
+                 "kept_s": out.size / fs, "total_s": y.size / fs, "events": events}
+
+
 def emit(x, peak_state, dbfs):
     """Scale to dbfs against a decaying peak, then write slot 0 of a 4-slot frame."""
     if x.size:
@@ -98,6 +131,13 @@ def main():
     p.add_argument("--capture", type=float, default=20.0, help="pitch: seconds of vibration to record")
     p.add_argument("--play", type=float, default=8.0, help="pitch: seconds of audio to emit, looping")
     p.add_argument("--carrier", type=float, default=1000.0, help="live: carrier in Hz")
+    p.add_argument("--gate-db", type=float, default=None,
+                   help="pitch: keep only what rises this many dB above the measured noise floor. "
+                        "The floor is the MEDIAN short-window RMS, which is robust to the events "
+                        "themselves -- a mean would be dragged up by them and raise the bar.")
+    p.add_argument("--gate-window", type=float, default=0.025, help="pitch: gate window in seconds")
+    p.add_argument("--gate-pad", type=float, default=0.100,
+                   help="pitch: seconds kept either side of each event, so attacks are not clipped")
     args = p.parse_args()
 
     with SMBus(args.bus) as bus:
@@ -116,12 +156,24 @@ def main():
             print(f"# capturing {args.capture:.0f} s, then emitting at {OUT_RATE} Hz "
                   f"-> x{speedup:.0f} speed-up: 8.3 Hz lands at {8.3*speedup:.0f} Hz",
                   file=sys.stderr)
-            t0, chunks = time.time(), []
-            while time.time() - t0 < args.capture:
+            t0, chunks, last, seen = time.time(), [], 0.0, []
+            print("# capturing NOW -- tap the bench. Live level follows:", file=sys.stderr)
+            while True:
+                el = time.time() - t0
+                if el >= args.capture:
+                    break
                 d = drain(bus, lsb)
                 if d.size:
                     chunks.append(d)
+                    seen.append(float(np.linalg.norm(d - d.mean(axis=0), axis=1).max()))
+                if el - last >= 0.5:                  # a level meter you can tap against
+                    last = el
+                    now = max(seen[-5:]) if seen else 0.0
+                    bars = min(40, int(now * 1000 / 2))
+                    print(f"\r#  {el:5.1f}s  peak {now*1000:7.2f} mg  "
+                          f"{'#' * bars:<40}", end="", file=sys.stderr, flush=True)
                 time.sleep(0.01)
+            print(file=sys.stderr)
             d = np.vstack(chunks) if chunks else np.zeros((0, 3))
             if d.shape[0] < fs:
                 sys.exit("REFUSING: captured less than a second of samples.")
@@ -129,6 +181,20 @@ def main():
             y = np.zeros_like(x); prev_x = x[0]; prev_y = 0.0
             for i, xi in enumerate(x):                       # one-pole HPF
                 prev_y = a * (prev_y + xi - prev_x); prev_x = xi; y[i] = prev_y
+            if args.gate_db is not None:
+                y, kept = gate(y, fs, args.gate_db, args.gate_window, args.gate_pad)
+                if y.size == 0:
+                    sys.exit(f"NOTHING ABOVE THE GATE. Floor {kept['floor']*1000:.2f} mg, "
+                             f"threshold {kept['thresh']*1000:.2f} mg (+{args.gate_db:.0f} dB), "
+                             f"loudest window {kept['peak']*1000:.2f} mg "
+                             f"(+{kept['peak_db']:.1f} dB). Nothing was played -- that is a "
+                             f"result, not a failure. Tap the bench during the capture, run the "
+                             f"machine, or lower --gate-db.")
+                print(f"# gate +{args.gate_db:.0f} dB: floor {kept['floor']*1000:.2f} mg, "
+                      f"threshold {kept['thresh']*1000:.2f} mg, loudest {kept['peak']*1000:.2f} mg "
+                      f"(+{kept['peak_db']:.1f} dB) -> kept {kept['kept_s']:.2f} s of "
+                      f"{kept['total_s']:.1f} s ({100*kept['kept_s']/kept['total_s']:.1f}%) "
+                      f"in {kept['events']} event(s)", file=sys.stderr)
             rms = float(np.sqrt((y ** 2).mean()))
             print(f"# {d.shape[0]} samples = {d.shape[0]/fs:.1f} s, AC rms {rms*1000:.2f} mg, "
                   f"peak {np.abs(y).max()*1000:.2f} mg -> {args.play:.0f} s of audio, looped",
