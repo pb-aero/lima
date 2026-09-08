@@ -29,7 +29,7 @@ ADC2_CTRL   = 0x4000C020   # [4:6] ADC2_FS          [7] ADC2_DEC_ORDER
 ADC2_HPF    = 0x4000C023   # [4:5] ADC2_HPF_EN
 ADC_MUTES   = 0x4000C027   # [2] ADC2_MUTE
 ADC2_VOL    = 0x4000C02A   # [0:7]
-PGA2_GAIN   = 0x4000C034   # [0:10]
+PGA2_GAIN   = 0x4000C034   # [0:10] -- 11 BITS, spans 0xC034 (low 8) and 0xC035 (high 3)
 SPT0_ROUTE0 = 0x4000C0E3   # [0:5] source select
 STATUS2     = 0x4000C402
 
@@ -39,7 +39,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--bus", type=int, default=1)
 ap.add_argument("--addr", type=lambda s: int(s, 0), default=0x67)
 ap.add_argument("--route", type=int, default=ROUTE_ADC2, help="SPT0_ROUTE0 source (sweep if silent)")
-ap.add_argument("--pga-gain", type=int, default=0, help="PGA2_GAIN code, 0..2047 (0 dB..24 dB)")
+ap.add_argument("--pga-gain", type=int, default=0, help="PGA2_GAIN code, 0..2047 (0 dB..24 dB full span)")
 ap.add_argument("--apply", action="store_true", help="write; otherwise dry run")
 a = ap.parse_args()
 
@@ -71,7 +71,12 @@ with SMBus(a.bus) as b:
     print("\nanalog front end")
     setbits(b, PLL_PGA_PWR, 1 << 6, 1 << 6, "PGA2_EN")
     setbits(b, PWR_ADC_DAC, 1 << 2, 1 << 2, "ADC2_EN")
-    setbits(b, PGA2_GAIN,   0xFF,   a.pga_gain & 0xFF, "PGA2_GAIN")
+    # 11-bit field across two registers. Writing only the low byte caps the gain at
+    # 255/2047 of the range -- about 3 dB of the available 24, which would read as
+    # "the PGA does nothing" rather than as a bug.
+    g = max(0, min(2047, a.pga_gain))
+    setbits(b, PGA2_GAIN,     0xFF, g & 0xFF,        f"PGA2_GAIN_L={g}")
+    setbits(b, PGA2_GAIN + 1, 0x07, (g >> 8) & 0x07, "PGA2_GAIN_H")
 
     print("\ndigital")
     setbits(b, ADC2_CTRL, 0b111 << 4, 0b010 << 4, "ADC2_FS=48k")
