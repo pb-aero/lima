@@ -117,3 +117,60 @@ the mic was ever plugged in.
 **The fix is an amplified module** — MAX9814 or MAX4466 class, powered from the Pi's 3.3 V. Nothing
 else about the path needs to change: duplex, the route, the gain and the transport are all proven
 and waiting. `[gap]` parts not yet priced or stock-checked.
+
+
+---
+
+## 2026-09-08 later — the unplug test refuted my explanation, twice over
+
+**Prediction:** unplug the mic and P11 should go loud, proving the plug was grounding the inputs.
+**Result:** it stayed quiet. `[measured]`
+
+```
+route=38  ADC2 / P11  MIC UNPLUGGED   -89.1 dBFS
+route=36  ADC0 / P9   empty           -25.0 dBFS
+route=37  ADC1 / P10  empty           -28.7 dBFS
+```
+
+**P11 is quiet with nothing in it at all.** So neither the microphone nor the connector was ever
+the cause — the ~64 dB difference is a property of the **ADC2 channel**, present with an empty jack.
+
+### The PGA gain field does almost nothing — retracting a number I quoted
+
+I claimed P11 was "82 dB quieter *while carrying +24 dB of PGA gain*". A two-sided control kills
+that:
+
+| change | result |
+|---|---|
+| `PGA2_GAIN` 1951 -> 0 | ADC2 −89.1 -> −91.5 dBFS (**2.4 dB**) |
+| `PGA0_GAIN` 0 -> 1951 | ADC0 −25.0 -> −22.2 dBFS (**2.8 dB**) |
+
+The full span of an 11-bit field the datasheet calls a **0-24 dB** PGA moves the level by **~2.5 dB**,
+in both directions, on two different channels. `[gap]` **Either the gain code is not what I think it
+is, or the PGA is not actually in circuit** — something else (an input mux, a bypass, a mode bit)
+must be enabled first. `adi_lark_adc.c`'s call order is the place to look.
+
+**Consequences:** the "82 dB referred to input" figure was wrong — the true difference is ~64 dB
+with no gain correction to apply. And **swapping the gains did not swap the behaviour**, which is
+what rules the PGA out as the cause entirely.
+
+### What is actually left
+
+The difference is physical and upstream of every register I have touched. `AINP0`/`AINN0` float on
+an empty jack and pick up mains; `AINP2`/`AINN2` do not. The obvious candidate is the **input-mode
+jumpers**: `P13`/`P15` for ADC2 versus `P104`/`P105` for ADC0. Peter reports P13/P15 on pins 1-2,
+which per UG-2017 Table 3 is differential and should float — so either the report, the silkscreen
+numbering, or my reading of Figure 8 is wrong.
+
+`[gap]` **Cheapest next check, and it needs no pin numbers:** compare the jumper positions of
+`P13`/`P15` against `P104`/`P105` **relative to each other**. ADC0 demonstrably floats and ADC2
+demonstrably does not; if the two pairs are in different positions, that is the whole answer.
+
+### The method note worth keeping
+
+Three explanations were offered for P11's quietness and **all three were wrong**: the unbiased
+capsule, the TRRS plug grounding the inputs, and the PGA gain. Each was plausible, each fitted the
+data available at the time, and each died to one cheap control. The pattern is that every one of
+them was a story about **the thing I had just changed** — the mic, the plug, the register I wrote —
+while the real difference sat in a channel property nobody had touched. **Suspect the constant, not
+just the variable.**
