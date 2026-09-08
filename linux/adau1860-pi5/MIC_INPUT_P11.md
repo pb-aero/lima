@@ -87,6 +87,46 @@ module GND  -> SLEEVE,  and short RING to SLEEVE at the plug
 connection into a differential input, which is ordinary practice. This is my reading, **not** a
 UG-documented mode, so treat it as the first hypothesis rather than the answer.
 
+## THE PLUG ITSELF — a 4-segment plug does not fit this jack (added 2026-09-08)
+
+Peter's mic is a **standard PC mic with a 4-segment (TRRS) 3.5 mm plug**. **P11 is a 3-pole (TRS)
+jack** — `SJ-3523-SMT`, three contacts, per the schematic above. That mismatch is a fault on its
+own, upstream of every register and every bias question on this page.
+
+On a CTIA-standard 4-pole plug the conductors are **Tip = left audio, Ring1 = right audio,
+Ring2 = ground, Sleeve = MIC**. The extra ring shifts every segment backwards, so a 3-pole jack's
+contacts land on Tip and Ring1 — the **audio** conductors — and **the microphone, sitting on the
+Sleeve, reaches no contact at all.** (OMTP plugs swap Ring2/Sleeve; the mic still misses.)
+
+This is the everyday behaviour of plugging a phone headset into a stereo socket: sound in both
+ears, dead mic.
+
+**So the mic signal never arrived at the board.** That explains the measured silence completely and
+on its own — no bias theory required.
+
+### Retraction of the loading explanation
+
+`RESULTS-2026-09-08-mic.md` concluded, by elimination, that P11 being ~82 dB quieter than an empty
+jack meant "the capsule is loading the input down". **That attribution is withdrawn.** If this is a
+headset, what the jack's TIP and RING contacts are actually holding are the **headphone drivers**,
+around 32 Ω each — and a 32 Ω load across a high-impedance input is a far better explanation for
+killing 82 dB of antenna pickup than an unbiased capsule is.
+
+The elimination was sound as far as it went; it just never considered that the thing on the end of
+the wire might not be the microphone. **A 2-way "either A or B" is only as good as the list.**
+
+### What this changes about the fix
+
+Two faults were stacked, and the second survives fixing the first:
+
+1. **The mic is not connected** — needs a TRRS-to-TRS breakout (a "headset splitter" giving
+   separate 3-pole mic and headphone plugs). Cheap.
+2. **P11 still supplies no bias** — so even correctly broken out, a PC electret will stay silent
+   for the reasons in this document.
+
+**The amplified module remains the actual fix.** A splitter alone buys nothing here; it only moves
+the failure from "not connected" to "connected but unpowered".
+
 ## The alternative the board also offers
 
 `[measured, from Figure 7]` the EVB breaks out the **PDM digital mic** pins too: `P44` carries
