@@ -270,3 +270,24 @@ dead. It was a **narrow frame pulse** — 1 BCLK in 128. `gpiomon` caught fallin
 - Which slots the codec actually latches in STEREO mode is unverified (no read-back path); use the
   `DAC_ROUTE0` + distinct-DC-per-slot method from `RESULTS-2026-09-02.md`.
 - RX / duplex not re-tested on 6.18.39 — only the TX path was exercised.
+
+---
+
+## 2026-09-08 · TTS through the ADAU1860 — two paths, both working
+
+Peter: *"some text to speech through this audio board"*, then *"put piper on the pi"*. Both
+delivered. Full write-up `linux/adau1860-pi5/RESULTS-2026-09-08.md`, commits `eb1ae8b`, `478d8c7`.
+
+- **`piper_say.sh`** — Piper 1.8.0 neural TTS **on the Pi**, venv at `~/piper-venv`, voices in
+  `~/piper-voices`. RTF **0.371x** including model load, so it streams. `install_piper.sh` is
+  idempotent. Three English voices; default `en_GB-alba-medium`.
+- **`say_on_codec.sh`** — macOS `say` from the Mac, for voice variety. The Pi has no other engine.
+- Both end in `aplay -c 4` with audio in **slots 0 and 2** (`pack_slots.py` / `say_to_slots.py`);
+  neither writes a codec register — `bringup.sh` from a cold board still owns that.
+
+**Facts worth carrying:** SSH to the rig is **`node@192.168.0.99`** (no key for `peterbruce`).
+Piper's live home is **`OHF-Voice/piper1-gpl`**, not `rhasspy/piper` (read-only since Oct 2025);
+its abi3 aarch64 wheel installs on Python 3.13 with no build. ffmpeg is already on the Pi.
+
+**Open, unchanged in shape:** whether the jack makes a sound is still **Unknown** from here — no
+capture path, no instrument on P30. Every figure measures the digital path only.
