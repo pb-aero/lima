@@ -85,6 +85,8 @@ Use a **2 Form C (DPDT) signal relay** per GPIO and wire it break-and-shunt:
 | **0 Ω fitted** | Hard mute. Earphone grounded. | Peter's ruling: mute only, nothing replaces the audio. |
 | **DNP (omitted)** | Series break only. Earphone left free for a codec feed summed in downstream. | If AeroNode audio is later summed into the same earphone, grounding it would short the codec too. |
 
+**The shunt returns to AIRCRAFT ground, not AeroNode ground — see the correction in §11.3.**
+
 **Never shunt without breaking.** A bare shunt-to-ground short-circuits the intercom's headphone
 amplifier. Some GA panels have a series resistor and survive it; some do not, and which is which is
 `[gap]`. The Form C break removes the question entirely.
@@ -356,7 +358,7 @@ Three traps in that little circuit:
 3. **A capacitor blocks DC. It does not break a ground loop.** Aircraft audio ground and AeroNode
    ground can sit volts apart, and tying them through an audio path is a classic avionics buzz.
 
-### The transformer is the better answer for the aircraft
+### The transformer is the better answer for the aircraft — **RULED 2026-09-08, see §11**
 
 A small 600:600 Ω audio isolation transformer does everything the capacitor does — blocks DC
 absolutely, with no failure mode that passes 16 V — and also converts the differential output to
@@ -415,3 +417,123 @@ For completeness, since "output" may have been loose: if the aviation mic feeds 
 EVB they already exist — `[fetched]` `C25`/`C26` are **22 µF** in series with `AINP2`/`AINN2`
 (`MIC_INPUT_P11.md`). On a custom board, replicate them **and** add the attenuator, because §2's
 600 mV at 114 dB SPL overdrives the ADAU1860's 0.49 V rms single-ended full scale.
+
+---
+
+## 11. RULED 2026-09-08 — transformer isolation on the aircraft side
+
+Peter: *"use the transformer approach for the aircraft side."* §10.1's capacitor coupling is
+**superseded for anything facing the aircraft**; it stays valid only as a bench expedient.
+
+### The part
+
+**Bourns `SM-LP-5001`**, surface-mount line-matching transformer. `[fetched]` from Bourns'
+own datasheet (`bourns.com/pdfs/sm-lp-5001.pdf`, rev 05/17 — note `bourns.com/docs/...` 403s,
+`bourns.com/pdfs/...` serves it):
+
+| Spec | Value | Bearing on this design |
+|---|---|---|
+| Nominal impedance / ratio | **600 Ω, 1:1** | Voltage-transfer, no matching arithmetic. |
+| Frequency response | **±0.25 dB, 200 Hz–4 kHz** | The aviation comms band is 300 Hz–3 kHz. It sits inside. |
+| Insertion loss | 2.0 dB max at 2 kHz | 1.0 V rms in → **0.79 V rms** out. Folded into §11.2. |
+| **Dielectric strength** | **2000 V rms for 1 min** | This is the isolation barrier. |
+| Insulation resistance | 100 MΩ at 500 V | |
+| Distortion | −76 dB at 600 Hz, −10 dBm | Far below anything speech cares about. |
+| DC resistance | 115 Ω ±15% each winding | Used in the saturation and level sums below. |
+| Shunt inductance | **3.8 H min** | Decides where the attenuator goes — see §11.1. |
+| Power level | 10 dBm | We drive **+2.2 dBm**. `[derived]` 1.0 V rms into 600 Ω = 1.67 mW. |
+| Size | 12.8 × 9.0 mm, 7.5 mm seated | Larger than the relays. Budget the area. |
+
+`[fetched, search-result]` LCSC `C7503474`, **$1.95, 550 in stock**; Newark ~$3.56.
+
+### 11.1 Drive the primary directly. Put the attenuator on the SECONDARY.
+
+This is the one number that decides the layout, and getting it backwards ruins the audio:
+
+`[derived]` The low-frequency corner is the primary's shunt inductance working against the
+**source** impedance, `f = R_source / (2π·L)`.
+
+| Attenuator position | Source impedance seen by the primary | LF corner |
+|---|---|---|
+| 10 kΩ on the **primary** | 10 kΩ | **419 Hz** — inside the voice band. Ruins it. |
+| 10 kΩ on the **secondary** | ~116 Ω (winding DCR + HP amp) | **4.9 Hz** — irrelevant. Correct. |
+
+So: `HPOUTP`/`HPOUTN` connect straight across the primary, and the level-setting resistor lives on
+the far side.
+
+### 11.2 The circuit, and what the transformer deletes
+
+```
+                    SM-LP-5001
+                    2000 V rms
+  HPOUTP ─────┐    ║        ║    ┌──[ R1 10k ]──────► aircraft mic node
+              │  ) ║        ║ (  │
+              │  ) ║        ║ (  │
+  HPOUTN ─────┘    ║        ║    └──────────────────► aircraft MIC GROUND
+                    ║        ║                          (plug sleeve — NOT AeroNode GND)
+              AeroNode side │ aircraft side
+                            │
+                    ISOLATION BOUNDARY
+```
+
+**Three things from §10.1 disappear, and that is the argument for the ruling:**
+
+1. **No blocking capacitor on the primary.** `[derived]` The DAC's differential DC offset is
+   ±0.1 mV (datasheet), which across the 115 Ω winding is **±0.87 µA** — nothing against a 3.8 H
+   core. There is no DC to block, so there is no cap, no X7R derating trap, and no capacitor whose
+   failure mode passes 16 V.
+2. **The differential-output problem is gone.** `HPOUTP` and `HPOUTN` both drive the winding, which
+   is what a differential output wants. **This closes the §10.1 `[gap]`** about whether the HP amp
+   is specified to run with one leg unloaded — the question no longer arises. It also recovers the
+   6 dB that taking a single leg would have cost.
+3. **The 16 V fault path is gone entirely.** A transformer has no failure mode short of insulation
+   breakdown, and that is what the 2000 V rms rating covers. The BAT54S clamp becomes belt-and-braces
+   rather than the thing standing between the bias and a dead codec.
+
+`[derived]` **Level:** 1.0 V rms full scale − 2 dB insertion loss = 0.79 V rms open-circuit. Through
+`R1` = 10 kΩ into a mic node of ~470 Ω (the bias resistor, mid-range):
+`0.79 × 470 / (10000 + 115 + 470) =` **35 mV rms**. Sane against §2's 600 mV at 114 dB SPL, and the
+DAC still runs near full scale, so the SNR is spent in the analog attenuator rather than in digital
+gain.
+
+### 11.3 CORRECTION to §3 and §10.2 — which ground the mutes shunt to
+
+**§3 and §10.2 both say "GND". That is now wrong and it matters.** A transformer that isolates the
+two grounds is worthless if a mute contact bonds them somewhere else on the board.
+
+Every shunt on the aircraft side — §3's `R_MUTE` on the earphone lines, §10.2's mic-mute capacitor
+and its 1 MΩ bleed — must return to the **headset/aircraft ground (the plug sleeve)**, never to
+AeroNode `GND`. Treat them as a separate net; give it its own symbol and its own copper island, and
+make the schematic show it as such. The most likely way this design fails is a well-meaning ground
+symbol dropped on the wrong side of the boundary during layout.
+
+**The good news is that the relays are already part of the barrier.** A relay's contacts are
+galvanically isolated from its coil, so the coils are ours and the contacts are the aircraft's.
+`[fetched]` The `G6K` is rated **1500 V AC between coil and contacts for 1 min**, insulation
+resistance 1000 MΩ at 500 V DC, and the **`-Y`** suffix is specifically the wide-creepage variant —
+3.2 mm coil-to-contact, 2.5 kV impulse to Telcordia. So `G6K-2F-**Y**` was the right call in §5, and
+now it is the right call for a stated reason rather than by habit.
+
+With the transformer carrying the only signal that crosses, and the relay coils the only control,
+**nothing on the aircraft side is galvanically connected to AeroNode.** That is a clean boundary and
+it is worth defending in review.
+
+### 11.4 Honest limits — this part is not a flight part
+
+Two things I am not going to let pass quietly:
+
+1. **Operating temperature is −20 °C to +85 °C.** `[fetched]` A GA cockpit, cold-soaked or at
+   altitude, goes below −20 °C. This is the specification that disqualifies it from a flight
+   article, and it is easy to miss because everything else about the part fits.
+2. **`UL60950` is an IT-equipment safety standard, not `DO-160`.** Bourns' own applications list is
+   *"Modems (V32), Laptop Computers, Telecommunications, Instrumentation"*. This is a telecom part.
+
+**So:** `SM-LP-5001` is the right part for the bench proof and for a proof-of-concept board, and the
+topology it proves carries over unchanged. A flight article needs a transformer qualified to the
+environment, and that is a sourcing exercise nobody has started. `[gap]`
+
+3. `[gap]` **Confirm the pinout before layout.** The part has six pins (1,2,3 / 4,5,6) and the
+   datasheet notes it is *"symmetrical, meaning there is no real primary nor secondary winding"* —
+   which implies a centre tap per side, but the pin functions live in a schematic **graphic** that
+   carries no extractable text. Render it and read it, the way the UG-2017 Figure 8 crop was read
+   for `MIC_INPUT_P11.md`. Do not assume 2 and 5 are the taps.

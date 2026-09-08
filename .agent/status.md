@@ -365,3 +365,46 @@ Answered in `docs/h1-headset-mute-relay.md` section 10. **Yes, and it is mandato
 
 `[gap]` still open: whether the ADAU1860 HP amp is specified to run with one leg unloaded (the
 abridged datasheet has no output-stage description), and whether a capsule minds driving a near-short.
+
+### Same day — RULED: transformer isolation on the aircraft side
+
+Peter: *"use the transformer approach for the aircraft side."* Section 11 of
+`docs/h1-headset-mute-relay.md`. The section 10.1 capacitor coupling is superseded for anything
+facing the aircraft; it survives only as a bench expedient.
+
+- **Part: Bourns `SM-LP-5001`.** `[fetched]` from Bourns' own datasheet — 600 ohm 1:1, **200 Hz-4 kHz
+  +/-0.25 dB**, insertion loss 2 dB, **dielectric strength 2000 Vrms/1 min**, DCR 115 ohm/winding,
+  **shunt inductance 3.8 H**, power level 10 dBm. `[fetched, search-result]` LCSC `C7503474`, $1.95,
+  550 in stock. NOTE `bourns.com/docs/...` 403s; `bourns.com/pdfs/...` serves it.
+- **The design rule that decides layout:** attenuator goes on the **SECONDARY**. `[derived]` LF corner
+  = R_source/(2*pi*L). 10k on the primary = **419 Hz**, inside the voice band. 10k on the secondary
+  leaves ~116 ohm driving the primary = **4.9 Hz**. Getting this backwards ruins the audio.
+- **The transformer deletes three problems at once:** no primary blocking cap (DAC DC offset 0.1 mV
+  across 115 ohm = 0.87 uA, nothing to a 3.8 H core), the differential-output question is gone
+  (both legs drive the winding), and the 16 V fault path is gone. **This CLOSES the section 10.1
+  `[gap]`** about running HPOUTN unloaded — the question no longer arises.
+- `[derived]` Level: 0.79 Vrms after insertion loss, through 10k into a ~470 ohm mic node = **35 mVrms**.
+
+### CORRECTION made to sections 3 and 10.2 — the mute shunts
+
+Both said "GND". **Wrong once there is an isolation boundary.** Every aircraft-side shunt —
+`R_MUTE` on the earphones, the mic-mute cap and its 1M bleed — must return to **headset/aircraft
+ground (plug sleeve)**, never AeroNode GND, or the mute bonds the two grounds the transformer just
+separated. Separate net, own symbol, own copper island. The likeliest failure of this design is a
+ground symbol dropped on the wrong side of the boundary in layout.
+
+**The relays are already part of the barrier** — `[fetched]` G6K is 1500 VAC coil-to-contact for
+1 min, 1000 Mohm at 500 VDC, and the **`-Y`** suffix is the wide-creepage variant (3.2 mm, 2.5 kV
+impulse, Telcordia). So `G6K-2F-Y` is now justified by a stated reason, not habit. With the
+transformer the only signal crossing and the coils the only control, **nothing on the aircraft side
+is galvanically connected to AeroNode.**
+
+### Open (new)
+
+6. **`SM-LP-5001` is NOT a flight part.** `[fetched]` operating range **-20 to +85 C** — a GA cockpit
+   goes below that — and `UL60950` is an IT-equipment standard, not DO-160. Bourns' own applications
+   list is modems and laptops. Right for the bench and a proof-of-concept; a flight article needs a
+   qualified transformer and that sourcing has not started. `[gap]`
+7. `[gap]` **Confirm the SM-LP-5001 pinout before layout.** Six pins, datasheet says the part is
+   symmetrical (implying a centre tap per side), but pin functions are in a schematic **graphic**
+   with no extractable text. Render and read it, as with UG-2017 Figure 8. Do not assume 2 and 5.
