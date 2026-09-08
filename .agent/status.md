@@ -289,5 +289,9 @@ delivered. Full write-up `linux/adau1860-pi5/RESULTS-2026-09-08.md`, commits `eb
 Piper's live home is **`OHF-Voice/piper1-gpl`**, not `rhasspy/piper` (read-only since Oct 2025);
 its abi3 aarch64 wheel installs on Python 3.13 with no build. ffmpeg is already on the Pi.
 
-**Open, unchanged in shape:** whether the jack makes a sound is still **Unknown** from here — no
-capture path, no instrument on P30. Every figure measures the digital path only.
+**CLOSED — Peter confirms he heard all three voices** (2026-09-08, by ear). Speech is intelligible
+out of P30, so the chain is proven end to end: neural synthesis on the Pi -> 48 kHz resample ->
+slots 0 and 2 -> I2S -> ADAU1860 DAC -> analog. This is the confirmation the digital-path figures
+could never supply from here, and it retires the "audibility is Unknown" caveat that has ridden
+every ADAU1860 result since 2026-09-02. Future TTS results may state the analog path works —
+but a *new* configuration still needs ears, because a muted DAC reads back perfectly (2026-09-07).
