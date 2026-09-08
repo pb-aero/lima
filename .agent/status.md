@@ -340,3 +340,28 @@ headset and electret mic from the headset when i2s audio path is active."* Note 
 
 **Rig was unreachable** — `192.168.0.99:22` timed out while this was written. `[measured]` Nothing
 was probed, nothing was wired.
+
+### Same day — Peter: "can we use a blocking capacitor to stop the bias affecting the ADAU1860 output"
+
+Answered in `docs/h1-headset-mute-relay.md` section 10. **Yes, and it is mandatory, not optional.**
+
+- `[fetched]` ADAU1860 Rev. 0 abs max: **"Analog Input Voltage (Signal Pins) -0.3 V to AVDD + 0.3 V"**
+  and **"Input Current (Except Supply Pins) +/-20 mA"**. AVDD is 1.8 V, so the ceiling is **2.1 V**
+  against an 8-16 V mic line. `[derived]` worst-case fault 16 V through a 220 ohm bias resistor =
+  **63 mA** against a 20 mA rating. Direct connection destroys the part.
+- **Injection circuit (10.1):** `HPOUTP -> C1 220nF film -> R1 10k -> mic node`, BAT54S clamp,
+  `HPOUTN` **left open, never grounded** (it is a driven output — the DAC pair is differential,
+  1.0 V rms FS). R1 sits after C1 deliberately: if C1 fails short, 16 V/10k = 1.6 mA, inside the
+  rating. Corner 69 Hz. **Do not use X7R** — DC-bias derating walks the corner into the voice band.
+- **The better answer for the aircraft is a 600:600 transformer** — a cap blocks DC but does not
+  break the ground loop, and aircraft audio ground can sit volts off ours.
+- **10.2 supersedes part of section 4.** A shunt-leg cap (100 uF NP + 1M bleed to keep it charged)
+  mutes the mic **without ever breaking the DC path** — no bias interruption, no thump on either
+  edge. `[derived]` -39 dB at 300 Hz against a 470 ohm source. **This closes open item 1** (the
+  capsule's DC operating point) by changing the circuit rather than by measuring it.
+- **Operational warning recorded:** injecting into the mic line trips the intercom VOX and goes out
+  over the air if PTT is pressed. If the intent is a private advisory, the mic line is the wrong
+  injection point.
+
+`[gap]` still open: whether the ADAU1860 HP amp is specified to run with one leg unloaded (the
+abridged datasheet has no output-stage description), and whether a capsule minds driving a near-short.
