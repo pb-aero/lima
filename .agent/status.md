@@ -295,3 +295,48 @@ slots 0 and 2 -> I2S -> ADAU1860 DAC -> analog. This is the confirmation the dig
 could never supply from here, and it retires the "audibility is Unknown" caveat that has ridden
 every ADAU1860 result since 2026-09-02. Future TTS results may state the analog path works —
 but a *new* configuration still needs ears, because a muted DAC reads back perfectly (2026-09-07).
+
+---
+
+## 2026-09-08 (later) · Headset mute relays — design note, nothing wired
+
+Peter: *"start looking at wiring up a relay board to mute the audio left and right going to the
+headset and electret mic from the headset when i2s audio path is active."* Note at
+`docs/h1-headset-mute-relay.md`.
+
+**Peter's rulings:** bench proof first · design for GA aviation, prototype on the TRRS rig ·
+**mute only**, not changeover · **CM5 GPIO software-asserted**, no hardware I2S detector.
+
+- **The signals already exist.** `[repo]` John's AERONODE block diagram carries `GPIO_RLY_SPKR` and
+  `GPIO_RLY_MIC` into the `AUDIO` block alongside `I2S1_SDO2/SDI2/SDO3/SDI3`. The audio interface
+  sheet holds **only connectors** — no codec, no relays. So the block is agreed, the circuit is not.
+- **Part sourced with numbers.** Omron `G6K-2F-Y`, DPDT, **bifurcated crossbar, Ag (Au-alloy)**,
+  **min permissible load 10 uA at 10 mV DC**, operate/release 3 ms max, 5 V coil 21.1 mA. `[fetched]`
+  from Omron's datasheet. A generic SRD-05VDC relay module is the **wrong part** — silver contacts
+  need wetting current and go crackly on dry-circuit audio.
+- **Aviation far side, `[fetched]` Bose A20:** earphones **320 ohm stereo**, mic bias **8-16 VDC
+  through 220-2200 ohm**, mic output **600 mV at 114 dB SPL**. That last number means an aviation
+  mic **overdrives** the ADAU1860's 0.49 V rms full scale — the opposite of the bench problem. Do
+  not carry "buy a MAX9814" across from the bench.
+- **Topology:** Form C break-and-shunt, `R_MUTE` link picks hard-mute (0R) vs series-break (DNP), so
+  Peter's mute-only ruling and John's changeover intent stay compatible. Fail-passive comes from a
+  **100k gate pulldown** on the FET — a CM5 GPIO is high-Z through boot, so without it the pilot's
+  audio state during a reboot is undefined.
+
+### Open
+
+1. `[gap]` **Mic-node DC operating point** — three meter readings on a real panel + headset close it.
+   The mic shunt value cannot be calculated without them; I did not guess one.
+2. `[gap]` **PTT interlock.** Mic muted + PTT pressed = transmitting silence, unknowingly. Needs a
+   ruling from Peter/John before this flies. Out of scope for the bench.
+3. **The mic mute cannot be bench-tested yet.** The bench mic path is already silent (TRRS plug in
+   P11's TRS jack, and no bias) — a mute on a dead path passes its positive control for the wrong
+   reason. Fix the mic path first.
+4. `[assumed]` GPIO23/24 for the relays — verify with `pinctrl get`, keep clear of GPIO18-21 (I2S1).
+5. **Requirement reading flagged for correction.** I read "I2S path active" as *AeroNode is
+   speaking*. `DATA_OVER_I2S.md` makes a second reading plausible — the same link as a raw sensor
+   pipe, in which case this is a hearing-protection interlock and should not be software-asserted.
+   Same circuit, different safety argument. One sentence from Peter settles it.
+
+**Rig was unreachable** — `192.168.0.99:22` timed out while this was written. `[measured]` Nothing
+was probed, nothing was wired.
