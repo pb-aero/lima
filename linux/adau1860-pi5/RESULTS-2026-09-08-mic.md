@@ -38,9 +38,26 @@ full-band RMS   -85.7 dBFS  +/- 0.2 dB   across the whole 45 s
 windows >6 dB above floor:  ZERO
 ```
 
-`[gap]` **I do not know whether Peter tapped the mic during this window.** The capture is flat, but
-"nothing acoustic arrived" and "nothing acoustic was attempted" are indistinguishable from here.
-This must be re-run with the tap confirmed before it means anything.
+**CONFIRMED 2026-09-08, tap witnessed.** Peter tapped the mic hard, six times in two groups of
+three, and said so. Re-captured 40.0 s and looked for transients above 200 Hz at 25 ms resolution
+— a knuckle tap is broadband, mains pickup is not:
+
+```
+full-band RMS                   -92.6 dBFS
+>200 Hz median envelope         -87.5 dBFS
+>200 Hz maximum envelope        -84.1 dBFS   (at t=31.20 s)
+peak-to-median ratio             3.5 dB      over the whole 40 s
+events > median +6 dB            0
+events > median +10 dB           0
+events > median +20 dB           0
+```
+
+**3.5 dB peak-to-median across 40 seconds is stationary noise.** A working capsule taps in at
+20-40 dB above its floor. Not one window moved. The earlier flat result was not a missed tap —
+**the microphone produces nothing at all.**
+
+Not "quiet", *nothing*: an electret's JFET needs drain current to amplify, and with no bias it does
+not conduct, so there is no small signal to dig out with more gain.
 
 ## The route sweep, which is the interesting measurement
 
@@ -88,6 +105,15 @@ cold-only, once someone measures which those are.
 
 ## Next
 
-1. Confirm the P13/P15 jumper position on the board. Cheapest thing that could explain everything.
-2. Re-run the 45 s capture **with a confirmed tap**, so the flat result means something.
-3. The amplified module remains the expected fix; the transport is proven and waiting for it.
+**Both closed.** Peter confirms **`P13` and `P15` are both on pins 1-2** — the differential
+default — so `AINP2` is not grounded and the TIP reaches the ADC. And the tap test is now witnessed
+and flat.
+
+That leaves exactly one explanation standing, reached by elimination rather than assumption:
+**the capsule is electrically present (it damps 82 dB of antenna pickup) and acoustically dead
+because nothing biases it.** Which is what `MIC_INPUT_P11.md` predicted from the schematic before
+the mic was ever plugged in.
+
+**The fix is an amplified module** — MAX9814 or MAX4466 class, powered from the Pi's 3.3 V. Nothing
+else about the path needs to change: duplex, the route, the gain and the transport are all proven
+and waiting. `[gap]` parts not yet priced or stock-checked.
