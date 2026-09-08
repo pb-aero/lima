@@ -408,3 +408,41 @@ is galvanically connected to AeroNode.**
 7. `[gap]` **Confirm the SM-LP-5001 pinout before layout.** Six pins, datasheet says the part is
    symmetrical (implying a centre tap per side), but pin functions are in a schematic **graphic**
    with no extractable text. Render and read it, as with UG-2017 Figure 8. Do not assume 2 and 5.
+
+### Same day — DRAWN into the canonical schematic
+
+Peter: *"draw the transformer and relay block into the audio interface schematic."* Done, in
+`~/aerosense/aeronode/aerosense/aeronode-lite/aeronode-audio-interface.kicad_sch`, **through Konnect
+MCP only**. Section 12 of `docs/h1-headset-mute-relay.md`.
+
+- **18 components:** K1/K2 (G6K-2F-Y), T1 (SM-LP-5001), Q1/Q2 (2N7002), D1/D2, R1-R8, C1, J10/J11.
+- **That tree is NOT under git.** Backed up two ways first: `.bak-LIMA-<stamp>` beside the file, and
+  a byte copy at `lima:kicad/aeronode-lite-audio/before/`. Rollback is one `cp` (README documents it).
+- **ERC negative control: 41 errors before, 41 after, identical list.** `[measured]` The block adds
+  **zero** errors and zero warnings; the 41 are pre-existing decorative block-diagram labels. Running
+  ERC on the untouched `before/` copy is what proves that — without it, "41 errors" reads as mine.
+- **Netlist verified `[measured]`.** The block **tied into the existing sheet by net name**:
+  `GPIO_RLY_SPKR -> J4.2`, `GPIO_RLY_MIC -> J4.1`, `5V_NODE -> J2.8`, `GND -> J1.1/J2.1/J3.1`.
+  It is wired into John's sheet, not drawn beside it. 0 floating wire endpoints.
+- **Rendered and LOOKED at it.** First render had every relay-pin label colliding into unreadable
+  mush. Rotated the contact labels vertical, replaced three redundant gate labels with wires, moved
+  the note block. Re-rendered until legible. **A schematic you have not rendered is not checked.**
+
+### Section 11.4 `[gap]` CLOSED — and the caution was right
+
+`[fetched]` Rendered the SM-LP-5001 schematic graphic at 900 dpi and read it:
+**pins 2 and 5 are NO-CONNECT, not centre taps.** Windings are **1-3** (dot on 1) and **6-4** (dot
+on 6). Section 11.4 had said "do not assume 2 and 5 are the taps" because the datasheet calls the
+part symmetrical — that inference would have been **wrong**. Same class as the ICM-45686 footprint
+trap. Crop committed at `kicad/aeronode-lite-audio/doc/smlp5001-pinout.png`.
+
+### Open (new)
+
+8. **Symbols are generic and footprints are deliberately unassigned.** `Relay:Relay_DPDT` uses
+   EN50005 pin numbers (11/12/14/...) where the G6K package is 1-8; `Device:Transformer_1P_1S` is
+   1-4 where the SM-LP-5001 is 1/3/4/6 + 2/5 N/C. A note on the sheet says so. **Author real symbols
+   and footprints before layout** — same decision as `kicad/imu-board/` U1.
+9. **The block sits on a block-diagram sheet (A4, already full).** Legible, but it belongs on its own
+   hierarchical sub-sheet like `cm5.kicad_sch`. Copy-paste when Peter wants it, not a redraw.
+10. **J10/J11 are generic 4-pin placeholders** — real GA is a dual plug (PJ-055/PJ-068) or a 6-pin
+    panel connector. Waiting on the mechanical interface decision.

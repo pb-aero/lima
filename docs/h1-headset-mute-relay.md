@@ -537,3 +537,83 @@ environment, and that is a sourcing exercise nobody has started. `[gap]`
    which implies a centre tap per side, but the pin functions live in a schematic **graphic** that
    carries no extractable text. Render it and read it, the way the UG-2017 Figure 8 crop was read
    for `MIC_INPUT_P11.md`. Do not assume 2 and 5 are the taps.
+
+---
+
+## 12. DRAWN 2026-09-08 — the block is in the schematic
+
+Peter: *"draw the transformer and relay block into the audio interface schematic."* Done, in
+**`~/aerosense/aeronode/aerosense/aeronode-lite/aeronode-audio-interface.kicad_sch`** — the canonical
+tree, through Konnect MCP tools only. That sheet's `AUDIO` block was an empty placeholder with the
+CM5-side connectors already labelled; the circuit now sits in the free page area to its right.
+
+**That tree is not under git**, so before touching it: a timestamped `.bak-LIMA-<stamp>` was written
+beside the file, and a byte copy went to `lima:kicad/aeronode-lite-audio/before/`. Rollback is one
+`cp`, documented in that folder's README.
+
+### What was drawn — 18 components
+
+| Ref | Part | Role |
+|---|---|---|
+| `K1` | G6K-2F-Y | **SPKR mute.** Both poles: `COM`→`HS_L`/`HS_R`, `NC`→`AC_L`/`AC_R`, `NO`→`R1`/`R2`. |
+| `K2` | G6K-2F-Y | **MIC mute.** Pole 1 is the §10.2 AC shunt; pole 2 no-connected as a spare. |
+| `T1` | SM-LP-5001 | Primary across `HPOUTP`/`HPOUTN`, secondary → `R4` → `MIC_LINE`, other leg → `AC_GND`. |
+| `Q1`,`Q2` | 2N7002 | Low-side coil drivers. |
+| `R7`,`R8` | 100k | **Gate pulldowns — the fail-passive claim.** |
+| `R5`,`R6` | 1k | Gate series. |
+| `D1`,`D2` | 1N4148 | Coil flyback. |
+| `R1`,`R2` | 0R | §3's `R_MUTE` links. DNP = series break instead of hard mute. |
+| `C1`,`R3` | 100µF NP, 1M | §10.2 mic shunt + bleed. |
+| `R4` | 10k | §11.1 secondary-side attenuator. |
+| `J10`,`J11` | Conn_01x04 | Aircraft panel and headset. |
+
+### Verified, not assumed
+
+- **ERC: 41 errors before, 41 errors after, byte-identical list.** `[measured]` The block adds
+  **zero** ERC errors and zero warnings. The 41 are pre-existing "label not connected" on the block
+  diagram's own decorative labels. Running ERC on the untouched `before/` copy is the negative
+  control; without it "41 errors" would have looked like my doing.
+- **`validate_wire_connections`: 0 floating endpoints.** `[measured]`
+- **The netlist says what the design says.** `[measured]` Exported and parsed:
+
+```
+5V_NODE       -> D1.1, D2.1, J2.8, K1.A1, K2.A1
+GND           -> J1.1, J2.1, J3.1, Q1.S, Q2.S, R7.2, R8.2
+GPIO_RLY_SPKR -> J4.2, R5.1          GPIO_RLY_MIC -> J4.1, R6.1
+AC_L -> J10.1, K1.12                 AC_R  -> J10.2, K1.22
+HS_L -> J11.1, K1.11                 HS_R  -> J11.2, K1.21
+MUTE_L -> K1.14, R1.1                MUTE_R -> K1.24, R2.1
+MIC_LINE  -> C1.1, J10.3, J11.3, R4.2
+MIC_SHUNT -> C1.2, K2.11, R3.1
+AC_GND    -> J10.4, J11.4, K2.14, R1.2, R2.2, R3.2, T1.3
+HPOUTP -> T1.1   HPOUTN -> T1.2   T1_SEC -> R4.1, T1.4
+```
+
+  The line worth reading twice is **`GPIO_RLY_SPKR -> J4.2`**. The drivers landed on John's existing
+  CM5-side connector by net name, and `5V_NODE` picked up `J2.8`, and `GND` picked up `J1.1/J2.1/J3.1`.
+  **The block is wired into the sheet, not drawn beside it.**
+
+### The pinout `[gap]` from §11.4 is CLOSED — and my caution was right
+
+`[fetched]` The SM-LP-5001 schematic graphic, rendered at 900 dpi from Bourns' page 1 and read
+(crop at `kicad/aeronode-lite-audio/doc/smlp5001-pinout.png`):
+
+**Pins 2 and 5 are NO-CONNECT, not centre taps.** The windings are **1–3** (dot on 1) and **6–4**
+(dot on 6). §11.4 said *"Do not assume 2 and 5 are the taps"* on the strength of the datasheet
+calling the part symmetrical — that inference would have been wrong, and it is exactly the class of
+error the ICM-45686 footprint scar is about.
+
+### What is deliberately NOT right yet
+
+1. **The symbols are generic.** `Relay:Relay_DPDT` numbers its pins EN50005 (11/12/14/21/22/24/A1/A2);
+   the G6K's package pins are 1–8. `Device:Transformer_1P_1S` numbers 1–4; the SM-LP-5001's are
+   1/3/4/6 with 2 and 5 unconnected. **No footprints are assigned, deliberately** — same decision as
+   `kicad/imu-board/` U1. A sheet note on the drawing says so, so the mismatch cannot be inherited
+   silently. **Author real symbols and footprints before any layout.**
+2. **This sits on a block-diagram sheet.** The page is A4 and already carries the whole AeroNode
+   block diagram, so the circuit occupies leftover space. It is legible — the labels were rotated
+   vertical after the first render showed them colliding — but it would sit better on its own
+   hierarchical sub-sheet, the way `cm5.kicad_sch` already is. That is a copy-paste when Peter wants
+   it, not a redraw.
+3. **`J10`/`J11` are generic 4-pin connectors.** Real GA hardware is a dual plug (PJ-055/PJ-068) or a
+   6-pin panel connector. Placeholders until the mechanical interface is chosen.
