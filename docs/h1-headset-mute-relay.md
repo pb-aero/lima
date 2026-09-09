@@ -694,3 +694,75 @@ it. Two lessons worth keeping:
 `[gap]` **KiCAD is running on this machine** (`pgrep kicad` returns a process). If Peter has this
 project open in eeschema, he must reload it — and must not save from a stale in-memory copy, or
 these edits are lost.
+
+---
+
+## 14. ADAU1860 analog in + out — 2026-09-09
+
+Peter: *"add the adau1860 analog out and in connectivity."* Both directions now exist on
+`audio-mute.kicad_sch`.
+
+### Analog OUT — already there, now labelled as such
+
+`HPOUTP`/`HPOUTN` → `T1` primary → secondary → `R4` (10k) → `MIC_LINE`. That is §11.2 unchanged.
+A sheet caption now names it: *"ADAU1860 ANALOG OUT (differential HPOUTP/HPOUTN, 1.0 Vrms FS)"*.
+
+### Analog IN — new, and it needed a second transformer
+
+```
+MIC_LINE ──[ R9 2k2 ]── MIC_TAP ──┤├── AINP2 / AINN2      (T2, SM-LP-5001)
+                    T2 primary return → AC_GND
+```
+
+**Why `T2` and not a direct tap.** §11.3 claims *"T1 is the ONLY signal crossing"* the isolation
+boundary. A capture path wired from the aircraft mic line straight to an ADAU1860 ADC input would be
+a **second galvanic crossing** and would silently destroy that claim. So the capture gets its own
+transformer. Two transformers, no galvanic path in either direction — the boundary survives, and
+the design note that asserts it stays true.
+
+**`R9` = 2k2 sets the tap impedance.** `[derived]` Against a ~470 Ω mic node, a bare 600 Ω primary
+would load it by ~6 dB. Through 2k2 the load is (2k2+600) ∥ panel-Z, costing about **1.3 dB** of the
+pilot's mic level to the radio. LF corner is `2200+600 / (2π·3.8 H)` ≈ **92 Hz**, below the
+300 Hz–3 kHz comms band. Bigger R9 is gentler on the mic line but walks the corner up into the voice
+band — the §11.1 trade-off, in the other direction.
+
+**Level.** `[derived]` T2 sees `V_node × 600/(2200+600)` = 0.214 × V_node. Normal speech at the node
+(~50 mV rms) arrives at roughly **8.5 mV**, which is −41 dBFS against the ADAU1860's 0.98 V rms
+differential full scale — comfortable with the 0–24 dB PGA. §2's 600 mV at 114 dB SPL lands near
+−20 dBFS, so **the PGA must not be run near maximum** or loud speech clips.
+
+### Three things recorded on the sheet rather than buried
+
+1. **CAVEAT — as drawn, muting the mic also deafens AeroNode.** `K2` shunts the *shared* `MIC_LINE`
+   node (§10.2), and the capture taps that same node. So energising `GPIO_RLY_MIC` silences the
+   pilot to the radio **and** to us. If the intent is *"the radio cannot hear the pilot but AeroNode
+   can"* — which is what a push-to-talk-to-the-assistant feature needs — then `K2` must become a
+   **series break** with this tap on the headset side, and that **reopens the DC-thump question that
+   §10.2 closed**. This is a real fork and it is Peter's call; I have not taken it.
+2. **`R4` injects TTS onto the same node the capture reads**, so AeroNode hears its own voice. That
+   is not automatically a fault — it is a free echo reference for cancellation — but it must be
+   known.
+3. `[gap]` **The design assumes the ADAU1860's `AINx` pins self-bias.** `[fetched]` EVB Figure 8
+   shows only 22 µF in series into `AINP2`/`AINN2` with no bias network, which implies they do. If
+   they do not, two bias resistors from each `T2` secondary leg to `CM` (0.85 V) are needed. The
+   abridged datasheet has no input-stage description, so this is not settled.
+
+### Why the codec symbol is still not placed
+
+Deliberate. `docs/h1-audio-board-codec-selection.md` §4 records that the ADAU1761-vs-ADAU1860 choice
+is **John's**, not one to be taken here — *"if the part changes, it changes the bit map, and it has
+to go to him"*. Placing an ADAU1860 symbol would quietly make that decision. The interface is
+therefore expressed as sheet pins (`HPOUTP`, `HPOUTN`, `AINP2`, `AINN2`), which is what the block
+needs to be correct either way.
+
+### Verified
+
+- **ERC: 41 errors — the untouched baseline.** `[measured]` Zero added.
+- `validate_sheet_pins`: **0 issues** across 8 pins. `[measured]`
+- **Netlist** `[measured]`: `~/MIC_TAP -> R9.2, T2.1` · `~/MIC_LINE -> C1.1, J10.3, J11.3, R4.2,
+  R9.1` · `~/AC_GND` now includes `T2.2` · `/AINP2 -> T2.4` · `/AINN2 -> T2.3`.
+- **The §13 wire scar repeated, exactly.** The new `R9`→`T2` wire produced one fresh
+  *"Wires not connected to anything"* ERC error until a net label (`MIC_TAP`) was put on it — the
+  same failure, same fix, second time. It is now a rule, not an anecdote: **a Konnect-drawn wire
+  segment carrying no net label does not reliably form a net. Label every wire, then read the
+  netlist.**

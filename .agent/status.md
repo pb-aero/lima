@@ -486,3 +486,36 @@ Two rules from it:
 11. `[gap]` **KiCAD is running on this Mac** (`pgrep kicad` -> a process). If Peter has this project
     open in eeschema he must **reload** it, and must not save from a stale in-memory copy or these
     edits are lost.
+
+### Same day — ADAU1860 analog IN + OUT added to `audio-mute.kicad_sch`
+
+Peter: *"add the adau1860 analog out and in connectivity."* Section 14 of the design note.
+
+- **OUT** was already there (`HPOUTP`/`HPOUTN` -> T1 -> R4 -> MIC_LINE); now captioned on the sheet.
+- **IN is new and it needed a SECOND transformer.** `MIC_LINE -> R9 (2k2) -> MIC_TAP -> T2 ->
+  AINP2/AINN2`. A direct tap would have been a **second galvanic crossing** and would have silently
+  destroyed section 11.3's claim that T1 is the only one. Two transformers, boundary intact.
+- `[derived]` R9=2k2 costs ~1.3 dB of the pilot's mic level to the radio and puts the LF corner at
+  ~92 Hz. Speech arrives ~8.5 mV = -41 dBFS; 114 dB SPL lands near -20 dBFS, so **do not run the
+  PGA near maximum**.
+- **Codec symbol still NOT placed, deliberately.** `h1-audio-board-codec-selection.md` records the
+  ADAU1761-vs-1860 choice as **John's**. Placing a symbol would quietly take it. The interface is
+  sheet pins instead — correct either way.
+- ERC 41 = baseline. `validate_sheet_pins` 0 issues across 8 pins. Netlist verified.
+
+### Open (new) — a real fork for Peter, not a gap to inherit
+
+12. **As drawn, muting the mic also deafens AeroNode's own capture.** K2 shunts the *shared*
+    MIC_LINE node (10.2) and the capture taps that same node. If the wanted behaviour is *"the radio
+    cannot hear the pilot but AeroNode can"* — which is what push-to-talk-to-the-assistant needs —
+    K2 must become a **series break** with the tap on the headset side, and that **reopens the
+    DC-thump question 10.2 closed**. Recorded on the sheet and in the note. **Not taken by me.**
+13. `[gap]` Assumes ADAU1860 `AINx` self-bias (EVB Fig 8 shows only 22uF in series, no bias network).
+    If not, two bias resistors per T2 secondary leg to CM (0.85 V).
+
+### SCAR CONFIRMED (second occurrence) — label every wire, then read the netlist
+
+The new R9->T2 wire produced one fresh *"Wires not connected to anything"* ERC error until a net
+label (`MIC_TAP`) was placed on it. **Same failure, same fix, second time.** It is now a rule:
+**a Konnect-drawn wire segment carrying no net label does not reliably form a net.** Konnect's
+`validate_wire_connections` passes it regardless — believe KiCAD's ERC and the netlist.
