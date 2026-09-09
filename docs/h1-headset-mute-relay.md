@@ -869,3 +869,48 @@ pilot to the radio.
 
 `[gap]` Also unchanged: `R1`/`R2` at 0 Ω hard-parallel the two earphones onto one mono secondary.
 Fine for speech; give them a small series value if channel isolation ever matters.
+
+---
+
+## 17. Does `K2`'s shunt also shunt the AeroNode audio? — checked 2026-09-09
+
+Peter asked. **No — `−0.0036 dB`.** `[derived]` It was a fair question, and it *would* have been
+yes before §16.
+
+### Why it does not
+
+The two live on different nets now. `[measured]` from the netlist:
+
+```
+~/AERONODE_AUDIO -> R1.2, R2.2, R4.1, T1.4     ~/MIC_LINE  -> C1.1, J10.3, J11.3, R4.2
+~/MUTE_L -> K1.14, R1.1                        ~/MIC_SHUNT -> C1.2, K2.11, R3.1
+~/MUTE_R -> K1.24, R2.1                        ~/AC_GND    -> ..., K2.14, ...
+```
+
+AeroNode's audio reaches the pilot **`T1.4 → R1/R2 → K1's NO contact → HS_L/HS_R`**. `K2`'s shunt
+sits on `MIC_LINE`, which that path never touches. The only connection between the two nets is
+**`R4`, 10 kΩ** — and 10 kΩ across a 160 Ω earphone load is nothing:
+
+| | Load on `AERONODE_AUDIO` | Level at the earphones |
+|---|---|---|
+| `K2` de-energised (`R4` sees the ~470 Ω mic node) | 157.59 Ω | 0.4066 V rms |
+| `K2` energised (`R4` sees ~AC ground through `C1`) | 157.48 Ω | 0.4064 V rms |
+
+`[derived]` **−0.0036 dB**, and 16.5 µW goes down `R4` against 1.03 mW into the earphones.
+
+**Before §16 the answer was yes, and badly so.** When AeroNode's voice travelled *via* `MIC_LINE`
+(`R4` → panel → intercom → back to the earphones), `K2`'s shunt sat directly across it — `C1`'s
+~5 Ω against `R4`'s 10 kΩ is about **−66 dB**. That was half of §15's conflict. Making `K1` a
+changeover moved the audio off `MIC_LINE` entirely, so the shunt no longer has anything of ours to
+short. **The question is worth keeping because it is the check that proves §16 actually fixed it.**
+
+### The useful flip side — `K2` currently masks the `R4` hazard
+
+Running the logic the other way: energising `K2` **shorts `R4`'s injection into the mic line**, by
+that same −66 dB. So if software always energises `K2` while AeroNode speaks, §16's transmit hazard
+never fires.
+
+**Do not rely on that.** It is a software policy, not a property of the circuit — one missed GPIO and
+AeroNode's voice is on the mic line with PTT live. **DNP on `R4` is still the robust fix**; this only
+means the hazard is masked in normal operation, which is exactly the kind of thing that hides a
+defect until the day the software gets it wrong.
