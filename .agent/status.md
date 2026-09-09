@@ -519,3 +519,39 @@ The new R9->T2 wire produced one fresh *"Wires not connected to anything"* ERC e
 label (`MIC_TAP`) was placed on it. **Same failure, same fix, second time.** It is now a rule:
 **a Konnect-drawn wire segment carrying no net label does not reliably form a net.** Konnect's
 `validate_wire_connections` passes it regardless — believe KiCAD's ERC and the netlist.
+
+### Same day — RULED: headset mic is PANEL ONLY. Section 14's capture path REMOVED.
+
+Peter: *"the electret mic does not need to go to the aeronode we will use another analog mic via
+i2s."* Section 15 of the design note.
+
+- **Deleted from the schematic**, not deprecated: `R9`, `T2`, `MIC_TAP`, the `AINP2`/`AINN2`
+  hierarchical labels and their two parent sheet pins. `[measured]` netlist has no `AIN*` net and no
+  R9/T2. Both sheets backed up first (`.bak-LIMA-20260909-111922`). ERC 41 = baseline.
+- The headset electret now runs **headset -> MIC_LINE -> aircraft panel** only, K2 muting it.
+  AeroNode's audio input is a **separate analog mic into the codec over I2S**, not on this sheet.
+
+**Three things the ruling cleans up:** section 11.3's "T1 is the ONLY crossing" is literally true
+again (14 had needed a second transformer just to keep it honest); **open item 12 is CLOSED** rather
+than carried, because with no capture from this mic the mute-vs-capture conflict cannot arise and
+10.2's AC-only shunt stands; and one transformer + one resistor come off the BOM.
+
+### But a MORE serious conflict is now exposed — needs Peter's ruling
+
+With the capture gone, MIC_LINE carries the pilot's mic **and** AeroNode's TTS (injected by R4).
+Trace it: `HPOUT -> T1 -> R4 -> MIC_LINE -> panel -> intercom -> AC_L/AC_R -> K1 NC -> pilot`.
+
+**The TTS arrives through the very contact K1 opens to mute.** So energising GPIO_RLY_SPKR to "mute
+the headset while AeroNode speaks" cuts the only path AeroNode's voice has — the pilot hears
+*nothing*. K2 compounds it: its shunt is on MIC_LINE, so muting the mic also shorts the injected TTS
+(`[derived]` ~100uF against R4's 10k is about -66 dB at 300 Hz).
+
+**Fix is what John drew originally: make K1 a CHANGEOVER** — NO contact to AeroNode audio rather
+than AC_GND — so muting the intercom *substitutes* AeroNode's voice instead of silence. Two nets.
+`[gap]` **Not taken.** Peter ruled mute-only on 2026-09-08 *before* the injection point was chosen,
+so this is new information, not grounds to overturn him quietly. On the sheet and in section 15.
+
+### Open
+
+14. **The K1 / mic-line-injection conflict above.** The single most important thing on this design
+    now. Nothing else about the block is worth refining until it is ruled.

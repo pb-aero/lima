@@ -766,3 +766,58 @@ needs to be correct either way.
   same failure, same fix, second time. It is now a rule, not an anecdote: **a Konnect-drawn wire
   segment carrying no net label does not reliably form a net. Label every wire, then read the
   netlist.**
+
+---
+
+## 15. RULED 2026-09-09 — the headset mic does not go to AeroNode. §14's capture path is REMOVED.
+
+Peter: *"the electret mic does not need to go to the aeronode we will use another analog mic via
+i2s."*
+
+**§14's analog-IN chain is deleted from the schematic**, not merely deprecated: `R9`, `T2`, the
+`MIC_TAP` net, the `AINP2`/`AINN2` hierarchical labels, and the two matching sheet pins on the
+parent are gone. `[measured]` The netlist confirms it — no `AIN*` net exists and `R9`/`T2` appear
+nowhere. Both sheets were backed up first (`.bak-LIMA-20260909-111922`).
+
+### What the block does now
+
+The headset electret runs **headset → `MIC_LINE` → aircraft panel**, and `K2` mutes it. That is its
+only destination. AeroNode's own audio input is a **separate analog mic into the codec, reaching the
+CM5 over I2S** — a different part of the design, not this sheet. So the ADAU1860's analog **IN** is
+simply not used by this block, and only the analog **OUT** (`HPOUTP`/`HPOUTN` → `T1`) crosses here.
+
+**Three things this ruling cleans up, and they are all improvements:**
+
+1. **Back to one crossing of the isolation boundary.** §11.3's claim — *"T1 is the ONLY signal
+   crossing"* — is literally true again. §14 had to add a second transformer purely to keep it true.
+2. **Open item 12 is closed, not carried.** §14 flagged that muting the mic would also deafen
+   AeroNode's capture, and that fixing it would reopen the DC-thump question §10.2 settled. With no
+   capture from this mic, the conflict does not exist. §10.2's AC-only shunt stands unchallenged.
+3. **One less transformer, one less resistor**, and the aviation-mic overdrive arithmetic in §2/§14
+   no longer applies to anything on this sheet.
+
+### But it exposes a conflict that is still open, and it is more serious
+
+Removing the capture leaves `MIC_LINE` carrying two things: the pilot's mic to the radio, and
+**AeroNode's TTS, injected by `R4`** (§11.2). Trace where that TTS actually reaches the pilot:
+
+```
+HPOUT → T1 → R4 → MIC_LINE → aircraft panel mic input → intercom mixes it
+      → intercom headphone out → AC_L / AC_R → K1 NC contact → HS_L / HS_R → pilot
+```
+
+**The TTS arrives through `K1`'s NC contact — the exact contact `K1` opens when it mutes.** So
+energising `GPIO_RLY_SPKR` to "mute the headset while AeroNode speaks" cuts the only path AeroNode's
+voice has. The pilot hears nothing at all. And `K2` compounds it: its shunt sits on `MIC_LINE`, so
+muting the mic shorts the injected TTS too (`[derived]` ~100 µF against `R4`'s 10 kΩ is about
+−66 dB at 300 Hz).
+
+**As drawn, the two relays and the injection point cannot all be right.** The fix is the one John's
+AERONODE block diagram drew before the mute-only ruling: make `K1` a **changeover** — `NO` contact to
+AeroNode's audio rather than to `AC_GND` — so muting the intercom *substitutes* AeroNode's voice
+instead of substituting silence. That is `R_MUTE` → `T1` secondary instead of `R_MUTE` → `AC_GND`,
+a two-net change.
+
+`[gap]` **Not taken.** Peter ruled mute-only on 2026-09-08, before the injection point was chosen;
+this is new information rather than a reason to overturn him quietly. It is written on the sheet and
+recorded here as the next thing needing a ruling.

@@ -3381,26 +3381,6 @@
 		)
 		(uuid "3f9fa9e0-ac82-4543-a581-144b4a8d79a8")
 	)
-	(label "AINP2"
-		(at 115 145.78 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "6512df75-4bdd-4abc-829d-e03b15112f57")
-	)
-	(label "AINN2"
-		(at 115 148.32 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "effb9cc8-f506-4838-834d-1014cbffa260")
-	)
 	(sheet
 		(at 153.67 22.86)
 		(size 24.13 34.29)
@@ -3500,14 +3480,6 @@
 		(pin "HPOUTN" input
 			(at 115 143.24 180)
 			(uuid "249fca8c-2fb8-440e-94cb-6791d688eb8f")
-		)
-		(pin "AINP2" output
-			(at 115 145.78 180)
-			(uuid "1a5ca4c0-e38a-4681-ba6b-de65e1f2c47d")
-		)
-		(pin "AINN2" output
-			(at 115 148.32 180)
-			(uuid "8fa67397-aa12-428e-b8d7-042b80633434")
 		)
 		(instances
 			(project "aeronode-audio-interface"
