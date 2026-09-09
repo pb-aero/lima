@@ -2006,6 +2006,14 @@
 		(at 111.76 121.92)
 		(uuid "e0a78531-d038-4a59-913a-1c5c82791349")
 	)
+	(no_connect
+		(at 111.76 52.07)
+		(uuid "b46f0b46-1231-433d-ae2f-33457959d568")
+	)
+	(no_connect
+		(at 111.76 41.91)
+		(uuid "38a1bbf9-f46c-46d0-b673-2c68217c47ec")
+	)
 	(wire
 		(pts
 			(xy 53.34 44.45)
@@ -2071,14 +2079,14 @@
 		)
 		(uuid "a10fddb3-ba76-45d1-93b2-a4815f4dc822")
 	)
-	(text "HEADSET MUTE + AIRCRAFT ISOLATION\nLIMA 2026-09-09   lima:docs/h1-headset-mute-relay.md\n\nK1 = SPKR CHANGEOVER (ruled 2026-09-09, was mute-only)\n  De-energised: HS_L/HS_R <- AC_L/AC_R, the pilot hears\n  the radio. Energised: HS_L/HS_R <- AERONODE_AUDIO via\n  R1/R2, and the intercom side sees an OPEN.\n  Muting the intercom now SUBSTITUTES AeroNode's voice\n  instead of substituting silence.\n\nK2 = MIC MUTE. AC-only shunt through C1. The DC bias\n  path is NEVER broken, so no thump on either edge.\n  R3 (1M) keeps C1 pre-charged, so no click.\n\nFAIL-PASSIVE: coils de-energised = pilot hears the\n  radio and the mic is live. R7/R8 (100k) hold the\n  FETs OFF while the CM5 GPIO is high-Z at boot.\n  That resistor IS the fail-passive claim.\n\nISOLATION: T1 (2000 Vrms) is the ONLY signal crossing.\n  AC_GND is AIRCRAFT ground (headset plug sleeve).\n  It is NOT AeroNode GND. Never join them.\n\nSYMBOLS ARE GENERIC - pin numbers are NOT the package's.\n  Relay_DPDT is EN50005 (11/12/14/A1/A2); G6K is 1-8.\n  SM-LP-5001 windings are 1-3 and 6-4 (dots on 1, 6);\n  pins 2 and 5 are NO-CONNECT.\n  Author real symbols + footprints before layout."
-		(at 200 72 0)
+	(text "R4 = DNP  (do not populate)"
+		(at 250 114 0)
 		(effects
 			(font
-				(size 1 1)
+				(size 1.2 1.2)
 			)
 		)
-		(uuid "abc18e91-e75b-4e6a-8a42-6f14dd394f41")
+		(uuid "c45231b6-9919-47a9-8b8c-23c7c738c271")
 	)
 	(label "GND"
 		(at 71.12 54.61 0)
@@ -2280,46 +2288,6 @@
 		)
 		(uuid "f1c0e984-bd94-4d4d-93df-459dbb5bb439")
 	)
-	(label "MUTE_L"
-		(at 111.76 52.07 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "f1eb8915-64c4-491d-90fb-4ab03db54256")
-	)
-	(label "MUTE_L"
-		(at 167.64 35.56 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "52629240-bbf0-44fe-9cc3-7f8a69e0c489")
-	)
-	(label "MUTE_R"
-		(at 111.76 41.91 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "26eba58d-ebb2-4968-88a5-1816c4a840ca")
-	)
-	(label "MUTE_R"
-		(at 182.88 35.56 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "71dac58f-b35f-47c1-8727-f502cbcba94f")
-	)
 	(label "MIC_SHUNT"
 		(at 127 134.62 0)
 		(effects
@@ -2480,6 +2448,26 @@
 		)
 		(uuid "99ec4812-65a2-4a45-b216-8dc242a80377")
 	)
+	(label "HS_L"
+		(at 167.64 35.56 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3bdef3e2-dd60-4b47-b9f9-d7fd9cd680a6")
+	)
+	(label "HS_R"
+		(at 182.88 35.56 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "eefb1ad4-7300-4d96-b027-834cbde7af8d")
+	)
 	(hierarchical_label "GPIO_RLY_SPKR"
 		(shape input)
 		(at 45.72 44.45 180)
@@ -2546,15 +2534,15 @@
 		)
 		(uuid "523caf04-69c7-4159-8f2a-5a8866f1833b")
 	)
-  (text "HEADSET MIC = PANEL ONLY   (ruled by Peter, 2026-09-09)\nThe headset electret does NOT reach AeroNode. It runs\n  headset -> MIC_LINE -> aircraft panel, and K2 mutes it.\nAeroNode's own audio input is a SEPARATE analog mic into\n  the codec, arriving at the CM5 over I2S - not on this\n  sheet, so the ADAU1860 analog IN is unused by this block.\n\nR4 = DNP.  DO NOT POPULATE.  (ruled 2026-09-09)\n  Superseded by the K1 changeover: AeroNode's voice reaches\n  the pilot directly through K1. Fitted, R4 would inject it\n  into MIC_LINE toward the PANEL - tripping the intercom\n  VOX and TRANSMITTING it if PTT were pressed.\n  Footprint kept so the option survives; it must not be fitted.\n  !! The KiCAD dnp attribute is still 'no' - tick \"Do not\n  populate\" in the R4 symbol properties. Value + DNP field\n  are set, but a BOM export will list it until that is ticked.\n\nLEVEL [gap] - NEEDS EARS. T1's 115R per winding against\n  160R of paralleled earphones divides 1.0 Vrms FS down to\n  ~0.41 Vrms (~1.05 mW). A GA intercom drives 1-2 Vrms, so\n  this may be quiet in a noisy cockpit. If it is, the fix\n  is a lower-DCR transformer or a gain stage after the\n  codec - not more digital gain."
+  (text "HEADSET MUTE + AIRCRAFT ISOLATION    LIMA 2026-09-09\nlima:docs/h1-headset-mute-relay.md\nK1 = INTERCOM BREAK; AERONODE PERMANENTLY SUMMED\n  (ruled 2026-09-09, supersedes the changeover).\n  AERONODE_AUDIO is ALWAYS on HS_L/HS_R via R1/R2, so\n  ANC runs continuously; K1 breaks only the intercom.\n  NO contacts 14/24 unused.\n  R1/R2 MUST NOT BE 0R - that shorts the panel's L and\n  R together. 220R gives a 440R L-to-R path.\n  [gap] ANC authority depends on the panel's headphone\n  output impedance. Section 21. MEASURE IT.\nK2 = MIC MUTE, AC-only shunt via C1. DC bias never\n  broken (no thump); R3 pre-charges C1 (no click).\nFAIL-PASSIVE: coils off = pilot hears radio, mic live.\n  R7/R8 hold the FETs off while the GPIO is high-Z.\nISOLATION: T1 (2000 Vrms) is the ONLY crossing.\n  AC_GND = AIRCRAFT ground, NOT AeroNode GND.\nSYMBOLS GENERIC - pins are NOT the package's.\n  SM-LP-5001 windings 1-3, 6-4; pins 2 and 5 N/C."
+    (at 165 78 0)
+    (effects (font (size 1 1)))
+    (uuid "9443a8d2-1357-4af0-ab70-c96d56b52584")
+  )
+  (text "HEADSET MIC = PANEL ONLY   (ruled by Peter, 2026-09-09)\nThe headset electret does NOT reach AeroNode. It runs\n  headset -> MIC_LINE -> aircraft panel, and K2 mutes it.\nAeroNode's own audio input is a SEPARATE analog mic into\n  the codec, arriving at the CM5 over I2S - not on this\n  sheet, so the ADAU1860 analog IN is unused by this block.\n\nR4 = DNP.  DO NOT POPULATE.  (ruled 2026-09-09)\n  Superseded by R1/R2: AeroNode's voice now reaches the\n  pilot directly through the summing path. Fitted, R4 would\n  also inject it into MIC_LINE toward the PANEL - tripping\n  the intercom VOX and TRANSMITTING it if PTT were pressed.\n  Footprint kept so the option survives; it must not be fitted.\n  !! The KiCAD dnp attribute is still 'no' - tick \"Do not\n  populate\" in the R4 symbol properties. Value + DNP field\n  are set, but a BOM export will list it until that is ticked.\n\nLEVEL [gap] - NEEDS EARS. T1's 115R per winding against\n  160R of paralleled earphones divides 1.0 Vrms FS down to\n  ~0.41 Vrms (~1.05 mW) when AeroNode is the active path.\n  A GA intercom drives 1-2 Vrms, so this may be quiet in a\n  noisy cockpit. If it is, the fix is a lower-DCR transformer\n  or a gain stage after the codec - not more digital gain."
     (at 125 172 0)
     (effects (font (size 1 1)))
-    (uuid "a272c397-d304-425a-9d66-3cab359a183f")
-  )
-  (text "R4 = DNP  (do not populate)"
-    (at 250 114 0)
-    (effects (font (size 1.2 1.2)))
-    (uuid "c45231b6-9919-47a9-8b8c-23c7c738c271")
+    (uuid "acf9efe9-937f-48a8-a271-b50868c88fb9")
   )
 	(symbol
 		(lib_id "Device:R")
@@ -3090,7 +3078,7 @@
 				)
 			)
 		)
-		(property "Value" "0R"
+		(property "Value" "220R"
 			(at 167.64 39.37 90)
 			(effects
 				(font
@@ -3141,7 +3129,7 @@
 				)
 			)
 		)
-		(property "Value" "0R"
+		(property "Value" "220R"
 			(at 182.88 39.37 90)
 			(effects
 				(font
@@ -3269,15 +3257,6 @@
 				)
 			)
 		)
-		(instances
-			(project "audio-mute"
-				(path "b45f1e32-bb36-4b17-a2a5-b5d88b4c0a81"
-					(reference "R4")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "DNP" "yes"
 			(at 245.11 105.41 0)
 			(hide yes)
@@ -3295,7 +3274,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "audio-mute"
+				(path "b45f1e32-bb36-4b17-a2a5-b5d88b4c0a81"
+					(reference "R4")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x04")
 		(at 267.97 44.45 0)

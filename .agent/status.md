@@ -669,3 +669,31 @@ path."* **Open item 17 CLOSED** — section 19's "architectural blocker" was the
 
 So the ruling is also the cheaper engineering: ANC while AeroNode owns the earcup sidesteps the
 problem entirely, because the intercom is open exactly when ANC is running.
+
+### Same day — RETRACTED section 20. K1 SUMS after all; ANC is always on.
+
+Peter: *"actually i'm taking rubbish forget my previous statement"* -> clarified as **forget the
+cancel**. Section 21. I **asked** rather than guessing: the two readings gave opposite circuits, and
+picking wrong would have written a false ruling into the record as well as the wrong copper.
+
+- R1/R2 moved from K1.14/24 to **HS_L/HS_R permanently**; K1's NO contacts unused and no-connected;
+  K1 now breaks only the intercom. MUTE_L/MUTE_R nets gone. `[measured]` `~/HS_L -> J11.1, K1.11,
+  R1.1`, `~/AERONODE_AUDIO -> R1.2, R2.2, R4.1, T1.4`. ERC 42 (41 + the deliberate 3V3_MIC).
+- **R1/R2 changed 0R -> 220R, and had to.** AERONODE_AUDIO ties the two channels, so 0R would
+  **short the panel's L and R outputs**. Harmless under the changeover (intercom open at the same
+  instant), a fault under summing. **The value had to change because the switch behaviour around it
+  changed, not because the part did** - the kind of thing a parts-focused review misses.
+  220R gives a 440R L-R path for only 1.4 dB less level than 100R.
+
+### The honest limit: ANC AUTHORITY, not connectivity
+
+`[derived]` A passive sum cannot fight a low-Z source. Intercom live: AeroNode ~**-33 dB** at the
+earphone. K1 open: **-7.6 dB** - a free ~26 dB step, because the swamping panel is disconnected.
+So **ANC authority in normal flight is set by the panel's headphone output impedance**, `[gap]`
+unmeasured. Stiff panel (10R) -> ANC ~33 dB down, useless. Soft (330-600R) -> -13 dB, arguable.
+
+### Open
+
+20. **MEASURE THE PANEL'S HEADPHONE OUTPUT IMPEDANCE.** It decides whether ANC works summed. If it
+    is stiff, ANC needs its own path to the transducer instead of sharing the intercom line - a
+    bigger change than any resistor value, so worth knowing early.

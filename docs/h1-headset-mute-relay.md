@@ -1100,3 +1100,68 @@ whole problem, because the intercom is open at exactly the moments ANC is runnin
 `[gap]` `3V3_MIC` needs a quiet LDO (ERC 42 = 41 baseline + that one deliberate error) ·
 `[gap]` ANC must run on FastDSP at a high rate, not 48 kHz · `[gap]` whether the target headset
 already has its own ANR. `T1` remains a non-issue for bandwidth — 3.4 Hz corner in this circuit.
+
+---
+
+## 21. RULED 2026-09-09 — §20 retracted. `K1` sums; ANC is always on.
+
+Peter: *"actually i'm taking rubbish forget my previous statement"*, clarified as **forget the
+cancel — go back to summing**. §20's ruling is withdrawn; §19's open item 17 is closed by *doing*
+the summing change rather than by declaring the blocker intended.
+
+I asked which statement was being withdrawn rather than guessing: the two readings led to opposite
+circuits, and picking wrong would have put a false ruling into the record as well as the wrong
+copper.
+
+### The change
+
+| | Before (changeover) | Now (summing) |
+|---|---|---|
+| `R1`/`R2` | `K1.14`/`K1.24` → `AERONODE_AUDIO` | **`HS_L`/`HS_R` → `AERONODE_AUDIO`, permanent** |
+| `K1` NO (14/24) | AeroNode feed | **unused, no-connected** |
+| `K1` role | swap intercom ↔ AeroNode | **break the intercom only** |
+| `R1`/`R2` value | 0 Ω | **220 Ω** |
+| `MUTE_L`/`MUTE_R` | nets | gone |
+
+```
+K1 de-energised:  HS_L/HS_R  <-  AC_L/AC_R  +  AeroNode      summed
+K1 energised:     intercom OPEN,  AeroNode alone
+```
+
+`[measured]` `~/HS_L -> J11.1, K1.11, R1.1` · `~/HS_R -> J11.2, K1.21, R2.1` ·
+`~/AERONODE_AUDIO -> R1.2, R2.2, R4.1, T1.4` · `MUTE_*` gone · ERC **42** (41 baseline + the
+deliberate `3V3_MIC`).
+
+### `R1`/`R2` could not stay at 0 Ω — this is the part that would have bitten
+
+`AERONODE_AUDIO` ties the two channels together, so **0 Ω summing resistors short the panel's left
+and right outputs to each other.** Under the changeover that was harmless, because the intercom was
+open at the same instant the two were commoned. Summing keeps the intercom connected, so the same
+part value becomes a fault. **The value had to change because the switch behaviour around it
+changed, not because the part did** — exactly the sort of thing a parts-focused review misses.
+
+`[derived]` 220 Ω chosen: it gives a **440 Ω** left-to-right path (safe against a stereo panel) and
+costs only **1.4 dB** of AeroNode level versus 100 Ω.
+
+| `R_sum` | AeroNode, intercom live (Z_out = 10 Ω) | AeroNode active (K1 open) | L–R path |
+|---|---|---|---|
+| 0 Ω | −27.9 dB | −4.7 dB | **0 Ω — short** |
+| 100 Ω | −30.9 dB | −6.2 dB | 200 Ω |
+| **220 Ω** | **−33.5 dB** | **−7.6 dB** | **440 Ω** |
+| 470 Ω | −37.3 dB | −10.1 dB | 940 Ω |
+
+### The honest limit — ANC *authority*, not connectivity
+
+The DAC now always reaches the earcup, so ANC is connected continuously. But **a passive sum cannot
+fight a low-impedance source.** While the intercom is live, AeroNode sits about **−33 dB** at the
+earphone; the moment `K1` opens the intercom it jumps to **−7.6 dB**, because the panel that was
+swamping it is disconnected. That ~26 dB step is automatic and free — but it means **ANC authority
+in normal flight is set by the panel's headphone output impedance, which is `[gap]` unmeasured.**
+
+- A stiff panel (10 Ω) → ANC is ~33 dB down and will not do useful work.
+- A soft one (330–600 Ω) → ANC lands −13 dB, which is arguable.
+
+**Measure it before trusting ANC in the summed configuration.** If the panel turns out stiff, ANC
+needs its own path to the transducer rather than sharing the intercom line — which is a bigger
+change than any resistor value, and worth knowing early. `[gap]` also unchanged: is the target
+headset already an ANR set?
