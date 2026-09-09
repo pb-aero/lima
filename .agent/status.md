@@ -748,3 +748,31 @@ an LDO, HPOUTP/HPOUTN need the codec.
 **An error count that goes UP is not automatically a regression, and one that stays flat is not
 automatically clean.** ERC reports one rule per item, so changing one condition can reveal another
 that was always there. **Read the new entries; do not just diff the number.**
+
+### Same day — Peter: "why do we need the transformers?" Section 24.
+
+Honest audit of all three justifications:
+
+1. **DC blocking - the ORIGINAL reason - NO LONGER APPLIES.** T1 entered in 10.1 because AeroNode
+   injected into MIC_LINE (8-16 V bias, vs the ADAU1860's 2.1 V pin limit). R4 is now DNP and
+   AeroNode drives the EARPHONE lines, which carry no bias. **The requirement that justified the
+   part was engineered away by later decisions.** Say so rather than let a part coast on a stale
+   rationale.
+2. **Differential -> single-ended - real, and it PAYS FOR ITSELF.** `[derived]` I had this backwards:
+   the 230R of winding DCR looks like a level penalty, but against the realistic alternative
+   (single leg + Rsum~100R) the transformer WINS by **+3.7 dB** - 0.582 Vrms vs 0.380 - because it
+   uses both legs and the 6 dB more than covers the DCR.
+3. **Galvanic isolation - real but CONDITIONAL.** One bond is not a loop. It only matters if AeroNode
+   is already tied to aircraft ground elsewhere.
+
+`[gap]` **THE DECIDING QUESTION: is AeroNode galvanically connected to the aircraft anywhere else?**
+ARCHITECTURE.md has it on 2S LiFePO4 charged over USB-C. Battery-powered and floating in flight ->
+the audio ground is the only bond, no loop, transformers arguably optional. Charging from ship's
+power in flight -> two paths, keep them.
+
+Removing them would trade **+7 dB ANC authority** for **-3.7 dB level**, the isolation, and a floor
+of Rsum~100R (`[derived]` at 10R, **90 mA** would flow between the two amplifiers).
+
+**Recommendation: keep for now**, but answer the grounding question - if AeroNode floats, removing
+them frees ~$4, two 12.8x9 mm footprints and 7.5 mm height, and makes the 11.4 `[gap]` vanish
+(SM-LP-5001 is -20C/+85C and UL60950 - NOT a flight part, needs requalifying if it stays).

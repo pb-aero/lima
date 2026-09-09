@@ -1277,3 +1277,63 @@ source yet.* `3V3_MIC` needs an LDO; `HPOUTP`/`HPOUTN` need the codec. Both are 
 a regression, and one that stays flat is not automatically clean — ERC reports one rule per item, so
 fixing or changing one condition can reveal another that was there all along. Read the new entries,
 don't just diff the number.
+
+---
+
+## 24. "Why do we need the transformers?" — checked 2026-09-09
+
+A fair challenge, and the first thing to say is that **the reason they entered the design no longer
+applies.** Three jobs, current status of each:
+
+### 1. DC blocking — the original reason, and it is GONE
+
+§10.1 introduced `T1` because AeroNode injected into `MIC_LINE`, which carries the aviation mic bias
+of **8–16 V** — 6 to 14 V over the ADAU1860's 2.1 V pin limit (§10). That was a hard requirement.
+
+But `R4` is now **DNP** (§18) and AeroNode drives `HS_L`/`HS_R`, the **earphone** lines, which carry
+no bias. **The requirement that justified the transformers has been engineered away by later
+decisions.** Worth stating plainly rather than letting a part coast on a stale rationale.
+
+### 2. Differential → single-ended — real, and it pays for itself
+
+`HPOUTP`/`HPOUTN` is a differential pair; the earphone is single-ended. A transformer converts for
+free. Without one you take a single leg and lose 6 dB, or add an active converter.
+
+`[derived]` This is the part I had been getting backwards. The 230 Ω of winding DCR looks like a
+level penalty — but against the *realistic* alternative it is a level **gain**:
+
+| | AeroNode active | ANC (intercom live, 10 Ω panel) |
+|---|---|---|
+| **With `T1`/`T2`, `R_sum` = 0** | **0.582 V rms** | −27.9 dB |
+| No transformer, one leg, `R_sum` = 100 Ω | 0.380 V rms | **−21.1 dB** |
+
+The transformer uses **both** legs, and that 6 dB more than covers the 230 Ω. So "the transformers
+are costing us level" was wrong — they are worth about **+3.7 dB** versus the no-transformer option.
+
+### 3. Galvanic isolation — real, but conditional
+
+Without transformers, AeroNode's ground must bond to aircraft ground at the headset sleeve.
+**One bond is not a loop.** So this only matters if AeroNode is *already* connected to aircraft
+ground somewhere else — charging from ship's power in flight, a shared chassis, a USB connection to
+panel-powered kit.
+
+`[gap]` **This is the question that decides the whole thing.** `kicad/aeronode/doc/ARCHITECTURE.md`
+has AeroNode on a 2S LiFePO4 pack charged over USB-C. If it runs on battery, floating, in flight,
+the audio ground would be its only bond and the transformers are arguably optional. If it charges
+from the aircraft while flying, there are two paths and you want them.
+
+### What removing them would cost, honestly
+
+You would trade **+7 dB of ANC authority** (−21.1 dB instead of −27.9 dB) for **−3.7 dB of level**
+when AeroNode is active, plus the isolation, plus `R_sum` cannot go below ~100 Ω — `[derived]` at
+10 Ω it would push **90 mA** between the two amplifiers, which neither would enjoy.
+
+### Recommendation
+
+**Keep them for now.** Two of the three reasons still stand, the diff→SE conversion pays its own way,
+and isolation is cheap insurance on a safety-adjacent audio path in an electrically noisy aircraft.
+
+But do not treat it as settled: **answer the grounding question first.** If AeroNode floats in
+flight, removing `T1`/`T2` frees ~$4, two 12.8 × 9 mm footprints and 7.5 mm of height, buys 7 dB of
+ANC authority, and makes the `[gap]` from §11.4 disappear — the `SM-LP-5001` is **−20 °C to +85 °C**
+and `UL60950`, so it is **not a flight part** and would need requalifying if it stays.
