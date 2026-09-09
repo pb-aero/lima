@@ -3381,6 +3381,86 @@
 		)
 		(uuid "3f9fa9e0-ac82-4543-a581-144b4a8d79a8")
 	)
+	(label "GND"
+		(at 99 123.08 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "9aa6f96f-c3c6-4093-9813-9a71c43d94b8")
+	)
+	(label "3V3_MIC"
+		(at 99 120.54 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "aaeaeef0-9e8b-4eeb-b182-8bcb8a3512d9")
+	)
+	(label "AINP0"
+		(at 99 125.62 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "6085d633-7568-4109-8e24-f1ffa3a0a7b1")
+	)
+	(label "AINN0"
+		(at 99 128.16 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f62745ba-3fa5-48c0-aab7-f8a00c853231")
+	)
+	(label "AINP1"
+		(at 99 130.7 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "63e5912d-d5d9-4313-8802-fbf4f885436e")
+	)
+	(label "AINN1"
+		(at 99 133.24 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "def1f466-6f0f-412d-9ee3-d59a68f0e496")
+	)
+	(label "AINP2"
+		(at 99 135.78 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "daa0fcb4-f968-4594-845b-13b25494ae08")
+	)
+	(label "AINN2"
+		(at 99 138.32 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e83d059b-b9db-4fd3-a6f6-99e42ee42f3f")
+	)
 	(sheet
 		(at 153.67 22.86)
 		(size 24.13 34.29)
@@ -3485,6 +3565,76 @@
 			(project "aeronode-audio-interface"
 				(path "/0cbb3bbb-8297-40d4-b3a9-e92b3d8d375c"
 					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 69 118)
+		(size 30 58)
+		(fields_autoplaced)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0)
+		)
+		(uuid "a24e3327-7d03-4dbb-a4f4-91787aece02d")
+		(property "Sheetname" "ANALOG MICS (ADC0-2)"
+			(at 69 117.365 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "analog-mics.kicad_sch"
+			(at 69 176.635 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "3V3_MIC" input
+			(at 99 120.54 0)
+			(uuid "7df26495-25d9-4b62-96cf-393dc9fa6c80")
+		)
+		(pin "GND" input
+			(at 99 123.08 0)
+			(uuid "ec9e1d89-2bf0-4286-bd1a-a6850643ec7f")
+		)
+		(pin "AINP0" output
+			(at 99 125.62 0)
+			(uuid "0b085b3d-0c7f-457d-ba92-24be9af4f8ea")
+		)
+		(pin "AINN0" output
+			(at 99 128.16 0)
+			(uuid "4dec3853-e973-418f-bcd0-405d0e692918")
+		)
+		(pin "AINP1" output
+			(at 99 130.7 0)
+			(uuid "23707937-239c-4b49-a886-ecef2f99b145")
+		)
+		(pin "AINN1" output
+			(at 99 133.24 0)
+			(uuid "976fa486-f1fc-4a83-8dc7-ff1f49bd1ac5")
+		)
+		(pin "AINP2" output
+			(at 99 135.78 0)
+			(uuid "d488dce3-e3a7-4dff-9827-156a45d4c18d")
+		)
+		(pin "AINN2" output
+			(at 99 138.32 0)
+			(uuid "5af28888-99d0-4a47-a538-20b0f576513e")
+		)
+		(instances
+			(project "aeronode-audio-interface"
+				(path "/0cbb3bbb-8297-40d4-b3a9-e92b3d8d375c"
+					(page "4")
 				)
 			)
 		)

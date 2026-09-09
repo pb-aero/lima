@@ -959,3 +959,90 @@ A cosmetic note for whoever edits next: the value was briefly set to `10k  DNP`,
 resistor body and collided with the `AERONODE_AUDIO` and `MIC_LINE` labels. It is back to `10k`, with
 the DNP marking as separate sheet text in clear space. **Render and look after any field edit** —
 a longer Value string is a layout change.
+
+---
+
+## 19. Three analog mics on ADC0/1/2 — 2026-09-09
+
+Peter: *"can we wire up another 3 analog mics to the adau1860 analog inputs one for boom mic voice
+when electret is muted and the other 2 for the feedback feed forward anc."* Done, on a third
+hierarchical sheet **`analog-mics.kicad_sch`** (page 4).
+
+| Ch | Connector | Purpose | To |
+|---|---|---|---|
+| 0 | `J20` | **Boom voice** — hears the pilot when the headset electret is muted to the radio | `AINP0`/`AINN0` |
+| 1 | `J21` | **ANC feedforward** — outside the earcup, senses ambient | `AINP1`/`AINN1` |
+| 2 | `J22` | **ANC feedback** — inside the earcup, senses residual error at the ear | `AINP2`/`AINN2` |
+
+### The channel budget is now full — exactly, with nothing spare
+
+`[fetched]` The ADAU1860 has **three ADCs and one DAC** (datasheet: *"The three ADC channels and one
+DAC channel have an SNR of approximately…"*, and the pin list carries `AINP0`, `AINP1`, `AINP2`).
+Three mics uses **all three, zero spare.** Nothing else analog can ever be added without changing
+part — which is exactly the trade `docs/h1-audio-board-codec-selection.md` §1 flagged when it
+counted the ADAU1761's two channels against a mic plus an accelerometer.
+
+### They are AeroNode's mics, so the isolation boundary is untouched
+
+This is the part worth getting right. All three are **our** mics — biased from our rail, referenced
+to our `GND`, wired to our connectors. They never touch `AC_GND`. So **no transformers are needed
+here**, and §11.3's claim that `T1` is the only crossing of the isolation boundary still stands
+literally. Had these been taps off the headset, each would have needed its own transformer.
+
+### Front end, per channel
+
+`Rn` (100 Ω) + `Cn` (1 µF) filter the module supply at the connector. `C2n`/`C3n` couple the
+module's `OUT` and its **local ground** into `AINPn`/`AINNn` — pseudo-differential, so ground noise
+picked up along the cable is rejected rather than summed in. `[fetched]` This mirrors the EVB, which
+puts 22 µF in series with **both** legs and no bias network (UG-2017 Figure 8).
+
+**Amplified modules, not bare capsules.** The ADAU1860 has **no `MICBIAS` pin** and its PGA is only
+**0–24 dB** against a 0.49 V rms single-ended full scale. A bare electret's few mV × 16 lands about
+−24 dBFS at best, and the rest would have to come from digital gain, which lifts the noise floor with
+the signal. Modules must deliver a few hundred mV.
+
+`[gap]` **`3V3_MIC` has no source yet, and that is deliberate.** ANC noise performance is set by the
+mic supply, so it must be its own quiet rail rather than the CM5's 3V3. **ERC is 42, not the usual
+41** — the extra one is `Label not connected: '3V3_MIC'` on the parent, which is ERC correctly
+saying *this rail has no source*. Tying it to `3V3_CM5` to make the number pretty would be the wrong
+trade.
+
+### ANC — one architectural blocker, and a correction to myself
+
+**Blocker: `K1` is a changeover, so the DAC only reaches the earcup while `K1` is energised.**
+ANC anti-noise has to be permanently connected, continuously. As drawn, ANC would only work while
+AeroNode is also muting the radio — which is not what anyone wants. Either `K1` sums instead of
+switching (§3's `R_MUTE`-DNP variant plus a summing resistor), or the ANC output needs its own
+always-on path to the earcup. **Needs a ruling; not taken.**
+
+**Correction — `T1` is NOT a blocker, and I said it was.** I first wrote on the sheet that the
+`SM-LP-5001`'s **200 Hz–4 kHz** specified band would cut ANC off below 200 Hz, where cockpit ANC is
+most valuable. That was wrong, and I caught it before committing by doing the arithmetic instead of
+reading the spec line as a hard limit. `[derived]` 200 Hz–4 kHz is Bourns' **600 Ω telecom**
+condition. In *this* circuit — 160 Ω of paralleled earphones, driven from a low-impedance amp — the
+Thevenin resistance across the 3.8 H magnetising inductance is 81.6 Ω, so the corner is:
+
+```
+f = 81.6 / (2π × 3.8 H) = 3.4 Hz        50 Hz: −0.020 dB    100 Hz: −0.005 dB
+```
+
+Essentially flat across the whole ANC band. **A spec band is the condition the vendor guaranteed,
+not the physics of your circuit** — worth remembering, because reading it as a limit would have sent
+someone shopping for a different transformer for no reason. `[gap]` LF *distortion* at real power is
+still unmeasured, which is a separate question from response.
+
+**Latency.** `[derived]` At 48 kHz the ADC → DSP → DAC loop is roughly 1 ms, far too slow for
+feedforward ANC above a few hundred Hz. The ANC path must run through **FastDSP at a high rate** —
+`[fetched]` the datasheet characterises it at **768 kHz** for exactly this class of application.
+
+`[gap]` **Does the headset already have ANR?** A Bose A20 does its own. Two ANC systems fighting
+over one earcup is worse than either alone. If the target headset is an off-the-shelf ANR set, this
+whole path needs rethinking; if it is a passive headset or a custom earcup, it makes sense.
+
+### Verified
+
+- ERC **42** — the 41 baseline plus the one deliberate `3V3_MIC` error above. `[measured]`
+- `validate_sheet_pins`: **0 issues** across all three sheets, 14 pins. `[measured]`
+- Netlist `[measured]`: `/AINP0 -> C20.2` … `/AINN2 -> C32.2`, `/3V3_MIC -> R10.1, R11.1, R12.1`,
+  and `/GND` now spans all three sheets — `C10.2, C11.2, C12.2, C30.1, C31.1, C32.1, J1.1, J2.1,
+  J20.3, J21.3, J22.3, J3.1, Q1.S, Q2.S, R7.2, R8.2`.

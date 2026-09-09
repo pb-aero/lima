@@ -606,3 +606,40 @@ populate.
 **Cosmetic scar:** setting Value to "10k  DNP" overflowed the resistor body and collided with the
 AERONODE_AUDIO and MIC_LINE labels. Reverted to "10k" with the DNP marking as separate sheet text.
 **A longer Value string is a layout change — render and look after any field edit.**
+
+### Same day — three analog mics on ADC0/1/2, new sheet `analog-mics.kicad_sch`
+
+Peter asked for boom-voice + ANC feedforward + ANC feedback. Section 19. Page 4 of the project.
+
+- J20 boom voice -> AINP0/N0, J21 ANC feedforward -> AINP1/N1, J22 ANC feedback -> AINP2/N2.
+  Per channel: 100R + 1uF supply filter, and 1uF coupling on BOTH legs (OUT and the module's local
+  GND) = pseudo-differential, mirroring the EVB's Figure 8 topology.
+- **CHANNEL BUDGET IS NOW FULL.** `[fetched]` The ADAU1860 has exactly three ADCs. Zero spare.
+- **They are AeroNode's own mics** — our rail, our GND — so they never touch AC_GND and **section
+  11.3's "T1 is the only crossing" still stands literally.** No transformers needed here.
+- ERC **42**, not 41: the extra is `Label not connected: '3V3_MIC'`, which is ERC correctly saying
+  the mic rail has no source. `[gap]` no LDO specified. Tying it to 3V3_CM5 to make the number
+  pretty would be the wrong trade — ANC noise is set by the mic supply.
+- `validate_sheet_pins` 0 issues across 14 pins; `/GND` now spans all three sheets. `[measured]`
+
+### SCAR — I read a spec band as physics, and caught it only by doing the arithmetic
+
+I wrote on the sheet that T1's **200 Hz-4 kHz** spec would cut ANC off below 200 Hz. **Wrong.**
+That band is Bourns' **600R telecom** condition. In this circuit (160R earphones, low-Z drive) the
+Thevenin R across the 3.8 H magnetising inductance is 81.6R, so the corner is **3.4 Hz** — -0.020 dB
+at 50 Hz, flat across the whole ANC band. Corrected on the sheet before committing.
+
+**A vendor's specified band is the condition they guaranteed, not the physics of your circuit.**
+Reading it as a hard limit would have sent someone shopping for a different transformer for nothing.
+Compute the corner from your own source and load impedances.
+
+### Open
+
+17. **ANC blocker: K1 is a changeover, so the DAC only reaches the earcup while K1 is energised.**
+    ANC anti-noise must be permanently connected. Either K1 sums instead of switching, or ANC needs
+    its own always-on output path. **Needs a ruling; not taken.**
+18. `[gap]` **Does the target headset already have ANR?** A Bose A20 does. Two ANC systems fighting
+    over one earcup is worse than either alone. Decides whether this path is worth building.
+19. `[gap]` `3V3_MIC` needs a quiet LDO. `[gap]` T1 LF *distortion* at power unmeasured (separate
+    from response). `[gap]` ANC must run on FastDSP at a high rate - 48 kHz gives ~1 ms loop
+    latency, too slow for feedforward above a few hundred Hz; datasheet characterises 768 kHz.
