@@ -1046,3 +1046,57 @@ whole path needs rethinking; if it is a passive headset or a custom earcup, it m
 - Netlist `[measured]`: `/AINP0 -> C20.2` … `/AINN2 -> C32.2`, `/3V3_MIC -> R10.1, R11.1, R12.1`,
   and `/GND` now spans all three sheets — `C10.2, C11.2, C12.2, C30.1, C31.1, C32.1, J1.1, J2.1,
   J20.3, J21.3, J22.3, J3.1, Q1.S, Q2.S, R7.2, R8.2`.
+
+---
+
+## 20. RULED 2026-09-09 — ANC runs only while AeroNode is the active path. `K1` stays a changeover.
+
+Peter, mid-change: *"cancel that anc is only active when aeronode is the active audio path."*
+**Open item 17 is closed, not carried** — §19's "architectural blocker" was not a blocker at all,
+it was the intended behaviour. `K1` keeps the §16 changeover and does **not** sum.
+
+### The change was reverted byte-exactly
+
+I had begun the summing edit and had removed three labels when the cancel arrived. A timestamped
+backup taken immediately before the first deletion restored it: `[measured]` the live
+`audio-mute.kicad_sch` now `cmp`s **identical** to the copy committed at `c485dde`, and
+`git diff` on the mirrored file is **empty**. Netlist re-verified: `~/MUTE_L -> K1.14, R1.1` and
+`~/MUTE_R -> K1.24, R2.1` are intact, so the changeover is exactly as it was.
+
+**Backing up before starting, not after finishing, is what made the cancel cost nothing.** Two
+minutes of `cp` beat any amount of careful un-picking.
+
+### Summing was investigated. It is NOT a free swap — keep this, so nobody "improves" it later.
+
+`[derived]` Two findings from the analysis done before the cancel, both worth keeping:
+
+**1. The summing resistors could not have stayed 0 Ω — that would be a short across the panel.**
+Under the changeover, `R1` and `R2` at 0 Ω tie `HS_L` and `HS_R` together, which is harmless
+*because the intercom is open at the same instant*. Summing keeps the intercom connected, so those
+same 0 Ω resistors would **short the panel's left and right outputs to each other**. Any move to
+summing must give `R1`/`R2` a real value first. That is the kind of fault that survives a schematic
+review because the part didn't change — only the switch behaviour around it did.
+
+**2. How much of AeroNode survives summing depends entirely on the panel's output impedance**, which
+is `[gap]` and varies by aircraft. AeroNode's level at the earphone, against `T1`'s ~230 Ω source:
+
+| Panel Z_out | `R_sum` = 0 Ω | 330 Ω | 1 kΩ |
+|---|---|---|---|
+| 10 Ω | **−27.9 dB** | −35.4 dB | −42.1 dB |
+| 100 Ω | −12.1 dB | −18.4 dB | −24.7 dB |
+| 330 Ω | −7.7 dB | −13.0 dB | −18.7 dB |
+| 600 Ω | −6.5 dB | −11.3 dB | −16.8 dB |
+
+**You cannot passively sum into a node a low-impedance amplifier is already driving.** Against a
+stiff 10 Ω panel output AeroNode lands ~28 dB down — useless for ANC, which needs to be comparable
+to the noise at the ear. Making it work would mean either a series resistor in the *intercom* path
+(costing radio level, on the safety-critical path) or series injection through a second transformer.
+
+So the ruling is also the cheaper engineering: **ANC while AeroNode owns the earcup** avoids the
+whole problem, because the intercom is open at exactly the moments ANC is running.
+
+### What still stands from §19
+
+`[gap]` `3V3_MIC` needs a quiet LDO (ERC 42 = 41 baseline + that one deliberate error) ·
+`[gap]` ANC must run on FastDSP at a high rate, not 48 kHz · `[gap]` whether the target headset
+already has its own ANR. `T1` remains a non-issue for bandwidth — 3.4 Hz corner in this circuit.

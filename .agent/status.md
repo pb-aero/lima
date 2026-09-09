@@ -643,3 +643,29 @@ Compute the corner from your own source and load impedances.
 19. `[gap]` `3V3_MIC` needs a quiet LDO. `[gap]` T1 LF *distortion* at power unmeasured (separate
     from response). `[gap]` ANC must run on FastDSP at a high rate - 48 kHz gives ~1 ms loop
     latency, too slow for feedforward above a few hundred Hz; datasheet characterises 768 kHz.
+
+### Same day — RULED: ANC only while AeroNode is the active path. K1 STAYS a changeover.
+
+Peter cancelled the summing change mid-edit: *"anc is only active when aeronode is the active audio
+path."* **Open item 17 CLOSED** — section 19's "architectural blocker" was the intended behaviour.
+
+- **Reverted byte-exactly.** Three labels had been deleted when the cancel arrived. The timestamped
+  backup taken *immediately before the first deletion* restored it: `[measured]` live file `cmp`s
+  identical to the copy committed at `c485dde`, and `git diff` on the mirror is empty. Netlist
+  re-verified: `~/MUTE_L -> K1.14, R1.1`, `~/MUTE_R -> K1.24, R2.1`. **Backing up before starting,
+  not after finishing, is what made the cancel cost nothing.**
+
+### Two findings from the abandoned summing work — KEPT so nobody re-derives them
+
+1. **0R summing resistors would SHORT the panel's L and R together.** Under the changeover, R1/R2 at
+   0R tie HS_L and HS_R — harmless *because the intercom is open at the same instant*. Summing keeps
+   the intercom connected, so the same 0R becomes a short across its outputs. The kind of fault that
+   survives review because no part changed, only the switch behaviour around it.
+2. **You cannot passively sum into a node a low-Z amplifier already drives.** `[derived]` AeroNode's
+   level at the earphone vs the panel's output impedance: **-27.9 dB into 10R**, -12.1 dB into 100R,
+   -6.5 dB into 600R (Rsum=0). Against a stiff panel output AeroNode is ~28 dB down — useless for
+   ANC. Making it work would need a series R in the *intercom* path (costing radio level on the
+   safety-critical path) or series injection via a second transformer.
+
+So the ruling is also the cheaper engineering: ANC while AeroNode owns the earcup sidesteps the
+problem entirely, because the intercom is open exactly when ANC is running.
