@@ -2080,15 +2080,6 @@
 		)
 		(uuid "abc18e91-e75b-4e6a-8a42-6f14dd394f41")
 	)
-	(text "HEADSET MIC = PANEL ONLY   (ruled by Peter, 2026-09-09)\nThe headset electret does NOT reach AeroNode. It runs\n  headset -> MIC_LINE -> aircraft panel, and K2 mutes it.\nAeroNode's own audio input is a SEPARATE analog mic into\n  the codec, arriving at the CM5 over I2S - not on this\n  sheet, so the ADAU1860 analog IN is unused by this block.\n\nR4 IS NOW REDUNDANT - RECOMMEND DNP.\n  With K1 a changeover, AeroNode's voice reaches the pilot\n  directly through K1. R4 still injects it into MIC_LINE,\n  which goes to the PANEL - so it will trip the intercom\n  VOX and will be TRANSMITTED if PTT is pressed while\n  AeroNode is speaking. Left populated pending a ruling;\n  DNP unless AeroNode is meant to be heard on the radio.\n\nLEVEL [gap] - NEEDS EARS. T1's 115R per winding against\n  160R of paralleled earphones divides 1.0 Vrms FS down to\n  ~0.41 Vrms (~1.05 mW). A GA intercom drives 1-2 Vrms, so\n  this may be quiet in a noisy cockpit. If it is, the fix\n  is a lower-DCR transformer or a gain stage after the\n  codec - not more digital gain."
-		(at 125 172 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-		)
-		(uuid "cced31f4-1fdd-45bb-a696-68e88ced1bc8")
-	)
 	(label "GND"
 		(at 71.12 54.61 0)
 		(effects
@@ -2555,6 +2546,16 @@
 		)
 		(uuid "523caf04-69c7-4159-8f2a-5a8866f1833b")
 	)
+  (text "HEADSET MIC = PANEL ONLY   (ruled by Peter, 2026-09-09)\nThe headset electret does NOT reach AeroNode. It runs\n  headset -> MIC_LINE -> aircraft panel, and K2 mutes it.\nAeroNode's own audio input is a SEPARATE analog mic into\n  the codec, arriving at the CM5 over I2S - not on this\n  sheet, so the ADAU1860 analog IN is unused by this block.\n\nR4 = DNP.  DO NOT POPULATE.  (ruled 2026-09-09)\n  Superseded by the K1 changeover: AeroNode's voice reaches\n  the pilot directly through K1. Fitted, R4 would inject it\n  into MIC_LINE toward the PANEL - tripping the intercom\n  VOX and TRANSMITTING it if PTT were pressed.\n  Footprint kept so the option survives; it must not be fitted.\n  !! The KiCAD dnp attribute is still 'no' - tick \"Do not\n  populate\" in the R4 symbol properties. Value + DNP field\n  are set, but a BOM export will list it until that is ticked.\n\nLEVEL [gap] - NEEDS EARS. T1's 115R per winding against\n  160R of paralleled earphones divides 1.0 Vrms FS down to\n  ~0.41 Vrms (~1.05 mW). A GA intercom drives 1-2 Vrms, so\n  this may be quiet in a noisy cockpit. If it is, the fix\n  is a lower-DCR transformer or a gain stage after the\n  codec - not more digital gain."
+    (at 125 172 0)
+    (effects (font (size 1 1)))
+    (uuid "a272c397-d304-425a-9d66-3cab359a183f")
+  )
+  (text "R4 = DNP  (do not populate)"
+    (at 250 114 0)
+    (effects (font (size 1.2 1.2)))
+    (uuid "c45231b6-9919-47a9-8b8c-23c7c738c271")
+  )
 	(symbol
 		(lib_id "Device:R")
 		(at 49.53 44.45 90)
@@ -3276,7 +3277,25 @@
 				)
 			)
 		)
-	)
+	
+		(property "DNP" "yes"
+			(at 245.11 105.41 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Note" "Do not populate - ruled 2026-09-09. Injects AeroNode audio into MIC_LINE toward the panel: trips intercom VOX and transmits on PTT. Superseded by K1 changeover."
+			(at 245.11 105.41 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		))
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x04")
 		(at 267.97 44.45 0)

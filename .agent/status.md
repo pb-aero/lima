@@ -581,3 +581,28 @@ supersedes the mute-only ruling **for K1 only**; K2 stays a mute.
     this may be 8-14 dB quiet in a noisy cockpit. **Fix would be a lower-DCR transformer or a gain
     stage after the codec — NOT more digital gain.** Same class as the 2026-09-08 audibility
     caveat: cannot be settled from a desk.
+
+### Same day — RULED: R4 = DNP. Open item 15 closed, with one honest residual.
+
+Peter: *"DNP R4."* Section 18. R4 stays on the sheet so the footprint/option survive.
+
+Marked four ways `[measured]`: custom property `DNP=yes`, a `Note` property giving the reason,
+sheet text "R4 = DNP (do not populate)" beside it, and the note block.
+
+**RESIDUAL, not rounded up:** the KiCAD `(dnp ...)` **attribute is still `no`.** Konnect's
+`edit_schematic_component` / `batch_edit_schematic_components` set *properties*, not the symbol
+attribute, and the konnect rules forbid hand-editing a `.kicad_sch` to reach it. So eeschema will
+not cross R4 out, and **a BOM/position export will still list it as fitted.** One click fixes it:
+right-click R4 -> Properties -> tick "Do not populate". `[gap]` **Not ticked as of this commit.**
+
+This is precisely CLAUDE.md section 10's pattern — *a control written down, believed and cited but
+not actually live*. Four markings on a drawing do not stop a fab populating a part the BOM says to
+populate.
+
+`[derived]` Electrically: unfitted, R4 removes the only tie between AERONODE_AUDIO and MIC_LINE, so
+**the transmit hazard is gone at circuit level** rather than merely masked by K2's shunt (section
+17). MIC_LINE now carries the pilot's mic and nothing else. Earphone level +0.08 dB.
+
+**Cosmetic scar:** setting Value to "10k  DNP" overflowed the resistor body and collided with the
+AERONODE_AUDIO and MIC_LINE labels. Reverted to "10k" with the DNP marking as separate sheet text.
+**A longer Value string is a layout change — render and look after any field edit.**

@@ -914,3 +914,48 @@ never fires.
 AeroNode's voice is on the mic line with PTT live. **DNP on `R4` is still the robust fix**; this only
 means the hazard is masked in normal operation, which is exactly the kind of thing that hides a
 defect until the day the software gets it wrong.
+
+---
+
+## 18. RULED 2026-09-09 — `R4` is DNP
+
+Peter: *"DNP R4."* Open item 15 closed. `R4` stays on the sheet so the footprint and the option
+survive; it must not be fitted.
+
+### What is marked, and the one thing that is not
+
+| | State |
+|---|---|
+| Custom property `DNP` | **`yes`** `[measured]` |
+| Custom property `Note` | the reason, on the symbol `[measured]` |
+| Sheet text beside `R4` | **"R4 = DNP (do not populate)"** |
+| Sheet note block | the full rationale |
+| **KiCAD `(dnp …)` attribute** | **still `no`** `[measured]` |
+
+**The last row is a real residual and I am not rounding it up.** Konnect's
+`edit_schematic_component` / `batch_edit_schematic_components` set *properties*; neither exposes
+KiCAD's `dnp` symbol **attribute**, and the Konnect operating rules forbid hand-editing a
+`.kicad_sch` to reach it. So `(dnp no)` is unchanged, which means:
+
+- eeschema will **not** draw `R4` with the DNP cross-out, and
+- **a BOM or position-file export will still list `R4` as fitted.**
+
+**One click closes it:** in eeschema, right-click `R4` → *Properties* → tick **"Do not populate"**.
+Until that is ticked, this is exactly the failure mode §10 of `CLAUDE.md` names — *a control that is
+written down, believed and cited, but not actually live*. Four kinds of marking on the drawing do
+not stop a fab house populating a part the BOM says to populate.
+
+`[gap]` **Ticked?** Not yet, as of this commit.
+
+### Electrically
+
+`[derived]` Unfitted, `R4` removes the only tie between `AERONODE_AUDIO` and `MIC_LINE`:
+
+- **The transmit hazard is gone at the circuit level**, not merely masked by `K2`'s shunt (§17).
+- `MIC_LINE` now carries the pilot's mic and nothing else.
+- The load on `AERONODE_AUDIO` rises from 157.6 Ω to 160 Ω — **+0.08 dB** at the earphones. Nothing.
+
+A cosmetic note for whoever edits next: the value was briefly set to `10k  DNP`, which overflowed the
+resistor body and collided with the `AERONODE_AUDIO` and `MIC_LINE` labels. It is back to `10k`, with
+the DNP marking as separate sheet text in clear space. **Render and look after any field edit** —
+a longer Value string is a layout change.
