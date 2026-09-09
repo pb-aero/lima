@@ -717,3 +717,34 @@ Kills the L-R bridge entirely, and lets R1/R2 go to 0R safely (no shared node to
 recovers **+5.6 dB** of AeroNode level - the cheapest ANC-authority improvement available. ~$2.
 `[gap]` needs Peter's ruling; only matters if the panel is soft, so **measuring the panel (open
 item 20) decides this too.**
+
+### Same day — T2 added: one transformer per channel. Section 23.
+
+Peter: *"add the second transformer."* Built.
+`HPOUTP/N` -> T1 and T2 primaries in parallel; T1 sec -> AERONODE_L -> R1 (0R) -> HS_L;
+T2 sec -> AERONODE_R -> R2 (0R) -> HS_R; both returns to AC_GND. `AERONODE_AUDIO` is gone.
+`[measured]` HS_L and HS_R now meet **only at AC_GND** - the 440R bridge is gone.
+
+Three wins, `[derived]`:
+1. **No L-to-R bridge** - intercom separation is now whatever the panel gives, at any impedance.
+2. **R1/R2 back to 0R safely** (no shared secondary to short through) = **+5.6 dB** AeroNode level
+   with the intercom live. This is what the change was bought for.
+3. **Unplanned +3.0 dB per ear when active** - each secondary drives ONE 320R earphone instead of
+   both in parallel, so 0.582 Vrms per ear instead of 0.410 (2.12 mW vs 1.05 mW the pair).
+HP amp now drives two primaries in parallel: 275R, 3.6 mA. Trivial.
+
+**Section 11.3 updated: TWO crossings now, T1 and T2**, 2000 Vrms each. Nothing else crosses.
+
+### METHOD NOTE — ERC 42 -> 44 was NOT a regression
+
+The two new errors are `Label not connected: HPOUTP/HPOUTN` on the parent. Before, those nets had
+exactly ONE pin (T1.1/T1.2) so ERC reported the *warning* "connected to only one pin". Adding T2 gave
+each a second pin, the warning stopped applying, and **the error it had been masking surfaced** - the
+codec is not placed, so HPOUTP/HPOUTN have no source.
+
+Count is now **41 baseline + 3 deliberate**, all saying *this net has no source yet*: 3V3_MIC needs
+an LDO, HPOUTP/HPOUTN need the codec.
+
+**An error count that goes UP is not automatically a regression, and one that stays flat is not
+automatically clean.** ERC reports one rule per item, so changing one condition can reveal another
+that was always there. **Read the new entries; do not just diff the number.**

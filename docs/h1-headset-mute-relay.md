@@ -1224,3 +1224,56 @@ isolated winding:
 `[gap]` **Not done — needs Peter's ruling.** It is one part and a topology change, and it only
 matters if the panel turns out soft (open item 20). Measuring the panel decides both questions at
 once.
+
+---
+
+## 23. DONE 2026-09-09 — `T2` added: one transformer per channel
+
+Peter: *"add the second transformer."* §22's recommendation is built.
+
+```
+HPOUTP/HPOUTN ─┬─ T1 primary   T1 secondary → AERONODE_L → R1 (0R) → HS_L
+               └─ T2 primary   T2 secondary → AERONODE_R → R2 (0R) → HS_R
+                               both secondary returns → AC_GND
+```
+
+`[measured]` `/HPOUTP -> T1.1, T2.1` · `/HPOUTN -> T1.2, T2.2` · `~/AERONODE_L -> R1.2, R4.1, T1.4`
+· `~/AERONODE_R -> R2.2, T2.4` · `~/HS_L -> J11.1, K1.11, R1.1` · `~/HS_R -> J11.2, K1.21, R2.1`.
+`AERONODE_AUDIO` no longer exists.
+
+**`HS_L` and `HS_R` now meet only at `AC_GND`** — the shared sleeve return, which is how the headset
+is built anyway. The 440 Ω bridge is gone, so the intercom's stereo separation is whatever the panel
+provides, at any panel impedance.
+
+### Three wins, two of which were the point and one of which was free
+
+1. **The L-to-R bridge is gone.** §22's table of degraded separation no longer applies.
+2. **`R1`/`R2` are back to 0 Ω, safely.** There is no shared secondary left to short the panel's
+   channels through. `[derived]` +5.6 dB of AeroNode level with the intercom live (−27.9 dB instead
+   of −33.5 dB into a 10 Ω panel) — the ANC-authority improvement this was bought for.
+3. **Unplanned +3.0 dB per ear when AeroNode is active.** `[derived]` Each secondary now drives
+   **one** 320 Ω earphone instead of both in parallel (160 Ω), so the 115 Ω winding resistances
+   divide against a higher load: **0.582 V rms** per ear instead of 0.410 V, 2.12 mW the pair
+   instead of 1.05 mW. That was not the reason for the change; it fell out of it.
+
+`[derived]` The HP amp now drives **two primaries in parallel — 275 Ω, 3.6 mA.** Trivial for a part
+rated 30 mW into 32 Ω.
+
+**§11.3 updated: there are now TWO crossings of the isolation boundary, `T1` and `T2`**, each rated
+2000 V rms. The claim is still that nothing else crosses, and the sheet note says so.
+
+### ERC went 42 → 44, and the reason is worth understanding
+
+The two new errors are `Label not connected: 'HPOUTP'` and `'HPOUTN'` on the parent. **Nothing broke.**
+Before, those nets had exactly one pin (`T1.1`, `T1.2`), so ERC reported the *warning* "Label
+connected to only one pin". Adding `T2` gave each net a second pin, that warning stopped applying —
+and the **error it had been masking surfaced**: the codec is not placed, so `HPOUTP`/`HPOUTN` have no
+source on the root sheet.
+
+So the count is **41 baseline + 3 deliberate**, all three saying the same thing: *this net has no
+source yet.* `3V3_MIC` needs an LDO; `HPOUTP`/`HPOUTN` need the codec. Both are known gaps.
+
+**Worth keeping as a method note:** an error count that goes *up* after a change is not automatically
+a regression, and one that stays flat is not automatically clean — ERC reports one rule per item, so
+fixing or changing one condition can reveal another that was there all along. Read the new entries,
+don't just diff the number.
