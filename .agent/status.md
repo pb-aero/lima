@@ -697,3 +697,23 @@ unmeasured. Stiff panel (10R) -> ANC ~33 dB down, useless. Soft (330-600R) -> -1
 20. **MEASURE THE PANEL'S HEADPHONE OUTPUT IMPEDANCE.** It decides whether ANC works summed. If it
     is stiff, ANC needs its own path to the transducer instead of sharing the intercom line - a
     bigger change than any resistor value, so worth knowing early.
+
+### Same day — Peter: "how is there stereo if AeroNode goes to both HS_L and HS_R?"
+
+Section 22. Three answers, two of them real limits:
+
+1. **AeroNode is mono and cannot be otherwise.** `[fetched]` ADAU1860 has ONE DAC; T1 has ONE
+   secondary. Not a drawing error. Self-consistent with 1 feedforward + 1 feedback mic = **one ANC
+   channel driving both earcups**. Per-ear ANC would need 2 DACs + 2 feedback mics = different codec.
+2. **R1+R2 bridge the intercom's L to R through 440R.** `[derived]` separation vs panel Z_out:
+   -42.5 dB at 5R, -20.4 dB at 100R, **-14.1 dB at 600R**. A stiff panel holds each channel and the
+   bridge only sinks current; a soft one lets them pull each other about.
+3. **The same impedance pulls the two requirements OPPOSITE ways.** 10R: ANC -33.5 dB (useless),
+   separation -36.8 dB (fine). 600R: ANC -11.3 dB (good), separation -14.1 dB (poor). **No panel
+   impedance makes both good.** Inherent to summing two sources onto one node through one winding.
+
+**Fix offered, not taken:** a SECOND transformer, one secondary per channel from the same mono DAC.
+Kills the L-R bridge entirely, and lets R1/R2 go to 0R safely (no shared node to short) which
+recovers **+5.6 dB** of AeroNode level - the cheapest ANC-authority improvement available. ~$2.
+`[gap]` needs Peter's ruling; only matters if the panel is soft, so **measuring the panel (open
+item 20) decides this too.**

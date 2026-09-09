@@ -1165,3 +1165,62 @@ in normal flight is set by the panel's headphone output impedance, which is `[ga
 needs its own path to the transducer rather than sharing the intercom line — which is a bigger
 change than any resistor value, and worth knowing early. `[gap]` also unchanged: is the target
 headset already an ANR set?
+
+---
+
+## 22. "How is there stereo?" — there isn't, and here is what that costs
+
+Peter asked why `AERONODE_AUDIO` goes to both `HS_L` and `HS_R`. Three separate answers, and the
+question is a good one because two of them are real limits rather than drawing artefacts.
+
+### 1. AeroNode's output is mono, and cannot be anything else
+
+`[fetched]` The ADAU1860 has **one DAC channel** ("three ADC channels and one DAC channel"), and
+`T1` has **one secondary winding** (1–3 and 6–4, pins 2 and 5 no-connect — §12). So there is one
+AeroNode signal and it goes to both ears by construction. For speech that is correct and normal.
+It is **not** a wiring mistake on the sheet.
+
+The design is at least self-consistent: one DAC, one feedforward mic, one feedback mic = **one ANC
+channel driving both earcups**. Per-ear ANC would need two DACs and two feedback mics, i.e. a
+different codec — worth knowing before anyone assumes otherwise.
+
+### 2. The intercom's stereo survives, but `R1`+`R2` bridge L to R through 440 Ω
+
+This is the part that genuinely "looks strange", and it is a real side effect I named as a 440 Ω
+L-to-R path in §21 without spelling out what it does. `[derived]`, solving the three-node network:
+
+| Panel Z_out | L→R leak | Intercom separation |
+|---|---|---|
+| 5 Ω | 0.007 | **−42.5 dB** |
+| 10 Ω | 0.014 | −36.8 dB |
+| 100 Ω | 0.060 | −20.4 dB |
+| 330 Ω | 0.057 | −15.5 dB |
+| 600 Ω | 0.044 | **−14.1 dB** |
+
+A stiff panel holds each channel at its own voltage, so the bridge only sinks current and separation
+stays fine. A soft panel lets the channels pull each other about.
+
+### 3. The uncomfortable part — the same impedance pulls the two requirements in opposite directions
+
+| Panel Z_out | ANC authority (§21) | Intercom separation |
+|---|---|---|
+| 10 Ω | −33.5 dB — **useless** | −36.8 dB — **fine** |
+| 600 Ω | −11.3 dB — **good** | −14.1 dB — **poor** |
+
+**There is no panel impedance at which both are good.** That is not a value that can be tuned out;
+it is inherent to summing two sources onto one node through one shared winding.
+
+### The fix, if either matters: a second transformer — one secondary per channel
+
+`T2` (another `SM-LP-5001`, ~$2) driven from the same mono DAC, so `L` and `R` each get their own
+isolated winding:
+
+- **The L-to-R bridge disappears entirely** — separation becomes the panel's own, whatever it is.
+- **`R1`/`R2` can safely go to 0 Ω**, because there is no longer a shared node to short them
+  through. `[derived]` that recovers **+5.6 dB** of AeroNode level (−27.9 dB instead of −33.5 dB
+  with the intercom live), which is the single cheapest improvement available to ANC authority.
+- It also removes the §21 trap where a future 0 Ω "optimisation" shorts the panel.
+
+`[gap]` **Not done — needs Peter's ruling.** It is one part and a topology change, and it only
+matters if the panel turns out soft (open item 20). Measuring the panel decides both questions at
+once.
