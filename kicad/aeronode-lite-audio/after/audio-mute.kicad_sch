@@ -2055,14 +2055,12 @@
 		)
 		(uuid "89a6a692-4a67-4414-aa9c-c3b72476a1d8")
 	)
-	(text "HEADSET MUTE + AIRCRAFT ISOLATION\nLIMA 2026-09-09   lima:docs/h1-headset-mute-relay.md\n\nK1 SPKR MUTE: energised -> HS_L/HS_R tied to AC_GND\n  via R1/R2 (0R); the intercom side sees an OPEN.\n  R1/R2 DNP = series break only, no shunt.\n\nK2 MIC MUTE: AC-only shunt through C1. The DC bias\n  path is NEVER broken, so no thump on either edge.\n  R3 (1M) keeps C1 pre-charged, so no click.\n\nFAIL-PASSIVE: coils de-energised = pilot hears the\n  radio and the mic is live. R7/R8 (100k) hold the\n  FETs OFF while the CM5 GPIO is high-Z at boot.\n  That resistor IS the fail-passive claim.\n\nISOLATION: T1 (2000 Vrms) is the ONLY signal crossing.\n  AC_GND is AIRCRAFT ground (headset plug sleeve).\n  It is NOT AeroNode GND. Never join them.\n\nSYMBOLS ARE GENERIC - pin numbers are NOT the package's.\n  Relay_DPDT is EN50005 (11/12/14/A1/A2); G6K is 1-8.\n  SM-LP-5001 windings are 1-3 and 6-4 (dots on 1, 6);\n  pins 2 and 5 are NO-CONNECT.\n  Author real symbols + footprints before layout."
-		(at 200 72 0)
-		(effects
-			(font
-				(size 1 1)
-			)
+	(wire
+		(pts
+			(xy 167.64 43.18)
+			(xy 182.88 43.18)
 		)
-		(uuid "0584a761-40a3-4f55-b194-0e3b76ee5895")
+		(uuid "ee2c4884-0f6d-46b3-915a-4ba85215d723")
 	)
 	(text "ADAU1860 ANALOG OUT (differential HPOUTP/HPOUTN, 1.0 Vrms FS)"
 		(at 248 98 0)
@@ -2072,6 +2070,24 @@
 			)
 		)
 		(uuid "a10fddb3-ba76-45d1-93b2-a4815f4dc822")
+	)
+	(text "HEADSET MUTE + AIRCRAFT ISOLATION\nLIMA 2026-09-09   lima:docs/h1-headset-mute-relay.md\n\nK1 = SPKR CHANGEOVER (ruled 2026-09-09, was mute-only)\n  De-energised: HS_L/HS_R <- AC_L/AC_R, the pilot hears\n  the radio. Energised: HS_L/HS_R <- AERONODE_AUDIO via\n  R1/R2, and the intercom side sees an OPEN.\n  Muting the intercom now SUBSTITUTES AeroNode's voice\n  instead of substituting silence.\n\nK2 = MIC MUTE. AC-only shunt through C1. The DC bias\n  path is NEVER broken, so no thump on either edge.\n  R3 (1M) keeps C1 pre-charged, so no click.\n\nFAIL-PASSIVE: coils de-energised = pilot hears the\n  radio and the mic is live. R7/R8 (100k) hold the\n  FETs OFF while the CM5 GPIO is high-Z at boot.\n  That resistor IS the fail-passive claim.\n\nISOLATION: T1 (2000 Vrms) is the ONLY signal crossing.\n  AC_GND is AIRCRAFT ground (headset plug sleeve).\n  It is NOT AeroNode GND. Never join them.\n\nSYMBOLS ARE GENERIC - pin numbers are NOT the package's.\n  Relay_DPDT is EN50005 (11/12/14/A1/A2); G6K is 1-8.\n  SM-LP-5001 windings are 1-3 and 6-4 (dots on 1, 6);\n  pins 2 and 5 are NO-CONNECT.\n  Author real symbols + footprints before layout."
+		(at 200 72 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+		)
+		(uuid "abc18e91-e75b-4e6a-8a42-6f14dd394f41")
+	)
+	(text "HEADSET MIC = PANEL ONLY   (ruled by Peter, 2026-09-09)\nThe headset electret does NOT reach AeroNode. It runs\n  headset -> MIC_LINE -> aircraft panel, and K2 mutes it.\nAeroNode's own audio input is a SEPARATE analog mic into\n  the codec, arriving at the CM5 over I2S - not on this\n  sheet, so the ADAU1860 analog IN is unused by this block.\n\nR4 IS NOW REDUNDANT - RECOMMEND DNP.\n  With K1 a changeover, AeroNode's voice reaches the pilot\n  directly through K1. R4 still injects it into MIC_LINE,\n  which goes to the PANEL - so it will trip the intercom\n  VOX and will be TRANSMITTED if PTT is pressed while\n  AeroNode is speaking. Left populated pending a ruling;\n  DNP unless AeroNode is meant to be heard on the radio.\n\nLEVEL [gap] - NEEDS EARS. T1's 115R per winding against\n  160R of paralleled earphones divides 1.0 Vrms FS down to\n  ~0.41 Vrms (~1.05 mW). A GA intercom drives 1-2 Vrms, so\n  this may be quiet in a noisy cockpit. If it is, the fix\n  is a lower-DCR transformer or a gain stage after the\n  codec - not more digital gain."
+		(at 125 172 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+		)
+		(uuid "cced31f4-1fdd-45bb-a696-68e88ced1bc8")
 	)
 	(label "GND"
 		(at 71.12 54.61 0)
@@ -2364,26 +2380,6 @@
 		(uuid "758a4632-3d5e-4eb2-b242-3f069e2824ab")
 	)
 	(label "AC_GND"
-		(at 167.64 43.18 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "e38f953d-ba22-4ee0-85fc-46c0eb9b4b28")
-	)
-	(label "AC_GND"
-		(at 182.88 43.18 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "456ecfd5-ab0a-42a1-ab2b-bc6c63c39767")
-	)
-	(label "AC_GND"
 		(at 224.79 115.57 0)
 		(effects
 			(font
@@ -2412,26 +2408,6 @@
 			(justify right bottom)
 		)
 		(uuid "35f1afe8-b55b-42db-9532-927b4e796f8f")
-	)
-	(label "T1_SEC"
-		(at 224.79 105.41 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "c71e25ee-7fb7-45cf-8c2b-bf990a80b0cd")
-	)
-	(label "T1_SEC"
-		(at 241.3 105.41 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "fb3e44ed-7836-4991-bc7b-b41ce6f6d17a")
 	)
 	(label "MIC_LINE"
 		(at 146.05 124.46 180)
@@ -2482,6 +2458,36 @@
 			(justify left bottom)
 		)
 		(uuid "b409ac72-762b-4e54-9895-61780805b327")
+	)
+	(label "AERONODE_AUDIO"
+		(at 167.64 43.18 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "e911a206-4ecf-4d89-92fd-e18bfaffe408")
+	)
+	(label "AERONODE_AUDIO"
+		(at 224.79 105.41 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4c4c8902-c11c-4f79-ada5-dd270af8f45e")
+	)
+	(label "AERONODE_AUDIO"
+		(at 241.3 105.41 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "99ec4812-65a2-4a45-b216-8dc242a80377")
 	)
 	(hierarchical_label "GPIO_RLY_SPKR"
 		(shape input)
@@ -2549,11 +2555,6 @@
 		)
 		(uuid "523caf04-69c7-4159-8f2a-5a8866f1833b")
 	)
-  (text "HEADSET MIC = PANEL ONLY   (ruled by Peter, 2026-09-09)\nThe headset electret does NOT reach AeroNode. It runs\n  headset -> MIC_LINE -> aircraft panel, and K2 mutes it.\nAeroNode's own audio input is a SEPARATE analog mic into\n  the codec, arriving at the CM5 over I2S. It is not on this\n  sheet, so the ADAU1860 analog IN is unused by this block.\nThere is now exactly ONE crossing of the isolation boundary: T1.\n\nOPEN - K1 and the mic-line injection are in conflict.\n  TTS travels HPOUT -> T1 -> R4 -> MIC_LINE -> panel -> the\n  intercom -> AC_L/AC_R, and reaches the pilot only through\n  K1's NC contact. So energising K1 cuts the very path the\n  TTS arrives on, and the pilot hears nothing at all.\n  The fix is a CHANGEOVER: K1 NO -> AeroNode audio rather\n  than AC_GND - which is what John's AERONODE block diagram\n  drew before the mute-only ruling. Needs a ruling from\n  Peter; deliberately NOT taken here."
-    (at 125 172 0)
-    (effects (font (size 1 1)))
-    (uuid "da899dcb-0002-4500-ad1f-9fb10ef67370")
-  )
 	(symbol
 		(lib_id "Device:R")
 		(at 49.53 44.45 90)

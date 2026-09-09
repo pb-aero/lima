@@ -821,3 +821,51 @@ a two-net change.
 `[gap]` **Not taken.** Peter ruled mute-only on 2026-09-08, before the injection point was chosen;
 this is new information rather than a reason to overturn him quietly. It is written on the sheet and
 recorded here as the next thing needing a ruling.
+
+---
+
+## 16. RULED 2026-09-09 — K1 is a CHANGEOVER to AeroNode audio
+
+Peter: *"yes make K1 a changeover to the aeronode audio."* §15's conflict is closed, and this
+supersedes the mute-only half of the 2026-09-08 ruling for **K1 only** (`K2` stays a mute).
+
+### The change — two nets
+
+`R1.2` and `R2.2` moved from `AC_GND` to a new net **`AERONODE_AUDIO`**, which is the `T1` secondary
+hot leg (`T1.4`). `R1`/`R2` are now commoned by a wire and labelled once.
+
+```
+K1 de-energised:  HS_L/HS_R  <-- AC_L/AC_R          pilot hears the radio
+K1 energised:     HS_L/HS_R  <-- AERONODE_AUDIO     via R1/R2; intercom side OPEN
+```
+
+The return path completes through `AC_GND`: the earphone commons and `T1.3` are the same net, so
+`T1.4 → R1 → K1 → HS_L → earphone → AC_GND → T1.3`. Muting the intercom now **substitutes AeroNode's
+voice instead of substituting silence** — which is what John's AERONODE block diagram drew before
+the mute-only ruling, and what §3's original *"fail-passive changeover"* label meant.
+
+Fail-passive is unchanged and still holds: de-energised is still the metal contact that connects the
+pilot to the radio.
+
+`[measured]` Netlist: `~/AERONODE_AUDIO -> R1.2, R2.2, R4.1, T1.4` · `~/MUTE_L -> K1.14, R1.1` ·
+`~/MUTE_R -> K1.24, R2.1` · `~/AC_GND` no longer carries `R1.2`/`R2.2`. ERC **41 errors — baseline**.
+
+### Two consequences, both on the sheet
+
+1. **`R4` is now redundant, and it is a transmit hazard. Recommend DNP.**
+   With `K1` a changeover, AeroNode's voice reaches the pilot directly. `R4` still injects it into
+   `MIC_LINE`, which goes to the **panel** — so it will trip the intercom's VOX, and it will be
+   **transmitted over the air if PTT is pressed while AeroNode is speaking**. Left populated pending
+   a ruling rather than removed, because "AeroNode audible on the radio" might be wanted (a
+   position report, say). **DNP it unless it is.**
+2. `[gap]` **Level needs ears, and the arithmetic says it may be quiet.**
+   `[derived]` `T1` has **115 Ω DCR per winding**. Against 160 Ω of paralleled earphones that is a
+   divider: `1.0 V rms × 160/(115+115+160)` = **0.41 V rms**, about **1.05 mW** into the pair. A GA
+   intercom typically drives 1–2 V rms, so AeroNode may land 8–14 dB below a comfortable radio
+   level in a noisy cockpit.
+   **If it is too quiet the fix is a lower-DCR transformer or a gain stage after the codec — not
+   more digital gain**, which only lifts the noise floor with the signal. This is the same class as
+   the 2026-09-08 "audibility is Unknown" caveat: it cannot be settled from a desk.
+
+`[gap]` Also unchanged: `R1`/`R2` at 0 Ω hard-parallel the two earphones onto one mono secondary.
+Fine for speech; give them a small series value if channel isolation ever matters.

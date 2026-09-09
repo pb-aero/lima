@@ -555,3 +555,29 @@ so this is new information, not grounds to overturn him quietly. On the sheet an
 
 14. **The K1 / mic-line-injection conflict above.** The single most important thing on this design
     now. Nothing else about the block is worth refining until it is ruled.
+
+### Same day — RULED: K1 is a CHANGEOVER to AeroNode audio. Open item 14 CLOSED.
+
+Peter: *"yes make K1 a changeover to the aeronode audio."* Section 16 of the design note. This
+supersedes the mute-only ruling **for K1 only**; K2 stays a mute.
+
+- **Two nets changed.** `R1.2`/`R2.2` moved from `AC_GND` to **`AERONODE_AUDIO`** = the T1 secondary
+  hot leg (T1.4). R1/R2 are now commoned by a wire and labelled once (two 14-char labels 15 mm apart
+  collided; commoning them is both prettier and better practice).
+- De-energised: HS_L/HS_R <- AC_L/AC_R (pilot hears the radio). Energised: HS_L/HS_R <-
+  AERONODE_AUDIO, intercom side OPEN. Return completes via AC_GND to T1.3.
+- **Fail-passive unchanged** — de-energised is still the metal contact to the radio.
+- `[measured]` `~/AERONODE_AUDIO -> R1.2, R2.2, R4.1, T1.4`; AC_GND no longer carries R1.2/R2.2.
+  ERC 41 = baseline.
+
+### Open (new)
+
+15. **R4 is now redundant AND a transmit hazard — recommend DNP.** AeroNode's voice reaches the
+    pilot directly through K1 now; R4 still injects it into MIC_LINE toward the **panel**, so it
+    will trip VOX and **be transmitted if PTT is pressed while AeroNode speaks**. Left populated
+    pending a ruling only because "AeroNode audible on the radio" might be wanted.
+16. `[gap]` **Level needs ears.** `[derived]` T1's 115R per winding against 160R of paralleled
+    earphones divides 1.0 Vrms FS to **~0.41 Vrms (~1.05 mW)**. A GA intercom drives 1-2 Vrms, so
+    this may be 8-14 dB quiet in a noisy cockpit. **Fix would be a lower-DCR transformer or a gain
+    stage after the codec — NOT more digital gain.** Same class as the 2026-09-08 audibility
+    caveat: cannot be settled from a desk.
