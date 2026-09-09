@@ -813,3 +813,36 @@ is already an open item, so the rail is coming anyway).
 
 21. **RULE ON THE OUTPUT STAGE: C (op-amp, remove transformers) or D (gain into transformers)?**
     Not built - a topology change on a safety-adjacent path needs Peter's ruling.
+
+### Same day — RETRACTION: no 16 V on HS_L, and section 25's recommendation was WRONG
+
+Peter asked why there is 16 V on HS_L. **There isn't.** HS_L carries audio and no DC.
+
+**My error:** `[fetched]` the 8-16 V bias is on **MIC_LINE**, not the phones lines. I carried it
+across as a **postulated single-fault case** (MIC_LINE bridging to a phones line inside our own
+J10/J11) and then wrote it into sections 24 and 25 as if it were established. It is `[assumed]`, and
+weakly so - GA plug sizes (1/4in phones vs 0.206in mic) make user mis-plugging physically impossible,
+so the only credible path is damage to our own harness. **A design driver must carry its own
+provenance; this one did not, and it was load-bearing in a recommendation.**
+
+**But the check found a REAL constraint needing no fault:** `[derived]` against the codec's
+`[fetched]` 2.1 V pin limit - a panel at 1.5 Vrms peaks at 2.12 V and at 2.0 Vrms peaks at 2.83 V.
+**The intercom's own normal audio can exceed the ADAU1860's absolute-max pin rating.** So something
+must stand between the codec and HS_L regardless. The transformer does it free and permanently -
+a better and *established* argument than the one I gave.
+
+**SECTION 25's OPTION C IS RETRACTED.** It fails the same check: an op-amp sharing that node must
+swing the panel's full range. `[derived]` 3V3 rail -> 1.17 Vrms max; 5V_NODE -> 1.77 Vrms; neither
+spans a 2 Vrms panel. The op-amp would be driven past its rails by the intercom and clamp,
+**distorting the pilot's radio audio** - a safety-relevant defect, and I recommended it. C needs a
+12 V rail AeroNode does not have (VBAT is 5.0-7.3 V and varies).
+
+**Keep T1/T2.** Option D (gain stage INTO the transformers) is the way to buy level and ANC authority
+without giving up the barrier.
+
+### Open — supersedes items 16, 20 and 21
+
+22. **MEASURE THE PANEL: output VOLTAGE and output IMPEDANCE.** Voltage decides whether anything can
+    share the node at all; impedance decides ANC authority. Both unmeasured, both on the same
+    instrument, ten minutes with a scope and a resistor on a real aircraft. **Nothing else about the
+    output stage is worth refining until those two numbers exist.**

@@ -1396,3 +1396,66 @@ non-flight part in the BOM.
 
 `[gap]` **Not built.** This is a topology change to a safety-adjacent path and it needs Peter's
 ruling, not my assumption.
+
+---
+
+## 26. RETRACTION — there is no 16 V on `HS_L`, and §25's recommendation was wrong
+
+Peter asked why there is 16 V on `HS_L`. **There isn't.** In normal operation `HS_L` carries audio
+and no DC at all.
+
+### What I did wrong
+
+`[fetched]` The 8–16 V mic bias is on **`MIC_LINE`**, not on the phones lines. I carried that number
+across into a **postulated single-fault case** — `MIC_LINE` bridging to a phones line inside our own
+`J10`/`J11` connector, since both run through it — and then wrote it into §24 and §25 as though it
+were an established property of the node. It is `[assumed]`, not `[fetched]`, and the assumption is
+weak: GA plug sizes (¼″ phones vs 0.206″ mic) make user mis-plugging physically impossible, so the
+only credible path is damage to our own harness.
+
+**Any design driver I state must carry its own provenance.** This one did not, and it was doing real
+work in a recommendation.
+
+### But checking it surfaced a genuine constraint that needs no fault at all
+
+`[derived]` from the ADAU1860's `[fetched]` 2.1 V signal-pin limit:
+
+| Panel output | Peak on `HS_L` | vs codec's 2.1 V pin limit |
+|---|---|---|
+| 1.0 V rms | 1.41 V | within |
+| **1.5 V rms** | **2.12 V** | **exceeds** |
+| **2.0 V rms** | **2.83 V** | **exceeds** |
+
+**The intercom's own normal audio can exceed the codec's absolute-maximum pin rating.** So something
+must stand between the ADAU1860 and `HS_L` regardless of any fault. A transformer does that for free
+and permanently. That is a better argument for `T1`/`T2` than the one I gave — and it is established
+rather than assumed.
+
+### §25's recommendation of Option C is RETRACTED
+
+Worse, Option C does not survive the same check. An op-amp sharing a node the panel drives must
+swing across the panel's full range, and `[derived]`:
+
+| Rail | Max swing (centred) | Against a 2 V rms panel |
+|---|---|---|
+| 3.3 V | 1.17 V rms | **cannot** |
+| 5.0 V (`5V_NODE`) | 1.77 V rms | **cannot** |
+| 12 V | 4.24 V rms | ok |
+
+On either rail AeroNode actually has, the op-amp's output stage would be **driven beyond its rails by
+the intercom** and would clamp — **distorting the pilot's radio audio**. That is a safety-relevant
+defect, and I recommended it. Option C needs a 12 V rail that AeroNode does not have (`VBAT` is
+5.0–7.3 V and varies), which makes it a much larger change than §25 implied.
+
+### Where that leaves the design
+
+**Keep `T1`/`T2`.** The remaining justification is narrower than the original one but it is real and
+established: the transformer lets a 2.1 V-limited codec share a node with a source that swings past
+it, and converts differential to single-ended while doing so. **Option D** (a gain stage *into* the
+transformers) remains the way to buy level and ANC authority without giving that up.
+
+`[gap]` **The measurement that now decides everything: what does the panel actually put out —
+voltage AND output impedance?** Level decides whether anything can share the node; impedance decides
+ANC authority (§21). Both are unmeasured, both are on the same instrument, and it is a ten-minute job
+on a real aircraft with a scope and a resistor. **Nothing else about this output stage is worth
+refining until those two numbers exist.**
