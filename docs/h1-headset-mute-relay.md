@@ -1337,3 +1337,62 @@ But do not treat it as settled: **answer the grounding question first.** If Aero
 flight, removing `T1`/`T2` frees ~$4, two 12.8 × 9 mm footprints and 7.5 mm of height, buys 7 dB of
 ANC authority, and makes the `[gap]` from §11.4 disappear — the `SM-LP-5001` is **−20 °C to +85 °C**
 and `UL60950`, so it is **not a flight part** and would need requalifying if it stays.
+
+---
+
+## 25. RULED 2026-09-09 — AeroNode floats in flight. What that does to §24.
+
+Peter: *"aeronode runs on battery in flight, no aircraft ground connection."* `[ruled]`
+
+**So the audio ground would be AeroNode's only bond to the aircraft — a single point, not a loop.**
+The hum/ground-loop argument for `T1`/`T2` is therefore **dead**, alongside the DC-blocking argument
+that §24 already found dead. Of the three original reasons, one and a half remain:
+
+- **Differential → single-ended:** still real, worth 6 dB.
+- **Isolation:** no longer about hum. What survives is **fault tolerance** — the ADAU1860 dies above
+  2.1 V, and the very next pins on the same connector carry `MIC_LINE` at 8–16 V. A transformer is
+  immune to that *permanently*; a clamp diode is not.
+
+### The number that reframes the whole question
+
+ANC authority is **absolute anti-noise voltage at the ear**, not a ratio to AeroNode's full scale.
+A 1:1 transformer cannot provide gain. An amplifier can. `[derived]`, worst case (stiff 10 Ω panel,
+`R_sum` sized to keep inter-amplifier current sane):
+
+| Option | AeroNode active | **Anti-noise at the ear** | Inter-amp current |
+|---|---|---|---|
+| **A — `T1`/`T2` as built** | 0.582 V | **40.5 mV** | 8 mA |
+| B — cap + 100 Ω + clamp, one leg | 0.380 V | 43.8 mV | 16 mA |
+| **C — op-amp diff→SE, ×2 gain** | **1.520 V** | **175.2 mV** | 16 mA |
+| D — gain stage *into* `T1`/`T2` | 1.164 V | 81.0 mV | 8 mA |
+
+**Option C gives 4× the anti-noise of what is built, and lands the active level at 1.5 V rms — inside
+the 1–2 V rms a GA intercom drives.** That also closes §18's *"level needs ears"* gap, which no
+resistor value has been able to.
+
+### The honest catch in C
+
+Removing the transformers makes fault protection an **active design problem, not a free property**.
+`[derived]` a sustained 16 V fault on `HS_L` through a 100 Ω series resistor pushes **127 mA** into
+whatever clamp is fitted — far more than a BAT54 will survive. C therefore needs a properly sized
+series element and TVS, or a resettable device. That is real work; a transformer needs none of it.
+
+### Recommendation
+
+**Option C**, and it is now the change with the best return in this whole block:
+
+- 4× the ANC authority, which is the thing that is currently marginal.
+- Closes the level gap that has been open since §16.
+- Removes the `[gap]` that `SM-LP-5001` is **not a flight part** (−20 °C, `UL60950`) — no
+  requalification needed, because the part is gone.
+- Frees ~$4, two 12.8 × 9 mm footprints and 7.5 mm of height.
+
+Against: one dual op-amp and a rail (the `3V3_MIC` LDO is already an open item, so the rail is
+coming anyway), plus the fault-protection design above.
+
+**Option D** is the answer if bulletproof fault isolation outranks ANC authority — it keeps the
+galvanic barrier and still doubles the level, at the cost of half of C's anti-noise and keeping a
+non-flight part in the BOM.
+
+`[gap]` **Not built.** This is a topology change to a safety-adjacent path and it needs Peter's
+ruling, not my assumption.

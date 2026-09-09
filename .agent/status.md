@@ -776,3 +776,40 @@ of Rsum~100R (`[derived]` at 10R, **90 mA** would flow between the two amplifier
 **Recommendation: keep for now**, but answer the grounding question - if AeroNode floats, removing
 them frees ~$4, two 12.8x9 mm footprints and 7.5 mm height, and makes the 11.4 `[gap]` vanish
 (SM-LP-5001 is -20C/+85C and UL60950 - NOT a flight part, needs requalifying if it stays).
+
+### Same day — RULED: AeroNode floats in flight, no aircraft ground bond. Section 25.
+
+`[ruled]` So the audio ground would be its ONLY bond - a single point, not a loop. **The ground-loop
+argument for T1/T2 is dead**, alongside the DC-blocking argument section 24 already killed. What
+survives of "isolation" is **fault tolerance**: the ADAU1860 dies above 2.1 V and the adjacent pins
+carry MIC_LINE at 8-16 V. A transformer is permanently immune; a clamp diode is not.
+
+### The number that reframes it
+
+**ANC authority is ABSOLUTE anti-noise voltage at the ear, not a ratio to full scale.** A 1:1
+transformer cannot give gain; an amplifier can. `[derived]` worst case (stiff 10R panel):
+
+| option | active | **anti-noise at ear** | inter-amp current |
+| A  T1/T2 as built            | 0.582 V | **40.5 mV** |  8 mA |
+| B  cap+100R+clamp, one leg   | 0.380 V |   43.8 mV   | 16 mA |
+| C  op-amp diff->SE, x2 gain  | **1.520 V** | **175.2 mV** | 16 mA |
+| D  gain stage INTO T1/T2     | 1.164 V |   81.0 mV   |  8 mA |
+
+**C gives 4x the anti-noise of what is built**, and puts the active level at 1.5 Vrms - inside the
+1-2 Vrms a GA intercom drives, which **closes the section 18 "level needs ears" gap** that no
+resistor value could.
+
+**Catch in C:** fault protection becomes active design, not a free property. `[derived]` a sustained
+16 V fault on HS_L through 100R pushes **127 mA** into the clamp - far past a BAT54. Needs a properly
+sized series element + TVS.
+
+**Recommended: C.** Best return in the block - 4x ANC authority, closes the level gap, and **removes
+the not-a-flight-part problem entirely** (SM-LP-5001 is -20C/UL60950) because the part is gone.
+Frees ~$4, two 12.8x9 mm footprints, 7.5 mm height. Costs a dual op-amp + a rail (the 3V3_MIC LDO
+is already an open item, so the rail is coming anyway).
+**D** if bulletproof fault isolation outranks ANC authority.
+
+### Open
+
+21. **RULE ON THE OUTPUT STAGE: C (op-amp, remove transformers) or D (gain into transformers)?**
+    Not built - a topology change on a safety-adjacent path needs Peter's ruling.
