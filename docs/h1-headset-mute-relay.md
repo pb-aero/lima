@@ -542,6 +542,10 @@ environment, and that is a sourcing exercise nobody has started. `[gap]`
 
 ## 12. DRAWN 2026-09-08 — the block is in the schematic
 
+> **Superseded 2026-09-09 by §13.** The block was moved off the block-diagram page onto its own
+> hierarchical sub-sheet, `audio-mute.kicad_sch`. The component list, values and verification
+> method below all still stand; only the *location* and the layout changed.
+
 Peter: *"draw the transformer and relay block into the audio interface schematic."* Done, in
 **`~/aerosense/aeronode/aerosense/aeronode-lite/aeronode-audio-interface.kicad_sch`** — the canonical
 tree, through Konnect MCP tools only. That sheet's `AUDIO` block was an empty placeholder with the
@@ -617,3 +621,76 @@ error the ICM-45686 footprint scar is about.
    it, not a redraw.
 3. **`J10`/`J11` are generic 4-pin connectors.** Real GA hardware is a dual plug (PJ-055/PJ-068) or a
    6-pin panel connector. Placeholders until the mechanical interface is chosen.
+
+
+---
+
+## 13. MOVED 2026-09-09 — its own sheet, `audio-mute.kicad_sch`
+
+Peter: *"can we please put this on its own schematic so no text overlays."* Done. §12's open item 2
+is closed.
+
+**`AUDIO MUTE + ISOLATION`** is now a hierarchical sub-sheet (`audio-mute.kicad_sch`, page 3),
+matching the pattern `cm5.kicad_sch` already set in this project. The sheet symbol sits on the
+parent at (115, 128), 55 x 45 mm.
+
+**The parent was restored to its original bytes first** — `md5 052f149b996dfdf74993d68451ab7aa5`,
+verified identical to the pre-edit backup — rather than unpicking ~45 labels by hand. Then only the
+sheet symbol and its six pins were added. A second timestamped `.bak-LIMA-<stamp>` was taken before
+that restore.
+
+### The interface is six sheet pins
+
+Written as hierarchical labels on the child and imported with KiCAD's own *Import Sheet Pins*:
+
+| Pin | Crosses to |
+|---|---|
+| `GPIO_RLY_SPKR`, `GPIO_RLY_MIC` | the CM5-side connector `J4` on the parent |
+| `5V_NODE` | `J2.8` |
+| `GND` | `J1.1` / `J2.1` / `J3.1` |
+| `HPOUTP`, `HPOUTN` | nothing yet — the codec is not placed. Deliberate. |
+
+`validate_sheet_pins`: **0 issues.** `[measured]`
+
+Everything aircraft-side (`AC_L`, `AC_R`, `HS_L`, `HS_R`, `MIC_LINE`, `MIC_SHUNT`, `AC_GND`,
+`MUTE_L/R`, `T1_SEC`) stays **local to the sub-sheet** and does not leak into the parent's namespace —
+which is the scoping you want, and a second reason the sub-sheet is the right home.
+
+### Layout — why there are no overlays now
+
+Full A4 to itself, and one change did most of the work: **`K1` and `K2` are rotated 90°**, so the
+contacts face left and right at 2.54 mm pitch. Horizontal labels then stack like connector pin names
+instead of colliding. On the old A4 the same labels had to be rotated vertical to fit at all.
+
+### Verified — and one instrument caught lying
+
+- **ERC: 41 errors, identical to the untouched baseline.** `[measured]` Zero added.
+- **Netlist correct on both sides of the boundary** `[measured]`:
+
+```
+/5V_NODE       -> D1.1, D2.1, J2.8, K1.A1, K2.A1
+/GND           -> J1.1, J2.1, J3.1, Q1.S, Q2.S, R7.2, R8.2
+/GPIO_RLY_SPKR -> J4.2, R5.1        /GPIO_RLY_MIC -> J4.1, R6.1
+~/RLY_SPKR_G   -> Q1.G, R5.2, R7.1  ~/RLY_MIC_G   -> Q2.G, R6.2, R8.1
+~/AC_GND -> J10.4, J11.4, K2.14, R1.2, R2.2, R3.2, T1.3
+~/MIC_LINE -> C1.1, J10.3, J11.3, R4.2    ~/MIC_SHUNT -> C1.2, K2.11, R3.1
+```
+
+**The instrument scar, and it is the §3 pattern exactly.** Konnect's `validate_wire_connections`
+reported **`0 floating endpoints, valid: true`** on the child sheet. KiCAD's own ERC, run at the same
+moment, reported **two wires connected to nothing** — and the netlist confirmed KiCAD was right:
+`Q1.G`, `R5.2` and `R7.1` were on **no net at all**. The gate wires were drawn, looked correct in the
+render, and passed the convenient check.
+
+The fix was a net label on each gate node (`RLY_SPKR_G`, `RLY_MIC_G`); junction dots alone did not do
+it. Two lessons worth keeping:
+
+1. **`validate_wire_connections` is not a substitute for ERC.** It answers "does every wire end touch
+   something", not "does every pin end up on a net". Believe the netlist.
+2. **A rendered schematic that looks connected is not a connected schematic.** The only proof a node
+   exists is its appearance in the netlist with all the pins you expect on it. `[measured]` beats
+   `[looks right]`.
+
+`[gap]` **KiCAD is running on this machine** (`pgrep kicad` returns a process). If Peter has this
+project open in eeschema, he must reload it — and must not save from a stale in-memory copy, or
+these edits are lost.

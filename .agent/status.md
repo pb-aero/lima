@@ -446,3 +446,43 @@ trap. Crop committed at `kicad/aeronode-lite-audio/doc/smlp5001-pinout.png`.
    hierarchical sub-sheet like `cm5.kicad_sch`. Copy-paste when Peter wants it, not a redraw.
 10. **J10/J11 are generic 4-pin placeholders** — real GA is a dual plug (PJ-055/PJ-068) or a 6-pin
     panel connector. Waiting on the mechanical interface decision.
+
+## 2026-09-09 · Mute block moved to its own sheet — and an instrument caught lying
+
+Peter: *"can we please put this on its own schematic so no text overlays."* Done. Section 13 of
+`docs/h1-headset-mute-relay.md`.
+
+- **`AUDIO MUTE + ISOLATION` is now a hierarchical sub-sheet**, `audio-mute.kicad_sch` (page 3),
+  matching the `cm5.kicad_sch` pattern already in the project. Sheet symbol at (115,128), 55x45.
+- **Parent restored to original bytes first** (`md5 052f149b996dfdf74993d68451ab7aa5`, verified
+  against the pre-edit backup) rather than unpicking ~45 labels by hand. Then only the sheet symbol
+  and its 6 pins were added. **Restoring from a verified byte copy beat surgical deletion.**
+- **6 sheet pins** via KiCAD's own Import Sheet Pins: `GPIO_RLY_SPKR`/`GPIO_RLY_MIC` (-> J4),
+  `5V_NODE` (-> J2.8), `GND` (-> J1/J2/J3), `HPOUTP`/`HPOUTN` (nothing yet, codec unplaced).
+  `validate_sheet_pins`: 0 issues. Aircraft-side nets stay **local to the sub-sheet**.
+- **No overlays.** The change that did it: **rotate K1/K2 90 deg** so contacts face left/right at
+  2.54 mm pitch — horizontal labels then stack like connector pin names.
+- **ERC 41 = untouched baseline. Netlist verified on both sides of the boundary.** `[measured]`
+
+### SCAR — Konnect's `validate_wire_connections` said valid; KiCAD's ERC said otherwise
+
+`validate_wire_connections` returned **`0 floating endpoints, valid: true`** on the child sheet.
+KiCAD's ERC at the same moment reported **2 wires connected to nothing**, and the netlist confirmed
+ERC: **`Q1.G`, `R5.2`, `R7.1` were on NO net at all.** The gate wires were drawn, rendered
+convincingly, and passed the friendly check.
+
+Junction dots did **not** fix it; a **net label on the gate node** did (`RLY_SPKR_G`, `RLY_MIC_G`).
+
+Two rules from it:
+1. **`validate_wire_connections` is not ERC.** It answers "does every wire end touch something", not
+   "does every pin land on a net". **Believe the netlist.**
+2. **A render that looks connected is not a connected schematic.** The only proof a node exists is
+   its appearance in the netlist with every pin you expect. This is section 3's "a broken instrument
+   fails toward the answer you expected" in its purest form -- the check I ran first was the one
+   that agreed with me.
+
+### Open
+
+11. `[gap]` **KiCAD is running on this Mac** (`pgrep kicad` -> a process). If Peter has this project
+    open in eeschema he must **reload** it, and must not save from a stale in-memory copy or these
+    edits are lost.
