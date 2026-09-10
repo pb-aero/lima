@@ -465,3 +465,80 @@ would make the failure visible in `PM`/`IMU` logs instead of appearing as unexpl
   trade worth having, because §3's whole argument is that the fast lane is the fragile one.
 - **`[gap]` remaining:** whether 1.5 KB means 1500 or 1536 bytes. It moves the deadline by 2% and
   changes no decision, so it is not worth chasing.
+
+
+---
+
+## 8 · Single lane — Peter's ruling, 2026-09-10
+
+**One ICM-45686. No second IMU, no EKF3 lane voting, `EK3_IMU_MASK` stays 1.** §6 and §7 are kept
+as the record of why a second lane was considered and what it would and would not have bought — §7's
+conclusion, that it would not have covered the scheduling risk, makes this ruling cheaper than it
+looks. What it does mean is that **every remaining margin has to come from that one lane**, so the
+two settings below stop being preferences.
+
+### The default that would have caught us
+
+```c
+#if defined(STM32H7) || defined(STM32F7)
+#define MPU_FIFO_FASTSAMPLE_DEFAULT 1     // AP_InertialSensor.cpp:88-92
+#else
+#define MPU_FIFO_FASTSAMPLE_DEFAULT 0
+#endif
+```
+
+`INS_GYRO_RATE` therefore defaults to **0** on Linux, and `get_fast_sampling_rate()` returns
+`1 << 0 = 1`. The driver requires `enable_fast_sampling(...) && get_fast_sampling_rate() > 1`
+(`AP_InertialSensor_Invensensev3.cpp:849`), so:
+
+**Fast sampling is OFF by default on the CM5 — at 1 kHz — despite `INS_FAST_SAMPLE` defaulting to 1
+and the part being on SPI.** An H7 FMU would have come up at 2 kHz. Nothing warns about this; the
+startup banner prints "normal" rather than "fast" and that is the only tell.
+
+### The rate trade, with the packet sizes measured
+
+`FIFOData` is **16 bytes** and `FIFODataHighRes` is **20 bytes** — both `static_assert`ed
+(`AP_InertialSensor_Invensensev3.cpp:192-193`). The 45686's FIFO is 2 KB `[repo]` — the driver's own
+comment, *not* a datasheet read; DS-000563 would settle it and has not been fetched.
+
+| `INS_GYRO_RATE` | Backend rate | Deadline, HiRes **on** (105 samples) | Deadline, HiRes **off** (128) |
+|---|---|---|---|
+| **0 — Linux default** | **1 kHz** | **105 ms** | 128 ms |
+| 1 — H7 default | 2 kHz | 53 ms | 64 ms |
+| **2 — recommended** | **4 kHz** | **26 ms** | 32 ms |
+| 3 | 8 kHz | 13 ms | 16 ms |
+
+**Recommendation: `INS_GYRO_RATE = 2` (4 kHz), with HiRes on.** 4× the oversampling margin against
+airframe vibration — which §3 names as the dominant real-world AHRS error source, and which is now
+unbacked by any second lane — while leaving a 26 ms deadline, twice the 8 kHz figure. **Do not set
+3 until the scheduling tail has actually been measured** (`cyclictest` under Hailo inference and
+8-lane audio, plus ArduPilot's own `PM` log). On a single lane, an overrun is not a degraded lane,
+it is the AHRS.
+
+There is a coupling worth knowing but which does not bite here: `calculate_fast_sampling_backend_rate()`
+forces the multiplier up if `get_loop_rate_hz()` exceeds the 1 kHz base rate. Plane loop rates are
+50–400 Hz, so it never triggers. It would only matter above a 1 kHz loop.
+
+### Changed in the board target
+
+`define HAL_INS_HIGHRES_SAMPLE 1` — 20-bit sampling on instance 0. It is a per-instance bitmask
+(`enable_highres_sampling(accel_instance)`), it defaults to 0, and **no Linux hwdef in the tree sets
+it** — yet nothing gates it to ChibiOS; the driver asks only for `enable_highres_sampling()` and a
+SPI bus, both of which AeroNode satisfies. The cost is honest: the FIFO packet grows 16 → 20 bytes,
+so the buffer holds 105 samples instead of 128 and the deadline tightens ~20%. On a single lane that
+trade is worth making, and the margin comes back from choosing 4 kHz rather than 8.
+
+The backend rate itself is deliberately **not** baked into the hwdef — it stays the `INS_GYRO_RATE`
+parameter so it can be tuned against a measured scheduling tail rather than a predicted one.
+
+**Verified** `[measured]`: `HAL_INS_HIGHRES_SAMPLE 1` in the generated `build/aeronode/hwdef.h`;
+single-entry `HAL_INS_PROBE_LIST` / `HAL_MAG_PROBE_LIST` / `HAL_BARO_PROBE_LIST`; both
+`accumulate_samples` and `accumulate_highres_samples` present in the binary. `arduplane` builds in
+4m49s. Commit `a2c4ac41a3` on branch `aeronode-board`; patch series at
+`linux/ardupilot-cm5/aeronode-board.patch`.
+
+One thing I noticed and did not chase: enabling HiRes made the text segment ~11 KB **smaller**
+(3 356 535 → 3 345 607), where a new code path should have grown it. 0.3% on a 3.3 MB binary and
+almost certainly inlining churn around the changed `#if` structure — but it is the opposite of the
+expected sign, so it is recorded rather than glossed. The symbol-level controls above are the actual
+evidence that HiRes is in, not the size.

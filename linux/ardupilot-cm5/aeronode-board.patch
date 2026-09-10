@@ -1,7 +1,7 @@
 From 51ea1d87b5faa0dc79676969ca7c795c8c231d17 Mon Sep 17 00:00:00 2001
 From: "LIMA (peter)" <peter@aerosenseaviation.com>
 Date: Thu, 10 Sep 2026 11:40:56 +0200
-Subject: [PATCH] AP_HAL_Linux: add AeroNode CM5 board target
+Subject: [PATCH 1/2] AP_HAL_Linux: add AeroNode CM5 board target
 
 Inherits the generic linux target rather than pi5, because include of a board
 also inherits its sensor device lines and undef does not remove them.
@@ -91,6 +91,78 @@ index 0000000000..732ffcaf0c
 +define HAL_BOARD_STORAGE_DIRECTORY "/var/lib/aeronode/storage"
 +define HAL_BOARD_LOG_DIRECTORY     "/var/lib/aeronode/logs"
 +define HAL_BOARD_TERRAIN_DIRECTORY "/var/lib/aeronode/terrain"
+-- 
+2.47.3
+
+
+From a2c4ac41a35766e5e3370fedf12b1960e15d766c Mon Sep 17 00:00:00 2001
+From: "LIMA (peter)" <peter@aerosenseaviation.com>
+Date: Thu, 10 Sep 2026 13:34:52 +0200
+Subject: [PATCH 2/2] AP_HAL_Linux: AeroNode - single IMU lane, enable 20-bit
+ HiRes
+
+Single-lane ruling: one ICM-45686, EK3_IMU_MASK stays 1, no lane voting.
+
+Enable HAL_INS_HIGHRES_SAMPLE for instance 0. It defaults to 0 and no Linux
+hwdef in the tree sets it, though nothing gates it to ChibiOS -- the driver
+requires only enable_highres_sampling() and a SPI bus, both satisfied here.
+
+Backend rate is left as the INS_GYRO_RATE parameter rather than baked. Note
+that on Linux it defaults to 0 (1 kHz): MPU_FIFO_FASTSAMPLE_DEFAULT is 1 only
+for STM32H7/F7, and the driver requires get_fast_sampling_rate() > 1, so fast
+sampling is off by default here despite INS_FAST_SAMPLE=1 and a SPI bus.
+
+Verified: HAL_INS_HIGHRES_SAMPLE 1 in the generated hwdef.h, single-entry
+IMU/MAG/BARO probe lists, and both accumulate_samples and
+accumulate_highres_samples present in the binary. arduplane builds, 4m49s.
+---
+ .../AP_HAL_Linux/hwdef/aeronode/hwdef.dat     | 29 ++++++++++++++++++-
+ 1 file changed, 28 insertions(+), 1 deletion(-)
+
+diff --git a/libraries/AP_HAL_Linux/hwdef/aeronode/hwdef.dat b/libraries/AP_HAL_Linux/hwdef/aeronode/hwdef.dat
+index 732ffcaf0c..c3a13a1fc2 100644
+--- a/libraries/AP_HAL_Linux/hwdef/aeronode/hwdef.dat
++++ b/libraries/AP_HAL_Linux/hwdef/aeronode/hwdef.dat
+@@ -38,11 +38,38 @@ define HAL_LINUX_GPIO_RPI_ENABLED 1
+ define CONFIG_HAL_BOARD_SUBTYPE HAL_BOARD_SUBTYPE_LINUX_PI5
+ 
+ # --- IMU: TDK ICM-45686 on SPI, heated flex sub-PCB (the PWM0[0] heater loop
+-#     is app-layer, not ArduPilot`s)
++#     is app-layer, not ArduPilot`s).
++#
++#     SINGLE LANE, by Peter`s ruling 2026-09-10. There is no second IMU and no
++#     EKF3 lane voting: EK3_IMU_MASK stays 1. Everything about this sensor is
++#     therefore load-bearing.
+ undef HAL_INS_DEFAULT
+ IMU Invensensev3 SPI:icm45686 ROTATION_NONE
+ define INS_MAX_INSTANCES 1
+ 
++# --- 20-bit HiRes sampling, instance 0.
++#     Per-instance bitmask; the driver gates it on enable_highres_sampling()
++#     AND bus_type() == SPI, both satisfied here. Defaults to 0 in
++#     AP_InertialSensor_Backend.h:32 and NO Linux hwdef in the tree sets it --
++#     ChibiOS boards only, by habit rather than by any gate.
++#     Cost: the FIFO packet grows 16 -> 20 bytes, so the 2 KB FIFO holds 105
++#     samples instead of 128, tightening the overflow deadline by ~20%. Taken
++#     deliberately: on a single lane the resolution is worth more than the
++#     margin, and the margin is recovered by choosing INS_GYRO_RATE (below).
++define HAL_INS_HIGHRES_SAMPLE 1
++
++# --- Backend rate is a PARAMETER, not baked here: INS_GYRO_RATE.
++#     0:1kHz 1:2kHz 2:4kHz 3:8kHz. On Linux it defaults to 0 --
++#     MPU_FIFO_FASTSAMPLE_DEFAULT is 1 only for STM32H7/F7
++#     (AP_InertialSensor.cpp:88-92) -- and since the driver requires
++#     get_fast_sampling_rate() > 1, fast sampling is OFF by default on this
++#     board even though INS_FAST_SAMPLE is 1 and the part is on SPI.
++#     Deadline before the FIFO overruns, HiRes on, 105 samples:
++#       1 kHz 105 ms | 2 kHz 53 ms | 4 kHz 26 ms | 8 kHz 13 ms
++#     Recommendation for a single lane on a PREEMPT (non-RT) kernel sharing a
++#     CM5 with Hailo inference and 8-lane audio: INS_GYRO_RATE = 2 (4 kHz).
++#     Do not set 3 without first measuring the scheduling tail.
++
+ # --- Compass: PNI RM3100
+ COMPASS RM3100 SPI:rm3100 false ROTATION_NONE
+ define AP_COMPASS_PROBING_ENABLED 1
 -- 
 2.47.3
 

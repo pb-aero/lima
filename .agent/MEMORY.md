@@ -800,3 +800,47 @@ overrun overwrites the oldest samples and asserts `FIFO_OVR_IA` (§6.12.3). `rea
 both status bytes and uses **only** `DIFF_FIFO_8`; **`FIFO_OVR_IA` and `FIFO_FULL_IA` are never
 examined anywhere in the driver** `[measured]`. No error count, no log, no reset. The Invensense lane
 by contrast resets loudly (`need_reset` → the `MPU: temp reset` line). Worth an upstream patch.
+
+## Scar — fast sampling is OFF by default on Linux, and nothing says so (2026-09-10)
+
+`[repo]` `AP_InertialSensor.cpp:88-92`:
+
+```c
+#if defined(STM32H7) || defined(STM32F7)
+#define MPU_FIFO_FASTSAMPLE_DEFAULT 1
+#else
+#define MPU_FIFO_FASTSAMPLE_DEFAULT 0
+#endif
+```
+
+That sets `INS_GYRO_RATE`'s default. `get_fast_sampling_rate()` returns `1 << INS_GYRO_RATE`
+(`AP_InertialSensor_Backend.h:363`), and the driver requires
+`enable_fast_sampling(...) && get_fast_sampling_rate() > 1`
+(`AP_InertialSensor_Invensensev3.cpp:849`).
+
+**So on ANY Linux board the IMU runs at 1 kHz even with `INS_FAST_SAMPLE` = 1 and the part on SPI.**
+An H7 comes up at 2 kHz. The only tell is the startup banner printing "normal" instead of "fast".
+`INS_GYRO_RATE` values: 0:1kHz 1:2kHz 2:4kHz 3:8kHz.
+
+**Packet sizes, both `static_assert`ed** (`AP_InertialSensor_Invensensev3.cpp:192-193`): `FIFOData`
+**16 B**, `FIFODataHighRes` **20 B**. The 45686 FIFO is 2 KB `[repo]` — the driver's *comment*, not a
+datasheet read. So HiRes costs ~20% of the overflow deadline: 105 samples instead of 128.
+
+Deadlines, HiRes on: 1 kHz 105 ms | 2 kHz 53 ms | 4 kHz 26 ms | 8 kHz 13 ms.
+
+`HAL_INS_HIGHRES_SAMPLE` is a **per-instance bitmask** (`enable_highres_sampling(accel_instance)`),
+defaults 0, and **no Linux hwdef sets it** — but nothing gates it to ChibiOS. It needs only
+`enable_highres_sampling()` and a SPI bus.
+
+## Fact — AeroNode is SINGLE LANE by Peter's ruling (2026-09-10)
+
+One ICM-45686, no second IMU, no EKF3 lane voting, `EK3_IMU_MASK` = 1. §7 of
+`docs/aeronode-ahrs-latency-architectures.md` made this cheaper than it looks: a second IMU would
+have given dissimilar *sensor* redundancy but **not** dissimilar *timing* redundancy, so it was never
+going to cover the platform-jitter risk anyway.
+
+Board target now sets `HAL_INS_HIGHRES_SAMPLE 1` and leaves the rate as the `INS_GYRO_RATE`
+parameter. **Recommended `INS_GYRO_RATE = 2` (4 kHz)** — 4x oversampling margin against vibration
+with a 26 ms deadline. **Do not set 3 (8 kHz) until the scheduling tail is measured** — on a single
+lane an overrun is not a degraded lane, it is the AHRS. Commit `a2c4ac41a3` on branch
+`aeronode-board`; patch at `linux/ardupilot-cm5/aeronode-board.patch`.
