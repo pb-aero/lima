@@ -687,3 +687,58 @@ Drivers confirmed present for the AeroNode CM5 parts `[measured]` at `fa7ffbd0a1
 (Invensensev3, WHO_AM_I 0xE9, cites TDK **DS-000563 rev 1.0** — a datasheet the KiCAD sessions never
 found while chasing DS-000577), BMP581 (`AP_Baro_BMP581`, I2C 0x46/0x47), RM3100, ADS1115 (Linux
 `AnalogIn_ADS1115`). **Absent: BME690 and BME680 entirely** — environmental is never ArduPilot's.
+
+## Scar — a hwdef `include` inherits the other board's SENSORS, and `undef` will not remove them (2026-09-10)
+
+`[measured]`. Writing an AeroNode target as `include ../pi5/hwdef.dat` produced a target that probed
+the **pi5 dev rig's MPU-9250 on i2c-2:0x68** as `HAL_INS_PROBE1`, with the real ICM45686 appended as
+PROBE2 — and with `INS_MAX_INSTANCES 1` the real sensor is the one that gets dropped. The AK8963 and
+LPS22HB came too. `undef HAL_INS_DEFAULT` / `undef INS_MAX_INSTANCES` do nothing: the generator
+**appends** device lines and `undef` only touches `define`s.
+
+**`configure` printed `finished successfully` the whole time.** The evidence is in
+`build/<board>/hwdef.h` — read `HAL_INS_PROBE_LIST`, `HAL_MAG_PROBE_LIST`, `HAL_BARO_PROBE_LIST`
+after every hwdef change, never the exit code. Inherit `../linux/hwdef.dat` and re-add the board
+lines by hand.
+
+**Controls that prove it:** `nm -C` the binary — 27 `Invensensev3` symbols and **0**
+`AP_InertialSensor_Invensense::`; `strings` shows `icm45686`/`rm3100` and no `mpu9250`/`icm20602`.
+
+## Scar — my own instrument, twice in one session (2026-09-10)
+
+1. **`ModuleNotFoundError: No module named 'em'`** on `dronecangen` reads like a missing dependency.
+   It was not. `./waf configure` had been run **outside** `~/venv-ardupilot`, so waf cached
+   `/usr/bin/python3` and never saw the venv's `empy`. **Activate the venv before `configure`, not
+   just before the build.**
+2. **"`FMU.kicad_sch` is an empty 25 kB sheet, zero symbols"** — technically true, materially false,
+   and I said it to Peter while he was ruling on an architecture. It has **68 labels** and a drawn
+   pin-level plan: STM32H753IIT6, LAN8742A RMII PHY, ICM42688 + BMI088, RM3100, BMP581, SPI2/SPI3
+   with CS+DRDY, I2C4, UART7=telem1, SWD, PWM, heater. **`lib_id` count is not a content check on a
+   KiCad sheet** — count labels and graphics too before calling anything empty.
+
+## Fact — ArduPilot AHRS response time: the numbers that actually decide it (2026-09-10)
+
+`[repo]` at `fa7ffbd0a1`. Full analysis in `docs/aeronode-ahrs-latency-architectures.md`.
+
+- **The EKF fusion delay is NOT attitude lag.** EKF3 fuses at a delayed horizon —
+  `maxTimeDelay_ms` = max(`EK3_HGT_DELAY` 60, `magDelay_ms` 60, `tasDelay_ms` 100, GPS lag ≤250) —
+  then `calcOutputStates()`, called **outside** the `runUpdates` block
+  (`AP_NavEKF3_core.cpp:714-717`), winds it forward to now on **every main loop**. Two decoupled
+  rates: fusion at `min(loop_rate, 83 Hz)` (`EKF_TARGET_DT` = 12 ms), attitude output at the full
+  loop rate.
+- **`SCHEDULER_DEFAULT_LOOP_RATE` is 50 Hz for plane**, 400 for copter/sub
+  (`AP_Scheduler.cpp:44-46`). So attitude is ~20 ms old at plane defaults on **any** platform.
+- **Linux HAL priorities** (`Scheduler.cpp:26-32`, `Scheduler.h:15-16`): timer 15, UART 14, RCIN 13,
+  **IMU bus poller 12, main loop 12**, IO 10. The sensor read sits below UART and level with the
+  loop it feeds.
+- **Jitter costs SAMPLES, not milliseconds.** The driver integrates with the *sensor's own* dt and
+  applies coning per sample, so a late read is harmless. The two real doors are **FIFO overflow**
+  (45686 holds 105 HiRes samples → a **13 ms deadline at 8 kHz**) and **`dtNow` clipping** to
+  [0.5, 2.0]×`dtEkfAvg` (`AP_NavEKF3_Measurements.cpp:496`). Raising the loop rate to cut latency
+  tightens both.
+- **SPI is not a preference.** `fast_sampling` and 20-bit `highres_sampling` are both gated on
+  `bus_type() == BUS_TYPE_SPI`. On I2C you silently get 1 kHz, 16-bit, no oversampling.
+  `HAL_INS_HIGHRES_SAMPLE` defaults to 0 and **no Linux hwdef in the tree sets it** — ChibiOS boards
+  only, by habit not by gate.
+- **ArduPilot has no MAVLink IMU input**, so a companion computer can only consume a finished
+  attitude at the ATTITUDE stream rate — which then dominates every other term in the budget.

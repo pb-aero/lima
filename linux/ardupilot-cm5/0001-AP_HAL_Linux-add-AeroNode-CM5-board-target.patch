@@ -1,0 +1,96 @@
+From 51ea1d87b5faa0dc79676969ca7c795c8c231d17 Mon Sep 17 00:00:00 2001
+From: "LIMA (peter)" <peter@aerosenseaviation.com>
+Date: Thu, 10 Sep 2026 11:40:56 +0200
+Subject: [PATCH] AP_HAL_Linux: add AeroNode CM5 board target
+
+Inherits the generic linux target rather than pi5, because include of a board
+also inherits its sensor device lines and undef does not remove them.
+
+ICM-45686 on SPI (Invensensev3), RM3100 compass on SPI, BMP581 baro on I2C.
+All bus numbers are provisional placeholders -- the AeroNode design has no CM5
+sensor sheet yet, and LINUX_SPIDEV bus/subdev are Linux spidev enumeration
+numbers that must be read off the board.
+
+Builds: arduplane, 4m53s, aarch64 native. Verified in the binary: 27
+Invensensev3 symbols and 0 Invensense v1, spidev names icm45686 + rm3100 and
+no mpu9250/icm20602, RM3100 + BMP581 drivers linked, and no LPS22XH.
+---
+ .../AP_HAL_Linux/hwdef/aeronode/hwdef.dat     | 66 +++++++++++++++++++
+ 1 file changed, 66 insertions(+)
+ create mode 100644 libraries/AP_HAL_Linux/hwdef/aeronode/hwdef.dat
+
+diff --git a/libraries/AP_HAL_Linux/hwdef/aeronode/hwdef.dat b/libraries/AP_HAL_Linux/hwdef/aeronode/hwdef.dat
+new file mode 100644
+index 0000000000..732ffcaf0c
+--- /dev/null
++++ b/libraries/AP_HAL_Linux/hwdef/aeronode/hwdef.dat
+@@ -0,0 +1,66 @@
++# Aerosense AeroNode -- Raspberry Pi CM5 (CM5108064B, 8 GB / 64 GB eMMC).
++#
++# Inherits the GENERIC linux target, not pi5, and re-adds the two pi5 lines by
++# hand. That is deliberate and was found by measurement: `include ../pi5` also
++# inherits the pi5 dev rig`s MPU-9250 / AK8963 / LPS22HB device lines, and
++# `undef` does NOT remove an inherited IMU/COMPASS/BARO line -- the generator
++# appends, so the AeroNode target came out probing i2c-2 for sensors this board
++# does not have. Verified in build/aeronode/hwdef.h.
++#
++# =========================================================================
++# WARNING -- EVERY BUS NUMBER AND ADDRESS BELOW IS PROVISIONAL.
++#
++# The AeroNode schematic records the CM5 side (SPI3, SPI4, I2C1, UART0) and the
++# block diagram records the parts (ICM45686, RM3100, BMP581) but NOTHING in the
++# design joins the two: there is no CM5 sensor sheet. The assignment here is a
++# placeholder chosen so the target parses and builds.
++#
++# Before this target is flown or trusted:
++#   1. Read the real assignment off the schematic once it exists.
++#   2. Read the real spidev numbers off /dev/spidev* ON THE BOARD. The
++#      LINUX_SPIDEV BUS/SUBDEV fields are Linux enumeration numbers under the
++#      carrier overlay config -- NOT the SoC block numbers SPI3/SPI4.
++#   3. Confirm board detection: od -An -tx1 -N16 /proc/device-tree/soc*/ranges
++#      bytes 4-7 must read 00 00 00 10 (RPI_5). This target enables the RP1
++#      GPIO backend, so UNKNOWN_BOARD is an AP_HAL::panic at startup.
++#   4. The Util_RPI soc-node prefix fix is REQUIRED on this silicon (every 2712
++#      kernel names the node soc@107c000000). Unfiled upstream as of 2026-09-10.
++#
++# Every ROTATION_NONE below asserts the sensors are mounted level and forward.
++# That has NOT been checked. On the Pi 5 dev rig the same placeholder hid a
++# ~15 degree residual. Set the real orientation before trusting attitude.
++# =========================================================================
++
++include ../linux/hwdef.dat
++
++# --- from the pi5 target: RP1 GPIO through /dev/gpiomem0, detected as RPI_5
++define HAL_LINUX_GPIO_RPI_ENABLED 1
++define CONFIG_HAL_BOARD_SUBTYPE HAL_BOARD_SUBTYPE_LINUX_PI5
++
++# --- IMU: TDK ICM-45686 on SPI, heated flex sub-PCB (the PWM0[0] heater loop
++#     is app-layer, not ArduPilot`s)
++undef HAL_INS_DEFAULT
++IMU Invensensev3 SPI:icm45686 ROTATION_NONE
++define INS_MAX_INSTANCES 1
++
++# --- Compass: PNI RM3100
++COMPASS RM3100 SPI:rm3100 false ROTATION_NONE
++define AP_COMPASS_PROBING_ENABLED 1
++
++# --- Baro: Bosch BMP581 (0x46 with ADDR low, 0x47 with ADDR high)
++BARO BMP581 I2C:1:0x46
++
++# No probing on buses that carry no ArduPilot sensor.
++define HAL_LINUX_I2C_INTERNAL_BUS_MASK 0
++
++#            NAME        BUS SUBDEV MODE       BPW CS_PIN        LOWSPD HIGHSPD
++LINUX_SPIDEV "icm45686"  3   0      SPI_MODE_0 8   SPI_CS_KERNEL 4*MHZ  10*MHZ
++LINUX_SPIDEV "rm3100"    4   0      SPI_MODE_0 8   SPI_CS_KERNEL 1*MHZ  1*MHZ
++
++# --- Directories on the eMMC, not the build tree
++undef HAL_BOARD_STORAGE_DIRECTORY
++undef HAL_BOARD_LOG_DIRECTORY
++undef HAL_BOARD_TERRAIN_DIRECTORY
++define HAL_BOARD_STORAGE_DIRECTORY "/var/lib/aeronode/storage"
++define HAL_BOARD_LOG_DIRECTORY     "/var/lib/aeronode/logs"
++define HAL_BOARD_TERRAIN_DIRECTORY "/var/lib/aeronode/terrain"
+-- 
+2.47.3
+

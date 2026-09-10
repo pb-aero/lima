@@ -152,19 +152,31 @@ while chasing DS-000577.
 
 1. **File the upstream PR** — the `soc` prefix fix. Prerequisite for this silicon, and the only item
    here that helps people outside Aerosense.
-2. **Write `libraries/AP_HAL_Linux/hwdef/aeronode/hwdef.dat`.** It should `include ../pi5/hwdef.dat`
-   and then declare the real parts. Sketch, in the language the generator actually parses, with the
-   bus assignments left as the unknowns they are:
+2. **Write `libraries/AP_HAL_Linux/hwdef/aeronode/hwdef.dat`.** **DONE this session, built and
+   verified** — see `linux/ardupilot-cm5/RESULTS-2026-09-10.md` and the patch beside it. Commit
+   `51ea1d87b5` on branch `aeronode-board` in `~/ardupilot` on the Pi 5. `arduplane` builds in
+   4m53s; the binary carries 27 `Invensensev3` symbols and **zero** old-`Invensense` symbols.
+
+   **Correction to my own first sketch, which was wrong in a way `configure` called success.** I
+   wrote `include ../pi5/hwdef.dat`, because pi5 already has the toolchain, the RP1 GPIO backend
+   and the subtype. But **`include` also inherits a board's sensor device lines, and `undef` will
+   not remove them** — the generator appends. The AeroNode target came out probing the pi5 dev
+   rig's MPU-9250 on `i2c-2:0x68` as `HAL_INS_PROBE1`, with the real ICM45686 appended behind it,
+   and with `INS_MAX_INSTANCES 1` the real sensor is the one that gets dropped. `configure` printed
+   `finished successfully` throughout. Inherit `../linux/hwdef.dat` and re-add the two pi5 lines by
+   hand:
 
    ```
-   include ../pi5/hwdef.dat
+   include ../linux/hwdef.dat
+   define HAL_LINUX_GPIO_RPI_ENABLED 1
+   define CONFIG_HAL_BOARD_SUBTYPE HAL_BOARD_SUBTYPE_LINUX_PI5
 
    undef HAL_INS_DEFAULT
    IMU     Invensensev3 SPI:icm45686 ROTATION_NONE      # rotation TBD, see 4.4
    define INS_MAX_INSTANCES 1
 
-   COMPASS RM3100 SPI:rm3100 false ROTATION_NONE        # or I2C:1:0x20 — GAP
-   BARO    BMP581 I2C:1:0x46                           # or SPI — GAP
+   COMPASS RM3100 SPI:rm3100 false ROTATION_NONE        # or I2C:1:0x20 -- GAP
+   BARO    BMP581 I2C:1:0x46                            # or SPI -- GAP
    define AP_COMPASS_PROBING_ENABLED 1
    define HAL_LINUX_I2C_INTERNAL_BUS_MASK 0
 
@@ -175,7 +187,9 @@ while chasing DS-000577.
 
    The `BUS`/`SUBDEV` numbers are **spidev device numbers as Linux enumerates them under the
    carrier's overlay config**, not the SoC's SPI block numbers. They must be read off
-   `/dev/spidev*` on the real board, never inferred from `SPI3`/`SPI4` on the schematic.
+   `/dev/spidev*` on the real board, never inferred from `SPI3`/`SPI4` on the schematic. They are
+   placeholders and carry no design authority until the `[gap]` in §1 closes.
+
 3. **Prove board detection on the CM5 before trusting anything else.** One command on the bench:
 
    ```bash
@@ -184,9 +198,10 @@ while chasing DS-000577.
 
    Bytes 4–7 must read `00 00 00 10`. If they do, the CM5 detects as `RPI_5` and the whole §2
    groundwork applies unchanged. If they do not, `Util_RPI.cpp` needs a CM5 case and nothing built
-   on the RPi GPIO backend will start until it has one. `[assumed]` — same BCM2712, so I expect
-   `0x10`, but this is exactly the kind of expectation that a broken instrument confirms too
-   neatly. Measure it.
+   on the RPi GPIO backend will start until it has one. On the Pi 5 the full 16 bytes read
+   `00 00 00 00 00 00 00 10 00 00 00 00 80 00 00 00` `[measured]` and the binary prints `RPI 5` at
+   startup. `[assumed]` the CM5 matches — same BCM2712 — but this is exactly the kind of
+   expectation that a broken instrument confirms too neatly. Measure it.
 4. **Build and run**: `./waf configure --board=aeronode && ./waf plane`, then check the sensors
    declare themselves in the startup banner before looking at any attitude output.
 
@@ -208,15 +223,18 @@ Two constraints already measured and worth carrying in:
   is what makes the state defined through a CM5 reboot — `docs/h1-headset-mute-relay.md`. Software
   must not be the thing that guarantees this.
 
-### 4.3 The architecture question I cannot answer from a desk
+### 4.3 The architecture question — RULED 2026-09-10
+
+**Peter's ruling: ArduPilot runs on the CM5 itself.** The FMU path is not taken; the empty
+`FMU.kicad_sch` should stop implying otherwise. §4.1 is therefore the right work, and it is done.
+The rest of this section is kept because the trade it names does not go away by being decided.
 
 **`FMU.kicad_sch` exists and is empty.** If the intent is an FMU microcontroller running ArduPilot
 on ChibiOS with the CM5 as companion computer, then most of §4.1 is the wrong work and rev 1 is a
 MAVLink client, not a flight stack. If the intent is ArduPilot on the CM5 with the FMU sheet dead,
 §4.1 is right and the sheet should be deleted so it stops implying otherwise.
 
-**This needs Peter's ruling and I am not going to derive it.** What I can state plainly is the
-trade: ArduPilot on Linux is a userspace process on a general-purpose kernel. It uses `SCHED_FIFO`
+What must be carried forward as an accepted consequence of the ruling, not argued again: ArduPilot on Linux is a userspace process on a general-purpose kernel. It uses `SCHED_FIFO`
 threads and it works, but it has no hardware watchdog, no independent failsafe, and its worst-case
 scheduling latency is a property of whatever else the CM5 is doing — including Hailo inference on
 the PCIe bus. An FMU exists in flight controllers for that reason and not for driver support.
@@ -238,7 +256,13 @@ the PCIe bus. An FMU exists in flight controllers for that reason and not for dr
   on it. The CM5 claims in §4.1 step 3 are predictions with a stated test, not results.
 - **The bus map in §1 is incomplete by the hardware's own admission**, not by my omission. No CM5
   sensor sheet exists to read.
-- **Nothing here was compiled for a board target named `aeronode`.** The `hwdef.dat` in §4.1 is a
-  sketch in a verified language, not a file that has been through the generator.
+- **An `aeronode` board target now exists and builds** — that part of §5 is superseded, see §4.1
+  and `linux/ardupilot-cm5/RESULTS-2026-09-10.md`. It was built on the **Pi 5**, has never seen a
+  CM5, and has never read a sensor: the Pi 5 has only `/dev/spidev0.0` and `/dev/spidev10.0`
+  `[measured]`, so nothing answers to `icm45686` or `rm3100` there.
+- **My first version of that hwdef was wrong and `configure` called it a success.** The correction
+  is in §4.1. I am leaving the wrong version described rather than quietly replacing it, because
+  the failure mode — `include` inherits another board's sensors, `undef` does not remove them —
+  will catch the next person too.
 - **`aerosense.kicad_sch` and its sheets are not under git.** Everything §1 rests on lives in one
   unversioned directory on one Mac. That is a bigger risk to revision 1 than any item above.

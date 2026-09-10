@@ -968,3 +968,34 @@ repo is the CC93 part list and does **not** describe the CM5 board.
    one-command test: `od -An -tx1 -N16 /proc/device-tree/soc*/ranges`, expect `00 00 00 10`.
 5. **The CM5 design is not under git.** One unversioned directory on one Mac, no remote. A bigger
    risk to revision 1 than any technical item above.
+
+### Later the same session — Peter redirected to theory, and the FMU sheet is NOT empty
+
+**Correction I owe him.** I characterised `aerosense/FMU.kicad_sch` as an empty 25 kB sheet with zero
+symbols. Zero symbols is true; **empty is not.** It carries 68 labels and a drawn block layout:
+**STM32H753IIT6**, LAN8742A RMII Ethernet PHY, **ICM42688 + BMI088** IMUs, RM3100, BMP581, SPI2/SPI3
+with CS+DRDY lines, I2C4, UART1, UART7 = telem1, SWD, PWM, HEATER — with STM32 pin assignments
+(PA/PB/PC/PE/PF/PG/PH/PI). That is a pin-level FMU plan, not a placeholder, and it may have coloured
+his ruling. **Do not delete it.** I did not.
+
+**Delivered:** `docs/aeronode-ahrs-latency-architectures.md` — the sensor-fusion response-time theory
+for three architectures, every number cited to a file and line in `~/ardupilot` at `fa7ffbd0a1`.
+
+Headline findings worth carrying:
+- **EKF3's fusion delay is not attitude lag.** It fuses at a delayed horizon (60 ms minimum,
+  250 ms with GPS) and `calcOutputStates()` — called OUTSIDE the `runUpdates` block,
+  `AP_NavEKF3_core.cpp:717` — winds it forward to now every main loop.
+- **Attitude response time is set by `SCHED_LOOP_RATE`, not the silicon.** ArduPlane default is
+  **50 Hz**, so ~20 ms on a Cortex-M7 too. Fusion prediction is `min(loop_rate, 83 Hz)`.
+- **The platforms differ in jitter, and jitter costs SAMPLES not milliseconds.** The 45686 FIFO
+  holds 105 HiRes samples: at 8 kHz that is a **13 ms real-time deadline** on a thread the Linux HAL
+  runs at `SCHED_FIFO` **12 — below UART(14) and level with the flight loop**, on a `PREEMPT` (not
+  `PREEMPT_RT`) kernel with the `ondemand` governor `[measured]`.
+- **Architecture C has a hard ceiling:** ArduPilot has no MAVLink IMU input, so a CM5 fed by the FMU
+  consumes a finished attitude at the ATTITUDE stream rate, which dominates every other term.
+- **The strongest argument for the FMU is integrity, not latency** — two IMUs give EKF3 two cores to
+  vote; the CM5 block diagram has one.
+
+**Also built earlier this session, before the redirect:** the `aeronode` Linux board target. Commit
+`51ea1d87b5` on branch `aeronode-board` in `~/ardupilot`; patch at `linux/ardupilot-cm5/`; results
+and the `include`-inherits-sensors scar at `linux/ardupilot-cm5/RESULTS-2026-09-10.md`.
