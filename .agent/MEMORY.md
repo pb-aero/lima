@@ -641,3 +641,49 @@ false. This is the 2026-09-02 register scar one level up: not *a register that r
 does nothing*, but **a whole enumerated device that is not there.** Scan the control bus for the part
 before believing any negative result about it, and use a known-good peer on another bus as the
 control that proves your scan works.
+
+## Fact — TWO different boards are called AeroNode (2026-09-10)
+
+`[repo]` Do not read one's part list into the other. They share no barometer and no magnetometer.
+
+| Name | Compute | Where |
+|---|---|---|
+| **AeroNode (CC93)** | Digi ConnectCore 93 / i.MX93 | `kicad/aeronode/` in lima — under git |
+| **AeroNode (CM5)** | Raspberry Pi CM5108064B, 8 GB/64 GB | `~/aerosense/aeronode/aerosense/` on Peter's Mac — **NOT under git** |
+| AeroNode Lite | same CM5, audio variant | `.../aerosense/aeronode-lite/`, read-only mirror at `kicad/aeronode-lite-audio/` |
+
+`kicad/aeronode/doc/TELEMETRY_DATA_MODEL.md` is the **CC93** one: BMI088+ICM45686, MMC5983MA,
+BMP390, I2C4/LPSPI8. The CM5 one is ICM45686 only, **RM3100** compass, **BMP581** baro, on
+SPI3/SPI4/I2C1/UART0. A third board, `~/aerosense/aeronode/aeronode.kicad_sch` + `mcu.kicad_sch`,
+is the older STM32H743 AeroNode.
+
+**The unversioned tree is the standing risk.** The whole CM5 design lives in one directory on one
+Mac with no remote. `aerosense/FMU.kicad_sch` is an empty 25 kB sheet — zero symbols `[measured]` —
+so "there is an FMU" is a name, not a circuit.
+
+## Fact — ArduPilot detects a Pi by PERIPHERAL BASE ADDRESS, not a model string (2026-09-10)
+
+`[repo]` `libraries/AP_HAL_Linux/Util_RPI.cpp`, read at length. It reads
+`/proc/device-tree/soc*/ranges` and switches on bytes 4-7: `0x10` = `RPI_5`, `0xfe000000` = Pi 4,
+`0x3f000000` = Pi 2/3/Zero2. Anything else = `UNKNOWN_BOARD`, which is an `AP_HAL::panic` at startup
+on any board with the RPi GPIO backend enabled.
+
+Consequences worth keeping: **(a)** a CM5 should detect as `RPI_5` because it is the same BCM2712 —
+predicted, not measured; the one-command test is `od -An -tx1 -N16 /proc/device-tree/soc*/ranges`.
+**(b)** My `strncmp(d_name,"soc",4)`→`3` fix is therefore a **prerequisite for the CM5 too**, not a
+Pi-5-only nicety — every 2712 kernel names the node `soc@107c000000`. Still unfiled upstream.
+
+## Fact — `libraries/AP_HAL_Linux/hwdef/` is a real board-target mechanism (2026-09-10)
+
+`[measured]` 26 boards in it. Same declarative language as the ChibiOS hwdefs — `IMU`, `COMPASS`,
+`BARO`, `LINUX_SPIDEV`, `define`, `undef`, and `include ../<board>/hwdef.dat`. So a new Linux board
+inherits from `pi5` in one line. Parser: `libraries/AP_HAL_Linux/hwdef/scripts/linux_hwdef.py`
+(subclasses the shared generator; only `LINUX_SPIDEV` is handled locally).
+
+**`LINUX_SPIDEV`'s BUS/SUBDEV are Linux spidev enumeration numbers, not SoC block numbers.** Read
+them off `/dev/spidev*` on the real board; never infer them from `SPI3`/`SPI4` on a schematic.
+
+Drivers confirmed present for the AeroNode CM5 parts `[measured]` at `fa7ffbd0a1`: ICM45686
+(Invensensev3, WHO_AM_I 0xE9, cites TDK **DS-000563 rev 1.0** — a datasheet the KiCAD sessions never
+found while chasing DS-000577), BMP581 (`AP_Baro_BMP581`, I2C 0x46/0x47), RM3100, ADS1115 (Linux
+`AnalogIn_ADS1115`). **Absent: BME690 and BME680 entirely** — environmental is never ArduPilot's.

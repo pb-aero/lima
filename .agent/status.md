@@ -928,3 +928,43 @@ for five days. `inbox/README.md` step 4 exists for exactly this and I had not be
 - **Housekeeping:** this file is 55 KB against the brain's "a few KB" — old entries belong in
   `journal.md`. And two files sit untracked in the lane: `dsp/vibration-reference/fir_plot.html`,
   `kicad/aeronode/doc/TELEMETRY_DATA_MODEL.md`. Neither is mine to commit blind.
+
+---
+
+## 2026-09-10 (later) · AeroNode software revision 1 — the ArduPilot-on-CM5 scope
+
+Peter opened the topic with one line: *"AeroNode software revision 1 - with regards to the ardupilot
+port to the cm5"*. Delivered as `docs/aeronode-cm5-software-rev1.md` — a scope proposal, not code.
+
+**The framing correction that took the most work:** *AeroNode* names two different computers. The
+one in this repo (`kicad/aeronode/`) is a **ConnectCore 93** carrier; the CM5 one lives unversioned
+at `~/aerosense/aeronode/aerosense/`. See the new MEMORY.md entry. `TELEMETRY_DATA_MODEL.md` in this
+repo is the CC93 part list and does **not** describe the CM5 board.
+
+- **Every flight-critical sensor on the CM5 board already has an upstream ArduPilot driver.**
+  `[measured]` by `git grep` in `~/ardupilot` at `fa7ffbd0a1`: ICM45686 (Invensensev3, 0xE9,
+  DS-000563), BMP581, RM3100, ADS1115-on-Linux. **BME690/BME680 absent entirely** — environmental
+  and CO are app-layer, alongside ArduPilot, never inside it.
+- **`libraries/AP_HAL_Linux/hwdef/` inherits.** An `aeronode` board target is `include
+  ../pi5/hwdef.dat` plus the real parts. Sketch is in §4.1 of the doc.
+- **My unfiled `soc` prefix patch is a prerequisite for the CM5**, not a Pi-5-only nicety — same
+  BCM2712 device-tree naming. That raises the priority of filing it.
+- **Rescued two stranded files** at boot, uncommitted for a fortnight: commit `52953f7` —
+  `kicad/aeronode/doc/TELEMETRY_DATA_MODEL.md` (26 Aug) and `dsp/vibration-reference/fir_plot.html`.
+
+### Open — needs Peter, not more desk work
+
+1. **`[gap]` Which sensor is on SPI3, which on SPI4, which on I2C1.** Not recorded anywhere. The
+   block diagram names the parts, `cm5.kicad_sch` names the buses, nothing joins them, and
+   `FMU.kicad_sch` is an empty sheet with zero symbols `[measured]`. **A board target cannot be
+   written without this.**
+2. **Architecture ruling: does ArduPilot run on the CM5, or on an FMU with the CM5 as companion?**
+   The empty `FMU.kicad_sch` implies the second and the question implies the first. If it is the
+   FMU, most of the port work is the wrong work. Stated the trade in §4.3; will not derive it.
+3. **`[gap]` DAN-F10N protocol unverified.** Zero hits in the ArduPilot tree. Confirm UBX from the
+   u-blox datasheet before assuming `AP_GPS_UBLOX` drives it.
+4. **The CM5 was never reached.** `100.64.0.6` timed out on port 22 today `[measured]`. Everything
+   measured came from the Pi 5 at `192.168.10.34`. The CM5 detection claim is a prediction with a
+   one-command test: `od -An -tx1 -N16 /proc/device-tree/soc*/ranges`, expect `00 00 00 10`.
+5. **The CM5 design is not under git.** One unversioned directory on one Mac, no remote. A bigger
+   risk to revision 1 than any technical item above.
