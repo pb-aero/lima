@@ -846,3 +846,85 @@ without giving up the barrier.
     share the node at all; impedance decides ANC authority. Both unmeasured, both on the same
     instrument, ten minutes with a scope and a resistor on a real aircraft. **Nothing else about the
     output stage is worth refining until those two numbers exist.**
+
+
+---
+
+## 2026-09-10 · The publish order — shelf republished, and INDIA's framing corrected
+
+Peter: *"please can you check your messages"*, then *"do the publish order first"*.
+
+**DONE and verified on the remote.** `Aerosense-Dev-Team-Sync` at
+`0b7c4d2e4b134f69bc3c6ef279a2ce5d52c5599d` `[measured]`, all 40 chars compared. Two commits:
+`f572a6d` (the republish) and `0b7c4d2` (the rate ceiling, folded in an hour later).
+
+- **`reports/peter/LIMA_adau1860_pi5_i2s.html`** — `aa48b6c`/2026-09-02 → **`7911bd1`/2026-09-10**.
+  Six days folded in. Both shelf open items CLOSED by measurement (slot map; duplex on 6.18.39).
+  Added: MICBIAS, the Lark-SDK register map, poisoned boots, the `-1` route-encoding trap, the
+  edge-counting instrument lesson, the rate ceiling, all four retractions.
+- **`reports/peter/LIMA_ardupilot_pi5.html`** — `21e600b`/2026-09-05 → **`7911bd1`/2026-09-10**.
+  Machine identity fixed; the "pending reboot" prediction closed as having happened and cost a
+  session; the i2c-1 open item closed.
+- **`MANIFEST.md`** both rows rewritten. Banner field 3 **measured** (`git log -1 --format=%h --
+  record/` = `015aa11`), not the repo HEAD — the trap the banner spec says five of seven lanes fell into.
+- **`peter/outbox/2026-09-10-001`**, delivered as `inbox/chris/2026-09-10-004`.
+- **Three inbox items marked `answered`** per `inbox/README.md` step 4.
+
+### The correction I had to publish against my own order
+
+INDIA asked me to publish "the two retractions… once a 4-pole plug in a 3-pole jack turned out to
+explain the silence by itself." **It doesn't, and I had already killed that explanation myself the
+same day** (`edf3a6f`). Unplugged: P11 −89.1 dBFS vs empty P9 −25.0 and empty P10 −28.7 — **~64 dB
+quieter with nothing in it**, so it is an ADC2 *channel* property and still open. Three retractions,
+not two, and the third retracts the second. The MICBIAS finding survives untouched because it is
+documentary (pin list + UG-2017 Figure 8), not inferred from the silence.
+
+### The ruling — mine, and both INDIA and JULIETT said so
+
+**The shelf stays the interface. Probe-writers are NOT pointed at this lane as live source.**
+`reports/README.md` rule 7: *one canonical document per topic beats five snapshots of it.* A lane
+reader would have to reconstruct that retraction chain by hand — which is the work a report exists to
+have already done. Aiming people at the raw lane distributes the lag as a research task.
+
+**The rule I adopted instead, and it was tested within the hour:** when a lane finding closes an item
+the shelf lists as OPEN, the shelf gets republished **in the same session**. JULIETT's rate-lock probe
+landed at `8274ac4` while I was pushing and closed an item my new banner had *just* listed as open;
+folded in immediately as `0b7c4d2`. **An open item on a shelf report is a live instruction to other
+agents to go and re-derive it** — the one staleness that actively costs other people work.
+
+### SCAR — publishing is not an end-of-subject act
+
+I treated it as one, and this subject produced a result most days for six days, so the shelf lagged
+eight days while two people were blocked behind it. INDIA had twice told JULIETT to build probes from
+my shelf reports; doing that literally would have had it re-derive two things I had already answered.
+**Our dashboard doctrine applies to reports: a display that keeps rendering its last value while the
+feed has moved on is lying.** My "Next:" list was that display.
+
+**Second half of the same scar:** I recorded task state only here, in `status.md`, and never updated
+`status:` in `inbox/peter/` — so from the sender's side, work done looked identical to an order
+ignored. `2026-09-01-001` and `2026-08-26-002` were both acted on 5 September and sat reading `open`
+for five days. `inbox/README.md` step 4 exists for exactly this and I had not been doing it.
+
+### Measured today, and it changes the open list
+
+- **`aerosense-ops` ANSWERS.** `git ls-remote` → `363dc1f` `[measured]`. **Open item 1 above is dead** —
+  the 24 August order in `inbox/peter/2026-08-24-001`, blocked since, is unblocked. Next up.
+- **Card number confirmed unstable.** Me: card 1 on 8 Sep. JULIETT: card 0 on 10 Sep. Same box, same
+  kernel. Two honest measurements, two numbers → `hw:CARD=adauduplex,DEV=0`, never a number.
+- **IPs move too.** Same machine-id `49cc4b68…` at `100.64.0.1`, `192.168.0.99` and `192.168.10.34`
+  inside a week. Identify the bench by **model + machine-id**; `i2c-2` at `0x5c`/`0x68` fingerprints it.
+- **`dummy_duplex.c` is blocking someone else's measurement.** It declares
+  `SNDRV_PCM_RATE_8000_192000`, so 384 kHz cannot be tested — an attempt measures my stub. **Mine to
+  widen.**
+- **Bench needs a reboot** — the 192 kHz attempt poisoned the DMA channel.
+
+### Still on my desk
+
+- **`inbox/peter/2026-09-10-002`** (JULIETT, oscillator) — **not started.** Two documentary checks are
+  mine: confirm the Rev G read in `docs/h1-audio-board-codec-selection.md`, and say whether Rev G
+  addresses **PLL vs bypass** or only names the crystal; plus whether my 1860 bypass work transfers.
+  Three questions in its §4 are **Peter's**, as a named owner.
+- **`inbox/peter/2026-08-24-001`** — the ops order, now unblocked.
+- **Housekeeping:** this file is 55 KB against the brain's "a few KB" — old entries belong in
+  `journal.md`. And two files sit untracked in the lane: `dsp/vibration-reference/fir_plot.html`,
+  `kicad/aeronode/doc/TELEMETRY_DATA_MODEL.md`. Neither is mine to commit blind.
