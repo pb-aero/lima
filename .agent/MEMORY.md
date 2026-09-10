@@ -742,3 +742,32 @@ lines by hand.
   only, by habit not by gate.
 - **ArduPilot has no MAVLink IMU input**, so a companion computer can only consume a finished
   attitude at the ATTITUDE stream rate — which then dominates every other term in the budget.
+
+## Fact — LSM6DSV in ArduPilot: SPI-only by type, and the variant matters (2026-09-10)
+
+`[repo]` `libraries/AP_InertialSensor/AP_InertialSensor_LSM6DSV.{h,cpp}` at `179ae0ab03`, confirmed
+upstream. Proposed as AeroNode's second IMU — see
+`docs/aeronode-ahrs-latency-architectures.md` §6.
+
+- **`probe()` takes `OwnPtr<AP_HAL::SPIDevice>`, not a generic `Device`.** SPI is a *type*
+  constraint, not a preference. All six hwdefs using it declare `SPI:`. (Contrast the ICM-45686,
+  where I2C compiles and silently degrades to 1 kHz / 16-bit / no oversampling.)
+- **The hwdef keyword is `LSM6DSV`; the silicon must be a variant.** `check_whoami()` accepts
+  WHO_AM_I **0x70** — LSM6DSV16X and LSM6DSV**32X**, split by CTRL8 bit 2 after reset — or the
+  LSM6DSK320X id. **A plain LSM6DSV returns false.** Order 16X or 32X.
+- Rates: base 1000 Hz, fast sampling ×1..8 capped at **8000 Hz** via HAODR mode-1 — same ceiling as
+  the ICM-45686, same `bus_type() == BUS_TYPE_SPI` gate. **16-bit only; no 20-bit HiRes path.**
+- Driver defaults **2000 dps / 16 g** (4000 dps is in the register map but unused; 32 g is 32X-only)
+  against the 45686's 4000 dps / 32 g. The lanes are not range-matched.
+- **`drain_fifo()` is capped at 32 words per callback** (`LSM6DSV_FIFO_MAX_DRAIN_WORDS`, burst 16),
+  and `poll_data()` calls it once — bounded worst-case execution time, better for a `SCHED_FIFO`
+  thread than Invensense's unbounded `while (n_samples > 0)`. Net drain at 8 kHz ~240 words/ms, so
+  catch-up is still fast. FIFO **depth** is `[gap]` — not in the driver, wants the ST datasheet.
+- **`EK3_IMU_MASK` starts one EKF3 core per selected IMU** (`AP_NavEKF3.cpp:433`), up to 6. Two
+  cores ≈ 2× EKF CPU/memory: cheap on 4 CM5 cores, the binding constraint on an H7.
+
+**Do not over-read the navigator precedent.** BlueRobotics navigator (a **Linux** hwdef) declares
+both `IMU Invensense SPI:icm20602` and `IMU LSM6DSV SPI:lsm6dsv` — but both point at
+`LINUX_SPIDEV ... 1 2`, the **same bus and subdev** `[measured]`. They are board-revision alternates
+resolved by probing, **not** a simultaneous two-IMU setup. It proves the driver runs on Linux/SPI and
+nothing more.

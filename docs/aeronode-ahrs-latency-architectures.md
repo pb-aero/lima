@@ -291,3 +291,86 @@ alone, the number they are actually arguing about is a parameter.
 - **The ATTITUDE stream rate for architecture C is `[assumed]` at 10–50 Hz** from typical ArduPilot
   practice, not read from a config. If architecture C is on the table, that one number deserves its
   own check, because §2 shows it dominates everything else.
+
+---
+
+## 6 · Appendix, added 2026-09-10 — LSM6DSV as AeroNode's second IMU
+
+Raised by Peter after reading §3's "one IMU means no vote". It closes that gap, and it closes it on
+architecture A, which was the architecture the integrity argument counted against.
+
+**All facts below read out of `libraries/AP_InertialSensor/AP_InertialSensor_LSM6DSV.{h,cpp}` at
+`179ae0ab03`, confirmed an ancestor of `origin/master` — this is upstream, not a local patch.**
+
+### It fits the CM5 pin map with no new pins
+
+The CM5 sheet already has **SPI3 and SPI4**, each with one chip select. So:
+
+| Bus | Part |
+|---|---|
+| SPI3 | ICM-45686 — the high-resolution lane (20-bit HiRes, 4000 dps, 32 g) |
+| SPI4 | **LSM6DSV16X/32X** — the dissimilar-redundancy lane |
+| I2C1 | RM3100 compass at 0x20, BMP581, BME690, ADS1115 |
+
+RM3100 over I2C is a shipping configuration upstream (`COMPASS RM3100 I2C:0:0x20 false ...`
+`[measured]`), so moving it off SPI to free SPI4 costs nothing. **This resolves the §1 bus-map gap
+and the redundancy gap in the same stroke, on pins that already exist.** It is a proposal, not a
+schematic — Peter's call.
+
+Then `INS_MAX_INSTANCES 2` and `EK3_IMU_MASK = 3` gives EKF3 **two cores with lane affinity and
+voting** — "a separate instance of EKF3 will be started for each IMU selected" (`AP_NavEKF3.cpp:433`).
+Two cores is roughly double the EKF CPU and memory. On four CM5 cores that is cheap; on an H7 it is
+the thing that constrains the count.
+
+### Why a dissimilar pair beats a matched pair
+
+Two Invensense parts share failure modes — the FIFO-returns-zeros mode the Pi 5 dev rig sat in is
+one, and a voting scheme cannot detect a fault both lanes have. ST and TDK share nothing: different
+die, different register map, different FIFO architecture (LSM6DSV uses **tagged words**, one word
+per gyro *or* accel sample, against Invensense's fixed-layout packets). That is genuine common-mode
+fault detection rather than the appearance of it.
+
+### What the driver actually gives you
+
+| | ICM-45686 | LSM6DSV16X / 32X |
+|---|---|---|
+| Base backend rate | 1000 Hz | 1000 Hz (`LSM6DSV_DEFAULT_BACKEND_RATE_HZ`) |
+| Fast sampling ceiling | ×8 → 8000 Hz | ×8 → **8000 Hz**, via HAODR mode-1 |
+| Fast sampling gate | `bus_type() == BUS_TYPE_SPI` | same gate |
+| Resolution | **20-bit** HiRes (SPI + hwdef define) | **16-bit only** — no HiRes path exists |
+| Gyro full scale (driver default) | 4000 dps | **2000 dps** (4000 dps is in the register map; the driver picks 2000) |
+| Accel full scale (driver default) | 32 g | **16 g** (32 g on the 32X variant only) |
+| FIFO drain per callback | unbounded `while (n_samples > 0)` | **capped at 32 words** (`LSM6DSV_FIFO_MAX_DRAIN_WORDS`), burst 16 |
+
+**The bounded drain is a point in LSM6DSV's favour on a jittery host**, and it is the opposite of
+what you would guess. `poll_data()` calls `drain_fifo()` once and it removes at most 32 words, so
+its worst-case execution time is bounded and the sensor thread cannot monopolise its slot. Recovery
+is still quick: at 8 kHz, 2 words arrive per 125 µs callback while 32 leave, a net ~240 words/ms.
+The Invensense driver drains everything in one invocation — faster catch-up, unbounded execution
+time. For a `SCHED_FIFO` thread at priority 12 the bounded one is the better citizen.
+
+### Three things to get right before ordering
+
+1. **The hwdef keyword is `LSM6DSV`; the silicon must not be.** `check_whoami()` accepts WHO_AM_I
+   **0x70** — shared by **LSM6DSV16X** and **LSM6DSV32X**, disambiguated by CTRL8 bit 2 after reset —
+   or the **LSM6DSK320X** id. Nothing else returns true. **A plain LSM6DSV is not in the enum.**
+   Specify 16X or 32X (or DSK320X) on the BOM.
+2. **SPI is not a preference here, it is a type constraint.** `probe()` takes
+   `AP_HAL::OwnPtr<AP_HAL::SPIDevice>`, not a generic `Device`, and every one of the six hwdefs that
+   use it declares `SPI:`. Unlike the ICM-45686 — where I2C compiles and silently degrades to 1 kHz
+   16-bit — I2C here simply cannot be wired.
+3. **`[gap]` FIFO depth is not encoded in the driver**, so the overflow deadline computed for the
+   45686 in §3 (105 HiRes samples → 13 ms at 8 kHz) has no LSM6DSV counterpart yet. It wants the ST
+   datasheet before either lane's real-time budget is signed off.
+
+### One precedent, read carefully
+
+BlueRobotics **navigator** — an `AP_HAL_Linux` hwdef — declares both
+`IMU Invensense SPI:icm20602` and `IMU LSM6DSV SPI:lsm6dsv`. That **is** upstream proof that this
+driver runs on the Linux HAL over SPI.
+
+It is **not** proof of a working two-IMU Linux setup, and it would be easy to claim that it is. Both
+entries point at `LINUX_SPIDEV ... 1 2 ...` — **the same bus and the same subdev** `[measured]`. They
+are board-revision alternates that probing disambiguates, not a simultaneous pair. AeroNode's SPI3
+and SPI4 are genuinely separate buses with separate chip selects, so AeroNode would be a stronger
+configuration than the precedent, not an equal one — and correspondingly less well trodden.
