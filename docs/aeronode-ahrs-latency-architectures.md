@@ -359,9 +359,8 @@ time. For a `SCHED_FIFO` thread at priority 12 the bounded one is the better cit
    `AP_HAL::OwnPtr<AP_HAL::SPIDevice>`, not a generic `Device`, and every one of the six hwdefs that
    use it declares `SPI:`. Unlike the ICM-45686 — where I2C compiles and silently degrades to 1 kHz
    16-bit — I2C here simply cannot be wired.
-3. **`[gap]` FIFO depth is not encoded in the driver**, so the overflow deadline computed for the
-   45686 in §3 (105 HiRes samples → 13 ms at 8 kHz) has no LSM6DSV counterpart yet. It wants the ST
-   datasheet before either lane's real-time budget is signed off.
+3. ~~**`[gap]` FIFO depth**~~ — **CLOSED 2026-09-10 from the datasheet, and the answer changes the
+   redundancy argument. See §7 below.**
 
 ### One precedent, read carefully
 
@@ -374,3 +373,95 @@ entries point at `LINUX_SPIDEV ... 1 2 ...` — **the same bus and the same subd
 are board-revision alternates that probing disambiguates, not a simultaneous pair. AeroNode's SPI3
 and SPI4 are genuinely separate buses with separate chip selects, so AeroNode would be a stronger
 configuration than the precedent, not an equal one — and correspondingly less well trodden.
+
+
+---
+
+## 7 · The LSM6DSV overflow deadline, from the datasheet — and why it is bad news
+
+`[fetched]` **LSM6DSV16X datasheet, ST DS13510 Rev 3.** Three quotes, all needed:
+
+> §6.12, p.44/198: "The LSM6DSV16X embeds **1.5 KB** of data in FIFO (up to 4.5 KB with the
+> compression feature enabled)"
+
+> §6.12 (FIFO word format): "each FIFO word is composed of **7 bytes**: one tag byte
+> (FIFO_DATA_OUT_TAG (78h)) … and 6 bytes of fixed data (FIFO_DATA_OUT registers from (79h) to
+> (7Eh))"
+
+> §2, p.3/198: "4.5 KB FIFO data buffering, data **can be compressed two or three times**"
+
+### The 4.5 KB on the front page is not the buffer
+
+ST's feature bullet is "Smart FIFO up to 4.5 KB", and that is the number a BOM reviewer reads. The
+**physical buffer is 1.5 KB**; 4.5 KB is the compressed-equivalent at the 3× ratio §2 describes. And
+**ArduPilot disables compression** — `write_register(LSM6DSV_REG_FIFO_CTRL2, 0x00)`, at both
+`AP_InertialSensor_LSM6DSV.cpp:275` and `:501` `[measured]`. So the figure that governs the
+real-time budget is 1.5 KB, one sample per word, and it is one third of the advertised one.
+
+The driver's own `static_assert(sizeof(RawFifoWord) == 7)` (line 193) matches the datasheet exactly,
+and `DIFF_FIFO_[8:0]` — 9 bits, Tables 77/78, pp.74–75 — counts words, ceiling 511, comfortably
+above the ~219 the buffer physically holds. The numbers are self-consistent.
+
+### The deadline
+
+1.5 KB ÷ 7 B/word = **214 words** (at 1500 B) to **219 words** (at 1536 B). Temperature is not
+batched — `FIFO_CTRL3` is written `(odr << 4) | odr`, accel and gyro only — so words alternate gyro
+and accel, giving **~107 to 109 gyro+accel sample pairs**.
+
+| Backend rate | LSM6DSV FIFO full after | ICM-45686 (105 HiRes samples) |
+|---|---|---|
+| 1 kHz | 107–109 ms | 105 ms |
+| 2 kHz | 54 ms | 53 ms |
+| 4 kHz | 27 ms | 26 ms |
+| **8 kHz** | **13.4–13.6 ms** | **13.1 ms** |
+
+### This is the bad news, and it is the whole point of closing the gap
+
+**The two deadlines are within 5% of each other at every rate.** ~13.5 ms against ~13.1 ms at
+8 kHz. I had assumed a second IMU from a different vendor would come with a different real-time
+budget; it does not.
+
+**So a second IMU buys dissimilar *sensor* redundancy and not dissimilar *timing* redundancy.** On
+architecture A both lanes hang off the same `SCHED_FIFO` priority-12 poller threads under the same
+kernel, and a scheduling stall long enough to overflow one is long enough to overflow the other.
+Voting protects against a die failing, a bus glitching, or a part drifting. It does **not** protect
+against the host missing its deadline, because that is a common-mode fault by construction — and it
+is the specific fault mode architecture A introduces and architecture B does not.
+
+This does not argue against adding the LSM6DSV. It argues that adding it **does not retire the
+platform risk**, and anyone who counts it as doing so is double-counting one mitigation.
+
+### And the LSM6DSV lane loses samples silently
+
+The driver configures **Continuous mode** (`FIFO_CTRL4 = 0x06`), where the datasheet is explicit:
+
+> §6.12.3: "If an overrun occurs, at least one of the oldest samples in FIFO has been overwritten and
+> the **FIFO_OVR_IA** flag in FIFO_STATUS2 (1Ch) is asserted."
+
+`read_fifo_status()` reads both status bytes — and then uses **exactly one bit** of the second,
+`DIFF_FIFO_8` (line 618). **`FIFO_OVR_IA` and `FIFO_FULL_IA` are never examined anywhere in the
+driver** `[measured]`. So an overrun overwrites the oldest samples, sets a flag nobody reads, and
+produces no error count, no log message and no FIFO reset.
+
+Contrast the Invensense lane: when `accumulate_samples()` rejects a batch the driver sets
+`need_reset` and resets the FIFO — which is precisely the loud `MPU: temp reset IMU[0] <n> 0` the
+Pi 5 dev rig produced for a day.
+
+**So the two lanes fail differently, which is genuinely good for redundancy, but the new lane's
+failure is the unobservable one.** For a flight controller that is the wrong way round. Worth an
+upstream patch — checking `FIFO_OVR_IA` and calling `_inc_gyro_error_count()` is a few lines, and it
+would make the failure visible in `PM`/`IMU` logs instead of appearing as unexplained attitude drift.
+
+### What to do with this
+
+- **Keep the LSM6DSV** — dissimilar sensor redundancy is still worth having, and §6's reasoning
+  stands.
+- **Do not treat it as covering the scheduling risk.** That needs `PREEMPT_RT` or the `performance`
+  governor plus CPU isolation, per §4.
+- **Consider running the two lanes at different backend rates** (`INS_FAST_SAMPLE` is a per-instance
+  bitmask). Putting the LSM6DSV at 2 kHz against the 45686 at 8 kHz gives it a ~54 ms deadline
+  instead of ~13 ms, so a stall that overflows the fast lane leaves the slow one intact. That
+  restores real timing diversity for the cost of oversampling margin on one lane — which is the
+  trade worth having, because §3's whole argument is that the fast lane is the fragile one.
+- **`[gap]` remaining:** whether 1.5 KB means 1500 or 1536 bytes. It moves the deadline by 2% and
+  changes no decision, so it is not worth chasing.

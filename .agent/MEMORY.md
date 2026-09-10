@@ -762,7 +762,7 @@ upstream. Proposed as AeroNode's second IMU — see
 - **`drain_fifo()` is capped at 32 words per callback** (`LSM6DSV_FIFO_MAX_DRAIN_WORDS`, burst 16),
   and `poll_data()` calls it once — bounded worst-case execution time, better for a `SCHED_FIFO`
   thread than Invensense's unbounded `while (n_samples > 0)`. Net drain at 8 kHz ~240 words/ms, so
-  catch-up is still fast. FIFO **depth** is `[gap]` — not in the driver, wants the ST datasheet.
+  catch-up is still fast.
 - **`EK3_IMU_MASK` starts one EKF3 core per selected IMU** (`AP_NavEKF3.cpp:433`), up to 6. Two
   cores ≈ 2× EKF CPU/memory: cheap on 4 CM5 cores, the binding constraint on an H7.
 
@@ -771,3 +771,32 @@ both `IMU Invensense SPI:icm20602` and `IMU LSM6DSV SPI:lsm6dsv` — but both po
 `LINUX_SPIDEV ... 1 2`, the **same bus and subdev** `[measured]`. They are board-revision alternates
 resolved by probing, **not** a simultaneous two-IMU setup. It proves the driver runs on Linux/SPI and
 nothing more.
+
+## Fact — LSM6DSV16X FIFO depth, and the deadline it does NOT improve (2026-09-10)
+
+`[fetched]` **ST DS13510 Rev 3** (LSM6DSV16X datasheet), read from the PDF, not a search summary.
+
+- §6.12 p.44: "embeds **1.5 KB** of data in FIFO (up to 4.5 KB with the compression feature
+  enabled)". §2 p.3: data "can be compressed **two or three times**". **The 4.5 KB on the feature
+  page is the compressed-equivalent; the physical buffer is 1.5 KB.**
+- **ArduPilot disables compression** — `FIFO_CTRL2 = 0x00` at
+  `AP_InertialSensor_LSM6DSV.cpp:275` and `:501` `[measured]`. So 1.5 KB, one sample per word.
+- Word = **7 bytes** (1 tag + 6 data), datasheet §6.12 and the driver's
+  `static_assert(sizeof(RawFifoWord) == 7)`. `DIFF_FIFO_[8:0]` is 9 bits (Tables 77/78, pp.74-75),
+  ceiling 511 words — above the ~219 the buffer holds, so consistent.
+- Depth = 1.5 KB / 7 = **214-219 words**; temperature is not batched (`FIFO_CTRL3 = (odr<<4)|odr`),
+  so words alternate gyro/accel → **~107-109 sample pairs**.
+
+**The finding that matters, and it contradicted my expectation:** at 8 kHz that is a
+**13.4-13.6 ms** overflow deadline against the ICM-45686's **13.1 ms** — **within 5% at every
+rate.** A second IMU from a different vendor gives dissimilar **sensor** redundancy but **NOT
+dissimilar timing redundancy**; on one Linux host a stall that overflows one lane overflows both.
+Voting cannot cover a missed scheduling deadline — that is common-mode by construction. **Do not
+count a second IMU as retiring the platform-jitter risk.** Mitigation that does work: run the lanes
+at *different* backend rates (`INS_FAST_SAMPLE` is per-instance) — 2 kHz on one gives it ~54 ms.
+
+**And the LSM6DSV lane fails silently.** Driver uses Continuous mode (`FIFO_CTRL4 = 0x06`), where
+overrun overwrites the oldest samples and asserts `FIFO_OVR_IA` (§6.12.3). `read_fifo_status()` reads
+both status bytes and uses **only** `DIFF_FIFO_8`; **`FIFO_OVR_IA` and `FIFO_FULL_IA` are never
+examined anywhere in the driver** `[measured]`. No error count, no log, no reset. The Invensense lane
+by contrast resets loudly (`need_reset` → the `MPU: temp reset` line). Worth an upstream patch.
