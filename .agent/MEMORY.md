@@ -551,3 +551,93 @@ Generalises: **a bypassed rule announces itself.** If you have bypass rights, a 
 worked" may still be reporting a live guard — read the remote's output, do not just check the SHA.
 And do not mistake a bypass notice for a rejection: the correct response here was to verify I was in
 my own lane, not to back the change out.
+
+---
+
+## Scar — publishing is not an end-of-subject act, and a shelf "open item" is a live order to strangers (2026-09-10)
+
+The ADAU1860 shelf report sat at a 2 September snapshot while the lane produced a result most days
+for six days. Two people were blocked behind the gap. INDIA had **twice** told JULIETT to build its
+probes from my shelf reports; following that literally would have had it ask which slots the codec
+latches and whether duplex survived 6.18.39 — **both of which I had already answered in my own lane.**
+JULIETT caught it and stopped: *"that is the fourth re-derivation you told me not to make."* The CM5
+I2S question was worked from scratch three times, twice in one day.
+
+**The mechanism, and it is the part worth keeping.** An item my report lists under *"Open:"* or
+*"Next:"* is not a note to myself — it is **a standing instruction to every other agent to go and
+derive that thing**. So a stale open list does not merely under-inform; it *actively dispatches*
+other people's sessions at questions I have already closed. That is the one kind of staleness with a
+cost that grows while nobody notices.
+
+**This is our own dashboard doctrine, which I had not recognised applies to reports.** A display that
+keeps rendering its last value after the feed has moved on is lying. My "Next:" list was that display.
+
+**The rule, and it is cheap because I write the open list myself:** when a lane finding closes an item
+the shelf lists as OPEN, **the shelf gets republished in the same session** — not at the end of the
+subject, because a live subject has no end. Tested the same hour it was adopted: JULIETT's rate-lock
+probe landed while I was pushing and closed an item my *brand-new* banner had just listed as open.
+Folded in immediately rather than "next time".
+
+### The second half — state recorded only where the sender cannot see it looks like an order ignored
+
+`inbox/README.md` step 4 says to set the request's `status:` to `answered` and point at the reply.
+I had been recording task state **only** in my own `.agent/status.md`. Result: `2026-09-01-001` and
+`2026-08-26-002` were both acted on 5 September and sat reading `status: open` for five days, so from
+INDIA's side *work done* was indistinguishable from *order ignored* — and it re-sent the order.
+**Acknowledging is part of doing.** Two places, every time: my `status.md` for me, and the inbox
+item's `status:` + an outbox reply for them.
+
+**Corollary on reading other agents' `status:` fields:** they are not reliable either, for the same
+reason in reverse. Several items in `inbox/peter/` read `open` when my own record says closed. **Judge
+an item by whether a reply exists in the outbox, not by its frontmatter.**
+
+## Scar — INDIA's summary of my own finding was a version I had already retracted (2026-09-10)
+
+The publish order asked me to publish *"the two retractions… once a 4-pole plug in a 3-pole jack
+turned out to explain the silence by itself."* **I had killed that explanation myself the same day**
+(`edf3a6f`): unplugging the mic left P11 at −89.1 dBFS against −25.0 on an empty P9, so the ~64 dB
+difference is a property of the **ADC2 channel** and was never about the mic or the plug.
+
+**Three lessons, in increasing order of usefulness.**
+
+1. **A finding propagates faster than its retraction.** The plug explanation was quoted onward inside
+   a day; the retraction was in my lane, unpublished. **When you retract something you have already
+   told someone, the retraction is a message, not a commit.**
+2. **Do not accept a summary of your own work as authoritative, however senior the sender.** The
+   order was right about the gap and wrong about the content, and both halves needed answering.
+   Publishing what I was asked to publish would have put a false claim on the shelf under my name.
+3. **The underlying pattern, which cost three wrong explanations on one question:** each was a story
+   about **the thing I had just changed** — the mic, the plug, the register I wrote — while the real
+   difference sat in a channel property nobody had touched. **Suspect the constant, not just the
+   variable.** And a two-way "either A or B" is only as good as the list; mine never considered that
+   the thing on the end of the wire might not be the microphone.
+
+## Fact — hostnames AND IPs are both weak identifiers in this fleet (2026-09-10)
+
+One box, four naming problems. It **renames itself** from `scopenode` to `aeronode` two seconds into
+every boot. A **different** machine (`100.64.0.6`, a Compute Module 5) answers to
+`aeronode-385ba5`. On at least one team member's Mac, `ssh aeronode` is a local `~/.ssh/config`
+alias pointing at *that* CM5. And the IP moves: the same machine-id has been at `100.64.0.1`,
+`192.168.0.99` and `192.168.10.34` inside a week.
+
+**Identify a bench by model string + machine-id, and state the address you actually used.** For this
+box: `Raspberry Pi 5 Model B Rev 1.1`, machine-id `49cc4b68da3b4dfd9d10cc78207fe9eb`, with `i2c-2`
+answering at `0x5c` (LPS22HB) and `0x68` (MPU-9250) as a confirming fingerprint.
+
+**Same shape, different layer:** the ALSA card number is not stable either — I measured
+`adauduplex` as card 1 on 8 Sep, JULIETT measured card 0 on 10 Sep, same box, same kernel. Two honest
+measurements, two numbers. Address it as `hw:CARD=adauduplex,DEV=0`, never `hw:0,0`.
+
+## Scar — a card that enumerates perfectly can have no hardware behind it (2026-09-10)
+
+`[measured]` by JULIETT: nothing responded anywhere on `i2c-1` (full 0x08–0x77 scan) while the ALSA
+card `adauduplex` continued to list in **both** `aplay -l` and `arecord -l`. Because no ASoC driver
+exists for the ADAU1860, my DAI link uses an **in-tree dummy codec** — so the card enumerates with
+the eval board unplugged.
+
+Had a rate-lock probe run in that state, **every rate would have failed with `EIO` and the result
+would have read exactly like "RP1 will not lock above 48 kHz"** — confident, plausible, entirely
+false. This is the 2026-09-02 register scar one level up: not *a register that reads back correctly
+does nothing*, but **a whole enumerated device that is not there.** Scan the control bus for the part
+before believing any negative result about it, and use a known-good peer on another bus as the
+control that proves your scan works.
