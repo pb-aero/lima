@@ -1,0 +1,28 @@
+diff --git a/libraries/AP_InertialSensor/AP_InertialSensor_Invensense.cpp b/libraries/AP_InertialSensor/AP_InertialSensor_Invensense.cpp
+index fdb7b7866b..ad3db00428 100644
+--- a/libraries/AP_InertialSensor/AP_InertialSensor_Invensense.cpp
++++ b/libraries/AP_InertialSensor/AP_InertialSensor_Invensense.cpp
+@@ -838,6 +838,23 @@ check_registers:
+ */
+ bool AP_InertialSensor_Invensense::_check_raw_temp(int16_t t2)
+ {
++    /* ============ BENCH STUB -- NOT FOR UPSTREAM, NOT FOR FLIGHT ==========
++     * LIMA 2026-09-11. This bench Pi 5 has an MPU-9250 on I2C whose FIFO
++     * returns zeroed samples. Diagnosis, with five hypotheses refuted and the
++     * FIFO reading EMPTY while correctly configured:
++     *   linux/ardupilot-pi5/IMU-STALL-DIAGNOSIS-2026-09-11.md
++     * The temperature field is the driver's FIFO-corruption canary, so it
++     * fires forever, INS init never completes, and that blocks EVERY other
++     * subsystem -- GPS included, because GPS init runs after INS.
++     *
++     * Accepting the corrupt samples lets the rest of the stack run so the GPS
++     * path can be exercised. THE INERTIAL DATA IS GARBAGE AND ANY ATTITUDE IS
++     * MEANINGLESS. Only non-inertial subsystems mean anything in this build.
++     * Guarded to I2C so an SPI IMU is never affected.
++     * ==================================================================== */
++    if (_dev->bus_type() == AP_HAL::Device::BUS_TYPE_I2C) {
++        return true;
++    }
+     if (abs(t2 - _raw_temp) < 400) {
+         // cached copy OK
+         return true;
