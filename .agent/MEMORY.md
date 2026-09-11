@@ -844,3 +844,32 @@ parameter. **Recommended `INS_GYRO_RATE = 2` (4 kHz)** — 4x oversampling margi
 with a 26 ms deadline. **Do not set 3 (8 kHz) until the scheduling tail is measured** — on a single
 lane an overrun is not a degraded lane, it is the AHRS. Commit `a2c4ac41a3` on branch
 `aeronode-board`; patch at `linux/ardupilot-cm5/aeronode-board.patch`.
+
+
+## Scar — I ruled out the two causes that turned out to be it (2026-09-11)
+
+On 2026-09-04 I wrote that the Pi 5 IMU FIFO stall had "bus contention, intermittency and bus speed
+all ruled out by measurement", concluded "**no software change explains it**", and sent the next
+session **to the bench**. All three were wrong, and the handoff would have cost someone a day.
+
+`[measured]` 2026-09-11, same box (machine-id `49cc4b68da3b4dfd9d10cc78207fe9eb`, at 192.168.0.99):
+
+- Hardware is **fine**: `WHO_AM_I` 0x71; LPS22HB 0xb1 as the positive control; manual FIFO bursts of
+  14-504 bytes all return valid data -- accel Z `0xf830` is -1 g, temperature non-zero and matching
+  the register.
+- ArduPilot's **configuration of the part is correct**: `FIFO_EN=0xf8`, `USER_CTRL=0x40`,
+  `SMPLRT_DIV=0`, and `FIFO_COUNT` reads 14 -- it is filling.
+- **`strace -e trace=ioctl` is what cracked it**: `I2C_RDWR` **4902 failures out of 28979 in 12 s
+  (17%), all EREMOTEIO**. Bus is 400 kHz (`dtoverlay=i2c2-pi5,baudrate=400000`) shared by 0x68,
+  0x5c and 0x0c. My own **single-device** loop at the same 1 kHz rate: **0% errors**.
+- The canary: `AP_InertialSensor_Invensense.cpp:595` uses each FIFO sample's **temperature field**
+  as a corruption detector, so `temp reset IMU[0] <ref> 0` means *the register reads fine but the
+  FIFO sample carries 0*. Reading `FIFO_R_W` with nothing valid queued returns zeros -- I saw that
+  at ~0.4% even in a clean loop.
+
+**Lessons.** (1) "Ruled out by measurement" is only as good as the measurement -- I had never
+counted the syscall return codes, which is where the answer was sitting the whole time.
+(2) **Reach for `strace` earlier** when a driver "sees nothing" but the device answers by hand.
+(3) A negative result from a *low-rate* manual probe does not rule out a fault that only appears
+under *sustained multi-device* traffic -- match the instrument's duty cycle to the real one.
+(4) Retract loudly: the handoff is amended in place, not quietly patched.

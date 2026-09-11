@@ -25,3 +25,26 @@ and ruling on the ~15 deg residual mounting angle.
 `~/ardupilot` on scopenode, PR body at `linux/ardupilot-pi5/upstream-pr/PR_BODY.md`. There is no
 fork at `pb-aero/ardupilot` yet and no `gh` in this fleet; pushing works once a fork exists (my Mac
 key authenticates as `pb-aero`, and agent forwarding reaches the Pi's clone).
+
+
+## 2026-09-11 · RETRACTION of the 2026-09-04 IMU handoff
+
+**The advice below in the 2026-09-04 entry was wrong. Do not follow it.**
+
+> "Do not start by re-reading my hwdef; start at the bench -- power-cycle the sensor rail and check
+> the physical I2C wiring."
+
+**The hardware is fine** `[measured]` 2026-09-11: MPU-9250 `WHO_AM_I` = 0x71, LPS22HB = 0xb1 as a
+positive control, FIFO bursts up to 504 bytes return valid data including accel Z at -1 g and a
+non-zero temperature matching the register. A bench session would have found nothing.
+
+I also recorded "bus speed ruled out" and "bus contention ruled out". **Both were wrong.**
+`strace` shows **4902 of 28979 I2C transactions failing with EREMOTEIO in 12 s (17%)**, the bus is
+at **400 kHz** (`dtoverlay=i2c2-pi5,baudrate=400000`), and my own single-device loop at the same
+1 kHz sample rate gets **0% errors** -- so it is the multi-device traffic at 400 kHz, not the part.
+
+Full evidence and the ranked fixes: `linux/ardupilot-pi5/IMU-STALL-DIAGNOSIS-2026-09-11.md`.
+Cheapest test is dropping the bus to 100 kHz, which needs Peter's say-so (boot config + reboot).
+
+**And it matters less than it looks:** AeroNode puts the ICM-45686 on **SPI**, so this is a dev-rig
+artefact, not a design problem.
