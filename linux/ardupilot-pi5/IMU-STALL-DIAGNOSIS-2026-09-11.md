@@ -115,3 +115,78 @@ rig's I2C wiring. It blocks *this bench* from running a native flight stack; it 
 the AeroNode design. It is also a reminder of a rule already in `MEMORY.md`: the driver's own
 `fast_sampling` and 20-bit `highres_sampling` are both gated on `bus_type() == BUS_TYPE_SPI`, so
 I2C was never the right home for a flight IMU here.
+
+
+---
+
+# CORRECTION, same day — the 400 kHz diagnosis above is WRONG
+
+Peter authorised the 100 kHz test. **It refuted my own conclusion.** Leaving the original text
+above intact rather than editing it, because the reasoning error is the useful part.
+
+## What the test showed
+
+Identical 12-second straced runs of `build/pi5/bin/arduplane`, same box, only the bus clock changed:
+
+| Bus clock | I2C transfers | EREMOTEIO | % | **failures/second** |
+|---|---|---|---|---|
+| 400 kHz | 28 979 | 4 902 | 17.0% | **409** |
+| 100 kHz | 14 326 | 4 871 | 34.0% | **406** |
+
+**The absolute failure count barely moved — 4902 vs 4871 — while total transfers halved.** Failures
+per *second* are constant at ~405 across a 4x change in bus clock. Marginal signalling would scale
+with clock rate; a fixed ~405/s does not. The percentage "getting worse" at 100 kHz is an artefact
+of the denominator shrinking, and quoting that percentage as if it meant something would have been
+a second error on top of the first.
+
+**So it is not bus speed, and it is not signal integrity.** It is a specific transaction failing at
+a fixed rate.
+
+## What it partly is
+
+Running with `--defaults` setting `COMPASS_ENABLE 0`:
+
+| | failures/second |
+|---|---|
+| compass enabled | 406 |
+| **compass disabled** | **69** |
+
+**The AK8963 path accounts for ~83% of the I2C errors.** The pi5 hwdef declares
+`COMPASS AK8963:probe_mpu9250 I2C:2:0x0c` — the compass reached through the MPU-9250's auxiliary
+I2C master — and that path is failing continuously.
+
+**But the IMU still stalls with the compass off** (`MPU: temp reset IMU[0] 2096 0`), and 69
+failures/second remain. So the compass is a large contributor and *not* the root cause.
+
+## Where the evidence actually points now
+
+`SMPLRT_DIV = 0` with DLPF enabled gives a **1 kHz** sample rate at 14 bytes per sample —
+**14 kB/s** that must be drained over a bus shared with the baro and compass. One 14-byte FIFO read
+plus its register write is ~20 bytes of bus traffic; at 100 kHz that is ~2 ms per read against a
+1 ms budget, so the reader **cannot** keep up. The MPU-9250's FIFO is 512 bytes and `CONFIG=0x41`
+sets `FIFO_MODE=1` (stop when full).
+
+The driver's own comment at `AP_InertialSensor_Invensense.cpp:738-749` says it already knows about
+this, and resets the FIFO on I2C whenever more than 4 samples have accumulated. A reset followed by
+a read before fresh data has landed returns **zeros** — and zeros in the temperature field are
+exactly the corruption canary that fires. I measured that independently: my own blind read loop saw
+zero-temperature samples at ~0.4% even with **0% bus errors**.
+
+**Working hypothesis, explicitly not yet proven:** perpetual FIFO overflow-and-reset because 1 kHz
+sampling exceeds what this shared I2C bus can drain — not a signalling fault at all. The test that
+would settle it is instrumenting `n_samples` and the reset rate inside `_read_fifo()`, which means
+a patched build, not another strace.
+
+## State the box was left in
+
+**Restored to `baudrate=400000` and rebooted** — byte-identical to the pre-change backup
+`/boot/firmware/config.txt.bak-LIMA-20260911-101431`, verified by `diff`. 400 kHz was measurably the
+better of the two, and it is how I found it.
+
+## The lesson worth keeping
+
+I published a causal claim — "marginal 400 kHz shared-bus signalling" — on the strength of a
+**correlation between a percentage and a hypothesis I already held**, without checking whether the
+absolute rate moved. The first table in this section took ten minutes and killed it. `[measured]`
+was honest about each number; the *conclusion* drawn from them was not measured at all, and I
+should have tagged it `[assumed]`.
