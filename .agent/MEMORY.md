@@ -867,8 +867,26 @@ session **to the bench**. All three were wrong, and the handoff would have cost 
   FIFO sample carries 0*. Reading `FIFO_R_W` with nothing valid queued returns zeros -- I saw that
   at ~0.4% even in a clean loop.
 
+**CORRECTION, same day.** The conclusion I drew from that -- "marginal 400 kHz shared-bus
+signalling" -- was **also wrong**, and Peter's authorised 100 kHz test refuted it within the hour:
+
+| Bus clock | transfers | EREMOTEIO | % | **per second** |
+|---|---|---|---|---|
+| 400 kHz | 28979 | 4902 | 17.0% | **409** |
+| 100 kHz | 14326 | 4871 | 34.0% | **406** |
+
+**Absolute failures barely moved across a 4x clock change; only the denominator did.** Marginal
+signalling scales with clock. A fixed ~405/s does not. With `COMPASS_ENABLE 0` it drops to **69/s**,
+so the `AK8963:probe_mpu9250` path is ~83% of it -- **but the IMU still stalls without the compass.**
+Current hypothesis (`[assumed]`, not proven): perpetual FIFO overflow-and-reset, because 1 kHz x
+14 B = 14 kB/s cannot be drained over a bus shared with the baro and compass. Box restored to
+400 kHz, byte-identical to the backup.
+
 **Lessons.** (1) "Ruled out by measurement" is only as good as the measurement -- I had never
 counted the syscall return codes, which is where the answer was sitting the whole time.
+(1b) **A percentage is not a rate.** I read "17%" as evidence for a hypothesis I already held and
+published a causal claim on it, without checking whether the absolute count moved. Every number was
+`[measured]`; the conclusion drawn from them was `[assumed]` and I failed to tag it.
 (2) **Reach for `strace` earlier** when a driver "sees nothing" but the device answers by hand.
 (3) A negative result from a *low-rate* manual probe does not rule out a fault that only appears
 under *sustained multi-device* traffic -- match the instrument's duty cycle to the real one.
