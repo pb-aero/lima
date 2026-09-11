@@ -928,3 +928,42 @@ Three stacked instrument faults cost an hour on "can you read gps":
 `/proc/tty/driver/ttyAMA` -> `rx: fe: brk:`. **Framing errors per byte identify the baud rate
 directly** -- fe/rx was 0.3-0.6 at every wrong rate and exactly **0.000 at 230400**. Ask the driver
 what it is seeing before writing a parser for what you expect to see.
+
+
+## SCAR — the IMU was never broken, and I spent two sessions proving it was (2026-09-11)
+
+**`MPU: temp reset IMU[0] <n> 0` is ONE line, printed ONCE at startup.** The complete console
+output of a 45-second run is two lines. It is not a loop and ArduPilot does not halt.
+
+`[measured]` on the stock `--board=pi5` build via MAVLink: `acc=(0,-43,-981)` — **accel Z is
+-9.81 m/s2, gravity, stable sample after sample**; gyro ~0 with +/-1 jitter; VIBRATION 0.02 with
+zero clipping; `SYS_STATUS` gyro/accel/mag/baro all **healthy**; ATTITUDE produced. The IMU works
+and always did.
+
+**The cause of the one message:** the first 56-byte FIFO burst after init has a corrupt tail --
+sample 2 duplicates sample 1's accel with every other field zeroed, so its temperature reads 0 and
+trips the driver's corruption canary. That is exactly what the driver's own comment documents, and
+it **resets and recovers as designed**. Every later read is clean.
+
+**How I got it wrong, five runs across two sessions:** I never once connected a GCS and asked the
+running system whether it was healthy. Every time I read `head -5` of stdout, saw "reset", and
+stopped. **ArduPilot on Linux does not print "Ready" to stdout -- it reports over MAVLink.**
+
+Worse: on 2026-09-04 I ruled out bus contention, speed and intermittency *by measurement*. Those
+measurements were correct. They were clean **because nothing was wrong** -- and I read a set of
+clean results as a deepening mystery instead of as the answer.
+
+**False conclusions this produced, each published and then retracted:** dead hardware -> go to the
+bench; marginal 400 kHz signalling; FIFO overflow from 1 kHz sampling; the AK8963 is the culprit;
+ArduPilot needs an IMU stub to run. All wrong.
+
+**The instrument that settled it in one capture:** kernel i2c tracepoints,
+`/sys/kernel/debug/tracing/events/i2c/`. Address, length, result **and the reply bytes** of every
+transfer. It showed the MPU's own address ran **12727 transfers with 6 failures (0.0%)** -- the
+~408/s EREMOTEIO I had chased for hours was ArduPilot **probing absent devices on i2c-1**, routine
+and harmless.
+
+**Rules.** (1) **Ask the running system what it thinks its own state is before theorising about why
+it is broken.** Console output is not health. (2) A stream of clean "ruled out" results is evidence
+there is nothing to find, not evidence the fault is exotic. (3) Reach for the kernel's own
+tracepoints early -- they answer "what is actually on the wire" in one capture.

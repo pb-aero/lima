@@ -48,3 +48,17 @@ Cheapest test is dropping the bus to 100 kHz, which needs Peter's say-so (boot c
 
 **And it matters less than it looks:** AeroNode puts the ICM-45686 on **SPI**, so this is a dev-rig
 artefact, not a design problem.
+
+
+## 2026-09-11 (later) · The IMU retraction, in full
+
+Both prior entries about the IMU are wrong. **There was never a stall.** `MPU: temp reset` is one
+startup line from one corrupt FIFO burst; the driver recovers as designed and the IMU delivers
+gravity correctly for the rest of the run. Verified over MAVLink: `acc=(0,-43,-981)`, VIBRATION
+0.02, all sensors healthy.
+
+**The Pi has a working IMU, a working GPS (u-blox M10, 3D fix, 21 sats) and a working baro.** It can
+run as a flight controller now. What it still needs from Peter is accel and compass calibration,
+which needs the board physically rotated.
+
+Do not spend another minute on the "I2C IMU problem". It does not exist.

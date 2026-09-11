@@ -1,3 +1,89 @@
+# ⚠ RETRACTED IN FULL — THERE WAS NEVER A STALL
+
+**2026-09-11, later.** Everything below this banner is superseded. Kept in full because the
+reasoning failure is the point, and because it was repeated across two sessions and five separate
+test runs.
+
+## The IMU works. It always worked.
+
+`[measured]` on the unmodified `--board=pi5` build, stub reverted, via MAVLink:
+
+```
+acc=(     0,   -44,  -980)  gyro=(    0,    0,    0)
+acc=(     0,   -43,  -981)  gyro=(    0,    0,    0)
+acc=(     1,   -44,  -980)  gyro=(    1,    0,    1)
+acc=(     0,   -44,  -982)  gyro=(    0,    0,    0)
+acc=(    -1,   -43,  -980)  gyro=(    0,    0,   -1)
+```
+
+**Accel Z is −980 to −982, i.e. −9.81 m/s². That is gravity, live, stable, sample after sample.**
+`VIBRATION x=0.019 y=0.021 z=0.029, clipping 0/0/0`. `SYS_STATUS` reports gyro, accel, mag and baro
+all **healthy**. `ATTITUDE` is being produced.
+
+## What `MPU: temp reset IMU[0] <n> 0` actually was
+
+**The complete console output of a 45-second run is two lines:**
+
+```
+RPI 5
+MPU: temp reset IMU[0] 2054 0
+```
+
+**One line. Once. At startup.** Not a loop, not a halt.
+
+The kernel i2c tracepoints show exactly why. The first FIFO read after init is a 56-byte burst
+whose tail is corrupt — sample 2 duplicates sample 1's accelerometer values with every other field
+zeroed:
+
+```
+sample 1: 02-c0 00-1c c0-f0 | 08-50 | ...   temp 2128
+sample 2: 02-c0 00-1c c0-f0 | 00-00 | ...   temp 0     <- the canary fires here
+```
+
+That is *precisely* the tail corruption the driver's own comment describes ("if we have more than
+32 samples in the FIFO then some of those samples will be corrupt — it always is the ones at the
+end"). The temperature canary caught it, the driver reset the FIFO, and **recovered exactly as
+designed.** Every subsequent read is clean:
+
+```
+00-56 00-01 f8-21 | 08-7b | ff-8d 00-1d ff-fb     accel Z −2015 ≈ −1 g, temp 2171 valid
+```
+
+## How I got this so wrong, twice
+
+The 2026-09-04 session wrote *"ArduPilot startup halts at `MPU: temp reset` … and never reaches
+`ArduPilot Ready`"*. I re-ran it today and reached the same conclusion five more times.
+
+**I never once connected a GCS and asked the running system whether it was healthy.** Every single
+run, I read the first few lines of stdout, saw the word "reset", and stopped. ArduPilot on Linux
+does not print "Ready" to stdout — it reports over MAVLink. The evidence that it was fine was
+available in under a minute at any point in the last week.
+
+Worse, the earlier session ruled out bus contention, bus speed and intermittency by measurement,
+which was *correct* — those measurements were right, and they were right because **there was
+nothing wrong**. I read a set of clean results as a deepening mystery instead of as the answer.
+
+### The chain of false conclusions this produced
+
+1. "The hardware is broken, go to the bench" — wrong, and it would have cost a bench session.
+2. "Marginal 400 kHz signalling" — wrong; failures/second were invariant across a 4× clock change.
+3. "FIFO overflow from 1 kHz sampling" — wrong; the FIFO read *empty*.
+4. "The AK8963 is the culprit" — wrong; it is 83% of the I2C *errors* but those errors are
+   **ArduPilot probing absent devices on i2c-1**, which is routine and harmless. The MPU's own
+   address ran **12 727 transfers with 6 failures — 0.0%**.
+5. "ArduPilot needs an IMU stub to run" — wrong; it never needed one.
+
+### The instrument that settled it
+
+Kernel i2c tracepoints, `/sys/kernel/debug/tracing/events/i2c/`. They give the address, length,
+result **and the reply bytes** of every transfer. One capture attributed the failures correctly and
+showed the actual FIFO payload. That should have been the first tool, not the last.
+
+**The rule I keep relearning today:** ask the running system what it thinks its own state is,
+before theorising about why it is broken. Console output is not health.
+
+---
+
 # The Pi 5 IMU FIFO stall — diagnosed, and the 2026-09-04 handoff was wrong
 
 **Date:** 2026-09-11 · **Agent:** LIMA
