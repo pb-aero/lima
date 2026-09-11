@@ -891,3 +891,40 @@ published a causal claim on it, without checking whether the absolute count move
 (3) A negative result from a *low-rate* manual probe does not rule out a fault that only appears
 under *sustained multi-device* traffic -- match the instrument's duty cycle to the real one.
 (4) Retract loudly: the handoff is amended in place, not quietly patched.
+
+## Fact — the bench GNSS: u-blox M10 on ttyAMA0, 230400 baud, UBX-only (2026-09-11)
+
+`[measured]` on the Pi 5 (machine-id `49cc4b68da3b4dfd9d10cc78207fe9eb`). Working: **3D fix, 18
+satellites, 0.41 m horizontal accuracy**, 5 Hz NAV-PVT, all checksums OK.
+
+| | |
+|---|---|
+| port | `/dev/ttyAMA0` (`dtoverlay=uart0-pi5`, GPIO14 TX / GPIO15 RX) — **not** `/dev/serial0`, which is the console |
+| baud | **230400** |
+| protocol | **UBX binary ONLY — emits no NMEA at all** |
+| messages | NAV-PVT, NAV-DOP (30 each per 6 s), NAV-TIMEGPS, MON-HW, MON-IO |
+| MON-VER | `ROM SPG 5.10`, hwVersion `000A0000`, **PROTVER 34.10** = u-blox **M10** generation |
+| constellations | GPS, GLONASS, Galileo, BeiDou + SBAS, QZSS |
+
+**The bench part is an M10 (probably the `SAM-M10Q-00B` in `~/aerosense/`), NOT the DAN-F10N the
+AeroNode design specifies.** F10 is L1/L5 dual-band; M10 is L1 only. Do not validate an F10
+assumption on this bench.
+
+## Scar — I tested for one protocol and reported its absence as absence of data (2026-09-11)
+
+Three stacked instrument faults cost an hour on "can you read gps":
+
+1. **`timeout 3 head -c 4096 $PORT` discards what it read.** `head` buffers and is killed before
+   flushing, so a live port reports **0 bytes**. Use `timeout N cat $PORT > file` -- `cat` writes
+   through.
+2. **I grepped only for NMEA (`$G`).** After the TX/RX swap my sweep captured **1962 bytes at
+   230400** and I dismissed the line because `nmea=0`. The fix data was in that buffer. This module
+   emits **no NMEA at all**; at the correct baud my test still said "nothing".
+3. **A pull-down test cannot distinguish an actively driven line from a module-side pull-up**
+   (10k beats the Pi's ~50k). I twice claimed "something is driving it" when the honest statement
+   was "something on the module side is holding it high".
+
+**What actually worked, and should have been first:** the kernel's own UART counters,
+`/proc/tty/driver/ttyAMA` -> `rx: fe: brk:`. **Framing errors per byte identify the baud rate
+directly** -- fe/rx was 0.3-0.6 at every wrong rate and exactly **0.000 at 230400**. Ask the driver
+what it is seeing before writing a parser for what you expect to see.
