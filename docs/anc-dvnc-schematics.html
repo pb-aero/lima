@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ANC / DVNC schematics — December demonstrator + summing amplifier</title>
+<style>
+:root{
+  --bg:#f7f6f3; --panel:#ffffff; --ink:#1b1a17; --muted:#6b6760; --rule:#d6d2ca;
+  --wire:#2d2a26; --sym:#1b1a17; --accent:#9a3412; --accent2:#1d4ed8; --ok:#15803d;
+  --chip:#eceae5; --gapbg:#fdf3e7; --gapink:#8a5a12;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161a; --panel:#1b1e23; --ink:#e8e6e1; --muted:#9aa0a8; --rule:#333840;
+    --wire:#c8ccd2; --sym:#e8e6e1; --accent:#fb923c; --accent2:#7dd3fc; --ok:#4ade80;
+    --chip:#252a31; --gapbg:#2a2416; --gapink:#e3b567;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14161a; --panel:#1b1e23; --ink:#e8e6e1; --muted:#9aa0a8; --rule:#333840;
+  --wire:#c8ccd2; --sym:#e8e6e1; --accent:#fb923c; --accent2:#7dd3fc; --ok:#4ade80;
+  --chip:#252a31; --gapbg:#2a2416; --gapink:#e3b567;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:15px/1.6 ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+.wrap{max-width:1420px;margin:0 auto;padding:32px 20px 80px}
+header.top{border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:8px}
+h1{font-size:26px;margin:0 0 4px;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:14px;margin:0}
+.meta{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--muted);margin-top:8px}
+h2{font-size:19px;margin:44px 0 4px;padding-top:18px;border-top:1px solid var(--rule)}
+h2 .n{color:var(--accent);font-family:ui-monospace,monospace;font-size:14px;margin-right:10px}
+h3{font-size:15px;margin:26px 0 8px;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+.lede{color:var(--muted);margin:2px 0 18px;max-width:80ch}
+.sheet{background:var(--panel);border:1px solid var(--rule);border-radius:6px;
+  padding:10px;overflow-x:auto;margin:14px 0 10px}
+svg{display:block;min-width:1180px;width:100%;height:auto}
+.w{stroke:var(--wire);stroke-width:1.6;fill:none;stroke-linecap:square}
+.wb{stroke:var(--wire);stroke-width:2.6;fill:none;stroke-linecap:square}
+.sym{stroke:var(--sym);stroke-width:1.7;fill:none}
+.symf{stroke:var(--sym);stroke-width:1.7;fill:var(--panel)}
+.box{stroke:var(--sym);stroke-width:1.8;fill:var(--chip)}
+.boxl{stroke:var(--rule);stroke-width:1.2;fill:none;stroke-dasharray:5 4}
+.dot{fill:var(--wire)}
+text{fill:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.t{font-size:12px}
+.ts{font-size:10.5px;fill:var(--muted)}
+.tb{font-size:13.5px;font-weight:700}
+.tt{font-size:15px;font-weight:700;letter-spacing:.04em}
+.acc{fill:var(--accent)}
+.acc2{fill:var(--accent2)}
+.okc{fill:var(--ok)}
+.mut{fill:var(--muted)}
+.band{fill:var(--chip);opacity:.45}
+table{border-collapse:collapse;width:100%;margin:10px 0 6px;font-size:13.5px}
+th,td{border:1px solid var(--rule);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--chip);font-weight:700}
+td.mono,th.mono{font-family:ui-monospace,monospace;font-size:12.5px;white-space:nowrap}
+.gap{background:var(--gapbg);color:var(--gapink);border-left:3px solid var(--gapink);
+  padding:10px 14px;margin:14px 0;border-radius:0 4px 4px 0;font-size:13.5px}
+.gap b{color:var(--gapink)}
+.legend{display:flex;flex-wrap:wrap;gap:18px;font-size:12.5px;color:var(--muted);
+  font-family:ui-monospace,monospace;margin:6px 0 0}
+code{font-family:ui-monospace,monospace;background:var(--chip);padding:1px 5px;border-radius:3px;font-size:.92em}
+ol,ul{max-width:88ch}
+li{margin:5px 0}
+footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--rule);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>ANC / DVNC schematics</h1>
+  <p class="sub">Sheet 1 — 1 December technology demonstrator, two EVAL-ADAU1860EBZ.
+     Sheet 2 — aircraft-audio summing amplifier (product side).</p>
+  <p class="meta">Agent LIMA · pb-aero/lima · 2026-09-14 · drawn, not built · values derived, pin numbers marked where unverified</p>
+</header>
+
+<p class="lede">Two independent sheets. Sheet 1 is what gets wired on the bench for December and needs
+no summing amplifier at all, because each evaluation board drives its own earcup. Sheet 2 is the
+product-side circuit that puts AeroNode's output onto the aircraft's intercom line — not on the
+December path, drawn here so the two can be read against each other.</p>
+
+<div class="legend">
+  <span>── wire</span>
+  <span>● junction (dot = connected)</span>
+  <span>crossing without a dot = NOT connected</span>
+  <span><span style="color:var(--accent)">■</span> strap / setting</span>
+  <span><span style="color:var(--gapink)">■</span> unverified</span>
+</div>
+
+<h2><span class="n">SHEET 1</span>December demonstrator — front end and interconnect</h2>
+<p class="lede">DVNC on EVB&nbsp;1 into the <b>left</b> cup, ANC on EVB&nbsp;2 into the <b>right</b> cup.
+Each technology is independently audible, independently measurable, and independently debuggable —
+and a listener A/Bs either one by covering an ear.</p>
+
+<div class="sheet">
+<svg viewBox="0 62 1300 1228" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Schematic of the two-EVB December demonstrator front end">
+<defs>
+  <g id="res"><rect x="-14" y="-5.5" width="28" height="11" class="symf"/>
+    <line x1="-26" y1="0" x2="-14" y2="0" class="w"/><line x1="14" y1="0" x2="26" y2="0" class="w"/></g>
+  <g id="cap"><line x1="-18" y1="0" x2="-4.5" y2="0" class="w"/>
+    <line x1="-4.5" y1="-11" x2="-4.5" y2="11" class="sym"/>
+    <line x1="4.5" y1="-11" x2="4.5" y2="11" class="sym"/>
+    <line x1="4.5" y1="0" x2="18" y2="0" class="w"/></g>
+  <g id="gnd"><line x1="0" y1="0" x2="0" y2="9" class="w"/>
+    <line x1="-10" y1="9" x2="10" y2="9" class="sym"/>
+    <line x1="-6" y1="13.5" x2="6" y2="13.5" class="sym"/>
+    <line x1="-2.5" y1="18" x2="2.5" y2="18" class="sym"/></g>
+  <g id="mic"><circle cx="0" cy="0" r="15" class="symf"/>
+    <line x1="-10" y1="10" x2="10" y2="-10" class="sym"/></g>
+</defs>
+
+<!-- ============================ BAND A : DVNC / LEFT CUP ============================ -->
+<rect x="40" y="86" width="1230" height="392" rx="5" class="band"/>
+<text class="tt acc" x="56" y="112">BAND A — EVB 1 · DVNC · LEFT EARCUP</text>
+
+<!-- rails -->
+<line class="wb" x1="70" y1="140" x2="530" y2="140"/>
+<text class="t okc" x="70" y="133">VA3V0  (quiet rail, sheet 1 §C)</text>
+<line class="wb" x1="70" y1="452" x2="530" y2="452"/>
+<text class="t mut" x="70" y="470">AGND (demo ground — all sensor grounds star to EVB 1)</text>
+
+<!-- U1 ADXL354 -->
+<rect x="96" y="190" width="152" height="108" rx="4" class="box"/>
+<text class="tb" x="112" y="212">U1  ADXL354</text>
+<text class="ts" x="112" y="228">3-axis analog accel</text>
+<text class="ts" x="112" y="242">±2 g · 400 mV/g</text>
+<text class="ts acc" x="112" y="262">RANGE → ±2 g</text>
+<text class="ts acc" x="112" y="276">STANDBY → run</text>
+<line class="w" x1="150" y1="190" x2="150" y2="140"/><circle class="dot" cx="150" cy="140" r="3.2"/>
+<text class="ts" x="156" y="182">VSUPPLY</text>
+<line class="w" x1="150" y1="298" x2="150" y2="452"/><circle class="dot" cx="150" cy="452" r="3.2"/>
+<text class="ts" x="156" y="316">VSS</text>
+<line class="w" x1="248" y1="224" x2="272" y2="224"/>
+<text class="ts" x="254" y="214">XOUT</text>
+<text class="ts mut" x="252" y="258">YOUT ─╳</text>
+<text class="ts mut" x="252" y="278">ZOUT ─╳</text>
+
+<!-- U1 decoupling -->
+<line class="w" x1="296" y1="140" x2="296" y2="152"/>
+<g transform="translate(296,166) rotate(90)"><use href="#cap"/></g>
+<line class="w" x1="296" y1="180" x2="296" y2="452"/>
+<circle class="dot" cx="296" cy="140" r="3.2"/><circle class="dot" cx="296" cy="452" r="3.2"/>
+<text class="ts" x="294" y="176">C1 100n</text>
+<line class="w" x1="342" y1="140" x2="342" y2="152"/>
+<g transform="translate(342,166) rotate(90)"><use href="#cap"/></g>
+<line class="w" x1="342" y1="180" x2="342" y2="452"/>
+<circle class="dot" cx="342" cy="140" r="3.2"/><circle class="dot" cx="342" cy="452" r="3.2"/>
+<text class="ts" x="344" y="206">C2 1µ</text>
+
+<!-- accel signal chain : R1 then C3 -->
+<use href="#res" x="272" y="224" transform="translate(126,0)"/>
+<text class="ts" x="372" y="212">R1</text><text class="ts" x="372" y="240">100R</text>
+<line class="w" x1="424" y1="224" x2="448" y2="224"/>
+<g transform="translate(466,224)"><use href="#cap"/></g>
+<text class="ts" x="452" y="206">C3 1µ</text>
+<line class="w" x1="484" y1="224" x2="596" y2="224"/>
+<text class="ts acc2" x="500" y="216">ADC0 single-ended</text>
+
+<!-- MK1 error mic -->
+<rect x="96" y="334" width="152" height="92" rx="4" class="box"/>
+<text class="tb" x="112" y="356">MK1  IM73A135</text>
+<text class="ts" x="112" y="372">in-cup ERROR mic</text>
+<text class="ts" x="112" y="386">differential out</text>
+<text class="ts acc" x="112" y="406">VDD → normal mode</text>
+<line class="w" x1="140" y1="334" x2="140" y2="140"/><circle class="dot" cx="140" cy="140" r="3.2"/>
+<line class="w" x1="204" y1="426" x2="204" y2="452"/><circle class="dot" cx="204" cy="452" r="3.2"/>
+<line class="w" x1="248" y1="356" x2="300" y2="356"/><text class="ts" x="252" y="350">OUTP</text>
+<line class="w" x1="248" y1="392" x2="300" y2="392"/><text class="ts" x="252" y="386">OUTN</text>
+<g transform="translate(318,356)"><use href="#cap"/></g>
+<text class="ts" x="304" y="340">C4 1µ</text>
+<line class="w" x1="336" y1="356" x2="596" y2="356"/>
+<g transform="translate(318,392)"><use href="#cap"/></g>
+<text class="ts" x="304" y="416">C5 1µ</text>
+<line class="w" x1="336" y1="392" x2="596" y2="392"/>
+<text class="ts acc2" x="430" y="348">ADC1 differential</text>
+<!-- MK1 decoupling -->
+<line class="w" x1="440" y1="140" x2="440" y2="152"/>
+<g transform="translate(440,166) rotate(90)"><use href="#cap"/></g>
+<line class="w" x1="440" y1="180" x2="440" y2="452"/>
+<circle class="dot" cx="440" cy="140" r="3.2"/><circle class="dot" cx="440" cy="452" r="3.2"/>
+<text class="ts" x="448" y="176">C6 100n</text>
+
+<!-- EVB 1 -->
+<rect x="596" y="168" width="334" height="286" rx="5" class="box"/>
+<text class="tt" x="616" y="196">EVB 1 — EVAL-ADAU1860EBZ</text>
+<text class="t acc" x="616" y="216">DVNC · own USB to Lark Studio</text>
+<text class="ts" x="616" y="244">P9   ADC0 ← accelerometer  (single-ended)</text>
+<text class="ts acc" x="632" y="259">strap P104 / P105 → pins 2-3</text>
+<text class="ts" x="616" y="284">P10  ADC1 ← MK1 error mic  (differential)</text>
+<text class="ts acc" x="632" y="299">strap P12 / P14 → pins 1-2</text>
+<text class="ts" x="616" y="324">P11  ADC2 — spare (2nd axis / ref mic)</text>
+<text class="ts" x="616" y="352">P30  DAC OUT → left earcup</text>
+<text class="ts acc" x="632" y="367">REMOVE the 32 Ω load fitted by default</text>
+<text class="ts" x="616" y="396">P3   MCLK IN   ·  P25 jumper = osc OFF</text>
+<text class="ts" x="616" y="420">USB  P22 → host (board self-powers)</text>
+<line class="w" x1="930" y1="352" x2="982" y2="352"/>
+<line class="w" x1="700" y1="454" x2="700" y2="1112"/>
+<text class="ts mut" x="706" y="474">MCLK</text>
+
+<!-- LEFT EARCUP -->
+<rect x="982" y="296" width="252" height="116" rx="5" class="box"/>
+<text class="tb" x="1000" y="320">LEFT EARCUP  —  DVNC</text>
+<text class="ts" x="1000" y="340">anti-tone from EVB 1 DAC</text>
+<text class="ts" x="1000" y="356">MK1 error mic sits INSIDE this cup</text>
+<text class="ts acc" x="1000" y="378">passive cup — NOT an ANR headset</text>
+<text class="ts mut" x="1000" y="398">see gap note below</text>
+<line class="w" x1="982" y1="352" x2="982" y2="352"/>
+
+<!-- ============================ BAND B : ANC / RIGHT CUP ============================ -->
+<rect x="40" y="500" width="1230" height="536" rx="5" class="band"/>
+<text class="tt acc" x="56" y="526">BAND B — EVB 2 · ANC + VOICE · RIGHT EARCUP</text>
+
+<line class="wb" x1="70" y1="554" x2="530" y2="554"/>
+<text class="t okc" x="70" y="547">VA3V0</text>
+<line class="wb" x1="70" y1="1010" x2="530" y2="1010"/>
+<text class="t mut" x="70" y="1028">AGND</text>
+
+<!-- MK2 FF -->
+<rect x="96" y="592" width="152" height="88" rx="4" class="box"/>
+<text class="tb" x="112" y="614">MK2  IM73A135</text>
+<text class="ts" x="112" y="630">FEED-FORWARD</text>
+<text class="ts" x="112" y="644">OUTSIDE the cup</text>
+<text class="ts acc" x="112" y="664">PGA = 0 dB (see notes)</text>
+<line class="w" x1="140" y1="592" x2="140" y2="554"/><circle class="dot" cx="140" cy="554" r="3.2"/>
+<line class="w" x1="204" y1="680" x2="204" y2="1010"/><circle class="dot" cx="204" cy="1010" r="3.2"/>
+<line class="w" x1="248" y1="614" x2="272" y2="614"/><text class="ts" x="252" y="610">OUTP</text>
+<line class="w" x1="248" y1="650" x2="272" y2="650"/><text class="ts" x="252" y="646">OUTN</text>
+<g transform="translate(318,614)"><use href="#cap"/></g><text class="ts" x="304" y="598">C7 1µ</text>
+<line class="w" x1="272" y1="614" x2="300" y2="614"/><line class="w" x1="336" y1="614" x2="596" y2="614"/>
+<g transform="translate(318,650)"><use href="#cap"/></g><text class="ts" x="304" y="674">C8 1µ</text>
+<line class="w" x1="272" y1="650" x2="300" y2="650"/><line class="w" x1="336" y1="650" x2="596" y2="650"/>
+<text class="ts acc2" x="430" y="606">ADC0 differential</text>
+
+<!-- MK3 FB -->
+<rect x="96" y="722" width="152" height="88" rx="4" class="box"/>
+<text class="tb" x="112" y="744">MK3  IM73A135</text>
+<text class="ts" x="112" y="760">FEEDBACK / ERROR</text>
+<text class="ts" x="112" y="774">INSIDE the cup</text>
+<line class="w" x1="140" y1="722" x2="140" y2="554"/><circle class="dot" cx="140" cy="554" r="3.2"/>
+<line class="w" x1="204" y1="810" x2="204" y2="1010"/><circle class="dot" cx="204" cy="1010" r="3.2"/>
+<line class="w" x1="248" y1="744" x2="272" y2="744"/><text class="ts" x="252" y="740">OUTP</text>
+<line class="w" x1="248" y1="780" x2="272" y2="780"/><text class="ts" x="252" y="776">OUTN</text>
+<g transform="translate(318,744)"><use href="#cap"/></g><text class="ts" x="304" y="728">C9 1µ</text>
+<line class="w" x1="272" y1="744" x2="300" y2="744"/><line class="w" x1="336" y1="744" x2="596" y2="744"/>
+<g transform="translate(318,780)"><use href="#cap"/></g><text class="ts" x="304" y="804">C10 1µ</text>
+<line class="w" x1="272" y1="780" x2="300" y2="780"/><line class="w" x1="336" y1="780" x2="596" y2="780"/>
+<text class="ts acc2" x="430" y="736">ADC1 differential</text>
+
+<!-- MK4 boom electret -->
+<rect x="96" y="852" width="152" height="104" rx="4" class="box"/>
+<text class="tb" x="112" y="874">MK4  BOOM</text>
+<text class="ts" x="112" y="890">electret, noise-</text>
+<text class="ts" x="112" y="904">cancelling capsule</text>
+<text class="ts" x="112" y="924">omni MEMS will NOT</text>
+<text class="ts" x="112" y="938">work here — pattern</text>
+<g transform="translate(292,900)"><use href="#mic"/></g>
+<text class="ts" x="276" y="946">MK4</text>
+<line class="w" x1="292" y1="915" x2="292" y2="1010"/><circle class="dot" cx="292" cy="1010" r="3.2"/>
+<line class="w" x1="292" y1="885" x2="292" y2="860"/>
+<circle class="dot" cx="292" cy="860" r="3.2"/>
+<!-- bias resistor up to rail -->
+<g transform="translate(292,800) rotate(90)"><use href="#res"/></g>
+<line class="w" x1="292" y1="860" x2="292" y2="826"/>
+<line class="w" x1="292" y1="774" x2="292" y2="554"/>
+<circle class="dot" cx="292" cy="554" r="3.2"/>
+<text class="ts" x="300" y="840">R2 2k2 bias</text>
+<!-- coupling to ADC2 -->
+<line class="w" x1="292" y1="860" x2="372" y2="860"/>
+<g transform="translate(390,860)"><use href="#cap"/></g>
+<text class="ts" x="374" y="844">C11 1µ</text>
+<line class="w" x1="408" y1="860" x2="596" y2="860"/>
+<text class="ts acc2" x="440" y="852">ADC2 single-ended</text>
+
+<!-- EVB 2 -->
+<rect x="596" y="576" width="334" height="400" rx="5" class="box"/>
+<text class="tt" x="616" y="604">EVB 2 — EVAL-ADAU1860EBZ</text>
+<text class="t acc" x="616" y="624">ANC + voice · own USB to Lark Studio</text>
+<text class="ts" x="616" y="652">P9   ADC0 ← MK2 feed-forward (diff)</text>
+<text class="ts acc" x="632" y="667">P104 / P105 → pins 1-2</text>
+<text class="ts" x="616" y="692">P10  ADC1 ← MK3 feedback (diff)</text>
+<text class="ts acc" x="632" y="707">P12 / P14 → pins 1-2</text>
+<text class="ts" x="616" y="732">P11  ADC2 ← MK4 boom (single-ended)</text>
+<text class="ts acc" x="632" y="747">P13 / P15 → pins 2-3</text>
+<text class="ts" x="616" y="776">P30  DAC OUT → right earcup</text>
+<text class="ts acc" x="632" y="791">REMOVE the 32 Ω load</text>
+<text class="ts" x="616" y="820">P3   MCLK IN   ·  P25 jumper = osc OFF</text>
+<text class="ts" x="616" y="844">USB  P22 → host</text>
+<text class="ts okc" x="616" y="874">FF and FB loops both close ON THIS CHIP —</text>
+<text class="ts okc" x="616" y="889">no inter-board hop inside the control loop</text>
+<text class="ts mut" x="616" y="918">ADC0/1 PGA 0 dB · ADC2 PGA as needed</text>
+<line class="w" x1="930" y1="776" x2="982" y2="776"/>
+<line class="w" x1="700" y1="976" x2="700" y2="1112"/>
+
+<!-- RIGHT EARCUP -->
+<rect x="982" y="720" width="252" height="116" rx="5" class="box"/>
+<text class="tb" x="1000" y="744">RIGHT EARCUP  —  ANC</text>
+<text class="ts" x="1000" y="764">anti-noise from EVB 2 DAC</text>
+<text class="ts" x="1000" y="780">MK3 inside · MK2 outside</text>
+<text class="ts acc" x="1000" y="802">passive cup — NOT an ANR headset</text>
+
+<!-- ============================ BAND C : SHARED ============================ -->
+<rect x="40" y="1058" width="1230" height="196" rx="5" class="band"/>
+<text class="tt acc" x="56" y="1084">BAND C — SHARED RAIL AND CLOCK</text>
+
+<!-- LDO -->
+<rect x="96" y="1106" width="176" height="88" rx="4" class="box"/>
+<text class="tb" x="112" y="1128">U2  LP5907-3.0</text>
+<text class="ts" x="112" y="1144">low-noise LDO, 6.5 µVrms</text>
+<text class="ts" x="112" y="1158">5 V (EVB P47) → 3.0 V</text>
+<text class="ts acc" x="112" y="1178">ONE rail suits both parts</text>
+<line class="w" x1="60" y1="1150" x2="96" y2="1150"/>
+<text class="ts" x="46" y="1142">+5 V</text>
+<line class="w" x1="272" y1="1150" x2="470" y2="1150"/>
+<text class="t okc" x="282" y="1138">VA3V0 → bands A and B</text>
+<circle class="dot" cx="396" cy="1150" r="3.2"/>
+<line class="w" x1="396" y1="1150" x2="396" y2="1166"/>
+<g transform="translate(396,1180) rotate(90)"><use href="#cap"/></g>
+<line class="w" x1="396" y1="1194" x2="396" y2="1206"/>
+<g transform="translate(396,1206)"><use href="#gnd"/></g>
+<text class="ts" x="404" y="1186">C12 1µ</text>
+
+<!-- oscillator -->
+<rect x="560" y="1106" width="210" height="88" rx="4" class="box"/>
+<text class="tb" x="578" y="1128">Y1  24.576 MHz osc</text>
+<text class="ts" x="578" y="1144">one clock, both boards</text>
+<text class="ts acc" x="578" y="1164">jumper P25 on BOTH boards</text>
+<text class="ts acc" x="578" y="1178">to disable their own osc</text>
+<line class="w" x1="700" y1="1112" x2="700" y2="1106"/>
+<circle class="dot" cx="700" cy="1112" r="3.2"/>
+<line class="w" x1="770" y1="1150" x2="820" y2="1150"/>
+<text class="ts mut" x="790" y="1142">→ P3 on each EVB</text>
+
+<text class="ts mut" x="880" y="1128">Not strictly required — the two cups are acoustically</text>
+<text class="ts mut" x="880" y="1144">independent, so drift cannot beat between them.</text>
+<text class="ts mut" x="880" y="1160">Do it anyway: one wire, one jumper, and it removes a</text>
+<text class="ts mut" x="880" y="1176">variable you would otherwise rule out at the worst moment.</text>
+</svg>
+</div>
+
+<h3>Sheet 1 — values and straps</h3>
+<table>
+<tr><th class="mono">Ref</th><th>Part / value</th><th>Why this value</th></tr>
+<tr><td class="mono">U1</td><td>ADXL354, ±2 g strap</td><td>400 mV/g. Gives 1.73 g peak before the codec's 0.49 V rms single-ended full scale clips, at 0 dB PGA. At 24 dB PGA that falls to 0.11 g.</td></tr>
+<tr><td class="mono">R1</td><td>100 Ω</td><td>Series isolation out of XOUT into the cable and coupling cap. Not load-bearing; omit if the accelerometer's output impedance turns out to be high.</td></tr>
+<tr><td class="mono">C3</td><td>1 µF</td><td>Blocks the ADXL354's 0.9 V output offset. ≈7.7 Hz corner into the codec's input — well below the 50–300 Hz DVNC band.</td></tr>
+<tr><td class="mono">C4, C5<br>C7–C10</td><td>1 µF each</td><td>Differential coupling, one per leg, so the pair stays balanced. The mics' own 20 Hz cutoff dominates anyway.</td></tr>
+<tr><td class="mono">R2</td><td>2.2 kΩ</td><td>Electret bias from the 3.0 V quiet rail. Aviation capsules are normally fed 8–16 V through the panel; here we bias it ourselves.</td></tr>
+<tr><td class="mono">C11</td><td>1 µF</td><td>Blocks the bias voltage off ADC2.</td></tr>
+<tr><td class="mono">U2</td><td>LP5907-3.0</td><td>One quiet rail for both the accelerometer (2.25–3.6 V) and the mics. ANC noise floor is set by the sensor supply, so it must not be the EVB's digital 3.3 V.</td></tr>
+<tr><td class="mono">MK1–3</td><td>IM73A135 on <span class="mono">KIT_IM73A135V01_FLEX</span></td><td>Five mics pre-soldered on 25 × 4.5 mm flex with a ZIF adapter. The bare part is 4 × 3 × 1.2 mm bottom-port and cannot be hand-wired — this deletes a breakout fab cycle, and a flex strip is the right shape to thread into an earcup.</td></tr>
+</table>
+
+<h3>Sheet 1 — the two numbers that decide whether the demo reads as a success</h3>
+<ol>
+<li><b>The feed-forward PGA stays at 0 dB.</b> The codec clips before the microphone does:
+0.98 V rms differential full scale ÷ 12.6 mV/Pa = <b>131.8 dB SPL</b>, against the IM73A135's own
+135 dB SPL acoustic overload point. A 100 dB cockpit lands at −31.8 dBFS, which is ample — there is
+no reason to reach for PGA gain and good reason not to.</li>
+<li><b>The microphone's phase response must be calibrated out.</b> The IM73A135 is
+<b>+12° at 75 Hz</b>. Uncorrected, that alone caps cancellation at 2·sin(6°) = 0.209, i.e.
+<b>−13.6 dB</b> — and it lands exactly on prop blade-pass. It is specified, repeatable, and the
+sensitivity tolerance is ±1 dB, so it is correctable in the DSP. If it is not corrected, the demo
+will look like the technology does not work.</li>
+</ol>
+
+<div class="gap"><b>Correction to what I said earlier:</b> I claimed both boards default to I²C
+<code>0x64</code> so one <i>must</i> be re-strapped. That is only true if they share a bus. Each
+EVAL-ADAU1860EBZ carries its own FTDI and its own USB connection, so on the bench they never meet and
+<code>0x64</code> on both is fine. The <code>S14</code> strap (<code>0x64</code>/<code>0x65</code>/<code>0x66</code>/<code>0x67</code>)
+matters later, when something like a CM5 drives both over one bus.
+<b>[gap]</b> whether Lark Studio will talk to two boards at once, or wants two instances.</div>
+
+<div class="gap"><b>[gap] Check before adding C3–C11:</b> the EVB already fits an input network on
+<code>P9</code>/<code>P10</code>/<code>P11</code>. If coupling capacitors are already populated there,
+the ones drawn here put two in series and shift the corner. Read the board before soldering.</div>
+
+<div class="gap"><b>[gap] Pin numbers are not drawn</b> for U1, MK1–MK3 and U2. The specifications
+above were read from the datasheets this session; the pinouts were not. Confirm them before any
+breakout is fabricated — the ADXL354 breakout is the one board on this sheet that has to be made.</div>
+
+<div class="gap"><b>[gap] The earcup is the biggest unknown on this sheet.</b> If the target headset
+already has its own ANR, the demonstrator is two cancellers fighting in one cup, which performs worse
+than either alone. The demo needs a <b>passive</b> cup, or one with its ANR defeated. Decide this
+before ordering anything.</div>
+
+<h2><span class="n">SHEET 2</span>Aircraft-audio summing amplifier — product side</h2>
+<p class="lede">Not needed for December. This is the circuit that puts AeroNode's mono DAC onto the
+intercom's earphone lines. It is a <b>series insertion</b>: the panel becomes a 10 kΩ input, the
+summing node is a virtual ground, and the earphone sees only the amplifier's output.</p>
+
+<div class="sheet">
+<svg viewBox="0 0 1300 960" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Schematic of the aircraft audio summing amplifier with fail-passive relay bypass">
+
+<!-- ========== U1A differential receiver ========== -->
+<text class="tt acc" x="46" y="44">DIFFERENTIAL RECEIVER — replaces T1 / T2</text>
+
+<text class="t" x="46" y="126">HPOUTN</text>
+<line class="w" x1="120" y1="130" x2="174" y2="130"/>
+<use href="#res" x="200" y="130"/>
+<text class="ts" x="186" y="118">R11 10k</text>
+<line class="w" x1="226" y1="130" x2="300" y2="130"/>
+<circle class="dot" cx="265" cy="130" r="3.2"/>
+
+<text class="t" x="46" y="186">HPOUTP</text>
+<line class="w" x1="120" y1="190" x2="174" y2="190"/>
+<use href="#res" x="200" y="190"/>
+<text class="ts" x="186" y="212">R10 10k</text>
+<line class="w" x1="226" y1="190" x2="300" y2="190"/>
+<circle class="dot" cx="265" cy="190" r="3.2"/>
+
+<!-- R12 to ground -->
+<line class="w" x1="265" y1="190" x2="265" y2="214"/>
+<g transform="translate(265,240) rotate(90)"><use href="#res"/></g>
+<text class="ts" x="274" y="244">R12 10k</text>
+<line class="w" x1="265" y1="266" x2="265" y2="282"/>
+<g transform="translate(265,282)"><use href="#gnd"/></g>
+
+<!-- op=amp U1A -->
+<polygon points="300,108 300,212 392,160" class="symf"/>
+<text class="t" x="310" y="136">−</text><text class="t" x="310" y="200">+</text>
+<text class="tb" x="322" y="166">U1A</text>
+<line class="w" x1="392" y1="160" x2="450" y2="160"/>
+<circle class="dot" cx="424" cy="160" r="3.2"/>
+
+<!-- R13 feedback -->
+<line class="w" x1="424" y1="160" x2="424" y2="88"/>
+<line class="w" x1="398" y1="88" x2="424" y2="88"/>
+<use href="#res" x="372" y="88"/>
+<text class="ts" x="352" y="78">R13 10k</text>
+<line class="w" x1="265" y1="88" x2="346" y2="88"/>
+<line class="w" x1="265" y1="88" x2="265" y2="130"/>
+
+<text class="t acc2" x="458" y="152">ANTI</text>
+<text class="ts mut" x="458" y="170">= HPOUTP − HPOUTN, unity</text>
+<text class="ts mut" x="458" y="186">HPOUT never sees the panel:</text>
+<text class="ts mut" x="458" y="202">the summing node is a virtual ground</text>
+
+<!-- ANTI bus -->
+<line class="wb" x1="450" y1="160" x2="450" y2="628"/>
+
+<!-- ========== LEFT SUMMER ========== -->
+<text class="t" x="46" y="326">PANEL_L</text>
+<line class="w" x1="120" y1="330" x2="158" y2="330"/>
+<g transform="translate(180,330)"><use href="#cap"/></g>
+<text class="ts" x="162" y="314">C20 2µ2</text>
+<line class="w" x1="198" y1="330" x2="534" y2="330"/>
+<circle class="dot" cx="280" cy="330" r="3.2"/>
+<!-- bypass branch to K1a NC -->
+<line class="w" x1="280" y1="330" x2="280" y2="268"/>
+<line class="w" x1="280" y1="268" x2="870" y2="268"/>
+<line class="w" x1="870" y1="268" x2="870" y2="330"/>
+<line class="w" x1="870" y1="330" x2="900" y2="330"/>
+<text class="ts okc" x="560" y="260">fail-passive bypass — direct copper</text>
+<!-- R20 -->
+<use href="#res" x="560" y="330"/>
+<text class="ts" x="542" y="318">R20 10k</text>
+<line class="w" x1="586" y1="330" x2="660" y2="330"/>
+<!-- ANTI branch through R21 -->
+<circle class="dot" cx="450" cy="395" r="3.2"/>
+<line class="w" x1="450" y1="395" x2="534" y2="395"/>
+<use href="#res" x="560" y="395"/>
+<text class="ts" x="542" y="418">R21 10k</text>
+<line class="w" x1="586" y1="395" x2="660" y2="395"/>
+<!-- inverting node column -->
+<line class="w" x1="660" y1="306" x2="660" y2="395"/>
+<circle class="dot" cx="660" cy="330" r="3.2"/>
+<circle class="dot" cx="660" cy="360" r="3.2"/>
+<circle class="dot" cx="660" cy="395" r="3.2"/>
+<line class="w" x1="660" y1="360" x2="700" y2="360"/>
+<!-- R22 feedback -->
+<line class="w" x1="660" y1="306" x2="724" y2="306"/>
+<use href="#res" x="750" y="306"/>
+<text class="ts" x="732" y="296">R22 10k</text>
+<line class="w" x1="776" y1="306" x2="840" y2="306"/>
+<line class="w" x1="840" y1="306" x2="840" y2="380"/>
+<!-- op=amp U1B -->
+<polygon points="700,330 700,430 790,380" class="symf"/>
+<text class="t" x="710" y="366">−</text><text class="t" x="710" y="410">+</text>
+<text class="tb" x="716" y="388">U1B</text>
+<text class="ts acc" x="714" y="452">LEFT SUMMER</text>
+<line class="w" x1="700" y1="400" x2="690" y2="400"/>
+<line class="w" x1="690" y1="400" x2="690" y2="448"/>
+<g transform="translate(690,448)"><use href="#gnd"/></g>
+<line class="w" x1="790" y1="380" x2="900" y2="380"/>
+<circle class="dot" cx="840" cy="380" r="3.2"/>
+<text class="t acc2" x="96" y="480">HS_L = −( PANEL_L + ANTI )</text>
+<text class="t acc2" x="96" y="502">HS_R = −( PANEL_R + ANTI )</text>
+<text class="ts mut" x="96" y="524">comm at unity · ANC gain = R22/R21</text>
+
+<!-- ========== RIGHT SUMMER ========== -->
+<text class="t" x="46" y="556">PANEL_R</text>
+<line class="w" x1="120" y1="560" x2="158" y2="560"/>
+<g transform="translate(180,560)"><use href="#cap"/></g>
+<text class="ts" x="162" y="544">C30 2µ2</text>
+<line class="w" x1="198" y1="560" x2="534" y2="560"/>
+<circle class="dot" cx="280" cy="560" r="3.2"/>
+<line class="w" x1="280" y1="560" x2="280" y2="742"/>
+<line class="w" x1="280" y1="742" x2="870" y2="742"/>
+<line class="w" x1="870" y1="742" x2="870" y2="560"/>
+<line class="w" x1="870" y1="560" x2="900" y2="560"/>
+<use href="#res" x="560" y="560"/>
+<text class="ts" x="542" y="548">R30 10k</text>
+<line class="w" x1="586" y1="560" x2="660" y2="560"/>
+<circle class="dot" cx="450" cy="625" r="3.2"/>
+<line class="w" x1="450" y1="625" x2="534" y2="625"/>
+<use href="#res" x="560" y="625"/>
+<text class="ts" x="542" y="648">R31 10k</text>
+<line class="w" x1="586" y1="625" x2="660" y2="625"/>
+<line class="w" x1="660" y1="536" x2="660" y2="625"/>
+<circle class="dot" cx="660" cy="560" r="3.2"/>
+<circle class="dot" cx="660" cy="590" r="3.2"/>
+<circle class="dot" cx="660" cy="625" r="3.2"/>
+<line class="w" x1="660" y1="590" x2="700" y2="590"/>
+<line class="w" x1="660" y1="536" x2="724" y2="536"/>
+<use href="#res" x="750" y="536"/>
+<text class="ts" x="732" y="526">R32 10k</text>
+<line class="w" x1="776" y1="536" x2="840" y2="536"/>
+<line class="w" x1="840" y1="536" x2="840" y2="610"/>
+<polygon points="700,560 700,660 790,610" class="symf"/>
+<text class="t" x="710" y="596">−</text><text class="t" x="710" y="640">+</text>
+<text class="tb" x="716" y="618">U1C</text>
+<text class="ts acc" x="714" y="682">RIGHT SUMMER</text>
+<line class="w" x1="700" y1="630" x2="690" y2="630"/>
+<line class="w" x1="690" y1="630" x2="690" y2="678"/>
+<g transform="translate(690,678)"><use href="#gnd"/></g>
+<line class="w" x1="790" y1="610" x2="900" y2="610"/>
+<circle class="dot" cx="840" cy="610" r="3.2"/>
+
+<!-- ========== K1 ========== -->
+<rect x="900" y="288" width="150" height="372" rx="5" class="box"/>
+<text class="tb" x="914" y="312">K1  G6K-2F-Y</text>
+<text class="ts" x="914" y="328">DPDT, 2 Form C</text>
+<text class="ts" x="914" y="342">gold bifurcated</text>
+<circle class="dot" cx="900" cy="360" r="3.5"/><text class="ts" x="906" y="364">NC</text>
+<circle class="dot" cx="900" cy="404" r="3.5"/><text class="ts" x="906" y="408">NO</text>
+<line class="w" x1="900" y1="330" x2="900" y2="360"/>
+<line class="w" x1="900" y1="380" x2="900" y2="404"/>
+<line class="sym" x1="1006" y1="382" x2="916" y2="360"/>
+<circle class="dot" cx="1006" cy="382" r="3.5"/>
+<line class="w" x1="1006" y1="382" x2="1050" y2="382"/>
+<text class="ts" x="960" y="400">COM</text>
+<line class="w" x1="1050" y1="382" x2="1100" y2="382"/>
+<text class="ts acc2" x="1054" y="374">HS_L</text>
+
+<circle class="dot" cx="900" cy="560" r="3.5"/><text class="ts" x="906" y="556">NC</text>
+<circle class="dot" cx="900" cy="604" r="3.5"/><text class="ts" x="906" y="608">NO</text>
+<line class="w" x1="900" y1="610" x2="900" y2="604"/>
+<line class="sym" x1="1006" y1="582" x2="916" y2="560"/>
+<circle class="dot" cx="1006" cy="582" r="3.5"/>
+<line class="w" x1="1006" y1="582" x2="1100" y2="582"/>
+<text class="ts acc2" x="1054" y="574">HS_R</text>
+<text class="ts okc" x="914" y="638">shown DE-ENERGISED</text>
+<text class="ts okc" x="914" y="652">= panel straight through</text>
+
+<!-- headset -->
+<rect x="1100" y="300" width="160" height="330" rx="5" class="box"/>
+<text class="tb" x="1114" y="326">HEADSET</text>
+<text class="ts" x="1114" y="348">J11 · 320 Ω</text>
+<text class="ts" x="1114" y="364">per earphone</text>
+<text class="ts mut" x="1114" y="392">HS_L</text>
+<text class="ts mut" x="1114" y="592">HS_R</text>
+<text class="ts mut" x="1114" y="480">sleeve = AC_GND</text>
+<text class="ts mut" x="1114" y="496">common return —</text>
+<text class="ts mut" x="1114" y="512">which is why a</text>
+<text class="ts mut" x="1114" y="528">bridge-tied output</text>
+<text class="ts mut" x="1114" y="544">is impossible here</text>
+
+<!-- ========== POWER ========== -->
+<rect x="40" y="760" width="300" height="168" rx="5" class="box"/>
+<text class="tb" x="58" y="786">U2  LM27762</text>
+<text class="ts" x="58" y="804">charge pump + LDO, ±1.5 to ±5 V</text>
+<text class="ts" x="58" y="820">±250 mA · 22 µVrms · WSON 3×2 mm</text>
+<text class="ts acc" x="58" y="842">VIN max 5.5 V → feed from 5V_NODE,</text>
+<text class="ts acc" x="58" y="858">NEVER from VBAT (5.0–7.3 V)</text>
+<text class="ts okc" x="58" y="882">+VA / −VA → U1 supply pins</text>
+<text class="ts okc" x="58" y="898">split rails = DC-coupled output,</text>
+<text class="ts okc" x="58" y="914">no transfer thump, LF phase intact</text>
+<line class="w" x1="340" y1="800" x2="380" y2="800"/>
+<text class="ts" x="344" y="792">PGOOD</text>
+<line class="w" x1="380" y1="800" x2="380" y2="878"/>
+<line class="w" x1="380" y1="878" x2="760" y2="878"/>
+
+<!-- AND gate + driver -->
+<path d="M 760 846 L 760 910 L 792 910 A 32 32 0 0 0 792 846 Z" class="symf"/>
+<text class="ts" x="764" y="884">&amp;</text>
+<line class="w" x1="720" y1="862" x2="760" y2="862"/>
+<text class="ts" x="614" y="858">GPIO_RLY_SPKR</text>
+<line class="w" x1="706" y1="862" x2="760" y2="862"/>
+<line class="w" x1="824" y1="878" x2="866" y2="878"/>
+<rect x="866" y="850" width="120" height="58" rx="4" class="box"/>
+<text class="ts" x="878" y="874">Q1 + flyback</text>
+<text class="ts" x="878" y="890">→ K1 coil</text>
+<line class="w" x1="986" y1="878" x2="1020" y2="878"/>
+<line class="w" x1="1020" y1="878" x2="1020" y2="672"/>
+<line class="w" x1="1020" y1="672" x2="975" y2="672"/>
+<line class="w" x1="975" y1="672" x2="975" y2="660"/>
+<text class="ts acc" x="620" y="936">PGOOD gates the coil in HARDWARE: a rail collapse drops the headset back to direct copper with no software in the loop</text>
+</svg>
+</div>
+
+<h3>Sheet 2 — transfer function and values</h3>
+<p class="lede" style="font-family:ui-monospace,monospace;font-size:14px">
+ANTI&nbsp;&nbsp;&nbsp;&nbsp;= HPOUTP − HPOUTN &nbsp;&nbsp;(unity, differential → single-ended)<br>
+HS_L&nbsp;&nbsp;&nbsp;&nbsp;= −( PANEL_L + ANTI ) &nbsp;&nbsp;comm at unity, ANC gain = R22 / R21
+</p>
+<table>
+<tr><th class="mono">Ref</th><th>Value</th><th>Why</th></tr>
+<tr><td class="mono">R10–R13</td><td>10 kΩ, 0.1%</td><td>Unity differential receiver. Matching sets the rejection of the DAC's common mode.</td></tr>
+<tr><td class="mono">R20, R22<br>R30, R32</td><td>10 kΩ</td><td><b>Set by the panel's unmeasured source impedance, not by noise.</b> At 10 kΩ a 10–600 Ω panel costs ≤0.5 dB of comm level; at 2.2 kΩ it costs 2.4 dB. Output noise either way is ~3.4 µV rms — inaudible.</td></tr>
+<tr><td class="mono">R21, R31</td><td>10 kΩ (5 kΩ for ANC ×2)</td><td>The only gain knob worth turning. Comm stays at unity deliberately — the pilot's volume control must keep meaning what it meant.</td></tr>
+<tr><td class="mono">C20, C30</td><td>2.2 µF</td><td>≈7.2 Hz corner into 10 kΩ. Blocks any DC the panel carries.</td></tr>
+<tr><td class="mono">U1</td><td>OPA1664 quad</td><td>3.3 nV/√Hz, ±30 mA drive. Three of four used; U1D spare.</td></tr>
+<tr><td class="mono">K1</td><td>G6K-2F-Y</td><td>Already in the design. Gold bifurcated crossbar — the right contact class for dry-circuit audio. With a summer it stops being an operating control and only ever moves on a fault, so the contacts barely cycle.</td></tr>
+</table>
+
+<h3>Sheet 2 — what the topology buys, and what it costs</h3>
+<ul>
+<li><b>ANC authority stops depending on the panel.</b> The panel drives a 10 kΩ input instead of a
+160 Ω earphone, so anti-noise at the ear goes from ~40.5 mV worst case to the DAC's full
+1.0 V rms — about <b>+28 dB</b>, and the panel's output impedance drops out of the answer entirely.</li>
+<li><b>The summing resistors are the codec protection.</b> With U1 unpowered the panel reaches
+HPOUT through the R20/R21 divider: 2.83 V pk × ½ = <b>1.41 V pk</b>, inside the ADAU1860's 2.1 V
+pin limit. That is <i>derived, not measured</i> — it needs a bench check with the rail pulled.</li>
+<li><b>The cost is headroom, and it is the open question.</b> The op-amp must now produce the panel's
+full level, coherently summed with the anti-noise — and DVNC's sustained tones have no crest factor
+to hide behind. A 2 V rms panel needs 4.24 V peak; ±5 V gives 4.4 V at the OPA1664's 2 kΩ swing
+spec, which is not margin at 320 Ω.</li>
+</ul>
+
+<div class="gap"><b>[gap] The measurement that gates this whole sheet:</b> the panel's
+<b>open-circuit</b> output voltage and its output impedance. Open-circuit, not loaded — this circuit
+presents 10 kΩ where the earphones present 160 Ω, so the panel will read higher into it. The voltage
+decides the rail (±5 V versus a 12 V boost); the impedance decided the authority argument above.
+Ten minutes on a real aircraft with a scope and a resistor.</div>
+
+<div class="gap"><b>[gap] Ruling needed:</b> a summer <i>mixes</i> AeroNode's voice with the radio
+rather than replacing it, so K1 stops being the changeover it was ruled to be and becomes a
+fail-passive bypass only. That is a behaviour change, not a component change.</div>
+
+<footer>
+Drawn 2026-09-14 by agent LIMA · <span class="mono">pb-aero/lima</span> ·
+sources: OPA1662/OPA1664 SBOS489, LM27762 SNVSAF7, ADXL354/ADXL355 Rev. A,
+IM73A135V01 Rev. 1.00, EVAL-ADAU1860 UG-2017 Rev. 0 — all read this session.
+Companion notes: <span class="mono">docs/anc-dvnc-summing-amp.md</span>,
+<span class="mono">docs/two-adau1860-channel-allocation.md</span>.
+Nothing on these sheets has been built or measured.
+</footer>
+
+</div>
+</body>
+</html>
