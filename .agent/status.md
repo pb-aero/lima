@@ -1038,3 +1038,57 @@ Carry these:
     operate/release time for the mute-before-transfer sequence.
 24. §19's item 18 is **still open and still decides whether any of this is worth building**: does the
     target headset already have its own ANR?
+
+### 2026-09-14 — two ADAU1860 EVBs, and a scope correction I should have asked for first
+
+Peter proposed 2 EVBs: one for DVNC (ADXL354 + IM73A135), one for ANC FF/FB + boom electret.
+I argued the split should go **by ear** (John's upstream map is 3 channels per cup, and cup B's slot 5
+is spare because the pilot has one mouth — that is where the accelerometer goes at no cost). **Then
+Peter corrected the frame: this is a 1 December technology PROOF on eval boards, not the product.**
+
+**Under that frame my objection was wrong and his split is right** — independent bring-up, independent
+A/B, one technology failing does not block the other. `docs/two-adau1860-channel-allocation.md` keeps
+both: §1–§2 the product, §6 the demonstrator. **SCAR: I spent a full research pass arguing product
+architecture against a question that was about a demo. One sentence of scope ("is this the proof or
+the product?") would have bought the whole thing.**
+
+Carry these — the parts work applies to BOTH frames and is the durable part:
+1. `[fetched]` **IM73A135 phase response is +12° at 75 Hz.** `[derived]` uncorrected that caps
+   cancellation at 2·sin(6°) = **−13.6 dB, right on prop blade-pass.** Calibratable (±1 dB tolerance,
+   specified curve) but **it must be calibrated** — otherwise December reads as "ANC doesn't work."
+   The number that matters is not on the front page.
+2. `[derived]` **The codec clips 3 dB BEFORE the mic does** — 0.98 V rms diff FS ÷ 12.6 mV/Pa =
+   131.8 dB SPL vs the mic's 135 dB AOP. **FF PGA stays at 0 dB.** 100 dB SPL = −31.8 dBFS, ample.
+3. `[fetched]` **ADXL354** 400 mV/g (±2 g), 20 µg/√Hz, LPF fixed 1500 Hz, 0.9 V offset so AC-couple it.
+   `[derived]` **1.73 g peak at 0 dB PGA, 0.11 g at 24 dB.** One axis, not three.
+   **The argument for the analog part over the digital ADXL355 is clock-domain coherence** — a tonal
+   canceller's reference↔anti-tone phase is fixed by construction on-chip, and is not if the CM5 reads
+   it over SPI. That is the reason, not bandwidth.
+4. `[fetched]` **EVB gotchas, both biting on day one:** I²C address is strappable on `S14`
+   (0x64/0x65/0x66/0x67) and **both boards ship 0x64 — one must change**; **`P30` carries a 32 Ω load
+   by default** against a 320 Ω aviation earphone, so it must come off before any bench level means
+   anything. MCLK external via `P3` with `P25` disabling the on-board oscillator. Single-ended vs
+   differential is a per-channel jumper pair (ADC0 `P104`/`P105`, ADC1 `P12`/`P14`, ADC2 `P13`/`P15`).
+5. `[fetched]` **`KIT_IM73A135V01_FLEX` — five IM73A135 pre-soldered on 25 × 4.5 mm flex boards + ZIF
+   adapter.** The bare part is 4 × 3 × 1.2 mm bottom-port and cannot be hand-wired; this deletes a
+   breakout fab cycle and a flex strip is the right form for threading a mic into an earcup.
+6. **Give each EVB its own earcup** (DVNC left, ANC right). Then **no summing amp is needed for
+   December at all**, and you A/B by covering one ear. The DVNC board's mic is an **in-cup error mic** —
+   without it you can hear DVNC but cannot measure it.
+7. **The CM5 comes off the December path entirely** — Lark Studio over USB. That also drops the 1.98 V
+   IOVDD level-shifting problem and the RP1 I2S work.
+
+### Open
+
+25. `[gap]` **WEEK ONE, BEFORE ORDERING: does Lark Studio ship ready-made ANC blocks (FF/FB filters,
+    filtered-x LMS) or must they be written?** `[fetched]` the drag-and-drop FastDSP designer and the
+    NC-optimised FastDSP instruction set are real. This one question decides comfortable vs heroic for
+    1 December and costs a day to answer. **Highest-information action available.**
+26. `[gap]` **Which earcup, and does it already have ANR?** §19 item 18, now urgent: two cancellers in
+    one cup perform worse than either alone and will read as the technology failing. Decide before ordering.
+27. `[gap]` The full ADAU1860 datasheet (with register map) appears to exist at
+    `mouser.com/datasheet/2/609/adau1860-3119960.pdf`. **Unreachable from this machine** — returns a
+    13.9 kB HTML bot-block, the same class of failure as the analog.com scar. `[measured]` Someone on a
+    normal browser should pull it; it would close a gap open since 2026-09-02.
+28. Phase 2 of the demo is the one that matters: **both functions on one chip, one cup** (FF + FB +
+    accelerometer = exactly 3 ADCs). No new hardware, and it proves coexistence — the product question.
