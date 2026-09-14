@@ -391,212 +391,176 @@ than either alone. The demo needs a <b>passive</b> cup, or one with its ANR defe
 before ordering anything.</div>
 
 
-<h2><span class="n">SHEET 2</span>Digital interconnect — two EVBs and the Pi</h2>
-<p class="lede"><b>Yes to both.</b> The second serial port is the right way to link the two boards:
-<code>P3</code> is Serial Audio Port 1, brought out on its own header on every EVB, and both sides of
-that link are 1.8 V — so it needs no level translation at all. The Pi then hangs off
-<code>P2</code> (Serial Audio Port 0) on each board, sharing one bit clock and one frame clock, with
-each board on its own RP1 data lane.</p>
+<h2><span class="n">SHEET 2</span>Digital interconnect — Pi → DVNC board → ANC board</h2>
+<p class="lede"><b>Yes, and this is the better topology.</b> It is also the architecture the ADAU1860
+was chosen for: <code>docs/h1-audio-board-codec-selection.md</code> §2 already records
+<i>"SPT0 to the CM5, SPT1 to the AD2428W, DSP in between — that is a real bridge."</i> Serial Port 0
+(<code>P2</code>) faces the Pi; Serial Port 1 (<code>P3</code>) faces the next board; the DSP in the
+middle routes between them. Only one board ever talks to the Pi.</p>
 
 <div class="sheet">
-<svg viewBox="0 0 1300 1000" xmlns="http://www.w3.org/2000/svg" role="img"
-     aria-label="Digital interconnect: two ADAU1860 eval boards linked on serial port 1, both to a Pi 5 on serial port 0 through level translators">
+<svg viewBox="0 0 1300 880" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Series interconnect: Pi feeds the DVNC eval board on serial port 0, which feeds the ANC eval board on serial port 1">
 
-<text class="tt acc" x="46" y="42">ONE CLOCK DOMAIN — EVB 1 masters BCLK and FSYNC; both chips share one 24.576 MHz MCLK</text>
+<text class="tt acc" x="46" y="40">SERIES — one board faces the Pi · one level-shift interface · lanes 1-3 never used</text>
 
-<!-- MCLK source -->
-<rect x="470" y="72" width="250" height="76" rx="4" class="box"/>
-<text class="tb" x="488" y="96">Y1  24.576 MHz</text>
-<text class="ts" x="488" y="112">one oscillator, both boards</text>
-<text class="ts acc" x="488" y="132">jumper P25 on BOTH to kill the on-board osc</text>
-<line class="w" x1="470" y1="110" x2="44" y2="110"/>
-<line class="w" x1="44" y1="110" x2="44" y2="700"/>
-<circle class="dot" cx="44" cy="300" r="3.2"/>
-<circle class="dot" cx="44" cy="700" r="3.2"/>
-<line class="w" x1="44" y1="300" x2="150" y2="300"/>
-<line class="w" x1="44" y1="700" x2="150" y2="700"/>
-<text class="ts okc" x="56" y="292">MCLK</text>
-<text class="ts okc" x="56" y="692">MCLK</text>
-
-<!-- EVB 1 -->
-<rect x="150" y="188" width="316" height="272" rx="5" class="box"/>
-<text class="tt" x="168" y="216">EVB 1  —  DVNC / left cup</text>
-<text class="ts acc" x="168" y="236">SPT0 = CLOCK MASTER for the whole bus</text>
-<text class="ts mut" x="168" y="262">P3 pin 10 ← ext MCLK</text>
-<text class="ts mut" x="168" y="340">P3  Serial Audio Port 1</text>
-<text class="ts mut" x="168" y="356">→ inter-board link</text>
-<text class="ts mut" x="168" y="416">P2  Serial Audio Port 0</text>
-<text class="ts mut" x="168" y="432">→ level shifter → Pi</text>
-
-<!-- EVB 1 P3 stubs -->
-<line class="w" x1="150" y1="380" x2="96" y2="380"/>
-<line class="w" x1="96" y1="380" x2="96" y2="620"/>
-<line class="wb" x1="92" y1="386" x2="100" y2="374"/>
-<text class="ts acc2" x="100" y="372">4</text>
-
-<!-- EVB 1 P2 stubs with net labels -->
-<line class="w" x1="466" y1="240" x2="540" y2="240"/><text class="ts" x="472" y="234">P2.8  BCLK_1V8  ▶</text>
-<line class="w" x1="466" y1="272" x2="540" y2="272"/><text class="ts" x="472" y="266">P2.6  FS_1V8  ▶</text>
-<line class="w" x1="466" y1="304" x2="540" y2="304"/><text class="ts" x="472" y="298">P2.2  SD1_OUT  ▶</text>
-<line class="w" x1="466" y1="336" x2="540" y2="336"/><text class="ts" x="472" y="330">P2.4  SD1_IN  ◀</text>
-
-<!-- EVB 2 -->
-<rect x="150" y="588" width="316" height="272" rx="5" class="box"/>
-<text class="tt" x="168" y="616">EVB 2  —  ANC / right cup</text>
-<text class="ts acc" x="168" y="636">SPT0 = SLAVE to EVB 1's BCLK / FSYNC</text>
-<text class="ts mut" x="168" y="662">P3 pin 10 ← ext MCLK</text>
-<text class="ts mut" x="168" y="740">P3  Serial Audio Port 1</text>
-<text class="ts mut" x="168" y="756">→ inter-board link</text>
-<text class="ts mut" x="168" y="816">P2  Serial Audio Port 0</text>
-<text class="ts mut" x="168" y="832">→ level shifter → Pi</text>
-
-<line class="w" x1="150" y1="620" x2="96" y2="620"/>
-<line class="wb" x1="92" y1="626" x2="100" y2="614"/>
-<text class="ts acc2" x="100" y="612">4</text>
-<text class="ts okc" x="48" y="472">SPT1</text>
-<text class="ts okc" x="48" y="488">  ↕</text>
-<text class="ts okc" x="48" y="504">SPT1</text>
-<text class="ts okc" x="48" y="528">1.8 V</text>
-<text class="ts okc" x="48" y="544">both</text>
-<text class="ts okc" x="48" y="560">ends</text>
-<text class="ts okc" x="48" y="584">no</text>
-<text class="ts okc" x="48" y="600">xlat</text>
-
-<line class="w" x1="466" y1="640" x2="540" y2="640"/><text class="ts" x="472" y="634">P2.8  BCLK_1V8  ◀</text>
-<line class="w" x1="466" y1="672" x2="540" y2="672"/><text class="ts" x="472" y="666">P2.6  FS_1V8  ◀</text>
-<line class="w" x1="466" y1="704" x2="540" y2="704"/><text class="ts" x="472" y="698">P2.2  SD2_OUT  ▶</text>
-<line class="w" x1="466" y1="736" x2="540" y2="736"/><text class="ts" x="472" y="730">P2.4  SD2_IN  ◀</text>
-
-<!-- level shifter -->
-<rect x="640" y="212" width="252" height="560" rx="5" class="box"/>
-<text class="tt acc" x="658" y="240">LEVEL TRANSLATION</text>
-<text class="ts" x="658" y="260">1.8 V ⇄ 3.3 V · direction-FIXED</text>
-<text class="ts" x="658" y="276">e.g. SN74AXC4T245, one per direction</text>
-
-<text class="tb" x="658" y="312">U10  A→B  1.8 V → 3.3 V</text>
-<text class="ts" x="658" y="332">BCLK_1V8&#160;&#160;&#160;→&#160;&#160;GPIO18  I2S1_SCLK</text>
-<text class="ts" x="658" y="350">FS_1V8&#160;&#160;&#160;&#160;&#160;&#160;→&#160;&#160;GPIO19  I2S1_WS</text>
-<text class="ts" x="658" y="368">SD1_OUT&#160;&#160;&#160;&#160;→&#160;&#160;GPIO20  I2S1_SDI0</text>
-<text class="ts" x="658" y="386">SD2_OUT&#160;&#160;&#160;&#160;→&#160;&#160;GPIO22  I2S1_SDI1</text>
-
-<text class="tb" x="658" y="428">U11  B→A  3.3 V → 1.8 V</text>
-<text class="ts" x="658" y="448">SD1_IN&#160;&#160;&#160;&#160;&#160;←&#160;&#160;GPIO21  I2S1_SDO0</text>
-<text class="ts" x="658" y="466">SD2_IN&#160;&#160;&#160;&#160;&#160;←&#160;&#160;GPIO23  I2S1_SDO1</text>
-
-<text class="ts acc" x="658" y="506">This direction is the one that MATTERS.</text>
-<text class="ts acc" x="658" y="524">ADAU1860 IOVDD is 1.1–1.98 V and the</text>
-<text class="ts acc" x="658" y="542">UG says the P2 / P3 headers ARE 1.8 V.</text>
-<text class="ts acc" x="658" y="560">A Pi pin straight onto SDATA_IN sits</text>
-<text class="ts acc" x="658" y="578">above the part's absolute maximum.</text>
-
-<text class="ts mut" x="658" y="616">Do NOT use an auto-direction part</text>
-<text class="ts mut" x="658" y="634">(TXB0104 / TXS0108) on BCLK or FS —</text>
-<text class="ts mut" x="658" y="652">they are unreliable driving a clock</text>
-<text class="ts mut" x="658" y="670">against a push-pull source.</text>
-
-<text class="ts mut" x="658" y="706">I²C, if the Pi also takes control,</text>
-<text class="ts mut" x="658" y="724">needs an open-drain translator</text>
-<text class="ts mut" x="658" y="742">instead — PCA9306 class, never these.</text>
-
-<line class="w" x1="540" y1="240" x2="640" y2="240"/>
-<line class="w" x1="540" y1="272" x2="640" y2="272"/>
-<line class="w" x1="540" y1="304" x2="640" y2="304"/>
-<line class="w" x1="540" y1="336" x2="640" y2="336"/>
-<line class="w" x1="540" y1="640" x2="640" y2="640"/>
-<line class="w" x1="540" y1="672" x2="640" y2="672"/>
-<line class="w" x1="540" y1="704" x2="640" y2="704"/>
-<line class="w" x1="540" y1="736" x2="640" y2="736"/>
-
-<!-- the shared clock, drawn because a net label hides it -->
-<circle class="dot" cx="566" cy="240" r="3.2"/>
-<line class="w" x1="566" y1="240" x2="566" y2="640"/>
-<circle class="dot" cx="566" cy="640" r="3.2"/>
-<circle class="dot" cx="596" cy="272" r="3.2"/>
-<line class="w" x1="596" y1="272" x2="596" y2="672"/>
-<circle class="dot" cx="596" cy="672" r="3.2"/>
-<text class="ts okc" x="474" y="498">ONE BCLK</text>
-<text class="ts okc" x="474" y="514">ONE FSYNC</text>
-<text class="ts okc" x="474" y="530">to both boards</text>
+<!-- Y1 -->
+<rect x="1000" y="52" width="258" height="96" rx="4" class="box"/>
+<text class="tb" x="1016" y="76">Y1  24.576 MHz</text>
+<text class="ts" x="1016" y="94">one oscillator, both chips</text>
+<text class="ts acc" x="1016" y="114">jumper P25 on BOTH boards</text>
+<text class="ts okc" x="1016" y="136">▶ MCLK_24M576</text>
 
 <!-- Pi -->
-<rect x="980" y="212" width="270" height="560" rx="5" class="box"/>
-<text class="tt" x="998" y="240">RASPBERRY PI 5 · RP1</text>
-<text class="ts acc" x="998" y="260">use rp1_i2s1 — the CLOCK CONSUMER</text>
-<text class="ts" x="998" y="288">GPIO18  I2S1_SCLK &#160;◀ in</text>
-<text class="ts" x="998" y="306">GPIO19  I2S1_WS &#160;&#160;&#160;◀ in</text>
-<text class="ts" x="998" y="330">GPIO20  I2S1_SDI0 ◀ EVB 1</text>
-<text class="ts" x="998" y="348">GPIO21  I2S1_SDO0 ▶ EVB 1</text>
-<text class="ts" x="998" y="372">GPIO22  I2S1_SDI1 ◀ EVB 2</text>
-<text class="ts" x="998" y="390">GPIO23  I2S1_SDO1 ▶ EVB 2</text>
-<text class="ts mut" x="998" y="416">GPIO24-27 = lanes 2, 3 — spare</text>
+<rect x="60" y="186" width="252" height="346" rx="5" class="box"/>
+<text class="tt" x="78" y="214">RASPBERRY PI 5 · RP1</text>
+<text class="ts acc" x="78" y="234">rp1_i2s1 — the CLOCK CONSUMER</text>
+<text class="ts okc" x="78" y="258">ONE lane. ONE card. The path</text>
+<text class="ts okc" x="78" y="276">already proven on this bench.</text>
+<text class="ts" x="78" y="306">GPIO18  I2S1_SCLK &#160;◀</text>
+<text class="ts" x="78" y="330">GPIO19  I2S1_WS &#160;&#160;&#160;◀</text>
+<text class="ts" x="78" y="354">GPIO20  I2S1_SDI0 ◀</text>
+<text class="ts" x="78" y="378">GPIO21  I2S1_SDO0 ▶</text>
+<text class="ts mut" x="78" y="408">GPIO22-27 — lanes 1-3,</text>
+<text class="ts mut" x="78" y="426">not used, not needed</text>
+<text class="ts acc" x="78" y="456">no 4-lane overlay, no</text>
+<text class="ts acc" x="78" y="474">dummy_duplex.ko, and the</text>
+<text class="ts acc" x="78" y="492">never-wired lanes stay a</text>
+<text class="ts acc" x="78" y="510">problem for another day</text>
 
-<text class="ts acc" x="998" y="456">rp1_i2s0 can NEVER be slaved —</text>
-<text class="ts acc" x="998" y="474">the DesignWare block picks master</text>
-<text class="ts acc" x="998" y="492">or slave from a synthesis parameter.</text>
-<text class="ts acc" x="998" y="510">Do not set dtparam=i2s=on: it puts</text>
-<text class="ts acc" x="998" y="528">the PRODUCER on the same pins.</text>
+<line class="w" x1="312" y1="250" x2="380" y2="250"/>
+<line class="w" x1="312" y1="290" x2="380" y2="290"/>
+<line class="w" x1="312" y1="330" x2="380" y2="330"/>
+<line class="w" x1="312" y1="370" x2="380" y2="370"/>
 
-<text class="ts okc" x="998" y="570">Each lane = ONE STEREO PAIR.</text>
-<text class="ts okc" x="998" y="588">RP1 will not lock to a narrow TDM</text>
-<text class="ts okc" x="998" y="606">frame sync, so SAI_MODE = STEREO</text>
-<text class="ts okc" x="998" y="624">and 2 ch per lane is the ceiling.</text>
+<!-- translator -->
+<rect x="380" y="206" width="222" height="306" rx="5" class="box"/>
+<text class="tt acc" x="396" y="234">LEVEL TRANSLATION</text>
+<text class="ts" x="396" y="252">1.8 V &lt;-&gt; 3.3 V, direction-FIXED</text>
+<text class="ts okc" x="396" y="274">FOUR signals — not six.</text>
+<text class="ts" x="396" y="300">BCLK&#160;&#160;&#160;&#160;&#160;1.8 → 3.3</text>
+<text class="ts" x="396" y="318">FSYNC&#160;&#160;&#160;&#160;1.8 → 3.3</text>
+<text class="ts" x="396" y="336">SDATA_OUT 1.8 → 3.3</text>
+<text class="ts" x="396" y="354">SDATA_IN&#160;&#160;3.3 → 1.8&#160;&#160;◀ the one</text>
+<text class="ts acc" x="396" y="378">ADAU1860 IOVDD is 1.1–1.98 V and</text>
+<text class="ts acc" x="396" y="396">UG-2017 says P2/P3 ARE 1.8 V. A Pi</text>
+<text class="ts acc" x="396" y="414">pin straight onto SDATA_IN sits over</text>
+<text class="ts acc" x="396" y="432">the part's absolute maximum.</text>
+<text class="ts mut" x="396" y="458">SN74AXC4T245 class. NOT TXB0104 /</text>
+<text class="ts mut" x="396" y="476">TXS0108 — auto-direction parts are</text>
+<text class="ts mut" x="396" y="494">unreliable driving a clock.</text>
 
-<text class="ts mut" x="998" y="664">Measured on this bench 2026-09-04:</text>
-<text class="ts mut" x="998" y="682">8 ch TX + 8 ch RX at once, 3.072 MHz</text>
-<text class="ts mut" x="998" y="700">BCLK, all four lanes proven toggling</text>
-<text class="ts mut" x="998" y="718">with a 2-channel negative control.</text>
-<text class="ts acc" x="998" y="748">Lanes 1-3 have never been wired to</text>
-<text class="ts acc" x="998" y="766">a device — that is the unproven step.</text>
+<line class="w" x1="602" y1="250" x2="668" y2="250"/>
+<line class="w" x1="602" y1="290" x2="668" y2="290"/>
+<line class="w" x1="602" y1="330" x2="668" y2="330"/>
+<line class="w" x1="602" y1="370" x2="668" y2="370"/>
 
-<line class="w" x1="892" y1="288" x2="980" y2="288"/>
-<line class="w" x1="892" y1="330" x2="980" y2="330"/>
-<line class="w" x1="892" y1="372" x2="980" y2="372"/>
-<line class="w" x1="892" y1="414" x2="980" y2="414"/>
+<!-- EVB1 head -->
+<rect x="668" y="186" width="300" height="290" rx="5" class="box"/>
+<text class="tt" x="686" y="214">EVB 1 — DVNC · HEAD</text>
+<text class="ts acc" x="686" y="234">SPT0 (P2) → Pi &#160;&#160;· MASTER</text>
+<text class="ts acc" x="686" y="252">SPT1 (P3) → EVB 2 · MASTER</text>
+<text class="ts mut" x="686" y="282">P2.8 BCLK&#160;&#160;&#160;&#160;&#160;▶</text>
+<text class="ts mut" x="686" y="300">P2.6 FSYNC&#160;&#160;&#160;&#160;▶</text>
+<text class="ts mut" x="686" y="318">P2.2 SDATA_OUT ▶</text>
+<text class="ts mut" x="686" y="336">P2.4 SDATA_IN&#160;&#160;◀</text>
+<text class="ts okc" x="686" y="368">The DSP is the router: takes the</text>
+<text class="ts okc" x="686" y="386">Pi's 2 channels down, keeps one,</text>
+<text class="ts okc" x="686" y="404">passes the rest to EVB 2 — and</text>
+<text class="ts okc" x="686" y="422">returns EVB 2's measurement up.</text>
+<text class="ts okc" x="686" y="452">P3.10 ◀ MCLK_24M576</text>
 
-<text class="ts mut" x="46" y="930">Net labels, not drawn wires, carry the P2 signals across to the translator — the two clock nets are drawn explicitly because they are the</text>
-<text class="ts mut" x="46" y="948">point of the sheet: EVB 2 CONSUMES the bit clock and frame sync that EVB 1 produces, and the Pi consumes them too.</text>
+<!-- SPT1 link -->
+<line class="w" x1="968" y1="400" x2="1060" y2="400"/>
+<line class="w" x1="1060" y1="400" x2="1060" y2="640"/>
+<line class="w" x1="1060" y1="640" x2="968" y2="640"/>
+<line class="wb" x1="1004" y1="406" x2="1016" y2="394"/>
+<text class="ts acc2" x="1004" y="388">4</text>
+<text class="tb okc" x="1078" y="480">SPT1 ↔ SPT1</text>
+<text class="ts okc" x="1078" y="500">P3 ↔ P3, 1.8 V both ends</text>
+<text class="ts okc" x="1078" y="518">NO translation needed</text>
+<text class="ts acc" x="1078" y="548">AND NO 2-CHANNEL CEILING:</text>
+<text class="ts acc" x="1078" y="566">there is no RP1 in this path,</text>
+<text class="ts acc" x="1078" y="584">so it can run real TDM —</text>
+<text class="ts acc" x="1078" y="602">up to 16 channels, narrow</text>
+<text class="ts acc" x="1078" y="620">frame sync, codec to codec.</text>
+
+<!-- EVB2 leaf -->
+<rect x="668" y="566" width="300" height="248" rx="5" class="box"/>
+<text class="tt" x="686" y="594">EVB 2 — ANC · LEAF</text>
+<text class="ts acc" x="686" y="614">SPT1 (P3) ← EVB 1 · SLAVE</text>
+<text class="ts mut" x="686" y="638">P2  Serial Audio Port 0</text>
+<text class="ts mut" x="686" y="656">UNUSED — never sees the Pi</text>
+<text class="ts okc" x="686" y="688">The ANC loop closes ENTIRELY</text>
+<text class="ts okc" x="686" y="706">on this chip: FF/FB mic → DSP</text>
+<text class="ts okc" x="686" y="724">→ its own DAC. The chain is</text>
+<text class="ts okc" x="686" y="742">NOT inside the control loop.</text>
+<text class="ts okc" x="686" y="772">P3.10 ◀ MCLK_24M576</text>
+
+<text class="ts mut" x="46" y="580">Net labels carry MCLK rather</text>
+<text class="ts mut" x="46" y="598">than drawn wires. Both chips</text>
+<text class="ts mut" x="46" y="616">MUST take the same MCLK: it is</text>
+<text class="ts mut" x="46" y="634">what keeps every converter on</text>
+<text class="ts mut" x="46" y="652">one timebase and the ASRCs out</text>
+<text class="ts mut" x="46" y="670">of the path — this repo already</text>
+<text class="ts mut" x="46" y="688">has the scar of an ASRC quietly</text>
+<text class="ts mut" x="46" y="706">fabricating samples.</text>
+<text class="ts acc" x="46" y="744">Series means EVB 1 is a single</text>
+<text class="ts acc" x="46" y="762">point of failure for EVB 2.</text>
+<text class="ts acc" x="46" y="780">Fine on a bench; state it.</text>
 </svg>
 </div>
 
-<h3>Sheet 2 — channel budget</h3>
+<h3>Sheet 2 — why series beats two boards on two lanes</h3>
 <table>
-<tr><th>Lane</th><th class="mono">Pi pins</th><th>Up (to Pi)</th><th>Down (from Pi)</th></tr>
-<tr><td>0</td><td class="mono">SDI0 / SDO0</td><td>EVB 1 — accelerometer reference + left error mic</td><td>EVB 1 — program / comm L</td></tr>
-<tr><td>1</td><td class="mono">SDI1 / SDO1</td><td>EVB 2 — feedback mic + boom voice</td><td>EVB 2 — program / comm R</td></tr>
-<tr><td>2, 3</td><td class="mono">SDI2-3 / SDO2-3</td><td colspan="2">Spare. Proven working on the Pi side, never connected to anything.</td></tr>
+<tr><th></th><th>Series — Pi → EVB 1 → EVB 2</th><th>Parallel — both boards on the Pi</th></tr>
+<tr><td>Level-shifted signals</td><td class="okc"><b>4</b></td><td>6</td></tr>
+<tr><td>RP1 lanes used</td><td class="okc"><b>1</b> — the path already working on this bench</td><td>2 — needs the 4-lane overlay and <code>dummy_duplex.ko</code></td></tr>
+<tr><td>Depends on lanes 1-3, which have never had a device on them</td><td class="okc"><b>No</b></td><td>Yes — that is the unproven step</td></tr>
+<tr><td>Pi-side channel ceiling</td><td>2 each way, shared by both boards</td><td>2 each way <i>per board</i> = 4</td></tr>
+<tr><td>Inter-board link</td><td class="okc">Codec to codec, real TDM, <b>no 2-channel ceiling</b></td><td>Same, if SPT1 is used for it</td></tr>
+<tr><td>Single point of failure</td><td>Yes — EVB 1</td><td>No</td></tr>
+<tr><td>DSP work</td><td>EVB 1 must route between its two ports</td><td>None</td></tr>
 </table>
-<p class="lede">Two channels per lane is a hard ceiling, not a configuration choice — and it is the one
-number that shapes everything else on this sheet. If a board needs a third channel up, the options in
-order of cost are: put it on <b>SPT1</b> and give that port its own lane; or <b>pack two 16-bit
-values into one 32-bit word</b>, which this repo already does for accelerometer data over the same
-link.</p>
+
+<p class="lede">The trade is <b>Pi-side channels against unproven hardware</b>, and for December that is an
+easy call: the series link uses the single-lane path that already runs on this bench, needs two fewer
+translated signals, and never touches the RP1 lanes nobody has ever hung a device on. The bottleneck
+it concentrates — 2 channels each way to the Pi — is exactly enough for the demo:
+<b>down</b> two program channels, <b>up</b> one error-mic measurement from each cup.</p>
+
+<p class="lede">And the ceiling only exists on the Pi link. <b>The inter-board link has no RP1 in it</b>,
+so <code>P3</code>↔<code>P3</code> can run the ADAU1860's real TDM — narrow frame sync, up to 16
+channels. If more has to reach the Pi later, the expansion route is the one this repo already used
+for accelerometer data: <b>pack two 16-bit values into each surviving 32-bit word</b>, which gets
+four channels through two slots.</p>
 
 <h3>Sheet 2 — what is measured, and what is not</h3>
 <table>
 <tr><th>Claim</th><th>Status</th><th class="mono">Source</th></tr>
-<tr><td>RP1 <code>i2s1</code> has four data lanes sharing one BCLK and WS; 8 ch TX + 8 ch RX concurrently at 3.072 MHz</td><td class="okc"><b>measured</b>, with a 2-channel negative control proving lanes 1-3 stay dead when unused</td><td class="mono">duplex/MULTILANE.md</td></tr>
-<tr><td>RP1's DesignWare block will not lock to the ADAU1860's narrow TDM frame sync — <code>SAI_MODE</code> must be STEREO</td><td class="okc"><b>measured</b> twice, on two kernels</td><td class="mono">RESULTS-2026-09-07.md</td></tr>
-<tr><td><code>rp1_i2s0</code> can never be talked into slave mode; a codec-master card must target <code>rp1_i2s1</code></td><td class="okc"><b>measured</b> from the driver source, and it fails as <code>-EINVAL</code> from <code>set_fmt</code>, not as anything resembling a wiring fault</td><td class="mono">NOTES.md §2</td></tr>
-<tr><td>Serial Audio Port 0 = <code>P2</code>, Port 1 = <code>P3</code>, both on 10-pin headers; external MCLK is <code>P3</code> pin 10</td><td class="okc"><b>fetched</b> UG-2017 Table 8</td><td class="mono">UG-2017</td></tr>
-<tr><td>Those headers run at 1.8 V</td><td class="okc"><b>fetched</b> — the UG states it outright</td><td class="mono">UG-2017</td></tr>
-<tr><td><b>Two devices sharing BCLK/WS across separate lanes</b></td><td class="gapink"><b>[gap] — never done.</b> Lanes 1-3 are proven on the Pi side and have never had a device on them. This is exactly the step being asked about.</td><td class="mono">duplex/MULTILANE.md</td></tr>
-<tr><td>SPT0 and SPT1 can be clocked from the same source on one chip</td><td class="gapink"><b>[gap]</b> — the abridged datasheet still carries no register map</td><td class="mono">—</td></tr>
+<tr><td>RP1's DesignWare block will not lock to the ADAU1860's narrow TDM frame sync — <code>SAI_MODE</code> must be STEREO, so 2 channels per lane is a ceiling <b>on the Pi link only</b></td><td class="okc"><b>measured</b> twice, on two kernels</td><td class="mono">RESULTS-2026-09-07.md</td></tr>
+<tr><td><code>rp1_i2s0</code> can never be talked into slave mode; a codec-master card must target <code>rp1_i2s1</code></td><td class="okc"><b>measured</b> from driver source — it fails as <code>-EINVAL</code> from <code>set_fmt</code>, not as anything resembling a wiring fault</td><td class="mono">NOTES.md §2</td></tr>
+<tr><td>Codec-as-master on GPIO18-21, single lane, real traffic</td><td class="okc"><b>measured</b> — this is the working bench</td><td class="mono">RESULTS-2026-09-02.md</td></tr>
+<tr><td>Serial Audio Port 0 = <code>P2</code>, Port 1 = <code>P3</code>, both on 10-pin headers; external MCLK is <code>P3</code> pin 10; both headers run at 1.8 V</td><td class="okc"><b>fetched</b> UG-2017 Table 8</td><td class="mono">UG-2017</td></tr>
+<tr><td>ADAU1860 serial ports run 8 kHz-768 kHz, I²S / LJ / RJ / up to TDM16, two 16-channel ports, master mode supported</td><td class="okc"><b>fetched</b></td><td class="mono">datasheet Rev. 0</td></tr>
+<tr><td><b>SPT0 and SPT1 both mastering, from one MCLK, on one chip</b></td><td class="gapink"><b>[gap]</b> — the abridged datasheet still carries no register map, so this cannot be confirmed from a desk. It is the one thing the whole topology rests on.</td><td class="mono">—</td></tr>
+<tr><td>Routing between the two serial ports in the DSP</td><td class="gapink"><b>[gap]</b> — almost certainly a stock Lark Studio block, but unconfirmed. Folds into the week-one question.</td><td class="mono">—</td></tr>
 </table>
 
 <div class="gap"><b>[gap] — and worth checking on the existing bench today.</b> None of the
-<code>linux/adau1860-pi5/</code> notes mention a level translator, and the EVB user guide states the
-serial audio headers are 1.8 V. If the Pi's <code>GPIO21</code> has been wired straight onto the
-codec's <code>SDATA_IN</code>, that pin has been driven at 3.3 V against an absolute maximum of
-roughly IOVDD + 0.3 V, with the ESD clamp carrying the difference. It works, which is the problem —
-this is the failure mode that shows up as a board that was fine for weeks. Confirm how that bench is
-actually wired before the December build depends on those two boards.</div>
+<code>linux/adau1860-pi5/</code> notes mention a level translator, and UG-2017 states the serial audio
+headers are 1.8 V. If the Pi's <code>GPIO21</code> has been wired straight onto the codec's
+<code>SDATA_IN</code>, that pin has been driven at 3.3 V against an absolute maximum of roughly
+IOVDD + 0.3 V, with the ESD clamp carrying the difference. It works, which is the problem — this is
+the failure mode that shows up as a board that was fine for weeks.</div>
 
 <div class="gap"><b>Two operational scars that will cost a day each if forgotten</b>, both measured on
-this bench: a failed framing attempt <b>poisons the boot</b> — the DMA channel is left stuck and
-every later attempt fails too, including a correct one — so allow <b>one framing attempt per boot</b>
-and reboot before drawing any conclusion. And <b>a level sampler cannot tell "dead" from "low duty
-cycle"</b>: the ADAU1860's frame sync is a narrow pulse, so <code>pinctrl</code> sampling reports
-<code>hi=0 lo=200</code> on a perfectly healthy WS line. Use <code>gpiomon</code>.</div>
+this bench: a failed framing attempt <b>poisons the boot</b> — the DMA channel is left stuck and every
+later attempt fails too, including a correct one — so allow <b>one framing attempt per boot</b> and
+reboot before drawing any conclusion. And <b>a level sampler cannot tell "dead" from "low duty
+cycle"</b>: the frame sync is a narrow pulse, so <code>pinctrl</code> sampling reports
+<code>hi=0 lo=200</code> on a perfectly healthy WS line. Use <code>gpiomon</code>. Also: do not set
+<code>dtparam=i2s=on</code> — it puts <code>rp1_i2s0</code>, the producer, on the same pins.</div>
 
 <h2><span class="n">SHEET 3</span>Aircraft-audio summing amplifier — product side</h2>
 <p class="lede">Product side, not needed for December. This is the circuit that puts AeroNode's mono DAC onto the
