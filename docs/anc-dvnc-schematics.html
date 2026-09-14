@@ -568,8 +568,8 @@ intercom's earphone lines. It is a <b>series insertion</b>: the panel becomes a 
 summing node is a virtual ground, and the earphone sees only the amplifier's output.</p>
 
 <div class="sheet">
-<svg viewBox="0 0 1300 960" xmlns="http://www.w3.org/2000/svg" role="img"
-     aria-label="Schematic of the aircraft audio summing amplifier with fail-passive relay bypass">
+<svg viewBox="0 0 1300 1290" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Schematic of the aircraft audio summing amplifier with fail-passive relay bypass, and the separate headset microphone path to the panel">
 
 <!-- ========== U1A differential receiver ========== -->
 <text class="tt acc" x="46" y="44">DIFFERENTIAL RECEIVER — replaces T1 / T2</text>
@@ -775,8 +775,95 @@ summing node is a virtual ground, and the earphone sees only the amplifier's out
 <line class="w" x1="1020" y1="672" x2="975" y2="672"/>
 <line class="w" x1="975" y1="672" x2="975" y2="660"/>
 <text class="ts acc" x="620" y="936">PGOOD gates the coil in HARDWARE: a rail collapse drops the headset back to direct copper with no software in the loop</text>
+
+<!-- ======== MIC PATH ======== -->
+<line class="w" x1="40" y1="968" x2="1260" y2="968"/>
+<text class="tt acc" x="46" y="1000">THE MIC PATH — separate, untouched, and §15 says it stays that way</text>
+
+<rect x="60" y="1024" width="196" height="100" rx="5" class="box"/>
+<text class="tb" x="76" y="1048">J10  HEADSET MIC</text>
+<text class="ts" x="76" y="1066">0.206″ plug</text>
+<text class="ts" x="76" y="1084">the pilot's boom</text>
+<text class="ts" x="76" y="1102">electret capsule</text>
+
+<line class="w" x1="256" y1="1074" x2="884" y2="1074"/>
+<text class="t acc2" x="286" y="1064">MIC_LINE</text>
+<text class="ts mut" x="286" y="1100">nothing of ours drives this node</text>
+
+<rect x="884" y="1024" width="230" height="100" rx="5" class="box"/>
+<text class="tb" x="900" y="1048">J12  → PANEL MIC IN</text>
+<text class="ts" x="900" y="1066">8–16 V bias, from the</text>
+<text class="ts" x="900" y="1084">panel's own bias resistor</text>
+<text class="ts acc" x="900" y="1108">this is the ONLY destination</text>
+
+<!-- K2 AC-only shunt -->
+<circle class="dot" cx="560" cy="1074" r="3.2"/>
+<line class="w" x1="560" y1="1074" x2="560" y2="1104"/>
+<g transform="translate(560,1120) rotate(90)"><use href="#cap"/></g>
+<text class="ts" x="452" y="1126">C1 100µ NP</text>
+<line class="w" x1="560" y1="1136" x2="560" y2="1160"/>
+<circle class="dot" cx="560" cy="1152" r="3.2"/>
+<rect x="522" y="1160" width="76" height="34" rx="3" class="box"/>
+<text class="ts" x="530" y="1181">K2 Form A</text>
+<line class="w" x1="560" y1="1194" x2="560" y2="1224"/>
+
+<line class="w" x1="560" y1="1152" x2="648" y2="1152"/>
+<g transform="translate(648,1180) rotate(90)"><use href="#res"/></g>
+<text class="ts" x="660" y="1184">R3 1M bleed</text>
+<line class="w" x1="648" y1="1152" x2="648" y2="1154"/>
+<line class="w" x1="648" y1="1206" x2="648" y2="1224"/>
+
+<line class="wb" x1="500" y1="1224" x2="700" y2="1224"/>
+<text class="ts acc" x="500" y="1248">AC_GND — the plug sleeve, NEVER AeroNode GND (§11.3)</text>
+
+<text class="ts okc" x="740" y="1152">The DC path is NEVER broken. The capsule keeps its</text>
+<text class="ts okc" x="740" y="1170">panel bias straight through the mute, so the panel's</text>
+<text class="ts okc" x="740" y="1188">mic node never steps and there is no thump on</text>
+<text class="ts okc" x="740" y="1206">either edge. −39 dB at 300 Hz into a 470 Ω source.</text>
+<text class="ts acc" x="740" y="1236">R4 — the old injection into MIC_LINE — stays DNP (§18).</text>
+<text class="ts acc" x="740" y="1254">With the summer, AeroNode reaches the ear directly.</text>
+
+<text class="ts mut" x="46" y="1160">AeroNode does NOT tap</text>
+<text class="ts mut" x="46" y="1178">this line. §15 deleted</text>
+<text class="ts mut" x="46" y="1196">that path — it gets its</text>
+<text class="ts mut" x="46" y="1214">own microphone instead,</text>
+<text class="ts mut" x="46" y="1232">so this stays the only</text>
+<text class="ts mut" x="46" y="1250">crossing-free net here.</text>
 </svg>
 </div>
+
+<h3>Sheet 3 — one microphone or two?</h3>
+<p class="lede">The pilot's electret already passes through to the panel, and that is a ruling, not an
+oversight: <b>§15, 2026-09-09 — "the headset electret runs headset → <code>MIC_LINE</code> → aircraft
+panel, and <code>K2</code> mutes it. That is its only destination."</b> AeroNode gets a separate
+microphone. The mic path was simply missing from this sheet, which drew only the earphone half of the
+connector; it is on the drawing now.</p>
+<p class="lede">So the question the thought actually raises is <b>whether one capsule should serve
+both</b>. That was §14's design and §15 deleted it. Putting it back costs four specific things:</p>
+<table>
+<tr><th>What tapping <code>MIC_LINE</code> for the codec costs</th><th>Why</th></tr>
+<tr><td><b>Blocking caps and an attenuator, both mandatory</b></td><td>8–16 V of panel bias against the ADAU1860's 2.1 V pin limit; and an aviation capsule gives ~600 mV at 114 dB SPL against a 0.49 V rms single-ended full scale. The EVB already fits 22 µF on <code>AINP2</code>/<code>AINN2</code>; a custom board must replicate them <i>and</i> attenuate.</td></tr>
+<tr><td><b>A second crossing of the isolation boundary</b></td><td>§14 needed a whole second transformer purely to keep "<code>T1</code> is the only crossing" true. §15 got it back.</td></tr>
+<tr><td><b>Open item 12 reopens</b></td><td><code>K2</code>'s shunt sits on <code>MIC_LINE</code>, so muting the radio mic also mutes the tap — <code>[derived]</code> by about <b>−39 dB</b>, not to silence. AeroNode would go quiet exactly when §19 wanted it listening: "hears the pilot when the headset electret is muted to the radio". Tapping upstream of the shunt needs series impedance in the mic path, which costs level on the safety-critical path.</td></tr>
+<tr><td><b>The tap must be provably receive-only</b></td><td>§18's hazard: anything that can drive <code>MIC_LINE</code> can trip the intercom VOX and be <i>transmitted</i> with PTT pressed. <code>R4</code> is DNP for exactly this reason and must stay so.</td></tr>
+</table>
+<p class="lede"><b>Recommendation: leave §15 alone — two microphones.</b> It is less wasteful than it
+sounds, because the two want different things. The panel's mic has to be a noise-cancelling gradient
+capsule that an aviation intercom expects; AeroNode's is for voice commands and speech-to-text and
+can be optimised separately — and per the channel-allocation note it need not even be analog, since
+voice has no latency constraint and the ADAU1860 has eight PDM microphone channels sitting unused.</p>
+
+<div class="gap"><b>Not electrical, and not yet in scope — but it belongs to this sheet.</b> §4's
+interlock: <b>if the mic is muted and the pilot presses PTT, they transmit silence and do not know
+it.</b> Software-asserted GPIO with no hardware watchdog was ruled the right call for a bench proof
+and explicitly the wrong one for an aircraft. Before this flies, either the mute releases on PTT or a
+hardware one-shot limits how long software can hold it.</div>
+
+<div class="gap"><b>[gap] Three numbers still close §4 properly</b>, and they need a real headset in a
+real panel: the DC voltage at the mic node with the capsule connected, the same with it disconnected,
+and the panel's bias resistor value. §10.2's AC-only shunt was designed specifically so the design
+does not <i>need</i> them — it never disturbs the capsule's operating point — but they are what would
+let anyone check that claim rather than take it.</div>
 
 <h3>Sheet 3 — transfer function and values</h3>
 <p class="lede" style="font-family:ui-monospace,monospace;font-size:14px">
