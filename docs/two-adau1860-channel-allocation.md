@@ -9,6 +9,25 @@ mics IM73A135 as well as the electret boom mic."*
 Provenance: `[fetched]` = read from the vendor PDF this session, spec quoted · `[derived]` =
 arithmetic shown · `[repo]` = in this repository · `[gap]` = not established.
 
+---
+
+> ## ⚠ SCOPE CORRECTION — 2026-09-14, same session
+>
+> Peter: *"This is not for the final implementation design this is to prove the technologies for
+> 1 December using evaluation boards."*
+>
+> **I wrote §1–§2 below against the product architecture. For a technology proof they are the wrong
+> objection.** For a demonstrator, separating DVNC and ANC onto two chips is *good* engineering —
+> independent bring-up, independent A/B, and one technology failing does not block the other.
+> **Peter's split is right for December.** §6 is the demonstrator plan and supersedes §1–§2's
+> recommendation for that purpose.
+>
+> §1–§2 are kept, not deleted: the product still has to be built, and the per-cup allocation is still
+> where it lands. **§3–§4 (the parts and the EVB) apply unchanged and are the part of this document
+> that matters most for December.**
+
+---
+
 **Two ADAU1860s is right, and it is the first thing that makes per-ear ANC possible at all** —
 `[repo]` §22 of `docs/h1-headset-mute-relay.md` recorded that the single-DAC part could never do it.
 The part count is correct. **The proposed split of work across the two parts is not**, and §1 is why.
@@ -209,3 +228,115 @@ long-standing gap in this repo, not a new one.
   `https://docs.ampnuts.ru/analog.com.datasheet/adau1860/related_data/eval-adau1860-ug-2017.pdf` `[fetched]`
 - In-repo: `docs/johns-bitmap.html`, `docs/h1-headset-mute-relay.md` §19/§22,
   `docs/h1-audio-board-codec-selection.md`, `docs/anc-dvnc-summing-amp.md`
+
+---
+
+## 6. The 1 December demonstrator — what to build, what to cut, what will bite
+
+**~11 weeks from 2026-09-14.** The objective is to *prove the technologies*, not to prototype the
+product. That changes the answer in §2, and it changes what is on the critical path.
+
+### 6.1 Split by function — but give each function its own EAR
+
+Peter's split works for a demonstrator, and it works much better with one addition: **put each chip's
+DAC in a different earcup.**
+
+| | **EVB 1 — DVNC, LEFT cup** | **EVB 2 — ANC, RIGHT cup** |
+|---|---|---|
+| ADC0 | **ADXL354**, one axis, single-ended — harmonic reference | IM73A135 **feed-forward**, outside the cup, differential |
+| ADC1 | **IM73A135** in-cup **error mic** — this is what *measures* the cancellation | IM73A135 **feedback / error**, inside the cup, differential |
+| ADC2 | spare — second axis, or an external reference mic | boom electret (§3), or leave for a second FF mic |
+| DAC | **left earcup** | **right earcup** |
+
+Three things this buys:
+
+1. **No summing amplifier is needed for December at all.** Each DAC owns its own transducer.
+   `docs/anc-dvnc-summing-amp.md` comes off the critical path entirely — it is a product problem,
+   and it is unblocked anyway by a measurement (the panel) that has nothing to do with this demo.
+2. **You can A/B each technology live, by ear, on one head** — cover one ear, then the other. That is
+   a *better* demonstration than either technology alone, and it is the one thing a room full of
+   people can evaluate without instruments.
+3. **The in-cup error mic on EVB 1 is not optional.** Without it you can hear DVNC but you cannot
+   *measure* it, and a demo that produces a number ("−N dB at blade-pass") is worth several that
+   produce an opinion. Peter's "analog mic" on the DVNC board is exactly this — the allocation above
+   just names its job.
+
+Clock drift between the two boards does not matter here (two acoustically independent cups, no shared
+signal) — but **wire `P3` from one board's clock to the other anyway** (§4.2). It is one jumper and
+one wire, and it removes a variable you would otherwise have to rule out at the worst moment.
+
+### 6.2 What comes OFF the December critical path
+
+Everything the demo does not need to prove:
+
+- **The CM5.** `[fetched]` Lark Studio drives the EVB over USB and the board self-powers from it.
+  Dropping the CM5 also drops the **1.98 V IOVDD vs 3.3 V level-shifting** problem
+  (`docs/h1-audio-board-codec-selection.md` §1), the RP1 four-lane I2S work, and all CM5 integration.
+- **The A2B link and the AD2428W.** Not needed to prove cancellation.
+- **The summing amplifier, `T1`/`T2`, `K1`/`K2` and the whole `audio-mute` sheet.**
+- **The panel measurement** (open item 21 of `status.md`). It gates the product, not the proof.
+
+That is a large amount of risk removed, and none of it weakens the demonstration.
+
+### 6.3 What CANNOT come off, ranked by schedule risk
+
+1. **The FastDSP implementation. This is the whole schedule.** `[fetched]` Lark Studio has a
+   drag-and-drop FastDSP schematic designer with filter coefficient generation and magnitude/phase
+   visualisation, the FastDSP core has a reduced instruction set explicitly optimised for noise
+   cancellation, and a Lark SDK ships with drivers in source. The tooling is real.
+   `[gap]` **What is not established is whether Lark Studio ships ready-made ANC blocks — FF/FB
+   filters, a filtered-x LMS — or whether they have to be written.** That single question decides
+   whether 1 December is comfortable or heroic.
+   **Do this in week one, before ordering anything: install Lark Studio and look.** It costs a day
+   and it is the highest-information action available.
+2. **Acoustics and mechanics.** Where the FF mic sits outside the cup and where the FB mic sits
+   inside is most of ANC performance, and it is a mechanical problem with fabrication lead time, not
+   an electrical one.
+3. **A repeatable noise source.** A canceller cannot be tuned against an aeroplane you fly
+   occasionally. A recorded cockpit played through a speaker on a bench, with a measurement mic in
+   the cup, is a prerequisite for tuning — not a nicety.
+4. **The analog front end.** Lowest risk of the four. Resistors, caps and a quiet rail.
+
+### 6.4 Procurement — and the one find that removes a lead-time item
+
+**Buy `KIT_IM73A135V01_FLEX`** (order code `KITIM73A135V01FLEXTOBO1`, at Mouser / Farnell / Newark).
+`[fetched]` **Five IM73A135V01 microphones pre-soldered on 25 × 4.5 mm flex boards, plus one adapter
+board, connected by a 6-position ZIF.**
+
+This matters more than it looks. The bare IM73A135 is a **4 × 3 × 1.2 mm** bottom-port MEMS part —
+it cannot be hand-wired, it needs a breakout PCB, and a breakout is a fab cycle you do not have spare
+weeks for. **The flex kit deletes that item**, and a 25 × 4.5 mm flex strip is the right physical form
+for threading a microphone into an earcup in the first place. Five mics is exactly the demo's need:
+2 feed-forward, 2 feedback/error, one spare.
+
+Also needed: **2 × EVAL-ADAU1860EBZ** (DigiKey `15848881`, Newark `18AM2474`), an **ADXL354** — which
+still needs a small breakout, so **fab it in week 1–2** — a quiet rail for the accelerometer and mics
+(`[repo]` §19's `3V3_MIC` argument applies to the demo too: ANC noise floor is set by the mic
+supply), and the earcup itself.
+
+`[gap]` **Which earcup?** This is §19's open item 18 in its most urgent form: **if the target headset
+already has its own ANR, the December demo will be two cancellers fighting in one cup**, which
+performs worse than either alone and will read as "the technology does not work." The demo needs a
+**passive** headset, or a cup with its ANR defeated, and that needs deciding before anything is
+ordered.
+
+### 6.5 Phase 2, if the schedule allows — and it is the phase that matters most
+
+The function split never tests the thing most likely to fail in the product: **DVNC and ANC sharing
+one DAC and one error mic in one cup.** So once each works alone:
+
+> **Move both onto one chip, one cup: ADC0 = FF mic, ADC1 = FB mic, ADC2 = ADXL354, DAC = that cup.**
+
+That is exactly §2's per-cup allocation, reached as the **last** demo step instead of the first. It
+costs no new hardware — it is a re-patch and a Lark Studio reload — and it converts the December
+demonstration from *"both technologies work"* into *"both technologies work together on the silicon
+we are going to ship."*
+
+### 6.6 Week-one checklist
+
+1. Install Lark Studio; answer §6.3's `[gap]` about ANC blocks. **Before ordering.**
+2. Decide the earcup, and whether it already has ANR (§6.4).
+3. Order 2 × EVAL-ADAU1860EBZ and `KIT_IM73A135V01_FLEX`.
+4. Fab an ADXL354 breakout with the AC-coupling caps and a quiet rail (§3).
+5. On arrival, **before anything else:** set `S14` on the second board to `0x65` (both ship `0x64`),
+   and **remove the 32 Ω load on `P30`** (§4).
