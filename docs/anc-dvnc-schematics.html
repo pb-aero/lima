@@ -905,6 +905,126 @@ Ten minutes on a real aircraft with a scope and a resistor.</div>
 rather than replacing it, so K1 stops being the changeover it was ruled to be and becomes a
 fail-passive bypass only. That is a behaviour change, not a component change.</div>
 
+<h3>Sheet 3 — how AeroNode's own voice mic would reach the panel</h3>
+<p class="lede"><b>Today it does not, and that is deliberate.</b> The only path that ever existed was
+<code>R4</code> — 10 kΩ off <code>T1</code>'s secondary into <code>MIC_LINE</code> — and §18 made it
+DNP. §11.2's <i>original</i> architecture was exactly this chain
+(<code>HPOUT → T1 → R4 → MIC_LINE →</code> panel), and §16 and §18 took it out on purpose. So the
+answer to "how does it reach the panel" is: it doesn't, by ruling. Building one back is four
+problems, not a resistor.</p>
+
+<div class="sheet">
+<svg viewBox="0 0 1300 470" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Option, not ruled: a transmit path from the ADAU1860 PDM output to the panel microphone input through a transformer and K2's changeover">
+<text class="tt acc" x="46" y="40">OPTION — NOT RULED, NOT DRAWN IN KiCAD. What a transmit path would take.</text>
+
+<rect x="50" y="112" width="196" height="96" rx="5" class="box"/>
+<text class="tb" x="66" y="136">ADAU1860</text>
+<text class="ts" x="66" y="154">P7.3 — MP23 / PDM0</text>
+<text class="ts acc" x="66" y="174">the 2nd output. The DAC</text>
+<text class="ts acc" x="66" y="192">is already fully committed.</text>
+
+<line class="w" x1="246" y1="160" x2="274" y2="160"/>
+<use href="#res" x="300" y="160"/>
+<text class="ts" x="282" y="148">R6 470R</text>
+<line class="w" x1="326" y1="160" x2="420" y2="160"/>
+<circle class="dot" cx="364" cy="160" r="3.2"/>
+<line class="w" x1="364" y1="160" x2="364" y2="192"/>
+<g transform="translate(364,208) rotate(90)"><use href="#cap"/></g>
+<line class="w" x1="364" y1="224" x2="364" y2="242"/>
+<g transform="translate(364,242)"><use href="#gnd"/></g>
+<text class="ts" x="374" y="212">C5 100n</text>
+<text class="ts mut" x="256" y="250">RC reconstruction.</text>
+<text class="ts mut" x="256" y="266">A comm channel is</text>
+<text class="ts mut" x="256" y="282">300 Hz–3.4 kHz, so</text>
+<text class="ts mut" x="256" y="298">PDM + RC is plenty.</text>
+<text class="ts mut" x="256" y="314">AeroNode GND side.</text>
+
+<rect x="420" y="120" width="140" height="80" rx="4" class="box"/>
+<text class="tb" x="436" y="146">T3  1:1</text>
+<text class="ts" x="436" y="164">SM-LP-5001</text>
+<text class="ts acc" x="436" y="188">2nd crossing</text>
+
+<line class="w" x1="560" y1="160" x2="600" y2="160"/>
+<use href="#res" x="628" y="160"/>
+<text class="ts" x="610" y="148">R7 10k</text>
+<line class="w" x1="654" y1="160" x2="830" y2="160"/>
+<circle class="dot" cx="700" cy="160" r="3.2"/>
+<line class="w" x1="700" y1="160" x2="700" y2="194"/>
+<g transform="translate(700,220) rotate(90)"><use href="#res"/></g>
+<line class="w" x1="700" y1="246" x2="700" y2="262"/>
+<text class="ts" x="710" y="224">R8 220R</text>
+<circle class="dot" cx="782" cy="160" r="3.2"/>
+<line class="w" x1="782" y1="160" x2="782" y2="194"/>
+<g transform="translate(782,220) rotate(90)"><use href="#res"/></g>
+<line class="w" x1="782" y1="246" x2="782" y2="262"/>
+<text class="ts" x="752" y="300">R9 = DC load</text>
+<text class="ts acc" x="752" y="318">§4, unmeasured</text>
+<line class="wb" x1="650" y1="262" x2="840" y2="262"/>
+<g transform="translate(745,262)"><use href="#gnd"/></g>
+<text class="ts" x="650" y="296">AC_GND</text>
+<text class="ts mut" x="560" y="370">R7/R8 = −33 dB, down to electret level.</text>
+<text class="ts mut" x="560" y="388">§11.1: drive the primary, attenuate on the secondary.</text>
+
+<line class="w" x1="830" y1="160" x2="830" y2="178"/>
+<line class="w" x1="830" y1="178" x2="878" y2="178"/>
+
+<rect x="878" y="118" width="152" height="184" rx="5" class="box"/>
+<text class="tb" x="892" y="142">K2a — Form C</text>
+<text class="ts" x="892" y="158">set 1, re-purposed</text>
+<circle class="dot" cx="878" cy="178" r="3.5"/><text class="ts" x="886" y="196">NO</text>
+<circle class="dot" cx="878" cy="252" r="3.5"/><text class="ts" x="886" y="248">NC</text>
+<line class="sym" x1="1006" y1="216" x2="894" y2="252"/>
+<circle class="dot" cx="1006" cy="216" r="3.5"/>
+<text class="ts" x="944" y="278">COM</text>
+<line class="w" x1="1006" y1="216" x2="1082" y2="216"/>
+
+<rect x="50" y="300" width="196" height="88" rx="5" class="box"/>
+<text class="tb" x="66" y="324">J10  pilot's capsule</text>
+<text class="ts" x="66" y="342">its own boom electret</text>
+<text class="ts okc" x="66" y="366">disconnected the instant</text>
+<text class="ts okc" x="66" y="382">AeroNode transmits</text>
+<line class="w" x1="246" y1="344" x2="856" y2="344"/>
+<line class="w" x1="856" y1="344" x2="856" y2="252"/>
+<line class="w" x1="856" y1="252" x2="878" y2="252"/>
+
+<rect x="1082" y="120" width="176" height="96" rx="5" class="box"/>
+<text class="tb" x="1098" y="144">J12 → PANEL</text>
+<text class="ts" x="1098" y="162">mic input, 8–16 V</text>
+<text class="ts" x="1098" y="180">bias on its own R</text>
+
+<text class="ts okc" x="1046" y="300">ONE Form C does both jobs, on</text>
+<text class="ts okc" x="1046" y="318">ONE coil: the pilot's capsule</text>
+<text class="ts okc" x="1046" y="336">CANNOT be live at the same</text>
+<text class="ts okc" x="1046" y="354">instant AeroNode transmits.</text>
+<text class="ts acc" x="1046" y="380">A hardware interlock, which is</text>
+<text class="ts acc" x="1046" y="398">exactly what §17 said not to</text>
+<text class="ts acc" x="1046" y="416">trust software to provide.</text>
+</svg>
+</div>
+
+<table>
+<tr><th>What it costs</th><th>Why</th></tr>
+<tr><td><b>A second analog output — the DAC cannot do it</b></td><td>The one DAC already carries comm plus anti-noise into the earcup. Transmit voice is a different signal at the same time. The realistic second output is the <b>PDM pair on <code>P7</code></b>, and a comm channel's 300 Hz–3.4 kHz makes PDM + RC entirely adequate — this is the one constraint that turns out to be cheap.</td></tr>
+<tr><td><b>K2's mute must stop being a shunt</b></td><td>You cannot inject onto a node that <code>K2</code> shorts. This repo already measured that geometry: <code>[derived]</code> ~100 µF against <code>R4</code>'s 10 kΩ is about <b>−66 dB</b>. A shunt mute and an injection cannot share <code>MIC_LINE</code>.</td></tr>
+<tr><td><b>…which reopens §4's DC thump</b></td><td>§10.2 closed §4 <i>by changing the circuit rather than measuring</i> — the AC-only shunt never disturbs the capsule's operating point. Go back to a series break and the panel's mic node steps on both edges again, so the NO leg needs <code>R9</code> to mimic the capsule's DC load. <b>The three numbers I called non-blocking last turn become blocking again.</b></td></tr>
+<tr><td><b>A second crossing of the isolation boundary</b></td><td><code>T3</code>. §11.3's "<code>T1</code> is the only crossing" goes, for the second time in this design's history.</td></tr>
+</table>
+
+<p class="lede"><b>One thing is already in your favour.</b> <code>[measured]</code> from the netlist,
+<code>K2</code> uses only <code>K2.11</code> and <code>K2.14</code> — <b>contact set 2 (21/22/24) is
+completely unused</b>, and a <code>G6K-2F-Y</code> is two Form C. So the relay to do this is already
+on the board. Better still, the drawing above needs only <i>one</i> changeover to do both jobs at
+once: <code>NC</code> the pilot's capsule, <code>NO</code> AeroNode's output, <code>COM</code> to the
+panel. One coil, mechanically interlocked, so the two can never be live together — which is the
+hardware property §17 explicitly warned must not be left to software.</p>
+
+<div class="gap"><b>Worth deciding before this is drawn for real:</b> is a DSP-cleaned transmit path
+actually wanted? It is a real feature — the cockpit is ~100 dB SPL and the ADAU1860 has a
+feed-forward noise reference sitting right there — but it puts AeroNode inside the transmit path of a
+safety-critical radio, and everything above is the price of that. §19's boom-voice channel was
+specified to <i>hear</i> the pilot, not to <i>speak</i> for them, and nothing since has changed that.</div>
+
 <footer>
 Drawn 2026-09-14 by agent LIMA · <span class="mono">pb-aero/lima</span> ·
 sources: OPA1662/OPA1664 SBOS489, LM27762 SNVSAF7, ADXL354/ADXL355 Rev. A,
