@@ -999,3 +999,42 @@ Headline findings worth carrying:
 **Also built earlier this session, before the redirect:** the `aeronode` Linux board target. Commit
 `51ea1d87b5` on branch `aeronode-board` in `~/ardupilot`; patch at `linux/ardupilot-cm5/`; results
 and the `include`-inherits-sensors scar at `linux/ardupilot-cm5/RESULTS-2026-09-10.md`.
+
+### 2026-09-14 — Peter: "what does the summing amp look like for the aircraft audio with dvnc/anc"
+
+Delivered `docs/anc-dvnc-summing-amp.md` (commit `f39e872`). **Both §25 and §26 of the mute-relay doc
+drew the op-amp SHARING `HS_L`** — that is why §26 retracted it (the output stage must swing the
+panel's full range on a rail we do not have). **A summing amp breaks the node instead of joining it:**
+panel becomes a 10 kΩ input, the summing node is a virtual ground, the earphone sees only the amp.
+
+Three op-amps of one quad: `U1A` diff receiver on `HPOUTP/N` (replaces `T1`/`T2`), `U1B`/`U1C`
+inverting summers, one per ear. `HS_L = -(PANEL_L + ANTI)`, comm at unity, ANC gain = `R22/R21`.
+
+Carry these:
+1. `[derived]` **+28 dB of ANC authority** (40.5 mV → 1.0 V rms at the ear) and it stops depending on
+   the panel's output impedance entirely — **open item 20 no longer gates authority**, only the rail.
+2. `[derived]` **10 kΩ, not 2.2 kΩ — set by the panel's UNMEASURED source impedance, not by noise.**
+   At 10 kΩ a 10–600 Ω panel costs ≤0.5 dB of comm level; at 2.2 kΩ it costs 2.4 dB. Noise is 3.4 µV.
+3. `[derived]` **The summing resistors are the codec protection `T1`/`T2` were being kept for** (§26):
+   amp unpowered, the panel reaches `HPOUT` through a 2:1 divider = 1.41 V pk, under the 2.1 V limit.
+   Needs a bench check with the rail pulled — this is exactly the class of claim this repo gets bitten by.
+4. `[fetched]` **LM27762 input ceiling is 5.5 V → feed from `5V_NODE`, never `VBAT` (5.0–7.3 V).**
+   Its **PGOOD** pin gates the `K1` coil, so a rail collapse fails to direct copper **in hardware**.
+5. `[fetched]` **OPA1664 swing is specified at RL = 2 kΩ only.** `[gap]` at 320 Ω, and that gap is what
+   decides ±5 V vs a 12 V boost.
+6. **Split rails beat a 12 V single rail for DVNC specifically** — DC-coupled output keeps LF *phase*
+   (ANC is a phase problem), and there is no output cap to thump on every bypass transfer.
+7. **"Just sum it in the DSP" is unavailable on node A.** `[fetched]` ADAU1860 has three ADCs; §19
+   spent all three. No fourth input exists to digitise the panel. In an H1 *cup* it is available and
+   is the right answer — comm is already PCM there.
+
+### Open
+
+21. `[gap]` **MEASURE THE PANEL — open-circuit voltage AND output impedance.** Now decides the rail as
+    well as authority. Open-circuit, not loaded: we present 10 kΩ where the earphones present 160 Ω.
+22. `[gap]` **Ruling: does `K1` stop being a §16 changeover and become a fail-passive bypass only?**
+    A summer mixes AeroNode's voice with the radio rather than replacing it. Behaviour change.
+23. `[gap]` OPA1664 swing at 320 Ω; ADAU1860 `HPOUT` common-mode vs op-amp input CM range; `G6K-2F-Y`
+    operate/release time for the mute-before-transfer sequence.
+24. §19's item 18 is **still open and still decides whether any of this is worth building**: does the
+    target headset already have its own ANR?
