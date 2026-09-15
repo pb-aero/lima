@@ -76,7 +76,8 @@ footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--rule);color:v
   <h1>ANC / DVNC schematics</h1>
   <p class="sub">Sheets 1 and 2 — 1 December technology demonstrator, two EVAL-ADAU1860EBZ: analog front end, then digital interconnect to a Pi 5.<br>
      Sheet 3 — aircraft-audio summing amplifier (product side).</p>
-  <p class="meta">Agent LIMA · pb-aero/lima · 2026-09-14 · drawn, not built · values derived, pin numbers marked where unverified</p>
+  <p class="meta">Agent LIMA · pb-aero/lima · rev 2026-09-15 · drawn, not built · values derived, pin numbers marked where unverified<br>
+     <b>Target headset assumed: BOSE A30, mono — 150 Ω, RTCA DO-214A.</b> Ruled by Peter 2026-09-15. Everything downstream of that assumption is marked.</p>
 </header>
 
 <p class="lede">Sheets 1 and 2 are the December bench build — the analog front end, then how the two
@@ -150,7 +151,7 @@ and a listener A/Bs either one by covering an ear.</p>
 
 <!-- ============================ BAND A : DVNC / LEFT CUP ============================ -->
 <rect x="40" y="86" width="1230" height="392" rx="5" class="band"/>
-<text class="tt acc" x="56" y="112">BAND A — EVB 1 · DVNC · LEFT EARCUP</text>
+<text class="tt acc" x="56" y="112">BAND A — EVB 1 · DVNC · INTO THE BOSE A30, NO SURGERY</text>
 
 <!-- rails -->
 <line class="wb" x1="70" y1="140" x2="530" y2="140"/>
@@ -228,26 +229,37 @@ and a listener A/Bs either one by covering an ear.</p>
 <text class="ts" x="616" y="284">P10  ADC1 ← MK1 error mic  (differential)</text>
 <text class="ts acc" x="632" y="299">strap P12 / P14 → pins 1-2</text>
 <text class="ts" x="616" y="324">P11  ADC2 — spare (2nd axis / ref mic)</text>
-<text class="ts" x="616" y="352">P30  DAC OUT → left earcup</text>
+<text class="ts" x="616" y="352">P30  DAC OUT → U3 → A30 input</text>
 <text class="ts acc" x="632" y="367">REMOVE the 32 Ω load fitted by default</text>
 <text class="ts" x="616" y="396">P3.10 ext MCLK · P25 jumper = osc OFF</text>
 <text class="ts" x="616" y="420">USB  P22 → host (board self-powers)</text>
-<line class="w" x1="930" y1="352" x2="982" y2="352"/>
+<line class="w" x1="930" y1="352" x2="950" y2="352"/>
 <line class="w" x1="700" y1="454" x2="700" y2="1112"/>
 <text class="ts mut" x="706" y="474">MCLK</text>
 
 <!-- LEFT EARCUP -->
-<rect x="982" y="296" width="252" height="116" rx="5" class="box"/>
-<text class="tb" x="1000" y="320">LEFT EARCUP  —  DVNC</text>
-<text class="ts" x="1000" y="340">anti-tone from EVB 1 DAC</text>
-<text class="ts" x="1000" y="356">MK1 error mic sits INSIDE this cup</text>
-<text class="ts acc" x="1000" y="378">passive cup — NOT an ANR headset</text>
-<text class="ts mut" x="1000" y="398">see gap note below</text>
-<line class="w" x1="982" y1="352" x2="982" y2="352"/>
+<rect x="950" y="300" width="152" height="112" rx="5" class="box"/>
+<text class="tb" x="964" y="324">U3  diff → SE</text>
+<text class="ts" x="964" y="342">+ level set</text>
+<text class="ts mut" x="964" y="364">HPOUT is differential,</text>
+<text class="ts mut" x="964" y="380">the A30 input is not</text>
+<text class="ts acc" x="964" y="402">[gap] ratio — see below</text>
+<line class="w" x1="1102" y1="352" x2="1124" y2="352"/>
+
+<rect x="1124" y="272" width="168" height="186" rx="5" class="box"/>
+<text class="tb" x="1138" y="302">BOSE A30</text>
+<text class="ts" x="1138" y="322">audio input, 150 Ω</text>
+<text class="ts" x="1138" y="338">MONO = BOTH cups</text>
+<text class="ts" x="1138" y="354">RTCA DO-214A</text>
+<text class="ts acc" x="1138" y="378">we inject as PROGRAM</text>
+<text class="ts acc" x="1138" y="394">AUDIO. Bose's amp</text>
+<text class="ts acc" x="1138" y="410">drives the transducer.</text>
+<text class="ts okc" x="1138" y="432">MK1 threads under</text>
+<text class="ts okc" x="1138" y="448">the ear seal</text>
 
 <!-- ============================ BAND B : ANC / RIGHT CUP ============================ -->
 <rect x="40" y="500" width="1230" height="536" rx="5" class="band"/>
-<text class="tt acc" x="56" y="526">BAND B — EVB 2 · ANC + VOICE · RIGHT EARCUP</text>
+<text class="tt acc" x="56" y="526">BAND B — EVB 2 · ANC + VOICE · PASSIVE TEST CUP (cannot be the A30)</text>
 
 <line class="wb" x1="70" y1="554" x2="530" y2="554"/>
 <text class="t okc" x="70" y="547">VA3V0</text>
@@ -320,7 +332,7 @@ and a listener A/Bs either one by covering an ear.</p>
 <text class="ts acc" x="632" y="707">P12 / P14 → pins 1-2</text>
 <text class="ts" x="616" y="732">P11  ADC2 ← MK4 boom (single-ended)</text>
 <text class="ts acc" x="632" y="747">P13 / P15 → pins 2-3</text>
-<text class="ts" x="616" y="776">P30  DAC OUT → right earcup</text>
+<text class="ts" x="616" y="776">P30  DAC OUT → passive test cup</text>
 <text class="ts acc" x="632" y="791">REMOVE the 32 Ω load</text>
 <text class="ts" x="616" y="820">P3.10 ext MCLK · P25 jumper = osc OFF</text>
 <text class="ts" x="616" y="844">USB  P22 → host</text>
@@ -331,11 +343,14 @@ and a listener A/Bs either one by covering an ear.</p>
 <line class="w" x1="700" y1="976" x2="700" y2="1112"/>
 
 <!-- RIGHT EARCUP -->
-<rect x="982" y="720" width="252" height="116" rx="5" class="box"/>
-<text class="tb" x="1000" y="744">RIGHT EARCUP  —  ANC</text>
-<text class="ts" x="1000" y="764">anti-noise from EVB 2 DAC</text>
-<text class="ts" x="1000" y="780">MK3 inside · MK2 outside</text>
-<text class="ts acc" x="1000" y="802">passive cup — NOT an ANR headset</text>
+<rect x="982" y="706" width="290" height="148" rx="5" class="box"/>
+<text class="tb" x="998" y="730">PASSIVE TEST CUP  —  ANC</text>
+<text class="ts" x="998" y="750">anti-noise from EVB 2 DAC, direct</text>
+<text class="ts" x="998" y="766">MK3 inside · MK2 outside</text>
+<text class="ts acc" x="998" y="790">CANNOT be the A30. A feedback loop</text>
+<text class="ts acc" x="998" y="806">will not close through Bose's own</text>
+<text class="ts acc" x="998" y="822">electronics — unknown latency.</text>
+<text class="ts okc" x="998" y="844">A printed cup, or an ANR set defeated.</text>
 
 <!-- ============================ BAND C : SHARED ============================ -->
 <rect x="40" y="1058" width="1230" height="196" rx="5" class="band"/>
@@ -375,6 +390,25 @@ and a listener A/Bs either one by covering an ear.</p>
 <text class="ts mut" x="880" y="1176">variable you would otherwise rule out at the worst moment.</text>
 </svg>
 </div>
+
+<h3>Sheet 1 — what assuming the A30 changed</h3>
+<table>
+<tr><th></th><th>Before</th><th>Now</th></tr>
+<tr><td>EVB 1 drives</td><td>a left earcup transducer</td><td class="okc"><b>the A30's audio input</b>, 150 Ω, via <code>U3</code> — no surgery, anti-tone arrives as program audio</td></tr>
+<tr><td>EVB 2 drives</td><td>a right earcup transducer</td><td><b>a passive test cup.</b> It cannot be the A30 — a feedback loop will not close through Bose's electronics</td></tr>
+<tr><td>MK1 error mic</td><td>control-loop sensor</td><td class="okc"><b>measurement</b> sensor, threaded under the A30's ear seal on its 25 × 4.5 mm flex</td></tr>
+<tr><td>Channels</td><td>left and right</td><td><b>mono — one channel to both cups.</b> Per-ear anything is foreclosed through the audio input</td></tr>
+<tr><td>New part</td><td>—</td><td><code>U3</code> differential → single-ended and level set. <code>HPOUT</code> is differential; the A30 input is not</td></tr>
+</table>
+<div class="gap"><b>[gap] <code>U3</code>'s attenuation ratio is the one number this sheet now waits on.</b>
+The A30 expects what a panel's phones output delivers into 150 Ω; the ADAU1860's <code>HPOUT</code> is
+about 1 V rms differential. Those may be close enough to need almost no attenuation, or not. The lead
+worth chasing first is the A30's quoted <b>96.5 ± 3.5 dBA SPL to RTCA DO-214A</b> — if DO-214A names
+the reference input level, this ratio and §18's long-open "level needs ears" gap both fall out
+without a bench.</div>
+<div class="gap"><b>Procurement item this creates:</b> a <b>passive cup</b> for EVB 2, or an ANR set
+with its ANR defeated. Until one exists, the ANC half of December cannot be demonstrated at all — only
+the DVNC half, which needs nothing but the A30 itself.</div>
 
 <h3>Sheet 1 — values and straps</h3>
 <table>
@@ -766,18 +800,21 @@ summing node is a virtual ground, and the earphone sees only the amplifier's out
 
 <!-- headset -->
 <rect x="1100" y="300" width="160" height="330" rx="5" class="box"/>
-<text class="tb" x="1114" y="326">HEADSET</text>
-<text class="ts" x="1114" y="348">J11 · 300 Ω each</text>
-<text class="ts" x="1114" y="364">150 Ω the PAIR</text>
-<text class="ts acc" x="1114" y="382">mono wiring puts</text>
-<text class="ts acc" x="1114" y="398">both on one channel</text>
-<text class="ts mut" x="1114" y="392">HS_L</text>
-<text class="ts mut" x="1114" y="592">HS_R</text>
-<text class="ts mut" x="1114" y="480">sleeve = AC_GND</text>
-<text class="ts mut" x="1114" y="496">common return —</text>
-<text class="ts mut" x="1114" y="512">which is why a</text>
-<text class="ts mut" x="1114" y="528">bridge-tied output</text>
-<text class="ts mut" x="1114" y="544">is impossible here</text>
+<text class="tb" x="1114" y="326">BOSE A30</text>
+<text class="ts" x="1114" y="348">audio input</text>
+<text class="ts" x="1114" y="366">150 Ω mono</text>
+<text class="ts" x="1114" y="384">300 Ω stereo</text>
+<text class="ts" x="1114" y="402">RTCA DO-214A</text>
+<text class="ts mut" x="1114" y="430">HS_L</text>
+<text class="ts acc" x="1114" y="458">MONO: both cups</text>
+<text class="ts acc" x="1114" y="474">sit in parallel on</text>
+<text class="ts acc" x="1114" y="490">ONE channel, so</text>
+<text class="ts acc" x="1114" y="506">U1C is NOT FITTED</text>
+<text class="ts acc" x="1114" y="522">and HS_R does not</text>
+<text class="ts acc" x="1114" y="538">exist.</text>
+<text class="ts mut" x="1114" y="566">HS_R — stereo</text>
+<text class="ts mut" x="1114" y="582">installs only</text>
+<text class="ts mut" x="1114" y="610">sleeve = AC_GND</text>
 
 <!-- ========== POWER ========== -->
 <rect x="40" y="760" width="300" height="168" rx="5" class="box"/>
@@ -936,11 +973,10 @@ headphone driver at +145 / −130 mA. The differential receiver is unaffected; i
 <code>[derived]</code> 1.0 V rms through 230 Ω of winding DCR gives <b>0.395 V rms into 150 Ω</b>, not
 the 0.582 V quoted into 320 Ω — <b>3.4 dB worse</b>, which makes §18's still-open "level needs ears"
 gap harder, not easier.<br><br>
-<b>What is still not established:</b> which headset. §19's open item 18 — does the target set already
-have its own ANR — has been open since 9 September and it decides this number too. The right move is
-not to pick 150 or 300 but to <b>design for 150 Ω and measure the actual set with a meter</b>: voice-coil
-DC resistance is typically ~80% of nominal impedance, so a 30-second check on the real headset settles
-it better than any datasheet.</div>
+<b>Resolved the same day:</b> the 150 Ω came from a <b>Bose A30 in mono</b>, and <code>[fetched]</code>
+the A30 is <b>150 Ω mono / 300 Ω stereo per RTCA DO-214A</b> — a standard, not one headset's quirk.
+<b>Ruled 2026-09-15: assume the A30.</b> These sheets are drawn to it. What that costs the ANC half is
+in the callout above sheet 1.</div>
 
 <h3>Sheet 3 — what the topology buys, and what it costs</h3>
 <ul>
