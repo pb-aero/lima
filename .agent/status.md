@@ -1133,3 +1133,50 @@ downstream arithmetic could have caught it — every derivation was right, on th
     datasheet will. This is now the single highest-value 30 seconds available on this design.
 30. `[gap]` OPA1622 swing and THD **into 150 Ω at ±5 V** not read — only the 32 Ω figures were
     surfaced. Confirm before committing the part.
+
+### 2026-09-15 (same day) — the 150 Ω is a Bose A30 in mono. That closes one gap and opens the real one.
+
+`[fetched]` **Bose A30: headphone input impedance 150 Ω mono / 300 Ω stereo, per RTCA DO-214A.**
+So Peter's number is right and **150/300 is the STANDARD**, not one headset's figure — which is why
+the DC H10-13.4 is *"150 ohms (300 each; wired in parallel)"* and the A20's 160/320 was the outlier.
+**§9's correction now rests on a specification rather than a datasheet.** Design to 150 Ω.
+
+**But an A30 has its own ANR — §19 item 18, open since 2026-09-09, half-answered.** The decisive fact
+is structural: **that 150 Ω is the input of BOSE'S ELECTRONICS, not a voice coil.** Their amplifier
+drives the transducer, downstream of their ANR. Anything we send arrives as *program audio*.
+
+`[derived]` **The split is latency tolerance, and it is the most useful thing to come out of this:**
+
+| | Broadband ANC (FF+FB) | DVNC (per-harmonic) |
+|---|---|---|
+| Must reach the transducer | **yes** — loop closes acoustically | no — injects as program audio |
+| Tolerates fixed unknown path latency | **no, fatal** | **yes** — calibrate phase once per harmonic |
+| Through an ANR headset's audio input | **not viable** | **viable** |
+| Against the headset's own ANR | **two cancellers fighting** (§19's warning) | **complementary** — cancels the tonal residue broadband ANR leaves |
+
+**A feedback loop through a black box of unspecified delay cannot be closed at all. A sustained
+harmonic only needs the path's phase at that one frequency.** That asymmetry is the whole finding.
+
+**So on an A30, DVNC is the demo and ANC is not — and that is the better product anyway.** Cancelling
+prop/engine orders on top of a good broadband ANR is differentiated; a second broadband canceller in
+a Bose earcup is the fight §19 named.
+
+**December, restated:**
+- **EVB 1 already IS the DVNC-on-an-ANR-headset demo** — accel reference + in-cup error mic + DAC —
+  and works through the A30's audio input with **no surgery**. The error mic is a *measurement*
+  sensor, which is what sheet 1 already calls it.
+- **EVB 2's FF/FB ANC cannot be proven on an A30.** Needs a passive or ANR-defeated cup. **Now a
+  procurement item, not a footnote.**
+- `[derived]` **Mono forecloses per-ear anything through the audio input** — 150 Ω *is* both cups in
+  parallel on one channel. On a mono intercom the second board buys nothing on the audio path, only
+  on the sensing side.
+
+### Open
+
+31. `[gap]` **Does RTCA DO-214A name the reference input level** for the A30's quoted
+    *96.5 ± 3.5 dBA SPL* sensitivity? If so, **§18's "level needs ears" gap closes analytically** —
+    the first route to that number that needs no aircraft. Open since 2026-09-09; chase this first.
+32. `[gap]` **Confirm the headset.** Still not ruled — Peter said "I'm not sure". Everything above is
+    conditional on it being an A30 or another ANR set. If it is passive, §19 item 18 resolves the
+    other way and EVB 2's ANC demo is back on.
+33. **Procure a passive or ANR-defeated cup** if the ANC half of December is to be proven at all.
