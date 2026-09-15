@@ -300,3 +300,58 @@ obvious first suggestion anyone makes about this circuit and it is unavailable.
 - LM27762, TI `SNVSAF7` — `https://www.ti.com/lit/ds/symlink/lm27762.pdf` `[fetched]`
 - In-repo: `docs/h1-headset-mute-relay.md` §16–§26, `docs/h1-audio-board-codec-selection.md`,
   `docs/johns-bitmap.html`, `kicad/aeronode-lite-audio/after/audio-mute.kicad_sch`
+
+---
+
+## 9. CORRECTION 2026-09-15 — the earphone load was wrong, and it changes the op-amp
+
+Peter asked whether the earphone is 150 Ω per speaker. **It is not — 150 Ω is the pair.** But he was
+right that the number in this document is wrong, and the correction goes the way that costs us.
+
+### What the sources actually say
+
+`[fetched]` **David Clark H10-13.4**, verbatim: *"Earphone Impedance: 150 ohms (300 each; wired in
+parallel)"*. `[fetched]` The general-aviation convention is the same everywhere: **300 Ω elements,
+paralleled to 150 Ω**, and aircraft audio amplifiers are specified to drive 300 Ω or higher.
+
+### Where my 320 Ω came from, and what I did wrong with it
+
+`[repo]` `docs/h1-headset-mute-relay.md` §2 quotes the Bose A20 brochure: *"Monaural mode: 160 ohms
+ON and OFF · Stereo mode: 320 ohms ON and OFF."* That is **the A20's input impedance in each mode**,
+and it is quoted correctly. What I did wrong was **generalise one ANR headset's input impedance into
+"the earphone load"** and then build every level, current and headroom number on it.
+
+**The A20 figure is also the best case.** A passive GA set is 300 Ω per element, and in **mono wiring
+— which most GA installations are — both elements sit in parallel on one channel.** So the worst case
+a summer actually drives is **150 Ω**, not 320 Ω. I designed to the favourable end of the range and
+then wrote it down as the value.
+
+### What changes
+
+| | At 320 Ω (as written) | At 150 Ω (worst case) |
+|---|---|---|
+| `[derived]` Peak current, 4.24 V pk | 13.3 mA | **28.3 mA** |
+| vs OPA1664's `[fetched]` ±30 mA drive | 44% — comfortable | **94% — no margin** |
+| `[derived]` `T1`/`T2` level, 1.0 V rms through 230 Ω DCR | 0.582 V rms | **0.395 V rms — 3.4 dB worse** |
+
+**§4's part choice does not survive.** The OPA1664 is a general-purpose audio op-amp and 28.3 mA is
+at its rating, where distortion rises. The output stage becomes a **headphone driver**:
+`[fetched]` **OPA1622**, +145 / −130 mA, ±2 V to ±18 V, designed for exactly this load. `U1A`, the
+differential receiver, is unaffected — it drives 10 kΩ and needs the low noise, not the current, so
+an OPA1662 half does it.
+
+**And it makes §18's open "level needs ears" gap worse**, not better, if `T1`/`T2` are kept: 3.4 dB
+less at the ear than §23 claimed.
+
+### The honest conclusion
+
+`[gap]` **Which headset is still not chosen** — §19's open item 18, open since 2026-09-09, decides
+this number as well as whether the ANC path is worth building at all. The right response is not to
+pick 150 or 300 but to **design for 150 Ω** and then **measure the real set**: voice-coil DC
+resistance runs about 80% of nominal impedance, so a meter across the plug settles in thirty seconds
+what no datasheet will.
+
+**The generalisable lesson, and it is the one this repo keeps relearning:** a number quoted correctly
+from a datasheet can still be the wrong number, because **the error is in the scope of the claim, not
+in the digits.** "320 Ω" was true of a Bose A20's input. It was never true of "the earphone load",
+and nothing in the arithmetic downstream could have caught that.

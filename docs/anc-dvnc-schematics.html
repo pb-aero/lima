@@ -735,8 +735,10 @@ summing node is a virtual ground, and the earphone sees only the amplifier's out
 <!-- headset -->
 <rect x="1100" y="300" width="160" height="330" rx="5" class="box"/>
 <text class="tb" x="1114" y="326">HEADSET</text>
-<text class="ts" x="1114" y="348">J11 · 320 Ω</text>
-<text class="ts" x="1114" y="364">per earphone</text>
+<text class="ts" x="1114" y="348">J11 · 300 Ω each</text>
+<text class="ts" x="1114" y="364">150 Ω the PAIR</text>
+<text class="ts acc" x="1114" y="382">mono wiring puts</text>
+<text class="ts acc" x="1114" y="398">both on one channel</text>
 <text class="ts mut" x="1114" y="392">HS_L</text>
 <text class="ts mut" x="1114" y="592">HS_R</text>
 <text class="ts mut" x="1114" y="480">sleeve = AC_GND</text>
@@ -877,27 +879,55 @@ HS_L&nbsp;&nbsp;&nbsp;&nbsp;= −( PANEL_L + ANTI ) &nbsp;&nbsp;comm at unity, A
 <tr><td class="mono">R20, R22<br>R30, R32</td><td>10 kΩ</td><td><b>Set by the panel's unmeasured source impedance, not by noise.</b> At 10 kΩ a 10–600 Ω panel costs ≤0.5 dB of comm level; at 2.2 kΩ it costs 2.4 dB. Output noise either way is ~3.4 µV rms — inaudible.</td></tr>
 <tr><td class="mono">R21, R31</td><td>10 kΩ (5 kΩ for ANC ×2)</td><td>The only gain knob worth turning. Comm stays at unity deliberately — the pilot's volume control must keep meaning what it meant.</td></tr>
 <tr><td class="mono">C20, C30</td><td>2.2 µF</td><td>≈7.2 Hz corner into 10 kΩ. Blocks any DC the panel carries.</td></tr>
-<tr><td class="mono">U1</td><td>OPA1664 quad</td><td>3.3 nV/√Hz, ±30 mA drive. Three of four used; U1D spare.</td></tr>
+<tr><td class="mono">U1B, U1C</td><td><b>OPA1622 dual</b> — a headphone driver, not a general-purpose op-amp</td><td><b>Corrected 2026-09-15.</b> <code>[derived]</code> 4.24 V pk into <b>150 Ω is 28.3 mA peak</b>, against the OPA1664's <code>[fetched]</code> ±30 mA drive — 94% of rating, no margin, and distortion rises as you approach it. The OPA1622 is <code>[fetched]</code> <b>+145 / −130 mA</b>, ±2 V to ±18 V, and is designed for exactly this load.</td></tr>
+<tr><td class="mono">U1A</td><td>OPA1662 dual (one half; other spare)</td><td>The differential receiver drives 10 kΩ, not the earphone — it needs the low noise, not the current. 3.3 nV/√Hz.</td></tr>
 <tr><td class="mono">K1</td><td>G6K-2F-Y</td><td>Already in the design. Gold bifurcated crossbar — the right contact class for dry-circuit audio. With a summer it stops being an operating control and only ever moves on a fault, so the contacts barely cycle.</td></tr>
 </table>
+
+<div class="gap" style="border-left-color:#b91c1c"><b>CORRECTION — 2026-09-15. The earphone load
+was wrong on these sheets, and it changes the op-amp.</b><br><br>
+Peter asked whether the earphone is 150 Ω per speaker. <b>150 Ω is the PAIR, not one speaker</b> —
+<code>[fetched]</code> David Clark H10-13.4, verbatim: <i>"Earphone Impedance: 150 ohms (300 each;
+wired in parallel)"</i>, and the general-aviation convention is 300 Ω elements paralleled to 150 Ω.
+<br><br>
+But <b>150 Ω is the number these sheets should have been using anyway</b>, and the reason I had 320 Ω
+is worth stating: it came from the <code>[fetched]</code> Bose A20 brochure — <i>"Monaural mode: 160
+ohms · Stereo mode: 320 ohms"</i> — which is the <b>A20's input impedance in each mode</b>, read
+correctly but generalised carelessly. A passive GA headset is 300 Ω per element, and in <b>mono
+wiring — which most GA installations are — both elements sit in parallel on one channel, so one
+summer drives 150 Ω.</b> I had designed to the best case and called it the case.<br><br>
+<b>What it changes:</b> <code>[derived]</code> 4.24 V pk into 150 Ω is <b>28.3 mA peak</b>, not the
+13.3 mA I quoted at 320 Ω. Against the OPA1664's <code>[fetched]</code> ±30 mA that is 94% of rating
+— so <b>the OPA1664 is the wrong part</b> and the output stage becomes an OPA1622, which is a
+headphone driver at +145 / −130 mA. The differential receiver is unaffected; it drives 10 kΩ.<br><br>
+<b>And if <code>T1</code>/<code>T2</code> are kept instead</b>, §23's level claim goes with it:
+<code>[derived]</code> 1.0 V rms through 230 Ω of winding DCR gives <b>0.395 V rms into 150 Ω</b>, not
+the 0.582 V quoted into 320 Ω — <b>3.4 dB worse</b>, which makes §18's still-open "level needs ears"
+gap harder, not easier.<br><br>
+<b>What is still not established:</b> which headset. §19's open item 18 — does the target set already
+have its own ANR — has been open since 9 September and it decides this number too. The right move is
+not to pick 150 or 300 but to <b>design for 150 Ω and measure the actual set with a meter</b>: voice-coil
+DC resistance is typically ~80% of nominal impedance, so a 30-second check on the real headset settles
+it better than any datasheet.</div>
 
 <h3>Sheet 3 — what the topology buys, and what it costs</h3>
 <ul>
 <li><b>ANC authority stops depending on the panel.</b> The panel drives a 10 kΩ input instead of a
-160 Ω earphone, so anti-noise at the ear goes from ~40.5 mV worst case to the DAC's full
+150–300 Ω earphone, so anti-noise at the ear goes from ~40.5 mV worst case to the DAC's full
 1.0 V rms — about <b>+28 dB</b>, and the panel's output impedance drops out of the answer entirely.</li>
 <li><b>The summing resistors are the codec protection.</b> With U1 unpowered the panel reaches
 HPOUT through the R20/R21 divider: 2.83 V pk × ½ = <b>1.41 V pk</b>, inside the ADAU1860's 2.1 V
 pin limit. That is <i>derived, not measured</i> — it needs a bench check with the rail pulled.</li>
 <li><b>The cost is headroom, and it is the open question.</b> The op-amp must now produce the panel's
 full level, coherently summed with the anti-noise — and DVNC's sustained tones have no crest factor
-to hide behind. A 2 V rms panel needs 4.24 V peak; ±5 V gives 4.4 V at the OPA1664's 2 kΩ swing
-spec, which is not margin at 320 Ω.</li>
+to hide behind. A 2 V rms panel needs 4.24 V peak; ±5 V gives 4.4 V at a 2 kΩ swing spec, which is
+not margin at 300 Ω and is less at 150 Ω. <b>The load, not the rail, is what moved here</b> — see the
+correction below.</li>
 </ul>
 
 <div class="gap"><b>[gap] The measurement that gates this whole sheet:</b> the panel's
 <b>open-circuit</b> output voltage and its output impedance. Open-circuit, not loaded — this circuit
-presents 10 kΩ where the earphones present 160 Ω, so the panel will read higher into it. The voltage
+presents 10 kΩ where the earphones present 150–300 Ω, so the panel will read higher into it. The voltage
 decides the rail (±5 V versus a 12 V boost); the impedance decided the authority argument above.
 Ten minutes on a real aircraft with a scope and a resistor.</div>
 
@@ -1027,7 +1057,7 @@ specified to <i>hear</i> the pilot, not to <i>speak</i> for them, and nothing si
 
 <footer>
 Drawn 2026-09-14 by agent LIMA · <span class="mono">pb-aero/lima</span> ·
-sources: OPA1662/OPA1664 SBOS489, LM27762 SNVSAF7, ADXL354/ADXL355 Rev. A,
+sources: OPA1662/OPA1664 SBOS489, OPA1622, LM27762 SNVSAF7, ADXL354/ADXL355 Rev. A,
 IM73A135V01 Rev. 1.00, EVAL-ADAU1860 UG-2017 Rev. 0 — all read this session.
 Companion notes: <span class="mono">docs/anc-dvnc-summing-amp.md</span>,
 <span class="mono">docs/two-adau1860-channel-allocation.md</span>.
