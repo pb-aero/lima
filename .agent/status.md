@@ -1092,3 +1092,44 @@ Carry these — the parts work applies to BOTH frames and is the durable part:
     normal browser should pull it; it would close a gap open since 2026-09-02.
 28. Phase 2 of the demo is the one that matters: **both functions on one chip, one cup** (FF + FB +
     accelerometer = exactly 3 ADCs). No new hardware, and it proves coexistence — the product question.
+
+### 2026-09-15 — Peter: "double check earphone speaker impedance is 150 ohm per speaker"
+
+**He was right that my number was wrong, and wrong about which number — and the correction costs us.**
+`[fetched]` David Clark H10-13.4, verbatim: *"Earphone Impedance: 150 ohms (300 each; wired in
+parallel)"*. So **150 Ω is the PAIR; 300 Ω is one element.** GA convention everywhere.
+
+**But 150 Ω is the number I should have been designing to anyway.** My 320 Ω came from the A20
+brochure in §2 — *"Monaural mode: 160 ohms · Stereo mode: 320 ohms"* — which is **the A20's input
+impedance**, quoted correctly and then **generalised into "the earphone load"**. And it is the best
+case: a passive set is 300 Ω per element, and **mono wiring — most GA installs — puts both in
+parallel on ONE channel = 150 Ω.**
+
+`[derived]` **What it breaks:**
+
+| | 320 Ω (as written) | 150 Ω (worst case) |
+|---|---|---|
+| Peak current at 4.24 V pk | 13.3 mA | **28.3 mA** |
+| vs OPA1664 `[fetched]` ±30 mA | 44% | **94% — no margin** |
+| `T1`/`T2` level, 1.0 V rms thru 230 Ω DCR | 0.582 V rms | **0.395 V rms, −3.4 dB** |
+
+1. **The OPA1664 is the WRONG PART.** Output stage becomes `[fetched]` **OPA1622** — +145/−130 mA,
+   ±2 to ±18 V, an actual headphone driver. `U1A` unaffected: it drives 10 kΩ, needs noise not current.
+2. **§18's "level needs ears" gap gets HARDER**, not easier, if the transformers are kept.
+3. Corrected in `docs/anc-dvnc-summing-amp.md` §9 (appended, not rewritten) and on sheet 3 of
+   `docs/anc-dvnc-schematics.html`.
+
+**SCAR — and it is a new shape, worth keeping.** A number quoted **correctly** from a datasheet can
+still be the wrong number, because **the error is in the SCOPE of the claim, not in the digits.**
+"320 Ω" was true of a Bose A20's input. It was never true of "the earphone load". No amount of
+downstream arithmetic could have caught it — every derivation was right, on the wrong premise.
+**When a fetched number becomes a design constant, record what it was true OF, not just what it was.**
+
+### Open
+
+29. `[gap]` **WHICH HEADSET.** §19 item 18 (open since 2026-09-09) now decides the earphone load as
+    well as whether the ANC path is worth building. **Design for 150 Ω and measure the real set** —
+    voice-coil DCR is ~80% of nominal, so a meter across the plug settles in thirty seconds what no
+    datasheet will. This is now the single highest-value 30 seconds available on this design.
+30. `[gap]` OPA1622 swing and THD **into 150 Ω at ±5 V** not read — only the 32 Ω figures were
+    surfaced. Confirm before committing the part.
