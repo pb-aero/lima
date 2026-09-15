@@ -1180,3 +1180,33 @@ a Bose earcup is the fight §19 named.
     conditional on it being an A30 or another ANR set. If it is passive, §19 item 18 resolves the
     other way and EVB 2's ANC demo is back on.
 33. **Procure a passive or ANR-defeated cup** if the ANC half of December is to be proven at all.
+
+### 2026-09-15 — RULED: assume the Bose A30 (mono). Sheets redrawn to it.
+
+Peter: *"let's assume the a30 for now and update the sheets."* `[ruled]`
+`docs/anc-dvnc-schematics.html` now carries the assumption in its header and is drawn to it.
+
+**What changed, and it is more than a number:**
+
+1. **EVB 1 no longer drives a transducer.** It goes through a new **`U3` (diff→SE + level set)** into
+   the **A30's audio input** — 150 Ω, mono, both cups in parallel, RTCA DO-214A. The anti-tone
+   arrives as **program audio**; Bose's amplifier drives the transducer. **No surgery on the headset.**
+2. **MK1 changes role** from control-loop sensor to **measurement** sensor, threaded under the ear
+   seal on the flex kit's 25 × 4.5 mm strip.
+3. **EVB 2 needs a PASSIVE TEST CUP** — a printed cup or an ANR set with its ANR defeated. The sheet
+   states why it cannot be the A30: a feedback loop will not close through Bose's electronics at an
+   unknown latency.
+4. **Mono forecloses per-ear anything through the audio input.** On sheet 3, `U1C` is **NOT FITTED**
+   and `HS_R` does not exist on a mono install.
+5. `U1` output stage remains the **OPA1622** from §9's correction — 150 Ω is the design load and it is
+   now a specification (DO-214A), not a guess.
+
+### Open
+
+34. `[gap]` **`U3`'s attenuation ratio — the one number sheet 1 now waits on.** `HPOUT` is ~1 V rms
+    differential; the A30 expects what a panel's phones output delivers into 150 Ω. **Chase the
+    DO-214A lead first (open 31):** if it names the reference level behind the A30's *96.5 ± 3.5 dBA
+    SPL*, this ratio **and** §18's "level needs ears" gap both fall out with no bench.
+35. **PROCUREMENT, now blocking half of December: a passive cup.** Until one exists only the **DVNC**
+    half can be demonstrated — which needs nothing but the A30 itself. **The DVNC half is therefore
+    the schedule-safe half, and it is also the differentiated one.** If time runs short, drop ANC.
