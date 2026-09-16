@@ -84,3 +84,24 @@ and anything less is silent data loss that looks like success.
 **Still unanswered from the start of the session:** what AeroVault is FOR. 128 MiB is a log or a key
 vault, not a recorder. Retention, write rate and power-loss behaviour were never specified, so the
 UBIFS choice is Peter's stated preference rather than a derived one.
+
+## 2026-09-16 (later) · The tuning attempt, and what it cost
+
+Peter asked me to tune the SPI clock up from the deliberately slow 1 MHz / 300 us. **The answer is
+no, and finding that out cost the W25N01GV eight of its eighteen spare blocks.**
+
+25 MHz corrupted a 16 MiB file outright. 10 MHz passed the checksum while the kernel quietly logged
+`mark PEB <n> as bad` nine times in a single pass — UBI retried elsewhere, the data came back
+correct, and the test went green while the part's spare pool drained. **I should have stopped after
+the 25 MHz failure instead of trying 10 MHz on the same wiring.** The bad-block count went 2 -> 10
+and does not come back.
+
+**If you are tempted to raise those numbers again: don't, not until the wiring is fixed.** And if
+you do, the acceptance test is 16 MiB through `ubi-verify.sh` with `bad_blocks` and
+`dmesg | grep "mark PEB"` checked either side — never the 64-page bisect, which passed at every
+single setting including both failing ones.
+
+Two process notes worth keeping. The Pi's copy of the overlay and the repo's drifted apart because I
+was `sed`-ing the remote file directly — edit the repo file and copy it over, always. And
+`timing-sweep.py` had a real instrument bug (erasing only the first block of a multi-block range)
+that produced a confident, plausible, completely wrong `128/256`.

@@ -1225,8 +1225,15 @@ socket). Carry these:
    flag reads clear while it is still programming and a status byte read in that window returns
    nonsense. Every correct driver trusts BUSY, so every correct driver proceeds early and loses the
    next operation — 33 of 64 pages, 2 of 8 erases. With the CS gap: 64 of 64, 8 of 8.
-2. **Cost: ~68 KiB/s.** 1 MHz plus a 300 us gap per chip-select. The part is rated 104 MHz. Tuning
-   both numbers back down is open item 29; the real fix is short leads with a ground return.
+2. **Cost: ~125 KiB/s ceiling, and TUNING IT UP IS CLOSED-NEGATIVE.** 25 MHz corrupts data;
+   10 MHz passes the checksum while silently marking good blocks bad — nine spares in one 16 MiB
+   pass. Only 1 MHz / 300 us survives a full write-verify with zero blocks consumed. **The tuning
+   attempt cost this part 8 of its 18 spare blocks, permanently** (bad blocks 2 -> 10). The fix for
+   throughput is wiring, not parameters.
+   **A 64-page write test is NOT an acceptance test** — it passed at every setting, including the
+   one that corrupts and the one that eats the spare pool. Acceptance = 16 MiB through
+   `ubi-verify.sh` PLUS `bad_blocks` and `dmesg | grep "mark PEB"` either side, because UBI exists
+   to hide exactly that failure.
 3. **The kernel already drives this part** — `jedec,spi-nand`, and `W25N01GV` is a string inside the
    shipped `spinand.ko.xz`. No driver work, just an overlay.
 4. **`aeronode.local` — address the Pi by name.** 192.168.0.99 at home, 192.168.10.34 at the work
