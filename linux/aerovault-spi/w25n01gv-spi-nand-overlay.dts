@@ -38,15 +38,17 @@
 			flash@0 {
 				compatible = "jedec,spi-nand";
 				reg = <0>;
-				/* Dropped 25 MHz -> 5 MHz 2026-09-16: UBI writes would not land on
-				   flying leads at 25 MHz while reads stayed perfect. Raise only by measurement. */
+				/* 1 MHz with a 300 us chip-select gap. This is SLOW ON PURPOSE.
+				   A 2026-09-16 tuning attempt raised it to 25 MHz/20 us and then
+				   10 MHz/100 us. Both passed a 64-page write test and BOTH FAILED
+				   the real one: 25 MHz corrupted a 16 MiB file, and 10 MHz passed
+				   the checksum while quietly marking good blocks bad — it consumed
+				   nine of the part's eighteen spare blocks in a single pass.
+				   Do not raise these numbers again without running the FULL
+				   ubi-verify AND checking /sys/class/mtd/mtd0/bad_blocks either
+				   side of it. The fix for throughput is wiring, not parameters. */
 				spi-max-frequency = <1000000>;
 
-				/* 2026-09-16: short back-to-back transactions on this board are
-				   unreliable — BUSY reads back as clear while the chip is still
-				   programming, so the driver proceeds and the next page is lost.
-				   Force a gap around every chip-select. 300 us is tPROG-sized,
-				   which is the gap measured to make 8 of 8 pages land. */
 				spi-cs-inactive-delay-ns = <300000>;
 				spi-cs-setup-delay-ns = <1000>;
 				spi-cs-hold-delay-ns = <1000>;
