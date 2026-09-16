@@ -62,6 +62,7 @@ def main():
     ap.add_argument("--bus", type=int, default=0)
     ap.add_argument("--dev", type=int, default=0)
     ap.add_argument("--speed", type=int, default=1_000_000, help="start slow; the part does 104 MHz")
+    ap.add_argument("--mode", type=int, default=0, choices=[0, 3], help="W25N supports mode 0 and mode 3")
     args = ap.parse_args()
 
     spi = spidev.SpiDev()
@@ -70,12 +71,13 @@ def main():
     except OSError as exc:
         print(f"FATAL: cannot open /dev/spidev{args.bus}.{args.dev}: {exc}", file=sys.stderr)
         return 2
-    spi.mode = 0
+    spi.mode = args.mode
     spi.bits_per_word = 8
     spi.max_speed_hz = args.speed
 
     jedec = read_jedec(spi)
     got = " ".join(f"{b:02X}" for b in jedec)
+    print(f"mode {args.mode}, {args.speed / 1000:g} kHz")
     print(f"JEDEC ID (9Fh + dummy) : {got}   expected EF AA 21")
 
     if jedec == JEDEC_EXPECT:
