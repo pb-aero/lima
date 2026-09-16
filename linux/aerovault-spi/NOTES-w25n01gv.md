@@ -6,6 +6,19 @@
 Peter: *"W25N01GVZEIG/IT click board is being used for now."* This file is the part knowledge and
 the plan. Nothing here has been run against the physical part yet — see Status at the bottom.
 
+## 0. Reaching the Pi — use the NAME, not the address `[measured]` 2026-09-16
+
+`aeronode` moves between sites and its address moves with it: **192.168.0.99 at the home office,
+192.168.10.34 at the work office.** An IP hard-coded in a script or a note is a stale instrument
+the next time the box moves — and it fails looking exactly like a dead Pi, which is how half an
+hour went missing on 2026-09-15.
+
+**`aeronode.local` resolves over mDNS at both sites** and is the address to use everywhere:
+`ssh node@aeronode.local`. Found this way in one command after the move
+(`ping aeronode.local` -> 192.168.10.34), hostname, model and kernel all matching the home-office
+box exactly. Uptime 23 min at the time of the check — it had simply been powered down and moved,
+not crashed.
+
 ## 1. It is NAND, not NOR — that is the whole story
 
 `[fetched]` 1 Gbit **SLC NAND**, 2.7–3.6 V single supply, 104 MHz max clock, 25 mA active.
@@ -30,7 +43,11 @@ SPINAND_INFO("W25N01GV", /* 3.3V */
 	     NAND_MEMORG(1, 2048, 64, 64, 1024, 20, 1, 1, 1),
 	     NAND_ECCREQ(1, 512),
 ```
-with `#define SPINAND_MFR_WINBOND 0xEF`. So the device tree compatible is **`jedec,spi-nand`**,
+with `#define SPINAND_MFR_WINBOND 0xEF`. **And it is already on the box** — `[measured]` the
+string `W25N01GV` is present inside the shipped
+`/lib/modules/6.18.39+rpt-rpi-2712/kernel/drivers/mtd/nand/spi/spinand.ko.xz`, alongside the `mtd`
+and `ubi` module trees. No kernel rebuild, no out-of-tree driver, nothing to compile.
+So the device tree compatible is **`jedec,spi-nand`**,
 the stack is spi-nand → MTD → (UBI → UBIFS), and `/dev/mtd0` appears with no code from us.
 Zephyr's own Flash 5 Click shield uses the same compatible at 104 MHz, which is a second source
 for the binding.
@@ -103,9 +120,9 @@ is no level shifting to do — unlike the ADAU1860 EVB work, where 1.98 V IOVDD 
   config/key vault, not a data recorder.
 - `[gap]` **How is the click board physically connected?** mikroBUS shield, or flying leads to the
   header? Nothing is wired yet as far as I know.
-- `[measured]` **`aeronode` (192.168.0.99) went unreachable at 2026-09-16 11:0x** — no ping, SSH
-  times out, three attempts. Everything in steps 1–3 is blocked on it coming back. That is a
-  measurement, not a guess, and it is not a pass.
+- ~~`aeronode` unreachable~~ **CLOSED 2026-09-16** — not a fault. The Pi had moved office with
+  Peter; it is up at `aeronode.local` (192.168.10.34) and the SPI0 loopback still passes
+  byte-clean to 50 MHz after the reboot. See §0: address the box by name from now on.
 
 ## Sources
 
