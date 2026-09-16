@@ -1231,7 +1231,13 @@ socket). Carry these:
    shipped `spinand.ko.xz`. No driver work, just an overlay.
 4. **`aeronode.local` — address the Pi by name.** 192.168.0.99 at home, 192.168.10.34 at the work
    office; mDNS resolves at both.
-5. **`/tmp` on that Pi is tmpfs.** Tools live in `~/aerovault/` now. I staged scripts in `/tmp` and
+5. **Reboot persistence is EVENT-driven, not timer-driven** (`ubi-persist.sh`). `modules-load.d`
+   loads `ubi` at ~2.4 s; the SPI NAND is not probed until ~3.5 s, so UBI fails with `-19` and the
+   Pi boots healthy-looking with no filesystem. A udev rule on `mtd0` starts `aerovault.service`
+   instead. **The attach then takes 44 s** (UBI scans 1024 blocks at 1 MHz with CS delays), so
+   `/mnt/aerovault` does not exist until ~48 s into boot — anything writing there must be
+   `After=aerovault.service` or it will write into the root fs under the mountpoint and lose it.
+6. **`/tmp` on that Pi is tmpfs.** Tools live in `~/aerovault/` now. I staged scripts in `/tmp` and
    then rebooted the box myself, which silently deleted them mid-task.
 
 **Four wrong calls this session, in order: signal integrity (dropped the clock for nothing), the
