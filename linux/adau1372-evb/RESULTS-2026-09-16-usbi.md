@@ -143,3 +143,75 @@ times), which `usbi_probe.py --spi` covers.
   Does **not** send `0xB8`/`0xB7`: their `wValue` polarity is undocumented, and the one hint in the
   protocol notes (`0xB9`: "1 = low") suggests `0xB8 = 1` may power the target *down*. Earlier runs
   sent it blindly; that was a mistake worth not repeating.
+
+---
+
+# USBi `J1` pinout and two free diagnostics — from AN-1006, 2026-09-16
+
+`[fetched]` AN-1006 Rev. A (*Using the EVAL-ADUSB2EBZ*), Figure 25 (header schematic), Figure 24
+(target power switch) and Table 1 (LEDs). Read off the schematic figure directly; analog.com PDFs
+time out from here, this came from the RS mirror `docs.rs-online.com/fcaa/0900766b81403140.pdf`.
+
+## `J1` on the USBi — 14-pin, odd row / even row
+
+| pin | signal | | pin | signal |
+|---|---|---|---|---|
+| 1 | CLATCH2 | | 2 | CLATCH3 |
+| **3** | **SCL** | | 4 | USB_CLK |
+| **5** | **SDA** | | 6 | +5 V (`5V0DD_USB`) |
+| 7 | COUT (SPI data from target) | | 8 | BRD_RESET |
+| 9 | CCLK (SPI clock) | | 10 | CDATA (SPI data to target) |
+| 11 | CLATCH1 | | **12** | **GND** |
+| 13 | CLATCH4 | | 14 | CLATCH5 |
+
+`[assumed]` The ribbon is labelled "2X5 CUSTOM RIBBON" on a 14-way body, so which ten conductors it
+carries is **not** established — do not assume pins 1-10. The signal names above are certain; the
+mapping onto the EVB's own header is not, because UG-807 is still unreadable from here.
+
+On the codec itself `[ds]`, the control pins are chip **pin 1 = SDA/MISO, pin 2 = SCL/SCLK**,
+pin 3 = ADDR1/MOSI, pin 4 = ADDR0/SS. Both lines need **2.0 kOhm pull-ups** in I2C mode — probing
+across those resistors is far easier than probing a 40-lead LFCSP.
+
+## Free diagnostic 1: the USBi's own LEDs (AN-1006 Table 1)
+
+| LED | colour | meaning |
+|---|---|---|
+| D1 | yellow | **I2C mode is active** |
+| D3 | yellow | **SPI mode is active** |
+| D4 | red | 5 V being supplied over the USB bus |
+| D2 | blue | GPIO LED, firmware debug |
+
+**If D3 is lit and D1 is not, every I2C probe so far was aimed at the wrong bus** and
+`usbi_probe.py --spi` is the correct run. This costs a glance and should have been the first thing
+checked.
+
+## Free diagnostic 2: SDA and SCL are gated by an analog switch
+
+Figure 25: SCL and SDA do not run straight to `J1`. Each passes through one half of an **ADG721BRMZ
+analog switch** (`U2-A`, `U2-B`), and **both halves are controlled by `USB_PWR_ON`** — the same
+signal that switches target power in Figure 24. ADI's stated reason: the switch "remains open,
+isolating the I2C bus from the target, until the boot process has completed", so the FX2 can boot
+from its own EEPROM without the target on the bus.
+
+**Consequence: if `USB_PWR_ON` is not asserted, SDA and SCL are physically disconnected from the
+ribbon and no I2C transaction can ever complete** — which is exactly the observed failure.
+
+### Correction to the previous entry
+
+The previous update guessed that `0xB8` with `wValue = 1` might be powering the target *down*, and
+removed it from the scripts on that basis. **That was wrong.** Figure 24 states `USB_PWR_ON` "turns
+on both transistors when driven high", and AN-1006 says the SigmaStudio default is device power
+**on**. So `0xB8 = 1` is almost certainly ON — and because the same signal closes the I2C isolation
+switch, asserting it is a prerequisite for talking to the target at all, not a hazard. Sending it
+was right; removing it was the mistake.
+
+`[measured, unexplained]` Run 5 sent no `0xB8` and its first I2C transaction still completed (status
+4), which suggests the switch is already closed after boot. That does not contradict the above, but
+it does mean the switch alone does not explain the fault.
+
+## Also worth knowing
+
+The USBi carries **its own EEPROM at I2C address 0x51** (AN-1006 warns against putting another
+EEPROM there). It sits on the FX2 side of the isolation switch, so it is not a valid control for
+whether the *target* bus is alive — the 0x50-0x57 sweep in `usbi_scan.py` should be read with that
+in mind.
