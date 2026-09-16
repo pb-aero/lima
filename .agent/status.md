@@ -1210,3 +1210,33 @@ Peter: *"let's assume the a30 for now and update the sheets."* `[ruled]`
 35. **PROCUREMENT, now blocking half of December: a passive cup.** Until one exists only the **DVNC**
     half can be demonstrated — which needs nothing but the A30 itself. **The DVNC half is therefore
     the schedule-safe half, and it is also the differentiated one.** If time runs short, drop ANC.
+
+### 2026-09-16 — AeroVault: W25N01GV SPI NAND up on the Pi 5, and the CS-delay fault
+
+Peter: *"simple aerovault test using pi 5 spi with mosi on gpio10"* -> spidev loopback -> the part ->
+UBIFS. **Done: UBIFS mounted at `/mnt/aerovault`, 106 MiB free, 16 MiB verified byte-identical
+across a cache drop and an unmount cycle.** Everything at `linux/aerovault-spi/`.
+
+The part is a **Flash 5 Click (MIKROE-3780)**, W25N01GV, wired direct to the Pi header (no mikroBUS
+socket). Carry these:
+
+1. **`spi-cs-inactive-delay-ns = <300000>` is what makes it work, and it is a WORKAROUND.**
+   Short SPI transactions back-to-back on flying leads are unreliable on this rig: the chip's BUSY
+   flag reads clear while it is still programming and a status byte read in that window returns
+   nonsense. Every correct driver trusts BUSY, so every correct driver proceeds early and loses the
+   next operation — 33 of 64 pages, 2 of 8 erases. With the CS gap: 64 of 64, 8 of 8.
+2. **Cost: ~68 KiB/s.** 1 MHz plus a 300 us gap per chip-select. The part is rated 104 MHz. Tuning
+   both numbers back down is open item 29; the real fix is short leads with a ground return.
+3. **The kernel already drives this part** — `jedec,spi-nand`, and `W25N01GV` is a string inside the
+   shipped `spinand.ko.xz`. No driver work, just an overlay.
+4. **`aeronode.local` — address the Pi by name.** 192.168.0.99 at home, 192.168.10.34 at the work
+   office; mDNS resolves at both.
+5. **`/tmp` on that Pi is tmpfs.** Tools live in `~/aerovault/` now. I staged scripts in `/tmp` and
+   then rebooted the box myself, which silently deleted them mid-task.
+
+**Four wrong calls this session, in order: signal integrity (dropped the clock for nothing), the
+3V3 rail (cost Peter a full re-wire), "first half of the burst lands" (the counts fit, the per-page
+check showed strict alternation), and "it is a kernel bug, the hardware is exonerated" (my own
+hand-written driver reproduced it).** Each was disproved by one cheap measurement that I could have
+run first. The pattern: I reasoned from a signature to a mechanism and reported the mechanism with
+more confidence than the evidence carried.

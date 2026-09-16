@@ -62,3 +62,25 @@ run as a flight controller now. What it still needs from Peter is accel and comp
 which needs the board physically rotated.
 
 Do not spend another minute on the "I2C IMU problem". It does not exist.
+
+## 2026-09-16 · AeroVault SPI NAND — what I would tell myself with no memory
+
+**It works.** `ssh node@aeronode.local`, `/mnt/aerovault` is UBIFS on a W25N01GV. If it is not
+mounted, UBI attach does not survive a reboot on its own — run `sudo bash ~/aerovault/ubi-setup.sh`,
+or better, make it persistent (`ubi.mtd=0` on the kernel cmdline plus an fstab line). **That
+persistence work is not done and is the obvious next task.**
+
+**Do not "clean up" the CS delays in the overlay.** `spi-cs-inactive-delay-ns = <300000>` looks like
+a mistake and is the only reason writes land. Read `linux/aerovault-spi/RESULTS-2026-09-16.md`
+before touching it. The whole diagnosis is in that file, including four hypotheses of mine that were
+wrong.
+
+**The half-made decision:** the rig is flying leads with no ground plane, and the CS delay is
+papering over that at a cost of ~68 KiB/s against a part rated for 104 MHz. Whether to tune the
+numbers back (open 29) or fix the copper (open 30) is Peter's call and has not been made. Do not
+raise the clock without re-running `~/aerovault/write-burst-bisect.sh` — 64 of 64 is the pass mark,
+and anything less is silent data loss that looks like success.
+
+**Still unanswered from the start of the session:** what AeroVault is FOR. 128 MiB is a log or a key
+vault, not a recorder. Retention, write rate and power-loss behaviour were never specified, so the
+UBIFS choice is Peter's stated preference rather than a derived one.
