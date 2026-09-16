@@ -108,3 +108,104 @@ two potential masters on one bus. **Unplug the USBi ribbon when the Pi owns the 
 `adau1372-pi5.dtbo` is built and installed in `/boot/firmware/overlays/`; `config.txt` is backed up.
 Loading it needs `dtoverlay=adau1860-duplex` (line 81) commented out, because that overlay holds the
 same `i2s_clk_consumer` block and GPIO18-21 — and that needs a reboot and Peter's say-so.
+
+---
+
+# Update — the mainline driver is running, and the ADC is still silent
+
+`[measured]` 2026-09-16, after swapping `dtoverlay=adau1860-duplex` for `dtoverlay=adau1372-pi5`
+and rebooting.
+
+## The driver had to be built — Raspberry Pi OS does not ship it
+
+`snd-soc-adau1372` is **not built in the Pi kernel**: nothing matching `adau1372` in
+`/lib/modules/6.18.39+rpt-rpi-2712/kernel/sound/soc/codecs/` (which has 54 codec modules, including
+adau1701/1977/7002 — but adau1372 and its `adau-utils` dependency are absent). The card sat in
+`deferred probe pending: asoc-simple-card: parse error`, which was simply the codec DAI never
+appearing.
+
+Built out-of-tree against the running kernel — headers were already installed:
+
+```
+cd ~/adau1372/build
+# adau1372.c adau1372-i2c.c adau1372.h adau-utils.c adau-utils.h from raspberrypi/linux rpi-6.18.y
+obj-m += snd-soc-adau1372-oot.o
+snd-soc-adau1372-oot-objs := adau1372.o adau1372-i2c.o adau-utils.o
+make -C /lib/modules/$(uname -r)/build M=$PWD modules
+sudo cp snd-soc-adau1372-oot.ko /lib/modules/$(uname -r)/extra/ && sudo depmod -a
+sudo modprobe snd-soc-adau1372-oot
+sudo modprobe -r snd_soc_simple_card && sudo modprobe snd_soc_simple_card   # kick the deferred probe
+```
+
+Result: driver bound (`/sys/bus/i2c/devices/1-003c/driver -> adau1372`) and
+**`card 2: adau1372 [adau1372], device 0: 1f000a4000.i2s-adau1372`** with all 50 mainline ALSA
+controls.
+
+## RP1 DOES lock to this codec's TDM4 frame
+
+`arecord -D hw:2,0 -f S32_LE -c 4 -r 48000` negotiated **channels 4, exact rate 48000**, and streamed
+8 seconds with no XRUN or EIO. **This settles open question 5 of CONFIG-PLAN in the affirmative and
+does not repeat the 2026-09-07 ADAU1860 failure.** The difference is the one predicted: the ADAU1372
+runs TDM with a 50%-duty LRCLK (`LR_MODE = 0`) when the DAI format is `i2s`, and RP1's DesignWare
+block locks to that where it would not lock to the ADAU1860's narrow frame sync.
+
+`[gap]` Which ADC lands in which slot is still unverified — with all channels at zero there is
+nothing to identify. That test waits on signal.
+
+## The digital path is complete, by the driver's own account
+
+DAPM widget states sampled **during** an active capture (sampling them afterwards shows everything
+`Off`, which was a broken measurement on the first attempt):
+
+```
+AIN0: On                      Output ASRC Supply: On
+PGA0: On                      Output ASRC0 Decimator: On
+ADC0: On                      Output ASRC0 Mux: On
+ADC0 Filter: On               Serial Output 0 Capture Mux: On
+Decimator0 Mux: On            Capture: On  in 4 out 1
+```
+
+Every stage of the capture chain is powered, and the capture still returns **0 nonzero samples out of
+384000 frames on all four channels**.
+
+## Conclusion: the fault is in the analog front end, and it is not software
+
+Stacking the evidence:
+
+| Subsystem | Status | Proof |
+|---|---|---|
+| Control port | works | 6/7 reset values; write/readback under clock gating |
+| Oscillator | running | writes stick only with MCLK enabled |
+| Clock generation | works | BCLK/LRCLK scatter 39/41 where they were stuck low |
+| Data pins, both directions | works | serial-in -> serial-out loopback at −0.5 dBFS |
+| Serial port, framing, TDM4 | works | 4 ch @ 48 kHz negotiated, 8 s clean |
+| Digital routing | works | driver's own DAPM reports the whole chain On |
+| **ADC output** | **exact zeros** | 384000 frames, four channels, incl. PGA at +35.25 dB |
+
+A converting ADC with a floating input and +35 dB of gain cannot produce mathematically exact zeros.
+Every hypothesis that blamed the register sequence is now dead — the mainline driver's own
+initialisation reproduces it exactly.
+
+**`[assumed]` What remains is the analog supply: AVDD absent, or an EVB supply link unfitted.** It
+explains the clean split — every digital function perfect, the analog-to-digital path producing
+literally nothing — and nothing else on the list does.
+
+Two ways to settle it, both needing hands on the bench:
+
+1. **Meter AVDD at the codec** (datasheet: AVDD pin 10, 1.8 V to 3.3 V), and check the EVB's supply
+   selection links.
+2. **Play to the DAC and listen on the EVB headphone output.** The DACs share AVDD with the ADCs, so
+   audible output would clear the analog supply and send the search back to the input stage.
+
+## Control names — correction to setup-inputs.sh
+
+Measured against the live card: the mux controls are **`Output ASRC0 Mux`**, not
+`Output ASRC0 Capture Mux`. `Serial Output 0 Capture Mux` and `Decimator 0+1 Capture Mux` were right.
+Fixed in the script.
+
+`[own-goal]` The control dump in this session first printed names like `ADC +3 Bias` and
+`PGA  Capture Switch`, which looked like missing controls. That was `tr -d "\x27"` — `tr` has no hex
+escape, so it deleted literal `\`, `x`, `2` and `7` characters from the output. The instrument was
+wrong, not the card. Same class of error as the `find /proc/device-tree` miss earlier in the session:
+`/proc/device-tree` is a symlink and `find` does not follow it, so the codec node appeared absent
+when it was present all along.

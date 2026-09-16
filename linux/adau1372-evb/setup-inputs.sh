@@ -36,7 +36,7 @@ s 'ADC 2+3 High-Pass-Filter' '1 Hz'
 s 'Decimator 0+1 Capture Mux' 'ADC'
 s 'Decimator 2+3 Capture Mux' 'ADC'
 for n in 0 1 2 3; do
-  s "Output ASRC$n Capture Mux" "Decimator$n"
+  s "Output ASRC$n Mux" "Decimator$n"
   s "Serial Output $n Capture Mux" "Output ASRC$n"
 done
 
