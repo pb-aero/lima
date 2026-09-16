@@ -1,5 +1,5 @@
 #!/bin/bash
-# AeroVault: verify a mounted UBIFS end to end. Run with sudo. Logs to /tmp/ubi-verify.log.
+# AeroVault: verify a mounted UBIFS end to end. Run with sudo. Logs to /home/node/aerovault/ubi-verify.log.
 #
 #   sudo bash ubi-verify.sh
 #
@@ -7,7 +7,7 @@
 # and REMOUNTS and checksums again — because a checksum that never left the page cache proves
 # nothing about the flash. Removes the test file at the end. Does not touch anything else.
 set -u
-exec &> >(tee /tmp/ubi-verify.log)
+exec &> >(tee /home/node/aerovault/ubi-verify.log)
 
 MNT=/mnt/aerovault
 VOL=aerovault
