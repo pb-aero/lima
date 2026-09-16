@@ -41,6 +41,15 @@
 				/* Dropped 25 MHz -> 5 MHz 2026-09-16: UBI writes would not land on
 				   flying leads at 25 MHz while reads stayed perfect. Raise only by measurement. */
 				spi-max-frequency = <1000000>;
+
+				/* 2026-09-16: short back-to-back transactions on this board are
+				   unreliable — BUSY reads back as clear while the chip is still
+				   programming, so the driver proceeds and the next page is lost.
+				   Force a gap around every chip-select. 300 us is tPROG-sized,
+				   which is the gap measured to make 8 of 8 pages land. */
+				spi-cs-inactive-delay-ns = <300000>;
+				spi-cs-setup-delay-ns = <1000>;
+				spi-cs-hold-delay-ns = <1000>;
 				status = "okay";
 			};
 		};
