@@ -78,3 +78,68 @@ The USBi is then only needed if SigmaStudio is wanted. Both cannot own the bus a
 - USBi vendor protocol reference: <https://github.com/wwolandaz/m1-drv-public/blob/HEAD/PROTOCOL.md>
   (recovered by firmware disassembly and confirmed against SigmaStudio's own driver; ADI has never
   published it).
+
+---
+
+# Update — five replugs later, 2026-09-16
+
+**Two of the three suspects are eliminated, and the failure has a sharper name.** Peter confirmed the
+EVB is powered and `J15` (`/PD`) carries no jumper, so the part is not held in power-down. What
+remains points at the I2C bus itself.
+
+## What the one-shot established `[measured]`
+
+Ordering every test that cannot hang before the one that can paid off:
+
+| Test | Result |
+|---|---|
+| `0xB1` ping, `0xB9` LED, `0xB8`, `0xB7` | all OK, 0-1 ms — the firmware and its OUT path are healthy |
+| **SPI transaction** (`wIndex = 1`) | `0xB3` OK, `0xB4` returned `ff`, `0xB6` **status 1 (success)** |
+| **I2C transaction** (`wIndex = 0`) | `0xB3` OK, `0xB4` timed out, `0xB6` **status 4 (error)** |
+
+The SPI result is the load-bearing one. SPI needs no acknowledgement from the target, so its engine
+completes whether or not anything is listening — `ff` is a floating MISO, not a device answering.
+**It proves the firmware, the USB path and the bus engines are fine, and isolates the fault to I2C.**
+
+## The distinction that matters: status 4, not status 3
+
+A plain address NAK — "nothing strapped here" — should report **status 3 ("failed")**, quickly and
+harmlessly. What comes back is **status 4 ("error")**, and the transaction after it hangs forever.
+That is not the signature of a wrong address. It is the signature of a **bus-level fault: SCL or SDA
+held low, or missing pull-ups** (the datasheet requires 2.0 kOhm on both lines in I2C mode).
+
+A flipped 10-pin ribbon produces exactly this. The USBi header interleaves signal and ground, so
+reversing pin 1 lands the bus lines on grounds and holds them down.
+
+## The debug loop is the real problem: one probe per replug
+
+`[measured]` across five runs. A failed I2C transaction does not just stall the engine — it kills the
+**whole firmware**. After one, `0xB1` stops answering; after another, the device stops answering its
+USB **device descriptor** (`device descriptor read/64, error -110`) and the kernel drops it.
+`usbi_clear.py` confirmed nothing short of a physical replug recovers it: `0xB0`, `USBDEVFS_RESET`,
+the sysfs `authorized` toggle and a bus rescan all fail.
+
+So the USBi yields **one I2C probe per physical replug**. Four candidate addresses is four replugs;
+a full 7-bit sweep is 112. That is not a debugging loop anyone should run.
+
+## What to do instead
+
+1. `[30 seconds, no replug]` **Meter on `J1`**, board powered: DC volts on SCL and SDA. Idle I2C must
+   sit at VDD_IO. Either line near 0 V *is* the fault. Check the ribbon's pin-1 orientation while the
+   meter is out.
+2. **Run SCL/SDA/GND to the Pi's I2C-1.** The Pi's controller has its own pull-ups, real bus-error
+   recovery, and `i2cdetect` sweeps 128 addresses in a second with no replug risk — it would have
+   answered this question five replugs ago. It is also the configuration
+   `adau1372-pi5-overlay.dts` already expects, and the only one that gives ALSA a codec it can see.
+
+`[assumed]` If both lines measure healthy and the Pi's own controller still finds nothing at
+0x3C-0x3F, the next suspect is the control port having switched to SPI (`SS` pulled low three
+times), which `usbi_probe.py --spi` covers.
+
+## Tools added
+
+- `usbi_oneshot.py` — the ordered diagnostic: non-bus requests, then SPI, then a single I2C attempt.
+- `usbi_scan.py` — targeted probe of 0x3C-0x3F plus 0x50-0x57 (EEPROM range) as a bus control.
+  Does **not** send `0xB8`/`0xB7`: their `wValue` polarity is undocumented, and the one hint in the
+  protocol notes (`0xB9`: "1 = low") suggests `0xB8 = 1` may power the target *down*. Earlier runs
+  sent it blindly; that was a mistake worth not repeating.
