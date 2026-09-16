@@ -1,0 +1,129 @@
+// SPDX-License-Identifier: GPL-2.0
+//
+// ADAU1372 EVB (EVAL-ADAU1372Z) <-> Raspberry Pi 5 / CM5 (RP1), CODEC IS CLOCK PROVIDER.
+// Capture-oriented: 4 single-ended analog inputs -> TDM4 -> Pi.
+//
+// *** UNTESTED DRAFT, 2026-09-16. Not loaded on any board yet. ***
+// Read CONFIG-PLAN.md section 5 first: on this silicon a 4-slot TDM capture has
+// already failed once (ADAU1860, 2026-09-07 - RP1 would not lock to a narrow TDM
+// frame sync and only slots 0 and 2 arrived). The ADAU1372 runs TDM with a
+// 50%-duty LRCLK when the format is "i2s", which is a different signal, but that
+// is a hypothesis until measured.
+//
+// Clock direction is chosen by picking the RP1 block, not by configuring one
+// (dwc-i2s.c takes DW_I2S_MASTER/SLAVE from a synthesis parameter):
+//     i2s_clk_producer -> rp1_i2s0   Pi drives BCLK/LRCLK
+//     i2s_clk_consumer -> rp1_i2s1   codec drives BCLK/LRCLK   <-- used here
+//
+// The tdm slot MASKS below are not optional: adau1372_set_tdm_slot() writes
+// SOUT_CONTROL0 = ~tx_mask, so an absent mask disables every output slot and the
+// capture is silent with no error. dw_i2s_set_tdm_slot() additionally requires
+// rx_mask == tx_mask and slot_width == 32.
+//
+// Build:   dtc -@ -I dts -O dtb -o adau1372-pi5.dtbo adau1372-pi5-overlay.dts
+// Install: sudo cp adau1372-pi5.dtbo /boot/firmware/overlays/
+// config.txt:
+//     dtparam=i2c_arm=on
+//     dtoverlay=adau1372-pi5
+//     dtoverlay=adau1372-pi5,addr=0x3d,mclk=24576000     # if strapped/clocked differently
+
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "brcm,bcm2835";
+
+	fragment@0 {
+		target = <&i2s_clk_consumer>;
+		__overlay__ {
+			status = "okay";
+		};
+	};
+
+	// The EVB clocks itself; the codec driver only needs to be told the rate.
+	// 12.288 MHz is PROVISIONAL - confirm against the EVB oscillator (UG-807).
+	// 12.288 and 24.576 MHz are used directly; anything else engages the PLL.
+	fragment@1 {
+		target-path = "/";
+		__overlay__ {
+			adau1372_mclk: adau1372-mclk {
+				compatible = "fixed-clock";
+				#clock-cells = <0>;
+				clock-frequency = <12288000>;
+			};
+		};
+	};
+
+	fragment@2 {
+		target = <&i2c_arm>;
+		__overlay__ {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "okay";
+
+			adau1372_codec: audio-codec@3c {
+				compatible = "adi,adau1372";
+				reg = <0x3c>;			// 0x3C..0x3F per ADDR1/ADDR0 strapping
+				#sound-dai-cells = <0>;
+				clocks = <&adau1372_mclk>;
+				clock-names = "mclk";
+				status = "okay";
+			};
+		};
+	};
+
+	fragment@3 {
+		target = <&sound>;
+		__overlay__ {
+			compatible = "simple-audio-card";
+			i2s-controller = <&i2s_clk_consumer>;
+			status = "okay";
+
+			simple-audio-card,name = "adau1372";
+			simple-audio-card,format = "i2s";
+
+			simple-audio-card,bitclock-master = <&snd_codec>;
+			simple-audio-card,frame-master = <&snd_codec>;
+
+			simple-audio-card,widgets =
+				"Microphone", "Mic Jack",
+				"Line", "Accel X",
+				"Line", "Accel Y",
+				"Line", "Accel Z";
+
+			// Pairs are sink, source. The MICBIAS0 line is what turns the
+			// bias supply on - it is a DAPM supply with no amixer control.
+			simple-audio-card,routing =
+				"AIN0", "Mic Jack",
+				"Mic Jack", "MICBIAS0",
+				"AIN1", "Accel X",
+				"AIN2", "Accel Y",
+				"AIN3", "Accel Z";
+
+			sai_cpu: simple-audio-card,cpu {
+				sound-dai = <&i2s_clk_consumer>;
+				dai-tdm-slot-num = <4>;
+				dai-tdm-slot-width = <32>;
+				dai-tdm-slot-tx-mask = <1 1 1 1>;
+				dai-tdm-slot-rx-mask = <1 1 1 1>;
+			};
+
+			snd_codec: simple-audio-card,codec {
+				sound-dai = <&adau1372_codec>;
+				dai-tdm-slot-num = <4>;
+				dai-tdm-slot-width = <32>;
+				dai-tdm-slot-tx-mask = <1 1 1 1>;
+				dai-tdm-slot-rx-mask = <1 1 1 1>;
+			};
+		};
+	};
+
+	__overrides__ {
+		addr  = <&adau1372_codec>,"reg:0";
+		mclk  = <&adau1372_mclk>,"clock-frequency:0";
+		slots = <&sai_cpu>,"dai-tdm-slot-num:0",
+			<&snd_codec>,"dai-tdm-slot-num:0";
+		width = <&sai_cpu>,"dai-tdm-slot-width:0",
+			<&snd_codec>,"dai-tdm-slot-width:0";
+	};
+};

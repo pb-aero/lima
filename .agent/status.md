@@ -1253,3 +1253,33 @@ check showed strict alternation), and "it is a kernel bug, the hardware is exone
 hand-written driver reproduced it).** Each was disproved by one cheap measurement that I could have
 run first. The pattern: I reasoned from a signature to a mechanism and reported the mechanism with
 more confidence than the evidence carried.
+
+### 2026-09-16 — ADAU1372 EVB: plan for 4 single-ended inputs (mic + analog accel XYZ) on a Pi 5
+
+Peter: *"config for the adau1372 evb to read a single ended mic on ain0 and an analog accelerometer
+xyz on ain1/2/3"*, EVB linked by the **EVAL-ADUSB2EBZ USBi**, host **Pi 5**, AC vibration >20 Hz only.
+Plan + draft overlay + mixer script at `linux/adau1372-evb/`. **Nothing measured on this hardware yet.**
+
+Carry these:
+
+1. **The USBi is control only** — USB->I2C/SPI for SigmaStudio on Windows, no audio path. Audio has to
+   leave the EVB's serial-audio header into the Pi's I2S pins. Never let SigmaStudio and the kernel
+   driver write registers at once: the regmap cache goes stale and controls read right while doing
+   nothing.
+2. **Single-ended line input = do nothing, then prove it.** `PGA_ENx = 0` and `PGA_POP_DISx = 1` are
+   both the reset state (0x23-0x26 = 0x40, 0x29 = 0x3F). Board side: tie `AINxREF` to `CM`.
+3. **Two silent-failure traps read out of the driver, both worth remembering beyond this part:**
+   `adau1372_set_tdm_slot()` writes `SOUT_CONTROL0 = ~tx_mask`, so an overlay with no
+   `dai-tdm-slot-tx-mask` disables **every** output slot with no error; and `dw_i2s_set_tdm_slot()`
+   rejects an empty mask, demands `rx_mask == tx_mask` and `slot_width == 32`.
+4. **The second data lane is closed by the mainline driver.** `ADC_SDATA_CH` (0x17) already splits
+   ch0/1 -> SDATA0 and ch2/3 -> SDATA1, but the pin is shared and the driver writes
+   `MODE_MP6 = 0x12` (CLKOUT) at probe. A 2-lane 2x-stereo capture needs a driver patch.
+5. **The 2026-09-07 RP1 scar applies directly** — 4 slots became 2 with the ADAU1860. The ADAU1372 can
+   run TDM with a 50%-duty LRCLK (`LR_MODE = 0`, datasheet Table 20), which is what the driver
+   programs for format `i2s` + 4 slots, so this may not repeat. Hypothesis, not a result.
+6. **Full scale is AVDD/3.63 V rms** (0.90 V rms at 3.3 V, 0.49 at 1.8) and input impedance is
+   14.3-20 kOhm, so a 32 kOhm-output analog accel must be buffered or two thirds of the signal is lost.
+7. **Could not fetch UG-807** (EVB user guide): analog.com PDFs time out from this network and the
+   mirrors 403. Coupling caps, AINxREF wiring, oscillator frequency and AVDD strapping are all still
+   unknown — flagged as gaps in the plan, not guessed.
