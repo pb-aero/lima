@@ -38,9 +38,9 @@
 			flash@0 {
 				compatible = "jedec,spi-nand";
 				reg = <0>;
-				/* Part does 104 MHz; start conservative and raise it
-				   only after a measured read/write test. */
-				spi-max-frequency = <25000000>;
+				/* Dropped 25 MHz -> 5 MHz 2026-09-16: UBI writes would not land on
+				   flying leads at 25 MHz while reads stayed perfect. Raise only by measurement. */
+				spi-max-frequency = <5000000>;
 				status = "okay";
 			};
 		};
