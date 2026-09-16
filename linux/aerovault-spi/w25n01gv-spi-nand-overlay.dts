@@ -1,0 +1,48 @@
+// AeroVault: bind the W25N01GV (Flash 5 Click) on Pi 5 SPI0 CE0 to the kernel's
+// spi-nand / MTD stack instead of talking to it by hand through spidev.
+//
+// This REPLACES spidev0.0 — the two cannot share a chip select. Probe with
+// w25n01gv-probe.py FIRST, then install this.
+//
+// Build + install:
+//   dtc -@ -I dts -O dtb -o w25n01gv.dtbo w25n01gv-spi-nand-overlay.dts
+//   sudo cp w25n01gv.dtbo /boot/firmware/overlays/
+//   then in /boot/firmware/config.txt:
+//       dtoverlay=spi0-1cs        # NOT spi0-0cs — the NAND needs a real CS on GPIO8
+//       dtoverlay=w25n01gv
+//   reboot, then: cat /proc/mtd   ->  expect one 128 MiB device
+//
+// Keep the comment on its own line. config.txt does not reliably parse a trailing
+// "#" on a dtoverlay= line — that scar is already in this repo twice.
+
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "brcm,bcm2712";
+
+	fragment@0 {
+		target = <&spidev0>;
+		__overlay__ {
+			status = "disabled";
+		};
+	};
+
+	fragment@1 {
+		target = <&spi0>;
+		__overlay__ {
+			status = "okay";
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			flash@0 {
+				compatible = "jedec,spi-nand";
+				reg = <0>;
+				/* Part does 104 MHz; start conservative and raise it
+				   only after a measured read/write test. */
+				spi-max-frequency = <25000000>;
+				status = "okay";
+			};
+		};
+	};
+};
