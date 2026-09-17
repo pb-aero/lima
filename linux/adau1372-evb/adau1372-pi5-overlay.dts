@@ -3,22 +3,27 @@
 // ADAU1372 EVB (EVAL-ADAU1372Z) <-> Raspberry Pi 5 / CM5 (RP1), CODEC IS CLOCK PROVIDER.
 // Capture-oriented: 4 single-ended analog inputs -> TDM4 -> Pi.
 //
-// *** UNTESTED DRAFT, 2026-09-16. Not loaded on any board yet. ***
-// Read CONFIG-PLAN.md section 5 first: on this silicon a 4-slot TDM capture has
-// already failed once (ADAU1860, 2026-09-07 - RP1 would not lock to a narrow TDM
-// frame sync and only slots 0 and 2 arrived). The ADAU1372 runs TDM with a
-// 50%-duty LRCLK when the format is "i2s", which is a different signal, but that
-// is a hypothesis until measured.
+// *** Framing changed to PLAIN STEREO I2S on 2026-09-17. ***
+// History, all measured on this rig:
+//   - TDM4 (128 BCLK/frame) streamed with no XRUN but was never slot-aligned:
+//     a per-slot tone test gave a DIFFERENT map on each run, tones mixed across
+//     slot boundaries, samples clipping to +-2^31, and only 2 of 4 channels ever
+//     carrying data.
+//   - simple-audio-card,frame-inversion (LR_POL = 1, verified SAI_1 = 0x11) did
+//     not fix it.  Neither did 2-channel capture, nor dropping BCLK from
+//     6.144 MHz to 1.024 MHz (which rules out signal integrity).  A search over
+//     all 128 bit positions found no constant offset.
+//   - The RP1 I2S block wants a 64-BCLK frame (64 fs), so the codec is now left
+//     in plain I2S: 2 slots x 32 bits.  With no dai-tdm-slot-* properties the
+//     driver never calls set_tdm_slot, so SAI stays I2S and SOUT_CONTROL0 stays
+//     0x00 (all slots enabled) - note that this also sidesteps the trap where a
+//     missing tx-mask makes adau1372_set_tdm_slot() write 0xFF and disable every
+//     output slot silently.
 //
 // Clock direction is chosen by picking the RP1 block, not by configuring one
 // (dwc-i2s.c takes DW_I2S_MASTER/SLAVE from a synthesis parameter):
 //     i2s_clk_producer -> rp1_i2s0   Pi drives BCLK/LRCLK
 //     i2s_clk_consumer -> rp1_i2s1   codec drives BCLK/LRCLK   <-- used here
-//
-// The tdm slot MASKS below are not optional: adau1372_set_tdm_slot() writes
-// SOUT_CONTROL0 = ~tx_mask, so an absent mask disables every output slot and the
-// capture is silent with no error. dw_i2s_set_tdm_slot() additionally requires
-// rx_mask == tx_mask and slot_width == 32.
 //
 // Build:   dtc -@ -I dts -O dtb -o adau1372-pi5.dtbo adau1372-pi5-overlay.dts
 // Install: sudo cp adau1372-pi5.dtbo /boot/firmware/overlays/
@@ -80,14 +85,19 @@
 			status = "okay";
 
 			simple-audio-card,name = "adau1372";
-			simple-audio-card,format = "i2s";
+			// PLAIN STEREO I2S: 2 slots x 32 bits = 64 BCLK per frame (64 fs).
+			// The RP1 I2S block wants a 64-BCLK frame; the codec was previously
+			// framing TDM4 = 128 BCLK, and that mismatch produced a garbage,
+			// non-deterministic slot map with only 2 of 4 channels carrying data
+			// (measured 2026-09-17).  With no dai-tdm-slot-* properties the driver
+			// leaves SAI in I2S mode and SOUT_CONTROL0 at 0x00 (all slots enabled).
+			// left_j: data starts ON the frame edge instead of one BCLK after it.
+			// With "i2s" the slot map was right but the bits within each slot
+			// wrapped (purity 13-18%, peaks pinned to +-2^31 from a -12 dBFS
+			// source), which is what a one-bit data offset does.
+			// Driver effect: SAI_0 delay field -> 0x40, and LR_POL inverts.
+			simple-audio-card,format = "left_j";
 
-			// LR_POL = 1.  The driver programs LR_POL = 0 for format "i2s",
-			// but datasheet Table 20 lists TDM as LR_POL = 1.  Without this the
-			// TDM4 slot map is offset by half a frame and non-deterministic:
-			// measured 2026-09-17, three runs gave slot 3 / slot 0 / slot 3 in
-			// ch0 with tones mixed across slot boundaries and samples clipping.
-			simple-audio-card,frame-inversion;
 
 			simple-audio-card,bitclock-master = <&snd_codec>;
 			simple-audio-card,frame-master = <&snd_codec>;
@@ -109,18 +119,10 @@
 
 			sai_cpu: simple-audio-card,cpu {
 				sound-dai = <&i2s_clk_consumer>;
-				dai-tdm-slot-num = <4>;
-				dai-tdm-slot-width = <32>;
-				dai-tdm-slot-tx-mask = <1 1 1 1>;
-				dai-tdm-slot-rx-mask = <1 1 1 1>;
 			};
 
 			snd_codec: simple-audio-card,codec {
 				sound-dai = <&adau1372_codec>;
-				dai-tdm-slot-num = <4>;
-				dai-tdm-slot-width = <32>;
-				dai-tdm-slot-tx-mask = <1 1 1 1>;
-				dai-tdm-slot-rx-mask = <1 1 1 1>;
 			};
 		};
 	};
@@ -128,9 +130,5 @@
 	__overrides__ {
 		addr  = <&adau1372_codec>,"reg:0";
 		mclk  = <&adau1372_mclk>,"clock-frequency:0";
-		slots = <&sai_cpu>,"dai-tdm-slot-num:0",
-			<&snd_codec>,"dai-tdm-slot-num:0";
-		width = <&sai_cpu>,"dai-tdm-slot-width:0",
-			<&snd_codec>,"dai-tdm-slot-width:0";
 	};
 };
