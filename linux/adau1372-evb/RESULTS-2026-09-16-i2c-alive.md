@@ -209,3 +209,65 @@ escape, so it deleted literal `\`, `x`, `2` and `7` characters from the output. 
 wrong, not the card. Same class of error as the `find /proc/device-tree` miss earlier in the session:
 `/proc/device-tree` is a symlink and `find` does not follow it, so the codec node appeared absent
 when it was present all along.
+
+---
+
+# CORRECTION 2026-09-17 — the TDM4 link streams, but it is NOT slot-aligned
+
+**Retracting the claim in the previous section that "RP1 DOES lock to this codec's TDM4 frame" and
+that CONFIG-PLAN open question 5 was settled.** It is not settled. The link streams without XRUN or
+EIO, and I took that as working. It moves bytes; it does not move the *right* bytes.
+
+## The measurement
+
+`codec_loopback.sh` routes `Serial Output N <- Serial Input N` inside the codec (no rewiring, no ADC
+involved) and plays a **different tone into each TDM slot** — 250 Hz, 1 kHz, 3 kHz, 6 kHz — so the
+slot map has to identify itself. Three consecutive runs, same configuration, nothing touched
+between them:
+
+| run | ch0 | ch1 | ch2 | ch3 |
+|---|---|---|---|---|
+| 1 | 6 kHz (slot 3) | 1 kHz (slot 1) | zero | zero |
+| 2 | 250 Hz (slot 0) | 1 kHz (slot 1) | zero | zero |
+| 3 | 6 kHz (slot 3) | 6 kHz (slot 3) | zero | zero |
+
+Three signatures, all pointing the same way:
+
+1. **The mapping is non-deterministic** — it changes between stream starts with no configuration
+   change. A correct TDM link is deterministic.
+2. **Each channel carries a mixture.** The dominant tone beats the next by only 1-2x; a cleanly
+   captured slot would beat it by orders of magnitude. Samples are being assembled across a slot
+   boundary.
+3. **Every peak is exactly ±2^31** — full scale, from a −12 dBFS source. That is wrapping, which is
+   what a bit offset does when a neighbouring slot's MSBs land in the sample.
+
+Only two of four channels ever carry anything, which matches the ADAU1860 outcome after all: **two
+channels, not four.**
+
+## What I got wrong, and why
+
+The earlier stereo-I2S loopback returned "peak −0.5 dBFS" from a **−8 dBFS** source. A path that
+returns 7.5 dB more than it was given is not a working path, and I noted the number without
+questioning it. Same again with "−0.5 and −0.9 dBFS" being reported as proof the transport was good.
+**The transport was never verified correct — only verified to move nonzero data.** Distinguishing
+"bytes arrived" from "the right bytes arrived" is exactly what a per-slot tone test is for, and it
+should have been the first loopback, not the fourth.
+
+Consequence for the earlier conclusions: "both data pins are wired correctly" still stands (data
+demonstrably crosses in both directions). "The transport is proven end to end" does not.
+
+## What this does NOT explain
+
+**The ADC silence is still unexplained.** Misalignment produces garbage, not zeros — and the ADC
+capture is mathematically exact zeros across 480000 frames on all four channels. Two separate
+faults, not one.
+
+## The concrete next test
+
+CONFIG-PLAN §5 already predicted this and named the fix: the driver programs `LR_POL = 0` for DAI
+format `i2s`, but datasheet Table 20 lists TDM as `LR_POL = 1`. A half-frame offset is exactly what
+would land slot 1 or slot 3 where slot 0 belongs. **Add `simple-audio-card,frame-inversion` to the
+overlay** (which gives `SND_SOC_DAIFMT_NB_IF` -> `LR_POL = 1`) and re-run the per-slot tone test.
+
+Needs an overlay rebuild and a reboot. `dai-format = "dsp_a"` is the other lever, but it sets
+`LR_MODE = 1` (narrow frame sync), which is the thing RP1 refused on the ADAU1860.
