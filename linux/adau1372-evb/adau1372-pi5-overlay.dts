@@ -82,6 +82,13 @@
 			simple-audio-card,name = "adau1372";
 			simple-audio-card,format = "i2s";
 
+			// LR_POL = 1.  The driver programs LR_POL = 0 for format "i2s",
+			// but datasheet Table 20 lists TDM as LR_POL = 1.  Without this the
+			// TDM4 slot map is offset by half a frame and non-deterministic:
+			// measured 2026-09-17, three runs gave slot 3 / slot 0 / slot 3 in
+			// ch0 with tones mixed across slot boundaries and samples clipping.
+			simple-audio-card,frame-inversion;
+
 			simple-audio-card,bitclock-master = <&snd_codec>;
 			simple-audio-card,frame-master = <&snd_codec>;
 
