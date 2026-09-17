@@ -91,12 +91,17 @@
 			// non-deterministic slot map with only 2 of 4 channels carrying data
 			// (measured 2026-09-17).  With no dai-tdm-slot-* properties the driver
 			// leaves SAI in I2S mode and SOUT_CONTROL0 at 0x00 (all slots enabled).
-			// left_j: data starts ON the frame edge instead of one BCLK after it.
+			// i2s.  left_j was tried on 2026-09-17 and REVERTED: with left_j the DAC
+			// output was audibly huge noise (Peter, by ear) while the identical
+			// file on a USB dongle was clean tones.  A digital loopback cannot
+			// catch this - it passes bits through unchanged whether the
+			// justification is right or wrong - so it took ears to find.
+			// Original left_j rationale, now known to be wrong:
 			// With "i2s" the slot map was right but the bits within each slot
 			// wrapped (purity 13-18%, peaks pinned to +-2^31 from a -12 dBFS
 			// source), which is what a one-bit data offset does.
 			// Driver effect: SAI_0 delay field -> 0x40, and LR_POL inverts.
-			simple-audio-card,format = "left_j";
+			simple-audio-card,format = "i2s";
 
 
 			simple-audio-card,bitclock-master = <&snd_codec>;
