@@ -1,0 +1,198 @@
+// SPDX-License-Identifier: GPL-2.0
+//
+// ADAU1372 EVB (EVAL-ADAU1372Z) <-> Raspberry Pi 5 / CM5 (RP1), CODEC IS CLOCK PROVIDER.
+// FOUR capture channels over TWO STEREO LANES.  No TDM anywhere.
+//
+// *** NEVER RUN ON HARDWARE AS OF 2026-09-18.  Built and reasoned, not measured. ***
+// The 2-channel overlay (adau1372-pi5-overlay.dts) is the known-good one and is
+// deliberately left untouched; that rig state has a bit-exact digital loopback
+// behind it.  Try this one only when someone can watch, and fall back to the
+// other if it does not come up.
+//
+// WHY TWO LANES INSTEAD OF TDM4
+//   The ADAU1372 has one serial port but TWO ADC data pins.  ADC_SDATA0 carries
+//   AIN0/AIN1, ADC_SDATA1 carries AIN2/AIN3; the split is ADC_SDATA_CH (0x17),
+//   which RESETS to 0x04 = SDATA0 starts at ch0, SDATA1 starts at ch2.  That is
+//   already what we want, so no write is needed.  [fetched] ADAU1372 datasheet
+//   p.53 Table 36.
+//   TDM4 was tried on this rig on 2026-09-17 and abandoned: it streamed without
+//   XRUN but was never slot-aligned - a per-slot tone test gave a DIFFERENT map
+//   each run, tones mixed across slot boundaries, samples clipped to +-2^31, and
+//   only 2 of 4 channels ever carried data.  The cause is that RP1 wants a
+//   64-BCLK frame; it will not lock to a narrow frame sync.
+//   Multi-lane sidesteps it: each lane carries its own 2x32-bit stereo pair, so
+//   the frame stays 64 fs and the bit clock stays at the stereo rate (1.536 MHz
+//   for 4ch at 48 kHz, not the 6.144 MHz a 4-slot TDM frame would need).
+//   [measured] 2/4/6/8 channels all stream with exact byte counts on this Pi -
+//   see ../adau1860-pi5/duplex/MULTILANE.md, including the negative control that
+//   unused lanes stay static.
+//
+// TWO PREREQUISITES - BOTH REQUIRED, NEITHER IS IN THIS FILE
+//   1. A WIRE.  ADC_SDATA1 must reach the host.  It is brought out on J4, the
+//      12-way serial audio header (pin order per UG-807 Figure 36: LRCLK, BCLK,
+//      DAC_SDATA/MP0, ADC_SDATA0/MP1, ADC_SDATA1/CLKOUT/MP6, EXT_MCLK) and again
+//      on J9.  It goes to host GPIO22 = RP1 i2s1 lane 1 SDI.
+//      [fetched] UG-807 Fig 36.  Lane map [repo] ../adau1860-pi5/duplex/MULTILANE.md.
+//   2. THE DRIVER PATCH.  Mainline adau1372_probe() writes MODE_MP6 = 0x12
+//      (CLKOUT) and the datasheet (p.26) says CLKOUT "disables the ADC_SDATA1
+//      serial port output".  Without 0001-adau1372-MODE_MP6-as-serial-output-1.patch
+//      the pin is not a data output no matter what this overlay says, and lanes
+//      2/3 of the capture will be silence with every register reading correct -
+//      the exact failure shape this lane has been bitten by twice.
+//      VERIFY AFTER LOADING:  MODE_MP6 must read 0x00, not 0x12.
+//        sudo cat /sys/kernel/debug/regmap/1-003c/registers | grep -i '^3e'
+//
+// CHANNEL ORDER, per John's option (c) ruling (inbox/peter/2026-09-18-001)
+//   capture ch0 = AIN0 = ADXL354 X      (J18 tip)   lane 0, first word
+//   capture ch1 = AIN1 = ADXL354 Y      (J20 tip)   lane 0, second word
+//   capture ch2 = AIN2 = ADXL354 Z      (J22 tip)   lane 1, first word
+//   capture ch3 = AIN3 = IM68A130A mic  (J22 ring)  lane 1, second word
+//   TRS (stereo) plugs only - a mono plug shorts the ring contact to ground.
+//   All four channels MUST use the same mode and gain: [fetched] the PGA inverts
+//   and the line path does not, so mixing modes flips polarity between channels.
+//
+// Clock direction is chosen by picking the RP1 block, not by configuring one
+// (dwc-i2s.c takes DW_I2S_MASTER/SLAVE from a synthesis parameter):
+//     i2s_clk_producer -> rp1_i2s0   Pi drives BCLK/LRCLK
+//     i2s_clk_consumer -> rp1_i2s1   codec drives BCLK/LRCLK   <-- used here
+//
+// Build:   dtc -@ -I dts -O dtb -o adau1372-pi5-4ch.dtbo adau1372-pi5-4ch-overlay.dts
+// Install: sudo cp adau1372-pi5-4ch.dtbo /boot/firmware/overlays/
+// config.txt:  dtparam=i2c_arm=on
+//              dtoverlay=adau1372-pi5-4ch
+//   Put it on its own line and do NOT also set dtparam=i2s=on - that enables
+//   rp1_i2s0, the clock PRODUCER, on the same pins.
+//
+// Test:    arecord -D hw:CARD=adau1372,DEV=0 -f S32_LE -c 4 -r 48000 -d 3 four.wav
+//   4 channels must take EXACTLY 3 s - the Pi is the clock consumer, so only the
+//   codec pacing the transfer can produce that timing.  A short run is a FAILURE
+//   that looks like a pass.  Expect 3 x 48000 x 4ch x 4B = 2,304,000 bytes.
+//   Lanes fill IN ORDER from the channel count and are not independently
+//   selectable: -c 4 means lanes 0 and 1.  There is no way to ask for lane 1 alone.
+
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "brcm,bcm2835";
+
+	// The stock rp1_i2s1_18_21 pin group claims only four pins, which is one
+	// lane.  Claim all ten so lane 1 (GPIO22 in / GPIO23 out) is muxed to the
+	// i2s1 function.  Claiming the unused pins is harmless: [measured] unused
+	// lanes stay static (MULTILANE.md negative control).
+	fragment@0 {
+		target = <&rp1_gpio>;
+		__overlay__ {
+			i2s1_all_1372: i2s1_all_1372 {
+				function = "i2s1";
+				pins = "gpio18","gpio19","gpio20","gpio21","gpio22",
+				       "gpio23","gpio24","gpio25","gpio26","gpio27";
+				bias-disable;
+			};
+		};
+	};
+
+	fragment@1 {
+		target = <&i2s_clk_consumer>;
+		__overlay__ {
+			pinctrl-names = "default";
+			pinctrl-0 = <&i2s1_all_1372>;
+			status = "okay";
+		};
+	};
+
+	// The EVB clocks itself; the codec driver only needs to be told the rate.
+	// 12.288 MHz measured on this board and confirmed against UG-807.
+	// 12.288 and 24.576 MHz are used directly; anything else engages the PLL.
+	fragment@2 {
+		target-path = "/";
+		__overlay__ {
+			adau1372_mclk_4ch: adau1372-mclk-4ch {
+				compatible = "fixed-clock";
+				#clock-cells = <0>;
+				clock-frequency = <12288000>;
+			};
+		};
+	};
+
+	fragment@3 {
+		target = <&i2c_arm>;
+		__overlay__ {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "okay";
+
+			adau1372_codec_4ch: audio-codec@3c {
+				compatible = "adi,adau1372";
+				reg = <0x3c>;			// 0x3C..0x3F per ADDR1/ADDR0 strapping
+				#sound-dai-cells = <0>;
+				clocks = <&adau1372_mclk_4ch>;
+				clock-names = "mclk";
+				status = "okay";
+			};
+		};
+	};
+
+	fragment@4 {
+		target = <&sound>;
+		__overlay__ {
+			compatible = "simple-audio-card";
+			i2s-controller = <&i2s_clk_consumer>;
+			status = "okay";
+
+			simple-audio-card,name = "adau1372";
+
+			// PLAIN STEREO I2S per lane: 2 slots x 32 bits = 64 BCLK (64 fs).
+			// Deliberately NO dai-tdm-slot-* properties.  Two reasons:
+			//   - the driver then never calls set_tdm_slot, so SAI stays I2S and
+			//     SOUT_CONTROL0 stays 0x00 (all slots enabled);
+			//   - it sidesteps the trap where a missing tx-mask makes
+			//     adau1372_set_tdm_slot() write 0xFF and silently disable every
+			//     output slot.
+			// The channel count comes from LANES, not slots.
+			//
+			// format = "i2s".  left_j was tried 2026-09-17 and REVERTED: with
+			// left_j the DAC output was audibly huge noise (Peter, by ear) while
+			// the identical file on a USB dongle was clean.  A digital loopback
+			// cannot catch this - it passes bits through unchanged whether the
+			// justification is right or wrong - so it took ears to find.
+			simple-audio-card,format = "i2s";
+
+			simple-audio-card,bitclock-master = <&snd_codec_4ch>;
+			simple-audio-card,frame-master = <&snd_codec_4ch>;
+
+			// Option (c): three accelerometer axes + one single-ended mic.
+			simple-audio-card,widgets =
+				"Line",       "Accel X",
+				"Line",       "Accel Y",
+				"Line",       "Accel Z",
+				"Microphone", "Mic Jack";
+
+			// Pairs are sink, source.  MICBIAS0 is a DAPM supply with no amixer
+			// control - routing to it is what turns the bias supply on.
+			// NOTE: the IM68A130A may be powered from the 2.75 V rail instead, in
+			// which case the MICBIAS0 route is harmless but unnecessary.  It is
+			// kept because the mic's range (2.4-3.3 V) accepts MICBIAS at 2.97 V.
+			// The IM73A135s must NOT use MICBIAS - 3.0 V absolute max, too close.
+			simple-audio-card,routing =
+				"AIN0", "Accel X",
+				"AIN1", "Accel Y",
+				"AIN2", "Accel Z",
+				"AIN3", "Mic Jack",
+				"Mic Jack", "MICBIAS0";
+
+			sai_cpu_4ch: simple-audio-card,cpu {
+				sound-dai = <&i2s_clk_consumer>;
+			};
+
+			snd_codec_4ch: simple-audio-card,codec {
+				sound-dai = <&adau1372_codec_4ch>;
+			};
+		};
+	};
+
+	__overrides__ {
+		addr  = <&adau1372_codec_4ch>,"reg:0";
+		mclk  = <&adau1372_mclk_4ch>,"clock-frequency:0";
+	};
+};

@@ -1,0 +1,56 @@
+From: LIMA (peter) <peter@aerosenseaviation.com>
+Date: 2026-09-18
+Subject: [PATCH] ASoC: adau1372: free ADC_SDATA1 by not claiming MP6 for CLKOUT
+
+The ADAU1372 has one serial port but TWO ADC data pins.  ADC_SDATA0 carries
+the AIN0/AIN1 pair and ADC_SDATA1 carries AIN2/AIN3, the split being set by
+ADC_SDATA_CH (0x17), which resets to 0x04 -- SDATA0 starting at channel 0 and
+SDATA1 at channel 2.  So four capture channels are available with no TDM at
+all, which matters on hosts that cannot frame TDM: the RP1 block on a
+Raspberry Pi 5 / CM5 will not lock to a narrow frame sync and wants 64 fs,
+i.e. two 32-bit slots, so four channels MUST arrive as two stereo lanes.
+
+adau1372_probe() puts the multi-purpose pins "in the most sensible mode for
+general purpose CODEC operation" and chooses CLKOUT for MP6:
+
+	regmap_write(regmap, ADAU1372_REG_MODE_MP(6), 0x12); /* CLOCKOUT */
+
+Per the datasheet (Rev. ?, p.26) the CLKOUT function "disables the ADC_SDATA1
+serial port output", so this silently caps the part at two capture channels on
+any board that is not using CLKOUT.  CLKOUT exists to clock another IC or a
+PDM microphone; where neither is needed, Serial Output 1 is the more useful
+default.  MODE_MP6 = 0x00 is "Serial Output 1" (datasheet p.78, Table 70).
+
+Note that CLKOUT_SEL (0x07), written just below, applies only "when Pin
+ADC_SDATA1/CLKOUT/MP6 is set to clock output mode" (datasheet p.46), so it
+becomes inert rather than wrong.  No other register needs changing: the
+channel split is already the reset default.
+
+NOT SUBMITTED UPSTREAM.  Changing a driver default would break any board that
+relies on CLKOUT; the correct upstream fix is the pinctrl support the comment
+above the write says is missing.  This patch is a local change for a rig that
+needs the fourth channel.
+
+[measured] against sound/soc/codecs/adau1372.c from raspberrypi/linux rpi-6.18.y,
+built out-of-tree as snd-soc-adau1372-oot.ko.
+
+---
+ sound/soc/codecs/adau1372.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+--- a/sound/soc/codecs/adau1372.c
++++ b/sound/soc/codecs/adau1372.c
+@@ -999,7 +999,12 @@
+ 	 * sensible mode for general purpose CODEC operation.
+ 	 */
+ 	regmap_write(regmap, ADAU1372_REG_MODE_MP(1), 0x00); /* SDATA OUT */
+-	regmap_write(regmap, ADAU1372_REG_MODE_MP(6), 0x12); /* CLOCKOUT */
++	/*
++	 * MP6 as Serial Output 1, not CLKOUT: CLKOUT disables the ADC_SDATA1
++	 * serial output, which costs AIN2/AIN3 and caps capture at two
++	 * channels on hosts that cannot frame TDM.  Nothing here uses CLKOUT.
++	 */
++	regmap_write(regmap, ADAU1372_REG_MODE_MP(6), 0x00); /* SDATA OUT 1 */
+ 
+ 	regmap_write(regmap, ADAU1372_REG_OP_STAGE_MUTE, 0x0);
+ 
