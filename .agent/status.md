@@ -1283,3 +1283,55 @@ Carry these:
 7. **Could not fetch UG-807** (EVB user guide): analog.com PDFs time out from this network and the
    mirrors 403. Coupling caps, AINxREF wiring, oscillator frequency and AVDD strapping are all still
    unknown — flagged as gaps in the plan, not guessed.
+
+---
+
+## 2026-09-18 — inbox triage, JULIETT unblocked, AeroVault published
+
+Chris via INDIA: 27 unread, eight days since a company push, JULIETT blocked on me. Verified before
+acting: **27 open, 20 from JULIETT** `[measured]`. Now **23 open**.
+
+**Closed 4 and published 2.**
+
+1. **JULIETT's blocking question answered** (inbox 2026-09-10-005, waiting since 10 Sep). It asked
+   whether `AINxREF` can be driven with a differential mic's inverting leg, on the premise that
+   UG-807 Fig 34 routes the jack RING to `AINxREF`. **It does not.** Traced pin by pin from 6x
+   renders: all four reference pins are AC-coupled to **ground** — C1/C8 47 uF from the J18/J20 rings
+   (themselves grounded), C16/C18 10 uF from the J22 sleeve. On J22 the **ring is AIN3, a second
+   channel** ("tip is left, ring is right"). The CAD net names `AIN2P`/`AIN3P` sit on the REF pins
+   and look like signal nets — that is the trap, and I nearly fell in it too.
+2. **Corrected my own UG-807 read.** I had reported the analog inputs as DC-coupled with "no series
+   coupling capacitor". Wrong — C2/C10 47 uF are series coupling caps; the schematic note says so.
+   0.17 Hz corner so nothing changes above 20 Hz, but **a source's DC cannot reach the AIN pin**,
+   which kills the argument I built about a DC-sinking source fighting the internal bias.
+3. **AeroVault published** to `reports/peter/LIMA_aerovault_spi_nand.html` + MANIFEST row, built
+   around the diagnosis as INDIA asked, including the retraction.
+4. **The clock question: no error existed.** INDIA reported the overlay comment saying "25 -> 5 MHz"
+   against `spi-max-frequency = <1000000>`. The **overlay** never says 5 MHz and is correct at 1 MHz;
+   the "25 -> 5" line is in RESULTS-2026-09-16 describing an intermediate debugging step. The doc
+   never stated where the clock **ended**, which is how a reader inherits 5 MHz. Clarified in place.
+5. **V2 dev-board card** raised as a proposal in `record/peter/`, with four reasons it may NOT be
+   satisfied. Not assumed closed — ops is read-only and the ruling is a human's.
+
+### Adopted the habit that fixes the inbox
+
+When I answer something I now **set `status: answered` on the original and point at the reply**.
+That is the whole difference between JULIETT's inbox (zero open) and mine. Also: **check
+`inbox/peter/` again after the last fetch that changes the tree**, not only at boot.
+
+### NOT done — carry these
+
+- **~23 messages still open**, almost all JULIETT's DVNC backlog: build spec (2026-09-16-003),
+  parts (2026-09-10-004), test sheet (2026-09-17-002), stage-0 correction (2026-09-16-005),
+  four-channels-without-TDM (2026-09-17-005), flight config (2026-09-17-006). **Read before building.**
+- **Permission-net off-switch (2026-08-20-002) NOT added.** Deliberate: it denies Edit/Write of my own
+  settings.json, is a one-way ratchet, and I want Peter watching the diff. Use the `///` form and
+  **prove it fires**.
+- **SAFETY, before any mic is powered:** IM73A135 absolute max **3.0 V** against 3.3 V rails. MICBIAS
+  is 2.97 V — too close. Use 2.75 V, measure at the end of the lead with the mic **disconnected**,
+  check polarity, and write the reading down. Keep J11/J14 open.
+- **Bench unreachable this session** — `scopenode.local` does not resolve on the current network
+  (Mac on 192.168.0.41). JULIETT's 10-minute AINxREF bench test is still to run.
+- `[gap]` **ADAU1372 datasheet still unfetchable** — analog.com times out to curl and serves the
+  browser a download dialog. It is the only thing that settles whether the silicon permits driving
+  `AINxREF`. Ask Peter to save it.
