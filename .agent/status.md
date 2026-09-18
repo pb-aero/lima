@@ -1335,3 +1335,83 @@ That is the whole difference between JULIETT's inbox (zero open) and mine. Also:
 - `[gap]` **ADAU1372 datasheet still unfetchable** — analog.com times out to curl and serves the
   browser a download dialog. It is the only thing that settles whether the silicon permits driving
   `AINxREF`. Ask Peter to save it.
+
+
+---
+
+## 2026-09-18 (later) — Monday prep: rig stays in the office, VPN, option (c) to be connected
+
+Peter: *"the rig shall remain in office we will use vpn to run tests. Lets try get John's ruled
+architecture connected to the boards on Monday."*
+
+**BLOCKED ON PETER, one action:** Tailscale is installed and holds `100.101.15.106` but is
+**stopped** — `/Applications/Tailscale.app/Contents/MacOS/Tailscale status` says so `[measured]`, and
+all four known rig addresses (`100.64.0.1`, `100.64.0.6`, `192.168.0.99`, `192.168.10.34`) are silent.
+Starting a VPN is a change to his machine's network state, so I handed him the command rather than
+running it. **Nothing on the rig has been verified this session.**
+
+### Inbox re-triaged — 9 open, and today's messages supersede most of the backlog
+
+22 arrived since 10 Sep, all but one from JULIETT. **John ruled option (c)** (`2026-09-18-001`): 1860
+takes the differential mics + digital mic; 1372 takes ADXL354 X/Y/Z + one single-ended IM68A130A.
+**The mic receivers are dropped** — which voids `2026-09-16-005`'s still-open request to add 8× 100 nF
+to the order, along with the OPA4322s, the 0.1% resistors and the 1.65 V reference. `[repo]` build
+spec `README.md:177`. **Read the revised spec, not the older open messages.**
+
+### Delivered — `peter/outbox/2026-09-18-005`, landed at `Aerosense-Dev-Team-Sync@7e8d058`
+
+1. **1860 DMIC clock rate CLOSED** — the spec carried it `[assumed]` as *"LIMA to confirm in LARK
+   Studio"*. It is in the register map. `[fetched]` UG-2257 p.128 Table 171: `DMIC_CTRL1`
+   `0x4000C040`, **reset `0x03`**; both `DMIC_CLK_RATE[2:0]` and `DMIC_CLK1_RATE[6:4]` offer
+   384/768/1536/3072/6144 kHz and **both reset to 3.072 MHz** — the IM72D128V's high-performance mode,
+   so **no register write at all**. Low-power is `0b010`. Hot-writability inferred, NOT measured.
+2. **⚠ A SUPPLY VOLTAGE CHANGED WHEN OPTION (C) MOVED THE DIGITAL MIC.** `2026-09-17-004` says power
+   the IM72D128V *"from 3.3 V so its logic levels match the board"* — right for the **1372**
+   (IOVDD = 1.8 V **or** 3.3 V, `[fetched]` p.8), **wrong for the 1860** (IOVDD **1.2–1.8 V only**,
+   `[fetched]` UG-2257 pp.16/337). A 3.3 V PDM swing into a 1.8 V-referenced input is an overvoltage.
+   The spec already says 1.8 V IOVDD and is correct; the stale message was marked `closed`, so I added
+   a correction note **in place** on it. **Last week's scar in new clothes** — option (c) silently
+   invalidated an instruction three messages upstream of itself.
+3. **Asked for the P11 tone test to become a numbered stage**, not an if-time item. Ninety seconds
+   with the RME already in the room, and it is the only instrument that separates the two surviving
+   explanations for the ~64 dB shortfall. Payoff is a third differential mic channel.
+
+### The real Monday blocker, and it is now one wire — `21f524a`
+
+**Option (c) asks the 1372 for four channels. This rig delivers two.** Three causes; two fixed.
+
+- **`0001-adau1372-MODE_MP6-as-serial-output-1.patch`** — mainline `adau1372_probe()` writes
+  `MODE_MP6 = 0x12` (CLKOUT), and `[fetched]` p.26 says CLKOUT *"disables the `ADC_SDATA1` serial port
+  output."* `0x00` is Serial Output 1. **Verified with both controls** — applies clean to unpatched
+  source, refused as *"previously applied"* on the patched tree. My first hand-written hunk was
+  **malformed and `patch(1)` rejected it**; the committed one is generated from a real diff. *A patch
+  you have not dry-run is a guess.*
+- **`adau1372-pi5-4ch-overlay.dts`** — claims all ten `i2s1` pins; `[measured]` `dtc -@` exits 0 and
+  the `.dtbo` carries the right `__fixups__`, `gpio22`, and a `__local_fixups__` for `pinctrl-0`. The
+  2-channel overlay is **untouched** as the fallback.
+- **THE WIRE — needs hands:** J4 `ADC_SDATA1/CLKOUT/MP6` → host **GPIO22** (lane 1 SDI).
+
+**Free, and worth knowing:** `ADC_SDATA_CH` (`0x17`) **resets to `0x04`** = SDATA0 at ch0, SDATA1 at
+ch2 — exactly the AIN0/1 + AIN2/3 split option (c) wants, no write needed. `[fetched]` p.53 Table 36.
+
+**Corrected my own note in place:** `STATUS-2026-09-17` said *"`ADC_SDATA1` is not wired"* unqualified,
+which reads as a board limitation. `[fetched]` UG-807 Fig 36 — the **board** brings it out on J4 and
+J9. Our **harness** lacks the wire. One jumper, not a rework.
+
+### Gap closed by Peter without being asked
+
+**`~/Downloads/adau1372.pdf` exists**, saved 2026-09-18 09:59. The previous session's `[gap]` was
+*"ADAU1372 datasheet still unfetchable — ask Peter to save it."* Every `[fetched]` p.NN above comes
+from it. No PDF tooling on this Mac (`pdftotext`/`mutool` absent) — `pymupdf` is installed and works;
+scripts in the session scratchpad.
+
+### Carry
+
+- **`FOUR-CHANNEL-1372.md`** has the bring-up order, each step falsifiable. Step 1 is *"`MODE_MP6`
+  must read `0x00`, not `0x12`"*; step 5 is a **two-sided** channel test. **Stated before the run:
+  this configuration has never run on hardware**, and the channel-to-lane word order within a lane is
+  `[gap]` assumed.
+- **Still open and mine:** P11's ~64 dB shortfall; the 1860 DMIC hot-writability; `[gap]` whether the
+  IM72D128V does 3.072 MHz at 1.8 V VDD (datasheets are in John's Drive — if not, it is
+  `DMIC_CLK_RATE = 0b010` and nothing else changes).
+- **`status.md` is now 98 KB** against the brain's "a few KB". Overdue for archiving to `journal.md`.
