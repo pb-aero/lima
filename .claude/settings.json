@@ -24,7 +24,11 @@
       "Bash(git push -f:*)",
       "Bash(git reset --hard:*)",
       "Bash(git clean:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Edit(///Users/peterbruce/Documents/GitHub/lima/.claude/settings.json)",
+      "Write(///Users/peterbruce/Documents/GitHub/lima/.claude/settings.json)",
+      "Edit(///Users/peterbruce/Documents/GitHub/lima/.claude/settings.local.json)",
+      "Write(///Users/peterbruce/Documents/GitHub/lima/.claude/settings.local.json)"
     ]
   }
 }
