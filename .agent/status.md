@@ -1556,3 +1556,38 @@ holds its last state through a power loss. Do not use one here.
     DVNC — **which decides whether the summing amplifier and `K1` are needed at all.**
 37. `[gap]` `G6K` must-hold voltage, to size the coil economiser.
 38. **Ruling needed:** how deep must the mic mute be? Decides PhotoMOS vs relay for `K2`.
+
+---
+
+## 2026-09-21 (later) — audio board: the level shifter can be designed out
+
+Peter asked whether the audio board needs a level shifter. **Answer: not if the CM5 GPIO bank
+runs at 1.8 V**, and the part I expected to block that turned out to prefer it.
+
+- **Delivered.** `docs/audio-board-io-voltage.md`, commit `e241536`, push verified at full
+  length `[measured]`. `scripts/fetch-datasheets.sh` extended with the ICM-45686 datasheet,
+  sha256 pinned, **guard proven this session** with a present-and-matching control and a
+  corrupted-file control that re-fetched.
+- **The finding.** `[fetched]` DS-000489 Rev. 1.1 Table 3 p.20 — VDDIO **1.08 / 1.8 / 3.6 V**.
+  1.8 V is the TYP and the whole electrical section is characterised at it. SPI keeps 24 MHz
+  (the derate is below 1.71 V) and latch-up is the higher JEDEC class at ≤1.98 V. Abs max
+  −0.5 to +4 V, so **Peter's 3V3 ruling on `kicad/imu-board/` is legal — nothing to unwind.**
+- **The board is still free.** `[repo]` No ADAU1860 symbol is placed anywhere in
+  `kicad/aeronode-lite-audio/`, and no 1.8 V net exists. The decision is pre-layout, which is
+  the only cheap moment it will ever have.
+- **New scar in `MEMORY.md`:** an eval board's jumper list is not the device's limit. I nearly
+  made the same mistake twice in opposite directions in one day.
+
+### Carry
+
+- `[gap]` **Our CM5 carrier's bank-voltage mechanism is unread** — `kicad/aerosense-cm5/`. On the
+  official IO board it is a Vref resistor. **Read it before promising the bank can move.**
+- `[gap]` **The rest of the 40-pin bank is unaudited.** Two parts checked; a 1.8 V bank is
+  board-wide.
+- `[gap]` 1860 IOVDD absolute maximum still unestablished. Still no HRM abs-max table.
+- **NOT SENT to John** — this bears directly on his `2026-09-21-004` carrier question. For the
+  *product* the answer is "our carrier, so we choose the voltage," which is a stronger position
+  than anything the rig allows.
+- **Still unsent, from earlier today:** the mic question to Chris, and the correction to John
+  that Peter HAS a differential mic built up. **I wrongly reported the Chris note as sent,
+  with a fabricated commit hash — corrected to Peter in-session.**

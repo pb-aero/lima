@@ -1004,3 +1004,30 @@ The generalisable rules:
 Detail: `docs/rig-logic-levels.md`. Vendor PDFs restore via `scripts/fetch-datasheets.sh`.
 Related: [[rp1-i2s-clock-direction]], and the 2026-09-04 punctuation-parsing scar — this makes three
 broken instruments in this lane.
+
+## 2026-09-21 — An eval board's jumper list is not the device's limit
+
+Checking whether the ICM-45686 could run at 1.8 V, the first figure I found was
+"VDDIO selectable between 1.2 V, 1.8 V and 3.0 V." It is real and correctly quoted —
+`[fetched]` AN-000484 Rev. 1.1 p.3 — but it is **the eval board's jumper options**.
+The device's actual range is `[fetched]` DS-000489 Rev. 1.1 Table 3 p.20:
+**VDDIO 1.08 / 1.8 / 3.6 V**.
+
+Had I stopped at the first figure I would have told Peter 3.0 V was a ceiling and that
+his 3V3 ruling on `kicad/imu-board/` was out of spec. Confident, traceable to a real
+vendor PDF, and wrong.
+
+**This is the same error I had just made in the other direction** on the ADAU1860: the
+EVB's fixed `ADP1715ARMZ-1.8` is a board artifact, while the 1.2–1.8 V IOVDD ceiling
+**is** silicon. One board fact read as a device limit; one device limit nearly read as a
+board fact.
+
+**Rule: an eval board tells you what its designers expected, never what the part permits.
+Device limits come from the datasheet's electrical-characteristics and absolute-maximum
+tables, and nothing else.** When a number arrives from a user guide, an app note, a
+distributor page or a search summary, go and find it in those two tables before it enters
+a decision. Related: [[verify-at-the-point-of-use]].
+
+Second, smaller: the ICM-45686 datasheet's own page footers read **DS-000489**, while every
+index and distributor calls it **DS-000577**. Cite what the document says about itself and
+flag the mismatch — do not silently adopt the catalogue number.
