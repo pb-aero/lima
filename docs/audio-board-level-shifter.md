@@ -189,6 +189,44 @@ Setting `dai-tdm-slot-num` on the Linux side does not change what the DesignWare
 **Worth remembering if either end changes.** A codec offering 50%-duty multi-slot would put all three
 mics on one lane and halve the lines crossing the translator. This one does not.
 
+### 3.1.2 The slot map — four slots across two lanes, 50% duty, no TDM
+
+Peter's framing, and it is the right mental model: **slot 0 → port 0 left, slot 1 → port 0 right,
+slot 2 → port 1 left, slot 3 → port 1 right.** Four independently-routable slots on two wires with an
+ordinary 50%-duty frame clock. `[fetched]` The registers are named exactly this way — *Serial Port 0
+Output Routing Slot 0 **(Left)***, *Slot 1 **(Right)*** — and each port carries 16 slot registers, of
+which **only slots 0 and 1 are used in stereo mode**; slots 2–15 exist only in TDM.
+
+`[fetched]` UG-2257 Table 279, `SPT0_ROUTE0` @ 0x4000C0E3. Each slot register is a 6-bit source
+select, `SPTx_OUT_ROUTEy` [5:0], which can take **any** internal channel:
+
+| Value | Source |
+|---|---|
+| 0–15 | FastDSP Channel 0–15 |
+| 16–… | Tensilica DSP Channel 0–… |
+| 32–35 | Output ASRC Channel 0–3 |
+| **36 / 37 / 38** | **ADC Channel 0 / 1 / 2** |
+| **63** | **No Output. Slot not used.** |
+
+So the three mics land like this, with `SPT1` clock-slaved to `SPT0` per §3.1:
+
+| Slot | Register | Address | Value | Carries |
+|---|---|---|---|---|
+| 0 | `SPT0_ROUTE0` (left) | 0x4000C0E3 | **36** | ADC0 — mic 1 |
+| 1 | `SPT0_ROUTE1` (right) | 0x4000C0E4 | **37** | ADC1 — mic 2 |
+| 2 | `SPT1_ROUTE0` (left) | 0x4000C0F6 | **38** | ADC2 — mic 3 |
+| 3 | `SPT1_ROUTE1` (right) | — | **63** | unused, explicitly disabled |
+
+Four slots, three used, one spare — and the spare is free capacity on a wire we are already paying to
+translate. **`[gap]` Confirm `SPT1_ROUTE1`'s address against the register map before writing it**; the
+0x4000C0F6 above is inferred from the `SPT1_ROUTE0` position and has not been read off the table.
+
+> **TRAP, and it sits four values away from the ones we want.** Entries **32–35 are Output ASRC
+> Channels**. `[measured]` The 2026-09-02 scar: an ASRC in an accelerometer or reference path
+> **fabricates samples and reports no error**. Route the ADCs **direct** — 36/37/38 — and never
+> through 32–35. A typo of four in this register is silent and it is the exact failure this project
+> has already been bitten by once.
+
 ### 3.2 Every serial pin is multiplexed — the trap that already bit us once
 
 `[fetched]` Table 13: `BCLK_0/MP3` (ball B2), `BCLK_1/MP7` (D5), `SDATAI_1/MP10` (D4) — **every serial
