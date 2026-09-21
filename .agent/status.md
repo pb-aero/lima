@@ -1415,3 +1415,76 @@ scripts in the session scratchpad.
   IM72D128V does 3.072 MHz at 1.8 V VDD (datasheets are in John's Drive — if not, it is
   `DMIC_CLK_RATE = 0b010` and nothing else changes).
 - **`status.md` is now 98 KB** against the brain's "a few KB". Overdue for archiving to `journal.md`.
+
+
+---
+
+## 2026-09-21 — "do we need the 1372?" — no, and Peter corrected me twice getting there
+
+Peter asked whether the ADAU1372 is needed in the EVB rig. Answer: **yes.** Two of my objections
+were wrong and he caught both.
+
+**Verified against the real spec** (cloned `Aerosense-Dev-Team-Sync` to
+`~/Documents/GitHub/Aerosense-Dev-Team-Sync`, HEAD `7e8d058`).
+
+1. **WRONG — "the 1860 has ADC2 spare, so one axis fits there."** The build spec
+   (`README.md:95-104`) allocates **ADC2/P11 to a third differential mic** once its ~64 dB shortfall
+   is fixed. One 1860 in this rig, all three ADCs spoken for. No room for the ADXL354. I had read my
+   own `status.md` summary instead of the spec. **A summary of a source is not the source.**
+2. **WRONG, twice over — "the 1860 EVB cannot do 3.3 V."** It can, on the **control port**:
+   `[fetched]` UG-2017 Figure 14 has a `PCA9517DP` I2C buffer and six `FXLP34P5X` translators between
+   a `3.3V` rail and `IOVDD`. **My instrument was blind** — schematic pages 15–22 are vector-drawn,
+   ~140 chars of text against up to 9,100 paths, so my "exhaustive" full-text search for `3.3` was
+   reading blank pages. Scar recorded. **Consequence, and it removes work: I2C from a 3.3 V Pi/CM5
+   to the 1860 needs no external level shifting.**
+3. **My "one block, shared clock, four lanes" idea was already the spec**, and better specified —
+   the **1860** is master, driving BCLK/FSYNC for the 1372 and the CM5.
+
+### The finding that survived, and it is a live gap in the ruled architecture
+
+**The spec's clock plan does not work as the boards ship.** `[fetched]` ADAU1372 p.8 Table 3:
+V_IH min is **2.0 V at 3.3 V IOVDD**, 1.1 V at 1.8 V IOVDD. The 1860's audio pins swing to
+IOVDD = **1.8 V** and cannot go higher (`U10` is a fixed `ADP1715ARMZ-1.8`; HRM p.337 says
+1.2–1.8 V). **1.8 V does not meet 2.0 V.** The serial audio headers P2/P3 are 1.8 V with no
+translators — UG-2017 p.12. Reverse direction is an overvoltage on the 1860, so the spec at least
+chose the safe failure.
+
+Fix is cheap: the 1372's IOVDD is on its own jumpers (**J10** = IOVDD↔3.3 V VDD; AVDD separate on
+J17), and 1.71–3.63 V is in spec, so 1.8 V IOVDD with 3.3 V AVDD keeps analog headroom.
+**Recommendation: topology B for December** (keep both proven links, translate the 1860's audio lines),
+**A as the end-state**. Fixed-direction translator only — `SN74AVC4T774`/`AVC8T245`, never TXB/TXS on
+a 3.072 MHz clock.
+
+Second live gap: **"sample-synchronous" needs a shared MCLK, not just a shared frame clock.** Without
+it the 1372's **output ASRC stays in the accelerometer path**, and the 2026-09-02 scar says an ASRC
+fabricates samples and reports no error. Sharing MCLK is the R2/R3 rework on the 1372.
+
+### Delivered
+
+- **`docs/rig-logic-levels.md`** — the full analysis, every claim page-cited.
+- **`scripts/fetch-datasheets.sh`** — restores UG-2017 with a pinned sha256 (PDFs stay gitignored per
+  §5). **Verified with three controls** `[measured]`: present-and-matching, missing (re-fetches),
+  and corrupted local copy (detects and replaces).
+- **Correction in place** in `docs/two-adau1860-channel-allocation.md` §4.2 — `P3` is Serial Audio
+  Port 1 and external MCLK is **P3 pin 10**, selected by `P8`+`P27`; `P25` disables the oscillator.
+- Scar in `MEMORY.md`: check for a text layer before trusting a text search, and **the third time a
+  human repeats themselves, the instrument is the suspect.**
+
+### Monday is unaffected — fit the wire
+
+The 4-channel bring-up is the **1372 alone as master at 3.3 V into the Pi**, the `[measured]` proven
+path. None of the level-shift work bites until the 1860 joins for eight channels. Run
+`linux/adau1372-evb/FOUR-CHANNEL-1372.md`.
+
+### Carry
+
+- **NOT SENT:** none of this has gone to John, and it contradicts part of his ruled architecture.
+  Outbox note still to write.
+- `[gap]` **What rail 1372 `J8` feeds** — UG-807 Figure 38 needed; the board carries an
+  `ADP1713AUJZ-1.5` and 1.5 V is *below* the 1372's 1.71 V IOVDD minimum. **Do not move J8/J10 blind.**
+- `[gap]` 1.8 V clocks into a Pi/CM5 have never been measured here. Every proven capture had the
+  1372 driving the host at 3.3 V.
+- `[gap]` Whether the 1372's output ASRC can be muxed out of the capture path.
+- `[gap]` IOVDD absolute-maximum for the 1860 — no abs-max table in the HRM. Do not put 3.3 V on P43.
+- Still true and still overdue: **`status.md` is ~105 KB**, needs archiving to `journal.md`.
+- **`.agent/orders.md` does not exist**; reconciling against status alone. Tailscale still stopped.

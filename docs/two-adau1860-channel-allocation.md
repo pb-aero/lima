@@ -182,6 +182,19 @@ long-standing gap in this repo, not a new one.
    other's `P3`.** Two free-running oscillators on one head means two cancellers drifting against
    each other and against the comm audio — an audible, intermittent fault that will look like a DSP
    bug for a week.
+
+   > **Correction, 2026-09-21** `[fetched]` UG-2017 p.12/13, read from the PDF rather than a mirror
+   > summary: **`P3` is Serial Audio Port 1**, and the external MCLK input is specifically **pin 10
+   > of `P3`**. The source is selected by **`P8`** (`EXT_MCLK`/oscillator), which "must be used with
+   > `P27`" (`XTALI/MCLKIN` option); **`P25`** disables the on-board oscillator. So "into `P3`" is
+   > right only at pin 10, and it is `P8`+`P27` that do the selecting. The advice to share one clock
+   > stands unchanged.
+   >
+   > Also established the same day, and it bears on §4.5's level-shifting note: the EVB's **control
+   > port is 3.3 V** — a `PCA9517DP` I2C buffer and six `FXLP34P5X` translators sit between a `3.3V`
+   > rail and `IOVDD` (Figure 14) — **but the serial audio headers `P2`/`P3` are 1.8 V with no
+   > translators**, and `IOVDD` cannot be moved off 1.8 V (`U10` is a fixed `ADP1715ARMZ-1.8`).
+   > **I2C needs no shifter; the audio clock does.** Full analysis: `docs/rig-logic-levels.md`.
 3. **Single-ended vs differential is a per-channel jumper pair**, so mics-differential and
    accelerometer-single-ended coexist on one board with no rework: ADC0 = `P104`/`P105`,
    ADC1 = `P12`/`P14`, ADC2 = `P13`/`P15` (pins 1–2 differential, pins 2–3 single-ended).

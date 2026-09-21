@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# fetch-datasheets.sh — restore the gitignored vendor PDFs the notes in this repo cite.
+# PDFs are gitignored (CLAUDE.md §5: no large binaries), so checksums are pinned here and
+# the documents are restored on demand. analog.com is unreachable from this machine
+# (2026-09-06 scar), so ADI documents come from a mirror; the checksum is what makes that safe.
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+fetch() { # url dest sha256
+  local url="$1" dest="$2" want="$3"
+  if [ -f "$dest" ] && shasum -a 256 "$dest" | grep -q "$want"; then
+    echo "OK    $(basename "$dest") present and matches checksum"; return 0
+  fi
+  mkdir -p "$(dirname "$dest")"
+  echo "fetch $url"
+  local tmp; tmp="$(mktemp)"
+  curl -fsSL --max-time 300 -o "$tmp" "$url"
+  local got; got="$(shasum -a 256 "$tmp" | cut -d' ' -f1)"
+  if [ "$got" != "$want" ]; then
+    rm -f "$tmp"
+    echo "FAIL  checksum mismatch for $(basename "$dest")" >&2
+    echo "      want $want" >&2
+    echo "      got  $got" >&2
+    echo "      The document may have been revised. Verify the new revision by hand," >&2
+    echo "      re-read anything this repo cites from it, then update the pin here." >&2
+    return 1
+  fi
+  mv "$tmp" "$dest"; chmod 644 "$dest"
+  echo "OK    $(basename "$dest") restored"
+}
+
+# EVAL-ADAU1860 User Guide UG-2017 Rev. 0 (26 pp). Cited by docs/rig-logic-levels.md and
+# docs/two-adau1860-channel-allocation.md. Schematic sheets are VECTOR-DRAWN: pdftotext and
+# PyMuPDF get_text() return ~140 chars per sheet and see NONE of the labels. Render the pages
+# and read them as images. See the 2026-09-21 scar in .agent/MEMORY.md.
+fetch \
+  'https://docs.ampnuts.ru/analog.com.datasheet/adau1860/related_data/eval-adau1860-ug-2017.pdf' \
+  "$ROOT/linux/adau1860-pi5/EVAL-ADAU1860_UG-2017.pdf" \
+  'f4744990a98b4622ee1b0224a0fd4c8690f294cb6b48a687f7d1ab0dd4438090'
+
+echo "done"

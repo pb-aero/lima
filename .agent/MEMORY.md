@@ -967,3 +967,40 @@ and harmless.
 it is broken.** Console output is not health. (2) A stream of clean "ruled out" results is evidence
 there is nothing to find, not evidence the fault is exotic. (3) Reach for the kernel's own
 tracepoints early -- they answer "what is actually on the wire" in one capture.
+
+## Scar — a PDF text search is BLIND to a vector-drawn schematic (2026-09-21)
+
+Peter asked whether the ADAU1372 was needed in the DVNC rig. He then told me **three times** that the
+ADAU1860 evaluation board can run 3.3 V. I contradicted him twice, the second time calling my search
+"exhaustive": a full-text regex for `3.3|3V3` across all 26 pages of UG-2017, the complete jumper
+table, and the BOM. It returned the FTDI's LDO and nothing else, so I reported the 3.3 V option did
+not exist.
+
+**My instrument could not see the schematics.** `[measured]` pages 15–22 of UG-2017 carry **~140
+characters of text each against 1,800–9,100 vector paths** — the schematic labels are drawn as glyph
+outlines, so `get_text()` returns the page header and the figure caption and *nothing else*. I
+searched nine schematic sheets, found nothing, and read that as confirmation. **A text search over a
+schematic PDF is not a search; it is a blank page that answers every question with "no".**
+
+He was right. `[fetched]` UG-2017 Figure 14 — the control ports have a **PCA9517DP** I2C buffer and
+**six FXLP34P5X uni-directional translators** between a `3.3V` rail and `IOVDD`. The board does 3.3 V.
+What it does not do is 3.3 V on the **serial audio** headers (P2/P3), which p.12 states are 1.8 V and
+which have no translators — and that is the port the shared BCLK/FSYNC would use.
+
+The generalisable rules:
+
+- **Check whether the page has a text layer before trusting a text search of it.** `len(get_text())`
+  against `len(get_drawings())` per page takes one line and would have caught this immediately. A
+  sheet with 140 chars and 9,000 paths is a drawing, and a drawing must be **rendered and looked at**.
+- **Third time is the instrument, not the human.** §3 says suspect your instrument when a result is
+  surprising; the amendment is that a *person repeating themselves* is itself the surprising result.
+  Peter was the more reliable instrument and I over-rode him twice with a broken one.
+- **It failed toward the answer I expected**, exactly as §3 warns — I already believed the 1860 was
+  1.8 V-only, and the blank pages agreed with me. The one that agrees too neatly is the one to doubt.
+- Same session, a *second* correction of the same kind: I claimed the 1860's ADC2 was free from my own
+  `status.md` summary rather than from the build spec, which allocates it to a third differential mic.
+  **A summary of a source is not the source.** Clone the company repo and read the spec.
+
+Detail: `docs/rig-logic-levels.md`. Vendor PDFs restore via `scripts/fetch-datasheets.sh`.
+Related: [[rp1-i2s-clock-direction]], and the 2026-09-04 punctuation-parsing scar — this makes three
+broken instruments in this lane.
