@@ -38,4 +38,15 @@ fetch \
   "$ROOT/linux/adau1860-pi5/EVAL-ADAU1860_UG-2017.pdf" \
   'f4744990a98b4622ee1b0224a0fd4c8690f294cb6b48a687f7d1ab0dd4438090'
 
+
+# ICM-45686 datasheet, document number DS-000489 Rev. 1.1 (199 pp). Cited by
+# docs/audio-board-io-voltage.md. TDK's own invensense.tdk.com PDF URL and the Mouser mirror
+# both return HTML to curl and to WebFetch (bot wall, same class as the analog.com block);
+# this LCSC CDN path is the one that serves the real PDF. Text layer is present and complete —
+# Tables 3 and 9 extract cleanly with `pdftotext -layout`.
+fetch \
+  'https://wmsc.lcsc.com/wmsc/upload/file/pdf/v2/lcsc/2411220643_TDK-InvenSense-ICM-45686_C22459454.pdf' \
+  "$ROOT/kicad/imu-board/doc/ICM-45686_DS-000489.pdf" \
+  'dbff9a161c741953bca8701a67348d85738a7904c35640ef4c8c44f0e22c3059'
+
 echo "done"
