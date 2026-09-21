@@ -1031,3 +1031,34 @@ a decision. Related: [[verify-at-the-point-of-use]].
 Second, smaller: the ICM-45686 datasheet's own page footers read **DS-000489**, while every
 index and distributor calls it **DS-000577**. Cite what the document says about itself and
 flag the mismatch — do not silently adopt the catalogue number.
+
+## 2026-09-21 — "The datasheet doesn't have it" meant "I didn't grep for it"
+
+I carried `[gap] the ADAU1860's IOVDD absolute maximum is not established` across **three**
+documents, and told Peter twice I could not say whether 3.3 V on an 1860 pin degrades or
+destroys. It is in **Table 10, p.16 of the abridged datasheet** — the file I had already
+downloaded, extracted and grepped for *other* things in the same session:
+
+> Power Supply (AVDD, **IOVDD**, HPVDD, HPVDD_L): **−0.3 V to +1.98 V**
+> Digital Input Voltage (Signal Pins): −0.3 V to **IOVDD + 0.3 V**
+
+At IOVDD 1.8 V that is **2.1 V max on any digital pin**; 3.3 V is 1.2 V over and kills the part.
+That is not a footnote — it is the number the whole level-shifter decision rests on, and it
+would have changed the urgency of every message I wrote about the 3.3 V-into-`SDATAI` hazard.
+
+**What actually went wrong:** I searched the HRM for "absolute maximum", got zero hits, and
+generalised one document's absence into "not established" — without running the same grep against
+the datasheet sitting in the same directory. **A negative result from one document is a fact about
+that document, never about the question.**
+
+**Rule: before writing `[gap]`, grep every artefact already on disk for the term, and say which
+documents you checked.** A `[gap]` that names its search is honest; one that doesn't is a guess
+wearing a tag. Related: [[eval-board-jumper-list-is-not-the-device-limit]] — both are the same
+failure, trusting the first document to hand instead of the right one.
+
+**Second lesson, same day: "unreachable" also meant "I tried three URLs."** I declared UG-2257
+unmirrored after three guesses at one mirror. Peter said try again. A search found the canonical
+ADI URL; curl and WebFetch both fail on analog.com, **but the browser pane fetched it fine** — the
+site serves a save dialog rather than a page, which my own notes had already recorded for the 1372
+datasheet and I did not connect. **Exhaust your instruments before reporting a blocker: curl,
+WebFetch, the browser, and the possibility that the file is already on disk.**

@@ -45,10 +45,17 @@ That follows the chip onto any board we build. The EVB's fixed `ADP1715ARMZ-1.8`
 artifact and the CM5 carrier is someone else's choice — **the 1.8 V IOVDD ceiling is neither.** It is
 the reason this is a rail decision and not a wiring decision.
 
-`[gap]` **The absolute maximum for the 1860's IOVDD is still not established** — the HRM carries no
-absolute-maximum table and the abridged datasheet gives only the operating range. If any 3.3 V net
-reaches an 1860 digital pin on our board, I cannot tell you whether it degrades or destroys. Design so
-the question never arises.
+**CORRECTION, 2026-09-21 (later): this is established, and I was wrong to call it a gap.** The HRM
+indeed has no absolute-maximum table `[measured]` — 337 pages, zero hits for the phrase — but **the
+datasheet does**, and I had that file when I wrote the line above.
+
+`[fetched]` ADAU1860 datasheet Rev. 0, **Table 10, p.16**: Power Supply (AVDD, **IOVDD**, HPVDD,
+HPVDD_L) **−0.3 V to +1.98 V**; Digital Input Voltage (Signal Pins) **−0.3 V to IOVDD + 0.3 V**.
+
+> **At IOVDD = 1.8 V the limit on any digital pin is 2.1 V. 3.3 V is 1.2 V beyond it, and the
+> datasheet says stresses *at or above* the ratings may cause permanent damage. It destroys the part.**
+
+See `docs/audio-board-level-shifter.md` §2.1.
 
 ## 4. The ICM-45686 — the part I expected to block the bank move, and it does not
 

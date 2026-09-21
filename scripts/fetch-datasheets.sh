@@ -59,4 +59,26 @@ fetch \
   "$ROOT/linux/adau1860-pi5/ADAU1860_datasheet.pdf" \
   'b2f6f1196343bc8c7b3e6192eddefbdcd0b5a32b1f968ff56520d8eb2ca61b3a'
 
+# ADAU186x Hardware Reference Manual UG-2257 Rev. 0 (337 pp). Cited by
+# docs/audio-board-level-shifter.md for the SPTx clock-source registers (Tables 277/278, 296).
+# CANNOT BE FETCHED BY SCRIPT. analog.com refuses curl at the connection level and times out to
+# WebFetch; opened in a browser it serves a SAVE DIALOG rather than a page. Download it by hand:
+#   https://www.analog.com/media/en/technical-documentation/user-guides/adau186x-hardware-reference-manual-ug-2257.pdf
+# then drop it at the path below. The checksum here is what verifies the hand-download.
+#   want sha256 7c9b64be89d887d1594daa0e01881fa042cfa35b80788b04939062ef95fa58c2
+verify_manual() { # dest sha256
+  local dest="$1" want="$2"
+  if [ ! -f "$dest" ]; then
+    echo "MISSING $(basename "$dest") — download by hand, see the comment above"; return 0
+  fi
+  if shasum -a 256 "$dest" | grep -q "$want"; then
+    echo "OK    $(basename "$dest") present and matches checksum"
+  else
+    echo "FAIL  $(basename "$dest") present but checksum DOES NOT MATCH" >&2; return 1
+  fi
+}
+verify_manual \
+  "$ROOT/linux/adau1860-pi5/ADAU186x_HRM_UG-2257.pdf" \
+  '7c9b64be89d887d1594daa0e01881fa042cfa35b80788b04939062ef95fa58c2'
+
 echo "done"

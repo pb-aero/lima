@@ -33,8 +33,38 @@ real content of the ruling, and it is a sound reason to take it.
 are separate supplies with separate jobs; do not fold them together to save an LDO — mic supply noise
 sets ANC noise performance.
 
-`[gap]` **The 1860's IOVDD absolute maximum is still not established.** No abs-max table in the HRM.
-Design so that no 3.3 V net can ever reach an 1860 pin, including during power sequencing.
+### 2.1 The absolute maximum — found, and it is the hard number this whole design turns on
+
+**I previously recorded this as an open gap across three documents. It was not a gap; I had the file
+and did not read the table.** Corrected here and in `docs/audio-board-io-voltage.md`.
+
+`[fetched]` ADAU1860 datasheet Rev. 0, **Table 10, p.16, Absolute Maximum Ratings**:
+
+| Parameter | Rating |
+|---|---|
+| **Power Supply (AVDD, IOVDD, HPVDD, HPVDD_L)** | **−0.3 V to +1.98 V** |
+| Digital Supply (DVDD) | −0.3 V to +1.21 V |
+| **Digital Input Voltage (Signal Pins)** | **−0.3 V to IOVDD + 0.3 V** |
+| Analog Input Voltage (Signal Pins) | −0.3 V to AVDD + 0.3 V |
+| Input Current (except supply pins) | ±20 mA |
+
+> **With IOVDD at 1.8 V, the absolute maximum on any digital pin is 2.1 V. A 3.3 V drive is 1.2 V
+> over it.** The datasheet's wording is stricter than the usual formula — *"Stresses **at or above**
+> those listed under Absolute Maximum Ratings may cause permanent damage"* — so 3.3 V on an 1860
+> digital pin **destroys the part**. It does not degrade it, and it does not merely fail to clock.
+
+This turns the level shifter from a signal-integrity choice into a **protection requirement**, and it
+retires the hedged language in my earlier notes. Three consequences:
+
+1. **No 3.3 V net may reach an 1860 pin under any condition**, including power sequencing and the
+   window where one rail is up and the other is not. §7 keeps sequencing as an open item for exactly
+   this reason.
+2. **The translators must be the only path** between the 3.3 V domain and the codec. No test point, no
+   DNP resistor, no "temporary" jumper that bridges the two sides.
+3. `[repo]` **The 17 Sep duplex test sheet is a part-killer as written** — it sends CM5 playback
+   straight into the 1860's `SDATAI`. JULIETT already flagged it (`2026-09-21-002`) and asked that
+   Chris be told before he plugs anything in. **This is the number that says why: 3.3 V into a pin
+   rated 2.1 V maximum.**
 
 ## 3. What actually crosses the boundary
 
@@ -81,12 +111,11 @@ codec does internally. Wire `BCLK_0` and `FSYNC_0`; leave port 1's clock pins lo
 
 > **But the question does not disappear — it changes into a worse one. See §3.1.**
 
-### 3.1 The real open question: are `SDATAO_0` and `SDATAO_1` sample-aligned?
+### 3.1 Keeping `SDATAO_0` and `SDATAO_1` sample-aligned — answered
 
 Three capture channels need two data lanes, so the mic array arrives on **two different serial ports**
-of the same codec. Only port 0's clock reaches the host. `[gap]` **Whether port 1's transmit logic is
-phase-locked to port 0's when both are master is not established** — it is a register-map question and
-the register map is in UG-2257, which I could not fetch (§7).
+of the same codec, and only port 0's clock reaches the host. If port 1 ran its own free generator, the
+two halves of the array could sit at a fixed sample offset from each other.
 
 This matters more than the pin count. `[repo]` The three mics are an ANC array: their **relative**
 phase is the signal. A fixed sample offset between the mic on port 1 and the two on port 0 would not
@@ -95,19 +124,39 @@ show up as a dropout or an error bit — it would show up as an array that quiet
 −13.6 dB. This is the same failure class as the 2026-09-02 ASRC scar: **the data keeps flowing and
 nothing reports a fault.**
 
-Two ways to close it, in order of preference:
+**CLOSED — and the fix is two traces, not a register bet.** `[fetched]` UG-2257 Rev. 0, Tables 277
+and 296 (`SPT0_CTRL2` @ 0x4000C0E1, `SPT1_CTRL2` @ 0x4000C0F4) and Table 278 (`SPT0_CTRL3`
+@ 0x4000C0E2):
 
-1. **Read the UG-2257 register map** for the serial-port clock source, and confirm both ports derive
-   from one generator in master mode. Cheapest, and it should be done before layout either way.
-2. **Measure it** once hardware exists: one tone into two mics on different ports, cross-correlate the
-   captured channels, and confirm zero sample offset. This is a test we should run regardless of what
-   the register map says — the register map tells you the design intent, not the silicon.
+| Field | Setting | Meaning |
+|---|---|---|
+| `SPTx_BCLK_SRC` [2:0] | **000** | **BCLK is from external source** |
+| | 001 / 010 / 011 / 100 | generate BCLK at 3.072 / 6.144 / 12.288 / 24.576 MHz |
+| `SPTx_LRCLK_SRC` [3:0] | **0000** | **LRCLK is from external** |
+| | 0001 / 0010 / … | generate LRCLK at 48 / 96 / … kHz |
 
-`[gap]` If it turns out the ports *cannot* be aligned, the fix is not a translator change: it is
-putting all three mics on one port in TDM. `[measured]` **RP1 cannot receive TDM** — its lanes are
+**Both ports carry an identical, independent pair of source selects, and both can take their clocks
+externally.** So the design need not hope that two on-chip generators stay in step:
+
+> **Set SPT0 to generate (`BCLK_SRC` = 001, `LRCLK_SRC` = 0001) and SPT1 to external
+> (`BCLK_SRC` = 000, `LRCLK_SRC` = 0000), then wire `BCLK_1` ← `BCLK_0` and `FSYNC_1` ← `FSYNC_0`
+> on the board.** Port 1 is then clocked by the very same edges as port 0, and alignment is by
+> construction rather than by configuration.
+
+Those two traces sit **on the 1.8 V side, before the translators** — no translator bits, no extra
+part. They are the cheapest thing in this document and they delete a silent failure mode. **Draw
+them.**
+
+The cross-correlation measurement is still worth running once hardware exists — one tone into two
+mics on different ports, checked for zero sample offset. The register map states design intent; only
+a capture proves the silicon. But it is now a confirmation rather than a gate.
+
+**Aside, recorded because it will come up again:** `[fetched]` `SPTx_SAI_MODE` (Table 276, bit 0)
+selects `0 = STEREO (I2S, LJ, RJ)` / `1 = TDM`, so **the ADAU1860 can do TDM** and all three mics
+could ride one port. That does not help here — `[measured]` **RP1 cannot receive TDM**, its lanes are
 stereo pairs and the driver's 2/4/6/8-channel rule is 1/2/3/4 lanes, not slot counts
-(`linux/adau1860-pi5/duplex/MULTILANE.md`). So that escape route is closed on this host, and the
-question would become an architecture problem rather than a wiring one. **Settle it early.**
+(`linux/adau1860-pi5/duplex/MULTILANE.md`). **The limit is the host, not the codec.** Worth
+remembering if the host ever changes.
 
 ### 3.2 Every serial pin is multiplexed — the trap that already bit us once
 
@@ -192,13 +241,14 @@ Two real design rules survive that:
 
 - ~~Who is clock master on this board.~~ **Ruled by Peter, 2026-09-21: the 1860.** DIR straps fixed,
   MCLK does not cross, five lines.
-- `[gap]` **Whether `SDATAO_0` and `SDATAO_1` are sample-aligned when both ports are master** — §3.1.
-  This is the one that can fail silently, and it is an architecture question, not a wiring one.
-- `[gap]` **UG-2257, the ADAU186x Hardware Reference Manual, is not mirrored anywhere I can reach.**
-  Every URL tried returned 404 or HTML. The abridged datasheet has no register map and no
-  absolute-maximum table, so both of the gaps above need it. **Someone should pull it from ADI by hand
-  and commit the checksum** — several questions are now queued behind this one document.
-- `[gap]` **The 1860's IOVDD absolute maximum.** Still no abs-max table in the HRM.
+- ~~Whether `SDATAO_0` and `SDATAO_1` are sample-aligned.~~ **Closed — §3.1.** Slave SPT1's clocks to
+  SPT0's externally; two traces on the 1.8 V side.
+- ~~The 1860's IOVDD absolute maximum.~~ **Closed — §2.1. It is 1.98 V**, and digital pins are
+  IOVDD + 0.3 V. This was never a real gap: I had the datasheet and failed to read Table 10.
+- ~~UG-2257 is not reachable.~~ **Closed.** analog.com refuses curl and WebFetch but serves the file
+  to a browser as a download. It is now at `linux/adau1860-pi5/ADAU186x_HRM_UG-2257.pdf`, gitignored,
+  with its checksum verified by `scripts/fetch-datasheets.sh` (that entry checks a hand-placed file
+  rather than fetching — the comment there carries the URL and the method).
 - `[gap]` **Power sequencing between the 1.8 V and 3.3 V rails** has not been checked against the
   translator's requirements or the codec's. Read both datasheets' sequencing sections before layout.
 - **Nothing here is measured.** `[measured]` Every proven capture on this project ran with the host at
@@ -208,9 +258,11 @@ Two real design rules survive that:
 
 - **EVAL-ADAU1860 UG-2017 Rev. 0** — Table 8 (p.12, serial audio pin functions), Table 9 (p.12–14,
   connector descriptions). Restore with `scripts/fetch-datasheets.sh`; PDFs gitignored per CLAUDE.md §5.
-- **ADAU1860 datasheet Rev. 0**, 30 pp — Table 9 (serial port timing), Table 13 (pin functions).
-  Pinned in `scripts/fetch-datasheets.sh`, verified this session.
-- **ADAU186x Hardware Reference Manual UG-2257 Rev. 0** — pp. 16, 337. **Not mirrored; see §7.**
+- **ADAU1860 datasheet Rev. 0**, 30 pp — **Table 10 (p.16, Absolute Maximum Ratings)**, Table 9
+  (serial port timing), Table 13 (pin functions). Pinned in `scripts/fetch-datasheets.sh`.
+- **ADAU186x Hardware Reference Manual UG-2257 Rev. 0**, 337 pp — Table 276 (`SPT0_CTRL1`),
+  Table 277 (`SPT0_CTRL2`), Table 278 (`SPT0_CTRL3`), Table 296 (`SPT1_CTRL2`); pp. 189, 212.
+  Hand-downloaded from analog.com via a browser; checksum verified by `scripts/fetch-datasheets.sh`.
 - **TI SN74AVC4T774** — 4-bit dual-supply bus transceiver with configurable voltage level:
   `https://www.ti.com/lit/ds/symlink/sn74avc4t774.pdf`
 - `[repo]` `kicad/aeronode-lite-audio/after/*.kicad_sch`, `linux/adau1860-pi5/duplex/MULTILANE.md`,
