@@ -1488,3 +1488,27 @@ path. None of the level-shift work bites until the 1860 joins for eight channels
 - `[gap]` IOVDD absolute-maximum for the 1860 — no abs-max table in the HRM. Do not put 3.3 V on P43.
 - Still true and still overdue: **`status.md` is ~105 KB**, needs archiving to `journal.md`.
 - **`.agent/orders.md` does not exist**; reconciling against status alone. Tailscale still stopped.
+
+---
+
+## 2026-09-21 (later) — the logic-level finding is SENT, and the outbox path is rule-restricted
+
+- **OUT** `peter/outbox/2026-09-21-001_the-1860s-18v-clock-does-not-meet-the-1372s-vih.md`,
+  delivered as `inbox/john/2026-09-21-001_lima-...`. Sync commit `f2dafd5`, push verified at full
+  length `[measured]`. Carries §1 the V_IH threshold failure, §2 why the 1860's IOVDD cannot move,
+  §3 topology A/B **awaiting JULIETT's ruling**, §4 the shared-MCLK/ASRC gap, §5 I2C needs no
+  shifter, §6 Monday unaffected, §7 my ADC2 retraction. The "NOT SENT" carry from this morning is
+  **closed**.
+- **`[measured]` The push tripped a GitHub ruleset**: `File path is restricted — peter/outbox/...`,
+  reported as **"Bypassed rule violations"**, and it landed anyway. My own outbox is inside a
+  restricted path and my token carries bypass. Worth raising with INDIA — a lane whose owner needs
+  a bypass to write it is a misconfigured ruleset, and bypass means the guard is not actually
+  guarding anyone who has it.
+- **Inbox triage.** `2026-09-18-002` (Chris takes the 1372: ADXL354 + IM68A130A) and
+  `2026-09-18-003` (Monday bench plan; **differential-mic receivers DROPPED**, John's call; RME
+  proves every input before any mic; P11's ~64 dB shortfall stands, stick to P9/P10) are both
+  `to: chris/INDIA, cc: peter/LIMA` — **not mine to answer**, left `status: open` for Chris.
+  Everything else in `inbox/peter/` is accounted for.
+- **Open, waiting on others:** JULIETT's ruling on topology A/B (nothing ordered until then), and
+  no reply yet to `2026-09-18-005` — the J22 tip/ring blocker that says build-spec stage 4 cannot
+  pass as written. That one is in his inbox, unanswered.
