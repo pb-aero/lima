@@ -151,12 +151,43 @@ The cross-correlation measurement is still worth running once hardware exists �
 mics on different ports, checked for zero sample offset. The register map states design intent; only
 a capture proves the silicon. But it is now a confirmation rather than a gate.
 
-**Aside, recorded because it will come up again:** `[fetched]` `SPTx_SAI_MODE` (Table 276, bit 0)
-selects `0 = STEREO (I2S, LJ, RJ)` / `1 = TDM`, so **the ADAU1860 can do TDM** and all three mics
-could ride one port. That does not help here — `[measured]` **RP1 cannot receive TDM**, its lanes are
-stereo pairs and the driver's 2/4/6/8-channel rule is 1/2/3/4 lanes, not slot counts
-(`linux/adau1860-pi5/duplex/MULTILANE.md`). **The limit is the host, not the codec.** Worth
-remembering if the host ever changes.
+### 3.1.1 Why three mics cannot ride one lane — it is a mismatch, not a host limit
+
+**Correction to an earlier version of this note, which said "RP1 cannot receive TDM — the limit is
+the host, not the codec."** That was too coarse in both halves. Peter asked the sharper question:
+could the Pi take several slots on one data line with an ordinary frame clock, without it being TDM?
+In general that is a real mode and many parts do it. **Here it is closed, by the codec.**
+
+`[fetched]` UG-2257 Table 26, p.43 — frame-clock mode is **welded to** `SPTx_SAI_MODE`:
+
+| Format | Frame Clock Mode (`SPTx_SAI_MODE`) |
+|---|---|
+| I2S / Left Justified / Right Justified | **0 — 50% duty cycle** |
+| TDM | **1 — single bit clock wide pulse** |
+
+And the text on the same page is explicit about what 50%-duty buys you: *"In stereo modes, **both
+edges of frame clock determine where data is placed**, and the left channel maps to the output for
+Channel 0, while the right channel maps to the output for Channel 1. In TDM mode only, the rising
+edge of frame clock determines where data is placed."*
+
+> **So the ADAU1860 offers exactly two options: a 50%-duty frame clock carrying two channels, or a
+> multi-slot frame (to TDM16) carrying a single-BCLK-wide pulse. There is no 50%-duty multi-slot mode
+> on this part.** One serial port is two channels, full stop — which is why three mics need two ports.
+
+The host side then fails against the only multi-channel option the codec has. `[measured]`
+`RESULTS-2026-09-07`: with `SPT0_CTRL1` bit 0 `SAI_MODE` = TDM, `aplay` returns `EIO` with
+`hw_ptr=0` and the DMA channel fails to stop; the same run at `SAI_MODE` = STEREO passes cleanly.
+Setting `dai-tdm-slot-num` on the Linux side does not change what the DesignWare block locks to.
+
+**Stated precisely, so the record is right:**
+
+- `[measured]` RP1 will not lock to **the ADAU1860's** narrow TDM pulse.
+- `[gap]` Whether RP1 could receive TDM from *some other* source with a different sync width is **not
+  established** — and it does not matter here, because the 1860 cannot produce anything else.
+- `[fetched]` The **codec** is the binding constraint for a 50%-duty multi-slot link, not the host.
+
+**Worth remembering if either end changes.** A codec offering 50%-duty multi-slot would put all three
+mics on one lane and halve the lines crossing the translator. This one does not.
 
 ### 3.2 Every serial pin is multiplexed — the trap that already bit us once
 
