@@ -49,4 +49,14 @@ fetch \
   "$ROOT/kicad/imu-board/doc/ICM-45686_DS-000489.pdf" \
   'dbff9a161c741953bca8701a67348d85738a7904c35640ef4c8c44f0e22c3059'
 
+# ADAU1860 datasheet Rev. 0 (30 pp). Cited by docs/audio-board-level-shifter.md for Table 9 (serial
+# port timing: tSOD, tSS/tSH, fBCLK) and Table 13 (pin functions). This is the ABRIDGED datasheet —
+# it carries no register map and no absolute-maximum table. The register map lives in the ADAU186x
+# Hardware Reference Manual UG-2257, which is NOT mirrored here: every URL tried returned 404 or
+# HTML. Fetch it by hand from ADI when a register-level question needs settling.
+fetch \
+  'https://docs.ampnuts.ru/analog.com.datasheet/adau1860/adau1860.pdf' \
+  "$ROOT/linux/adau1860-pi5/ADAU1860_datasheet.pdf" \
+  'b2f6f1196343bc8c7b3e6192eddefbdcd0b5a32b1f968ff56520d8eb2ca61b3a'
+
 echo "done"

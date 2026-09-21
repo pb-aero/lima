@@ -64,14 +64,61 @@ playback channel needs **one**:
 | I2S0 Data In | host → 1860 | **down** 3.3 → 1.8 |
 | External MCLK | host → 1860 | **down**, *only if the host supplies MCLK* |
 
-**Five lines, six if MCLK is host-supplied.** Directions assume the **1860 is clock master**, which is
-what John ruled for the rig. `[gap]` **That has not been ruled for this board.** If the host is master
-instead, the two clock rows flip direction — the part below handles either, but the direction straps
-have to be set to match, so the ruling must land before layout.
+**Five lines. Peter ruled the 1860 clock master on this board (2026-09-21)**, as John ruled for the
+rig, which settles the table above and two things that follow from it:
 
-`[gap]` Whether both serial ports' bit and frame clocks can be tied together on the 1.8 V side is not
-established. If they can, the table above is complete; if each port needs its own pair, add two more
-lines. **Check the register map before committing the pin count.**
+- **MCLK does not cross.** A master 1860 clocks itself from its crystal — `[fetched]` Table 13, ball
+  B6 `XTALO` / B7 `XTALI/MCLKIN`. There is no second codec on this board needing a shared MCLK, so the
+  external-MCLK row drops. **Five lines, not six.**
+- **Every DIR strap is now fixed and can be tied to a rail.** Direction never changes at runtime, so
+  no GPIO is spent on it and no boot-order question arises. Four bits strapped for A→B (up), one for
+  B→A (down).
+
+**The pin count does not depend on the two ports sharing a clock**, which is what I thought needed the
+register map. It does not: `[measured]` RP1 has **one** bit clock and **one** frame clock for the whole
+four-lane block (`linux/adau1860-pi5/duplex/MULTILANE.md`), so only one pair can cross whatever the
+codec does internally. Wire `BCLK_0` and `FSYNC_0`; leave port 1's clock pins local.
+
+> **But the question does not disappear — it changes into a worse one. See §3.1.**
+
+### 3.1 The real open question: are `SDATAO_0` and `SDATAO_1` sample-aligned?
+
+Three capture channels need two data lanes, so the mic array arrives on **two different serial ports**
+of the same codec. Only port 0's clock reaches the host. `[gap]` **Whether port 1's transmit logic is
+phase-locked to port 0's when both are master is not established** — it is a register-map question and
+the register map is in UG-2257, which I could not fetch (§7).
+
+This matters more than the pin count. `[repo]` The three mics are an ANC array: their **relative**
+phase is the signal. A fixed sample offset between the mic on port 1 and the two on port 0 would not
+show up as a dropout or an error bit — it would show up as an array that quietly steers wrong, and
+`docs/analog-mics` already records that the IM73A135's +12° at 75 Hz alone caps cancellation at
+−13.6 dB. This is the same failure class as the 2026-09-02 ASRC scar: **the data keeps flowing and
+nothing reports a fault.**
+
+Two ways to close it, in order of preference:
+
+1. **Read the UG-2257 register map** for the serial-port clock source, and confirm both ports derive
+   from one generator in master mode. Cheapest, and it should be done before layout either way.
+2. **Measure it** once hardware exists: one tone into two mics on different ports, cross-correlate the
+   captured channels, and confirm zero sample offset. This is a test we should run regardless of what
+   the register map says — the register map tells you the design intent, not the silicon.
+
+`[gap]` If it turns out the ports *cannot* be aligned, the fix is not a translator change: it is
+putting all three mics on one port in TDM. `[measured]` **RP1 cannot receive TDM** — its lanes are
+stereo pairs and the driver's 2/4/6/8-channel rule is 1/2/3/4 lanes, not slot counts
+(`linux/adau1860-pi5/duplex/MULTILANE.md`). So that escape route is closed on this host, and the
+question would become an architecture problem rather than a wiring one. **Settle it early.**
+
+### 3.2 Every serial pin is multiplexed — the trap that already bit us once
+
+`[fetched]` Table 13: `BCLK_0/MP3` (ball B2), `BCLK_1/MP7` (D5), `SDATAI_1/MP10` (D4) — **every serial
+audio pin doubles as a multipurpose I/O.**
+
+`[measured]` This exact family of mux cost us the Monday bring-up on the other codec: mainline's
+ADAU1372 driver writes `MODE_MP6 = 0x12` (CLKOUT) at probe, which the datasheet says disables
+`ADC_SDATA1` — two of four channels with no data path, found on 2026-09-18. **A pin that is strapped
+correctly in the schematic can still be taken away by a driver write at probe time.** Confirm the MP
+assignments in the driver, not only in the netlist.
 
 **Plus the control port, which is easy to forget.** The 1860's I2C is IOVDD-referenced, so `SCL` and
 `SDA` cross too. `[fetched]` UG-2017 Table 9: P5 is `SCL_SCLK`, P6 is `SDA_MISO`, P4 is `ADDR0_SS`.
@@ -106,9 +153,22 @@ their own pull-ups, sized for the bus capacitance.
 `[derived]` At 48 kHz with a stereo lane of 2 × 32 bits, the bit clock is
 48 000 × 64 = **3.072 MHz**, a period of **325.5 ns** and a half-period of **162.8 ns**.
 
-The AVC4T774's propagation delay is single-digit nanoseconds and its rated throughput is 500 Mbps
-`[fetched]`. **The translator consumes on the order of 1–2% of a half-period.** At these rates the
-part is not a constraint.
+`[fetched]` ADAU1860 datasheet Table 9 gives the codec's own numbers, and they are the larger term:
+
+| Parameter | Limit | Note |
+|---|---|---|
+| `fBCLK` | 0.512–**24.576 MHz** | 3.072 MHz is comfortably inside |
+| `tSOD` — `SDATAO_x` delay from `BCLK_x` falling | **0–16 ns** at IOVDD ≥ 1.62 V | **0–32 ns** at IOVDD 1.1 V min |
+| `tSS` / `tSH` — `SDATAI_x` setup / hold to `BCLK_x` rising | 3 ns / 10 ns | the host must meet these |
+| `tTS` — `BCLK_x` falling to `FSYNC_x` skew (master) | 6 ns | |
+
+**Our 1.8 V IOVDD puts us in the 16 ns bracket, not the 32 ns one** — a further argument for 1.8 V
+over the 1.1 V end of the codec's range.
+
+`[derived]` Worst case on a capture line: `tSOD` 16 ns + translator delay of a few ns ≈ **20 ns against
+a 162.8 ns half-period, about 12%.** Ample. The AVC4T774's 500 Mbps rating `[fetched]` is two orders of
+magnitude beyond what this bus asks of it. **The translator is not the constraint; the codec's own
+output delay is, and it is still comfortable.**
 
 Two real design rules survive that:
 
@@ -130,9 +190,14 @@ Two real design rules survive that:
 
 ## 7. What is still open
 
-- `[gap]` **Who is clock master on this board.** Sets every DIR strap. Must be ruled before layout.
-- `[gap]` **Whether the two serial ports can share one bit/frame clock pair.** Sets the line count,
-  and therefore whether two translators is right or generous. Checkable in the register map.
+- ~~Who is clock master on this board.~~ **Ruled by Peter, 2026-09-21: the 1860.** DIR straps fixed,
+  MCLK does not cross, five lines.
+- `[gap]` **Whether `SDATAO_0` and `SDATAO_1` are sample-aligned when both ports are master** — §3.1.
+  This is the one that can fail silently, and it is an architecture question, not a wiring one.
+- `[gap]` **UG-2257, the ADAU186x Hardware Reference Manual, is not mirrored anywhere I can reach.**
+  Every URL tried returned 404 or HTML. The abridged datasheet has no register map and no
+  absolute-maximum table, so both of the gaps above need it. **Someone should pull it from ADI by hand
+  and commit the checksum** — several questions are now queued behind this one document.
 - `[gap]` **The 1860's IOVDD absolute maximum.** Still no abs-max table in the HRM.
 - `[gap]` **Power sequencing between the 1.8 V and 3.3 V rails** has not been checked against the
   translator's requirements or the codec's. Read both datasheets' sequencing sections before layout.
@@ -143,7 +208,9 @@ Two real design rules survive that:
 
 - **EVAL-ADAU1860 UG-2017 Rev. 0** — Table 8 (p.12, serial audio pin functions), Table 9 (p.12–14,
   connector descriptions). Restore with `scripts/fetch-datasheets.sh`; PDFs gitignored per CLAUDE.md §5.
-- **ADAU186x Hardware Reference Manual UG-2257 Rev. 0** — pp. 16, 337.
+- **ADAU1860 datasheet Rev. 0**, 30 pp — Table 9 (serial port timing), Table 13 (pin functions).
+  Pinned in `scripts/fetch-datasheets.sh`, verified this session.
+- **ADAU186x Hardware Reference Manual UG-2257 Rev. 0** — pp. 16, 337. **Not mirrored; see §7.**
 - **TI SN74AVC4T774** — 4-bit dual-supply bus transceiver with configurable voltage level:
   `https://www.ti.com/lit/ds/symlink/sn74avc4t774.pdf`
 - `[repo]` `kicad/aeronode-lite-audio/after/*.kicad_sch`, `linux/adau1860-pi5/duplex/MULTILANE.md`,
