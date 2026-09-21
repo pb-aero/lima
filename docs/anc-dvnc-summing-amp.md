@@ -413,3 +413,99 @@ fight §19 already named.
 `[gap]` If DO-214A names the reference input level that sensitivity is referred to, **§18's "level
 needs ears" gap closes analytically** — that would be the first route to the number that does not
 need an aircraft, and it has been open since 2026-09-09.
+
+---
+
+## 11. 2026-09-21 — "is there a better approach than relays?" Three answers, and the best one deletes the switch
+
+`docs/h1-headset-mute-relay.md` §5 already ruled on this, and **the ruling is right and should not be
+overturned**: *"a TS3A-class analog switch or a PhotoMOS has an undefined state when its rail
+collapses; a de-energised relay has a metal contact in a known position."* §5 even says it exists so
+the decision does not get "improved". **For `K1` that still holds.** What follows does not touch it.
+
+But the design has moved twice since §5 was written, and the ruling only half-applies now.
+
+### 1. `K2` is the one where the argument inverts — because §10.2 made it a shunt
+
+§5's reasoning is exactly right **for a series element**. `K2` is no longer one. §10.2 turned it into
+an **AC-only shunt**: `C1` 100 µF in series with a Form A contact to `AC_GND`.
+
+**For a shunt, the safe state is OPEN** — open means unmuted, means the pilot's mic reaches the
+radio. And a PhotoMOS with no LED current is not in an *undefined* state; it is **definitively open**,
+which is the safe state by construction. §5's objection does not survive the topology change.
+
+What a PhotoMOS buys here:
+
+- **Optical isolation** — which is the real reason a relay was good on this node (§11.3 leans on
+  coil-to-contact isolation as part of the barrier). A bare MOSFET or CMOS switch would bond our
+  control domain to `AC_GND`; a PhotoMOS does not.
+- **Bidirectional** by construction (back-to-back MOSFETs), so no body diode clipping half the audio.
+- `[fetched]` **~1 mA of LED current** against the `G6K`'s 21.1 mA coil, SOP-4 against
+  10 × 6.5 × 5.2 mm, no bounce, no contact wear, silent.
+
+**And the cost, which is real and must not be glossed.** `R_ON` adds to the shunt impedance and makes
+the mute shallower. `[derived]`, at 300 Hz against a 470 Ω source:
+
+| Shunt element | Z of the shunt leg | Mute depth |
+|---|---|---|
+| `G6K` contact, 100 mΩ | 5.4 Ω | **−38.9 dB** (§10.2's figure, reproduced) |
+| PhotoMOS at 1.0 Ω | 6.3 Ω | −37.6 dB |
+| PhotoMOS at 4.5 Ω `[fetched]` AQY225R2S | 9.8 Ω | **−33.8 dB** |
+| PhotoMOS at 4.5 Ω, `C1` raised to 220 µF | 6.9 Ω | −36.8 dB |
+
+§10.2 already noted −39 dB *"is not −∞"*. Losing another 5 dB may or may not be acceptable — that is
+a judgement about how deep a mic mute has to be, not an arithmetic question. **Pick a ≤1 Ω part, or
+raise `C1`, or keep the relay.** All three are defensible; picking one blind is not.
+
+### 2. The bigger miss is not the switch element — `K1`'s duty cycle changed and the power budget did not follow
+
+`docs/h1-headset-mute-relay.md` §6 states: *"Two relays energised = 42 mA off `5V_NODE`, **only while
+AeroNode is speaking**."* That was true under §16's changeover.
+
+**It is no longer true.** Under §3's summing amplifier, `K1` must be **energised for the amplifier to
+be in circuit at all** — which is the normal operating state for the whole flight, not a moment while
+AeroNode talks. `[derived]` **21.1 mA continuous, ~105 mW**, off a battery-powered box that §25 ruled
+runs on its own pack in flight. **The architecture change moved a momentary load onto the continuous
+budget and the note never followed it.**
+
+The fix is not a different switch. It is a **coil economiser**: full voltage to pull in, reduced
+voltage to hold. `[derived]` holding at 50% of rated halves the current and quarters the power;
+at 40% it is ~8 mA and ~17 mW. **It preserves fail-passive exactly** — remove the drive and the relay
+releases, unchanged. `[gap]` the `G6K`'s must-hold voltage was not read this session; it sizes the part.
+
+### 3. The best answer: the switch may not need to exist at all
+
+**`K1` exists because we chose series insertion.** §3 broke the panel-to-headset connection so the
+amplifier could own the node, and a broken safety-critical path needs a fail-passive way to re-make
+itself. That is the whole reason there is a relay.
+
+**Parallel injection needs no switch.** §21's original arrangement leaves the panel connected to the
+headset by permanent copper and injects alongside it — **fail-passive by topology, with nothing to
+fail.** It was left behind for one reason: `[derived]` §21 found a passive parallel sum cannot fight
+a low-impedance source, costing about **28 dB of authority**.
+
+**But that number was computed for broadband ANC, and broadband ANC is no longer the technology.**
+§10 ruled the target is a Bose A30, and on an ANR headset broadband ANC cannot close its loop at all
+— **DVNC is what survives**. And DVNC cancels *tonal residue the A30's own ANR leaves*, which is very
+much smaller than raw cockpit noise. **It may need 20–30 dB less authority than the number that
+killed parallel injection.**
+
+If so, the summing amplifier, `U3`, the OPA1622, the split rail, `K1` and its whole fail-passive
+argument all fall away together, and AeroNode injects through a transformer into a line that is never
+broken.
+
+> `[gap]` **One lookup decides it, and it is the same lookup that already had two other jobs.** §10
+> flagged the A30's quoted **96.5 ± 3.5 dBA SPL to RTCA DO-214A**. If DO-214A names the reference
+> input level, then: (a) `U3`'s ratio falls out, (b) §18's "level needs ears" gap closes, and now
+> (c) **we can compute whether §25's 40.5 mV of parallel-injected anti-tone is enough for DVNC** —
+> and therefore whether any of the series-insertion machinery is needed.
+>
+> **That makes DO-214A the highest-value thing to read on this entire design.**
+
+### And one option to reject explicitly, so nobody proposes it later
+
+**A latching relay** (`G6KU-2F-Y`) removes the continuous coil current entirely — and **breaks
+fail-passive**, because it holds its last state through a power loss. If AeroNode dies while the
+latch is set to "through the amplifier", the pilot loses their radio and nothing restores it. **Do not
+use one here.** The continuous coil current is the price of a known state, and §2's economiser is the
+right way to reduce it.
