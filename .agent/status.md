@@ -1512,3 +1512,47 @@ path. None of the level-shift work bites until the 1860 joins for eight channels
 - **Open, waiting on others:** JULIETT's ruling on topology A/B (nothing ordered until then), and
   no reply yet to `2026-09-18-005` — the J22 tip/ring blocker that says build-spec stage 4 cannot
   pass as written. That one is in his inbox, unanswered.
+
+### 2026-09-21 — Peter: "is there a better approach than relays to switch the audio path?"
+
+`docs/anc-dvnc-summing-amp.md` §11. **§5 of the mute-relay doc already ruled this and the ruling is
+right — I did not overturn it.** *"A PhotoMOS has an undefined state when its rail collapses; a
+de-energised relay has a metal contact in a known position."* §5 even says it exists so the decision
+does not get "improved". **That stands for `K1`.**
+
+**But the design moved twice since §5, and the ruling only half-applies now:**
+
+1. **`K2` is no longer a series element — §10.2 made it a shunt, and the failure-state argument
+   INVERTS.** For a shunt the safe state is **open**, and a PhotoMOS with no LED current is not
+   undefined, it is **definitively open**. A PhotoMOS there buys optical isolation (the real reason a
+   relay suited that node, §11.3), bidirectionality, `[fetched]` **~1 mA vs 21.1 mA**, SOP-4, no
+   bounce. **Cost is real:** `[derived]` `R_ON` adds to the shunt leg — §10.2's **−38.9 dB** becomes
+   **−33.8 dB** at 4.5 Ω, −37.6 dB at 1 Ω, −36.8 dB if `C1` goes to 220 µF. §10.2 already said −39 dB
+   *"is not −∞"*. Whether losing 5 more is acceptable is a judgement, not arithmetic.
+
+2. **The bigger miss is not the switch element.** §6 records *"42 mA, only while AeroNode is
+   speaking."* **Under the summing amplifier `K1` must be energised for the amp to be in circuit at
+   all — continuously, the whole flight.** `[derived]` 21.1 mA, ~105 mW, off the pack §25 ruled runs
+   on its own battery. **An architecture change moved a momentary load onto the continuous budget and
+   the note never followed it.** Fix is a **coil economiser** (full to pull in, reduced to hold),
+   which preserves fail-passive exactly. `[gap]` `G6K` must-hold voltage not read.
+
+3. **BEST ANSWER: the switch may not need to exist.** `K1` exists *because* we chose series
+   insertion. **Parallel injection needs no switch — fail-passive by topology.** It was rejected for
+   costing 28 dB of authority — **but that number was computed for broadband ANC, and §10 ruled an
+   A30, where broadband ANC cannot close its loop at all.** DVNC is what survives, and it cancels the
+   *tonal residue the A30's own ANR leaves*, which may need **20–30 dB less authority**. If so the
+   summer, `U3`, the OPA1622, the split rail and `K1` all fall away together.
+
+**Rejected explicitly:** a latching relay kills the coil current and **breaks fail-passive** — it
+holds its last state through a power loss. Do not use one here.
+
+### Open
+
+36. `[gap]` **READ RTCA DO-214A. It is now the highest-value action on this whole design** — one
+    lookup with three jobs. If it names the reference input level behind the A30's *96.5 ± 3.5 dBA
+    SPL*: (a) `U3`'s ratio falls out (open 34), (b) §18's "level needs ears" gap closes (open 31),
+    and (c) we can compute whether §25's **40.5 mV** of parallel-injected anti-tone is enough for
+    DVNC — **which decides whether the summing amplifier and `K1` are needed at all.**
+37. `[gap]` `G6K` must-hold voltage, to size the coil economiser.
+38. **Ruling needed:** how deep must the mic mute be? Decides PhotoMOS vs relay for `K2`.
