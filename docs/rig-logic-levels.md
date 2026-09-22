@@ -136,9 +136,43 @@ skew into the clock path.
 
 **Recommendation: B for December, A as the end-state.** Either way the I2C needs nothing (§3).
 
-**Do not use an auto-direction translator on the clocks.** TXB/TXS-class parts are for bidirectional
-low-drive signalling and behave badly on a 3.072 MHz bit clock. Use a fixed-direction part —
-`SN74AVC4T774` or `AVC8T245` class.
+### RULED 2026-09-22 by Peter — `TXS0108E` in push-pull for the bench, `SN74LVC8T245` for the product
+
+**And I am retracting the blanket ban I wrote here.** My earlier text said *"do not use an
+auto-direction translator on the clocks… not TXB/TXS"* without qualification. **That was too broad and
+the speed half of it was simply wrong.**
+
+`[fetched]` TXS0108E datasheet (SCES650), title page: the part is *"8-Bit Bi-Directional,
+Level-Shifting, Voltage Translator **for Open-Drain and Push-Pull Applications**"*, rated
+**110 Mbps push-pull** (1.2 Mbps open-drain), with **1.4–3.6 V on A and 1.65–5.5 V on B, VCCA ≤ VCCB**.
+For our 1.8 V ↔ 3.3 V case that is in range with the ordering satisfied, and **110 Mbps is 36× our
+3.072 MHz bit clock.** Speed is not the objection and I should not have implied it was.
+
+What TI actually says, `[fetched]` p.19, is a preference rather than a prohibition: the device is *"an
+excellent choice… where an **open-drain** driver is connected"* and *"**appropriate** for applications
+where a push-pull driver is connected… **but the TXB0104 device… might be a better option** for such
+push-pull applications."* Its stated design target is MMC/SD-class interfaces that *"start out in a
+low-speed open-drain mode and then switch to a higher speed push-pull mode."*
+
+**So the bench choice is sound.** Three real cautions, all from the datasheet's own text, and all
+about the bench's flying leads rather than the part:
+
+1. **The high level is held by a resistor, not a buffer.** `[fetched]` p.18: smart pull-ups are
+   **4 kΩ when driving high** (40 kΩ when driving low), giving *"a modest DC-current sourcing
+   capability of hundreds of micro-amperes."* An edge is driven hard by a **~30 ns one-shot**; after
+   that the line is merely held.
+2. **Keep the leads SHORT — this is the one that bites on a bench.** `[fetched]` p.18: *"With very
+   heavy capacitive loads, the one-shot can time-out before the signal is driven fully to the positive
+   rail,"* and TI warns of *"one-shot retriggering, bus contention, output signal oscillations, or
+   other adverse system-level affects."* Long unshielded jumpers between eval boards are exactly the
+   capacitance this is describing.
+3. `[gap]` **The datasheet's rates assume the driving device's output impedance is under 50 Ω**
+   (`[fetched]` p.18). **The ADAU1860's serial-port output impedance is not established.** If it is
+   high, `tPHL` and the achievable rate both degrade from the published figures.
+
+**One structural note, not an objection:** auto-direction is solving a problem we do not have — every
+signal here is fixed-direction. On the bench that is an acceptable trade for a part on hand; in the
+product it is why a strapped-direction part is the better answer, which is what Peter ruled.
 
 ## 7. "Sample-synchronous" needs a shared MCLK, not just a shared frame clock
 

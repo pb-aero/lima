@@ -257,9 +257,49 @@ up, one or two down. A bank-direction part like the `SN74AVC8T245` has one `DIR`
 and cannot express that. `[repo]` The `SN74AXC4T774` is the newer equivalent and is a fair substitute
 if availability favours it.
 
-> **Do not use TXB/TXS-class auto-direction translators.** They are for bidirectional low-drive
-> signalling and misbehave on a continuously-clocked line. This applies to the bit clock above all.
-> Fixed-direction parts only — the same rule as the rig (`docs/rig-logic-levels.md` §6).
+> **For the product, fixed-direction parts only** — a strapped direction is exactly what we want,
+> since every line here has one permanent direction. See the 2026-09-22 ruling below for the bench,
+> where an auto-direction part on hand is an acceptable trade, and for the correction I owe on how
+> broadly I stated this.
+
+### 4.1 RULED 2026-09-22 by Peter — `SN74LVC8T245` for the product. This supersedes my `AVC4T774` pick.
+
+**Peter's call, and it works.** `[fetched]` SN74LVC8T245 datasheet (SCES584): 8-bit dual-supply bus
+transceiver, **VCCA and VCCB each 1.65 V to 5.5 V**, so 1.8 V ↔ 3.3 V is in range; `DIR` and `OE` are
+**powered from VCCA**, so they must be strapped at the 1.8 V rail, not the 3.3 V one.
+
+Switching characteristics at **VCCA = 1.8 V, VCCB = 3.3 V** `[fetched]` §5.7:
+
+| Direction | `tPLH`/`tPHL` min | max |
+|---|---|---|
+| **A → B** (1.8 V codec → 3.3 V CM5) | 1 ns | **7.4 ns** |
+| **B → A** (3.3 V CM5 → 1.8 V codec) | 0.7 ns | **23.4 ns** |
+
+`[derived]` Against our bit clock — 8 channels over 4 stereo lanes at 48 kHz is **3.072 MHz**, a
+**325.5 ns** period and a **162.8 ns** half-period:
+
+- clocks and capture data travel **A → B** together, so the skew that sets setup/hold is bounded by
+  `max − min` = **6.4 ns, about 4% of a half-period.** Ample.
+- the **playback path is the binding one**: BCLK goes up (≤7.4 ns), the CM5 clocks data out, and that
+  data comes back down (≤23.4 ns) — **≤30.8 ns round trip against the codec's own local BCLK, about
+  19% of a half-period.** Comfortable, and it is the path to watch rather than the clock.
+
+**Two things Peter should have alongside the ruling, neither of them an objection:**
+
+1. **`DIR` is common to all eight bits**, which is the reason my earlier pick was the per-bit
+   `AVC4T774`. It is a **packaging consequence, not a blocker**: our set is ~6 up (BCLK, FSYNC, four
+   capture lanes) and 1–2 down (playback), so it wants **two packages with `DIR` strapped opposite
+   ways** — an 8-bit for the up group with two channels spare, plus a `SN74LVC4T245`-class 4-bit for
+   the down group. That is the same package count as two `AVC4T774`s, so the choice comes down to cost
+   and availability, which is Peter's call to make and not mine.
+2. `[derived]` **LVC does not scale past this configuration.** The B → A asymmetry (23.4 ns against
+   7.4 ns) is because LVC drives slowly at 1.8 V; `AVC`/`AXC` are the low-voltage-optimised families
+   and are far more symmetric. At 3.072 MHz it is irrelevant. **If a bit clock of 12.288 MHz is ever
+   used** — which happens the moment anyone collapses the four stereo lanes into one TDM8 frame — the
+   half-period is 81 ns and that 30.8 ns round trip becomes **38%**, which is marginal. **So the
+   ruling is safe for the ruled multi-lane design and should be revisited if the framing changes.**
+   `[repo]` Multi-lane is the ruled design precisely because RP1 cannot frame TDM, so this is a
+   remote risk, not a live one.
 
 **Control — a proper I2C translator, not a transceiver.** I2C is open-drain and bidirectional on one
 wire, so it cannot go through the AVC4T774. Use the **PCA9517A** (the part on the EVB, so it is the
