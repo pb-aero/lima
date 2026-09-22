@@ -4,8 +4,8 @@
 
 > **THE DECISION IS NOW TAKEN, AND IT IS NOT IN THIS FILE.** See
 > **`docs/audio-board-decision-record.md`**. In short: ANC runs in the earcup on a per-cup codec, not
-> on this board (John's Rev G); the board's codec is recommended as the **ADAU1787**, not the ADAU1761
-> or ADAU1860 compared below; A2B carries distance, not channel count. The research below stands as
+> on this board (John's Rev G); the product's codec is the **ADAU1861** — the ADAU1860's silicon
+> in a 64-lead side-solderable LFCSP — not the ADAU1761 or ADAU1860 compared below; A2B carries distance, not channel count. The research below stands as
 > the reasoning of the day and is kept intact — but §1–§4's framing assumed the board would host the
 > cancellation, and §5 predates the ADXL354 and PDM-mic architecture entirely.
 

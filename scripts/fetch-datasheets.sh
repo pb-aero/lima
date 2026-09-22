@@ -86,8 +86,10 @@ verify_manual \
 # analog.com refuses curl and WebFetch, and serves a browser a SAVE DIALOG rather than a page. Every
 # third-party mirror tried for these two returned HTML. Download by hand from:
 #   https://www.analog.com/media/en/technical-documentation/data-sheets/ADAU1787.pdf
+#   https://www.analog.com/media/en/technical-documentation/data-sheets/ADAU1861.pdf
 #   https://www.analog.com/media/en/technical-documentation/data-sheets/AD2420(W)-AD2426(W)-AD2427(W)-AD2428(W)-AD2429(W).pdf
 verify_manual "$ROOT/docs/datasheets/ADAU1787_RevA.pdf" '69da92c07764915eea7e3dd61ad4351d28fbb06e5b01ba2205809ddbd657a14e'
 verify_manual "$ROOT/docs/datasheets/AD242x_RevC.pdf"   '1d4e9efe621917e7638d0b5423ce1dc2a352ac1ac6f8a5b56c823daa813c311e'
+verify_manual "$ROOT/docs/datasheets/ADAU1861.pdf"      '79740d4eab12475be316d7fcf3d21d227bbc2fc9d2391ff337af3acd2ff217e6'
 
 echo "done"
