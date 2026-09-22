@@ -207,6 +207,28 @@ the 1372's output ASRC sitting in the accelerometer path, and a second codec to 
 > costing us *a third microphone* and starts **blocking the Z axis.** Until it is explained, one 1860
 > carries **two** usable analog channels, and a three-axis accelerometer does not fit.
 >
+> **HYPOTHESIS, 2026-09-22 — it is probably an open jumper, not a defective ADC.** `[repo]`
+> `linux/adau1860-pi5/MIC_INPUT_P11.md` traces the path from the schematic:
+>
+> ```
+> P11 tip   ── TP7 ─ P13 ─ R34 (0R) ─ C26 (22uF) ─ P15 ──► AINP2
+> P11 ring  ── TP6 ──────  R33 (0R) ─ C25 (22uF) ───────► AINN2
+> ```
+>
+> **`P13` and `P15` sit in series with the tip path, and `[repo]` they are ADC2's single-ended /
+> differential selection jumper pair** (ADC0 is `P104`/`P105`, ADC1 is `P12`/`P14`). The ring path
+> passes through neither — an asymmetry that only makes sense if those two are the configuration
+> point. With them open, `AINP2` is simply **not connected to the jack.**
+>
+> **The measurement fits that better than it fits a dead converter.** `[measured]` Unplugged, P11 read
+> **−89.1 dBFS against empty P9 at −25.0 and P10 at −28.7** — it is *quieter*, not louder or stuck. An
+> open input has no antenna and picks up no ambient hum, which is exactly a 60-odd dB drop in floor. A
+> failed ADC would be expected to read zero, full scale, or noise — not a clean, quiet, plausible
+> floor.
+>
+> **If this holds, the Z axis is not blocked and `ADC2` is fine.** `[gap]` It is a hypothesis from the
+> schematic, not a measurement, and the same ninety-second test settles it either way.
+>
 > **This is now the highest-value ninety seconds on the bench:** a known level into P9 and then the
 > same level into P11, back to back, with John's RME. It was an if-time item in
 > `inbox/peter/2026-09-18-003`; on this architecture it gates an axis.
