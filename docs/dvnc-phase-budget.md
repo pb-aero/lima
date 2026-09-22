@@ -12,10 +12,13 @@ repository.
 
 ## 1. The answer in one line
 
-**Uncorrected, this does not work at any coupling-capacitor value.** The best single capacitor still
-leaves a worst-case **13.3° mismatch** across 50–300 Hz, a **−12.7 dB** cancellation floor. **Phase
-calibration is mandatory, not optional** — which is exactly what `[repo]` the parts note already
-concluded for the IM73A135, for the same reason.
+**Uncorrected this does not work at any coupling-capacitor value** — the floor is around **−9 dB** at
+both edges of the 50–300 Hz band. **But the correction splits in two, and only half of it is hard:**
+the accelerometer contributes a **pure 148 µs delay** (fixable with a 7-sample digital delay, exactly),
+while the microphone contributes a **frequency-dependent** phase error that needs a real correcting
+filter. After the delay is removed the residual is **18.2° at 50 Hz falling to 4.7° at 300 Hz** — all
+of it the mic's. **Phase calibration is mandatory, not optional**, which is what `[repo]` the parts note
+already concluded for the IM73A135, for the same reason.
 
 ## 2. The mic, specified
 
@@ -44,37 +47,70 @@ extrapolated.
 **Consistency check:** a single-pole 11 Hz high-pass alone would give +8.3° at 75 Hz against the
 specified +11°, so the roll-off is steeper than one pole. That matters in §4.
 
-## 3. The reference path
+## 3. The reference path — it is a SINC filter, and that changes everything
 
-| Term | 50 Hz | 75 Hz | 150 Hz | 300 Hz |
+**`[assumed]` single-pole was wrong.** `[fetched]` ADXL354/ADXL355 datasheet Rev. D, p.25, FILTER:
+
+> *"The analog, low-pass antialiasing filter in the ADXL354/ADXL355 provides a **fixed 3 dB bandwidth
+> of approximately 1.5 kHz**... **The shape of the filter response in the frequency domain is that of a
+> sinc filter.**"*
+
+A sinc in frequency is a boxcar in time, which is **linear phase — constant group delay, not the
+arctan(f/fc) of a pole.** `[derived]` For a boxcar, |sinc(πfT)| = 0.707 at fT = 0.4429, so a 1.5 kHz
+−3 dB point gives **T = 295 µs and a group delay of 148 µs** — **7.1 samples at 48 kHz.**
+
+Two more `[fetched]` corrections to what the repo carried:
+
+- The **overall** 3 dB bandwidth is **1.9 kHz**, not 1.5 kHz: *"the MEMS sensor has a resonance at
+  2.4 kHz and mechanically amplifies the output response at around 1 kHz and above... Therefore, the
+  overall 3 dB bandwidth of the ADXL354 is 1.9 kHz."* The 1.5 kHz figure is the antialias filter alone.
+- **ADI publishes no phase or group delay for the ADXL354's analog path.** Table 10's group delays
+  belong to the **ADXL355's digital** decimation filter, which the analog-output ADXL354 does not have.
+  The 148 µs above is derived from the stated sinc shape, not a vendor number.
+
+| | 50 Hz | 75 Hz | 150 Hz | 300 Hz |
 |---|---|---|---|---|
-| ADXL354 internal LPF `[assumed]` single-pole 1500 Hz | −1.91° | −2.86° | −5.71° | −11.31° |
-| 100 nF C0G into 1 MΩ (fc 1.59 Hz) `[derived]` | +1.82° | +1.21° | +0.61° | +0.30° |
-| **net** | **−0.09°** | **−1.65°** | **−5.10°** | **−11.01°** |
+| ADXL354 sinc, 148 µs group delay `[derived]` | −2.66° | −3.99° | −7.97° | −15.94° |
+| 100 nF C0G into 1 MΩ `[derived]` | +1.82° | +1.21° | +0.61° | +0.30° |
+| **reference path net** | **−0.84°** | **−2.77°** | **−7.36°** | **−15.64°** |
+| IM72D128V mic | +20.0° `[graph]` | +11.0° `[fetched]` | +8.0° `[graph]` | +5.0° `[graph]` |
+| **mismatch** | **20.84°** | **13.77°** | **15.36°** | **20.64°** |
+| **uncorrected floor** | **−8.8 dB** | **−12.4 dB** | **−11.5 dB** | **−8.9 dB** |
 
-> `[assumed]` **The ADXL354 filter shape is load-bearing and unverified.** `[repo]` The note says "LPF
-> fixed 1500 Hz"; I have modelled it as a single pole. `[repo]` JULIETT also specified **C1–C3 removed**
-> on the eval board — if the 1500 Hz figure assumes those fitted, every number in that row moves.
-> **Check the ADXL354 datasheet before this table is used for anything.**
+The single-pole assumption had understated the accelerometer's lag by about 1.4×, so the uncorrected
+budget is **worse** than §1 first suggested — around −9 dB at both band edges.
 
-## 4. No single capacitor tracks the mic
+## 4. But the correction splits cleanly into an easy half and a hard half
 
-The tempting move is to give the reference path the mic's own 11 Hz roll-off so the phase error becomes
-common-mode. `[derived]` It does not survive the band:
+**This is the useful result.** The two paths fail in structurally different ways:
 
-| Coupling | 50 Hz | 75 Hz | 150 Hz | 300 Hz | worst | floor |
-|---|---|---|---|---|---|---|
-| 100 nF (fc 1.59 Hz) | +20.1° | +12.7° | +13.1° | +16.0° | 20.1° | −9.1 dB |
-| 15 nF (fc 10.6 Hz) | +9.9° | +5.8° | +9.7° | +14.3° | 14.3° | −12.1 dB |
-| 10 nF (fc 15.9 Hz) | +4.3° | +1.9° | +7.7° | +13.3° | **13.3°** | **−12.7 dB** |
+| | Mechanism | Correction |
+|---|---|---|
+| **ADXL354** | linear phase, **constant 148 µs group delay** | **a pure digital delay — 7 samples at 48 kHz.** Exact, trivial, no filter design |
+| **IM72D128V** | frequency-dependent group delay: `[fetched]` **60 µs at 250 Hz, 10 µs at 600 Hz, 6 µs at 1 kHz** | **a real phase-correcting filter.** Irreducible |
 
-**Why it cannot work:** `[derived]` to match the mic at 50 Hz a single pole needs **fc = 18.2 Hz**; to
-match it at 300 Hz it needs **fc = 26.2 Hz**. One pole cannot be in two places, because the mic's
+`[derived]` Delay the mic path by 148 µs and the accelerometer's entire contribution disappears. What
+remains is the mic's own curve against the coupling cap:
+
+| | 50 Hz | 75 Hz | 150 Hz | 300 Hz |
+|---|---|---|---|---|
+| residual after the pure delay | 18.18° | 9.79° | 7.39° | 4.70° |
+| floor | −10.0 dB | −15.4 dB | −17.8 dB | −21.7 dB |
+
+**So the accelerometer is not the problem — the microphone is**, and specifically its low-frequency
+roll-off, which is worst exactly where DVNC works hardest. A delay line gets you nothing at 50 Hz; only
+a phase-shaping filter does.
+
+## 4.1 No single capacitor tracks the mic
+
+The tempting move is to give the reference path the mic's own 11 Hz roll-off so the error becomes
+common-mode. `[derived]` It does not survive the band: to match at 50 Hz a single pole needs
+**fc = 18.2 Hz**; at 300 Hz it needs **26.2 Hz**. One pole cannot be in two places, because the mic's
 roll-off is steeper than first order (§2).
 
-**A single frequency is misleading here.** At 75 Hz alone, 10 nF gives a 1.9° mismatch and a −29.7 dB
-floor, which looks like a 16 dB win over 100 nF. **Across the band it is worth 3.6 dB.** Optimising a
-broadband quantity at one frequency is how you get a number that is true and useless.
+**A single frequency is misleading here.** At 75 Hz alone, 10 nF gives a small mismatch and looks like
+a 16 dB win over 100 nF. Across the band it is worth a few dB. Optimising a broadband quantity at one
+frequency is how you get a number that is true and useless.
 
 ## 5. What follows for the design
 
@@ -101,7 +137,10 @@ broadband quantity at one frequency is how you get a number that is true and use
 
 ## 7. Still open
 
-- `[assumed]` **ADXL354 filter shape and corner** — §3. The largest unverified term.
+- ~~ADXL354 filter shape and corner.~~ **Closed — §3. It is a sinc, 148 µs of linear-phase group
+  delay.** `[gap]` remaining: ADI publishes no phase or group delay for the analog path, so the 148 µs
+  is derived from the stated shape and should be confirmed on the bench — conveniently, by the same
+  two-distance measurement as the codec skew, since the two sit in series in one channel.
 - `[gap]` **ADC ↔ DMIC relative group delay inside the codec.** `docs/accel-vs-pdm-mic-skew.md`
   establishes ADI publishes neither path and five registers move it. **Measurement, on the shipping
   configuration.** This budget assumes it is zero, which it is not.

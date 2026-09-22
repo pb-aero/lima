@@ -100,4 +100,9 @@ fetch \
   "$ROOT/docs/datasheets/IM72D128V_v01_00.pdf" \
   '14f9b744735d3c9c5dd62e9e09f092c44efdea37bf5c131e568dd1661acdbde2'
 
+# ADXL354/ADXL355 datasheet Rev. D (45 pp). Cited by docs/dvnc-phase-budget.md for the FILTER section
+# (p.25: sinc shape, 1.5 kHz antialias, 1.9 kHz overall) and the 32 k output resistor. Hand-downloaded
+# via the browser - analog.com refuses curl and WebFetch.
+verify_manual "$ROOT/docs/datasheets/ADXL354_355_RevD.pdf" 'd54235c1db7ffea74ee9c4a361294204eb8927c20657484aefb935eafb29e56c'
+
 echo "done"
