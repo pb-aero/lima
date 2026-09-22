@@ -211,3 +211,98 @@ this rig had the 1372 driving the host at 3.3 V.
 - `[repo]` `john/agents/2026-09-10_dvnc-rig-build-spec/README.md`,
   `john/outbox/2026-09-18-001`, `linux/adau1860-pi5/duplex/MULTILANE.md`,
   `linux/adau1372-evb/FOUR-CHANNEL-1372.md`, `docs/two-adau1860-channel-allocation.md`.
+
+
+---
+
+## 8 · Propagation delay and phase lag with the translator inserted — measured against two separate budgets
+
+**Date added:** 2026-09-22 · Peter asked what the level shifter costs in propagation delay and phase
+lag. The short answer is that it buys into **two unrelated budgets**, and it is negligible in the one
+people worry about and material only in the one nobody asks about.
+
+### 8.1 The framing that matters: the translator is not in the ANC loop
+
+**The anti-noise control loop does not cross the level shifter.** `[repo]` (JULIETT, 2026-09-10, and
+John): the cup's fast loop is **analog in → ADC → FastDSP → DAC → analog out, entirely local to the
+codec**, with the 48 kHz link bridged by the part's own ASRCs. The translator sits on the **path to
+the CM5**, which records and monitors. **So "phase lag" in the ANC sense does not arise from it at
+all** — there is no mechanism by which it can contribute.
+
+And treated as plain transport delay to the host, a translator moves **already-sampled data**. A
+sample that arrives 7 ns late is still the same sample, captured at the codec's own ADC at the codec's
+own clock. The only thing lateness can do is **miss a setup window** — which is §8.3, a timing-
+integrity question, not a latency one.
+
+### 8.2 The numbers · `[fetched]` datasheet maxima at VCCA = 1.8 V, VCCB = 3.3 V
+
+| Part / direction | `tPHL` | `tPLH` | worst | % of a 162.8 ns half-period | % of a 20.833 µs sample |
+|---|---|---|---|---|---|
+| **TXS0108E push-pull** A→B | 5.7 ns | 6.5 ns | **6.5 ns** | 3.99% | 0.031% |
+| **TXS0108E push-pull** B→A | 7.4 ns | 5.8 ns | **7.4 ns** | 4.55% | 0.036% |
+| **SN74LVC8T245** A→B | — | — | **7.4 ns** | 4.55% | 0.036% |
+| **SN74LVC8T245** B→A | — | — | **23.4 ns** | 14.38% | 0.112% |
+| ⚠ **TXS0108E open-drain** A→B | 9.3 ns | **466 ns** | **466 ns** | **286%** | 2.24% |
+
+Bit clock is **3.072 MHz** (8 channels over 4 stereo lanes, 2 × 32 bit each, 48 kHz) — a **325.5 ns**
+period and a **162.8 ns** half-period.
+
+> **The surprise, stated because it is the opposite of what one would assume:** in this configuration
+> **the TXS0108E is the more symmetric part** — 6.5 / 7.4 ns against the LVC8T245's 7.4 / 23.4 ns. LVC
+> drives slowly at 1.8 V, so its B→A leg is three times the TXS's. **The reason to prefer LVC in the
+> product is therefore not speed** — it is that a strapped direction has no one-shot, no
+> direction-sensing and no capacitance-dependent failure mode. Worth being clear about, so nobody
+> defends the product choice on a performance argument that does not hold.
+
+### 8.3 Where the nanoseconds actually go — the serial-bus timing budget
+
+This is the budget the translator really spends, and it is about setup and hold, not phase.
+
+- **Clocks and capture data travel the same way** (codec → CM5), so what sets setup/hold is
+  **channel-to-channel skew**, bounded by `max − min` within a direction: **6.4 ns for LVC A→B, ≈4% of
+  a half-period.** Ample.
+- **The binding path is playback round trip** — BCLK up, the CM5 clocks data out, data comes back
+  down — measured against the codec's own *local* BCLK, which was never translated:
+
+| | round trip | % of a half-period |
+|---|---|---|
+| **TXS0108E** | 6.5 + 7.4 = **13.9 ns** | **8.5%** |
+| **SN74LVC8T245** | 7.4 + 23.4 = **30.8 ns** | **18.9%** |
+
+Both comfortable. **This, not the clock, is the path to watch**, and it is the number that would go
+marginal if the framing ever changed (a 12.288 MHz bit clock has an 81 ns half-period, where 30.8 ns
+is 38%).
+
+### 8.4 Phase lag, if you want it in degrees anyway — `φ = 360 · f · τ`
+
+`[derived]` from the maxima above, against the codec's own ADC-to-DAC group delay for scale
+(`[fetched]` UG-2257 Table 8 gives 12.9 µs at 192 kHz; the 48 kHz figure is JULIETT's extrapolation
+and is `[derived]`, not characterised by ADI):
+
+| Contributor | 40.01 Hz | 100 Hz | 500 Hz | 1 kHz |
+|---|---|---|---|---|
+| TXS0108E round trip (13.9 ns) | 0.0002° | 0.0005° | 0.0025° | **0.005°** |
+| LVC8T245 round trip (30.8 ns) | 0.0004° | 0.0011° | 0.0055° | **0.011°** |
+| ADAU1860 group delay @192 kHz `[fetched]` | 0.19° | 0.46° | 2.32° | **4.64°** |
+| ADAU1860 group delay @48 kHz `[derived]` | 0.65° | 1.62° | 8.10° | **16.2°** |
+
+> **At 1 kHz the translator contributes five to eleven thousandths of a degree while the codec
+> contributes 4.6° to 16.2°.** The codec's own converter chain is **419× to 3237×** larger. **The
+> translator is not a phase-lag consideration — it is four orders of magnitude below the term that
+> sets the answer.** If phase budget is tight, the lever is the codec's internal rate (192 kHz buys
+> 12.9 µs against ~45 µs at 48 kHz), never the translator.
+
+### 8.5 The one number that is not negligible, and it is a cliff rather than a slope
+
+⚠ **`tPLH` on the TXS0108E collapses from 6.5 ns to 466 ns if it operates open-drain rather than
+push-pull** — a factor of **72**, and **286% of a half-period**, so the bit clock cannot pass at all.
+
+**This is why Peter's "push-pull configuration" qualifier is load-bearing and not a detail.** The
+distinction is not a degradation; it is working versus not working. The part decides for itself which
+mode it is in, based on the driving device's edge and the one-shot firing correctly — which is exactly
+what §"keep the leads short" above is protecting, and `[gap]` why the ADAU1860's unestablished
+serial-port output impedance (TI assumes < 50 Ω) is the open risk on the bench.
+
+**Diagnostic, stated before the run:** if a captured clock shows edges arriving hundreds of ns late,
+or the link fails outright while every register reads correct, **suspect open-drain operation and lead
+capacitance first** — not the codec, and not the framing.
