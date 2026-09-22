@@ -117,6 +117,46 @@ board it is a Vref resistor (R5→R4) `[repo]`, which is where JULIETT's `2026-0
 *rig*. Our carrier is `kicad/aerosense-cm5/` and I have not read how it does it. **Read that before
 promising the bank can move.**
 
+### 5.1 The Hailo 8L is NOT affected by a 1.8 V GPIO bank — added 2026-09-22
+
+**Peter's question, and it is the right instinct aimed at the wrong part.** Moving the CM5's GPIO
+bank to 1.8 V cannot touch the Hailo 8L, confirmed four independent ways:
+
+1. `[repo]` `docs/aeronode-cm5-software-rev1.md` §parts: *"**NPU** — Hailo 8L on the PCIe M.2 slot,
+   its own TPS564252 rail."* It is a PCIe device on its own supply.
+2. `[repo]` our carrier schematic (`~/aerosense/aeronode/aerosense/cm5.kicad_sch`, read-only grep):
+   the PCIe path is `PCIE_CLK_N/P`, `PCIE_RX_N/P`, `PCIE_TX_N/P` and `PCIE_PWR_EN` — and
+   **`PCIE_PWR_EN` is CM5 connector pin 105**, a dedicated pin, *not* one of the 28 header GPIOs.
+   Nothing about the M.2 slot crosses the GPIO bank on our board.
+3. `[fetched]` CM5 datasheet: `GPIO_VREF` powers **the GPIO bank only** — tied to `CM5_1.8V` or
+   `CM5_3.3V` (or an external 2.5 V) — and covers **28 GPIO pins**, the ones matching the Pi 5
+   40-pin header. The **PCIe x1 Gen 2 root complex "is operated as a separate power domain."**
+4. `[fetched]` Hailo: the Hailo-8L M.2 module is a **PCIe Gen-3 2-lane** part in M.2 key B+M / A+E,
+   and the M.2 interface needs no GPIO as part of its standard interface.
+
+> **So the NPU is out of this decision entirely.** Whatever we do about the 1.8 V / 3.3 V split, the
+> Hailo keeps its PCIe domain and its own rail.
+
+**One new hard fact worth carrying:** `[fetched]` **`GPIO_VREF` must be powered for the CM5 to start
+up correctly.** It cannot be left floating during a rework or a bring-up experiment — this is a
+start-up dependency, not just a signalling reference.
+
+**Where the concern DOES bite**, because the instinct was sound even though the part was wrong.
+`GPIO_VREF` moves **all 28 bank pins at once**, so the exposures are whatever else is strapped there:
+
+| On the bank | At 1.8 V | Status |
+|---|---|---|
+| ADAU1860 I²S (BCLK/FSYNC/4 lanes) | **the point of the exercise** | wanted |
+| ICM-45686 `VDDIO` | fine — and *better*: `[fetched]` Table 3 allows up to 3.6 V, and 1.8 V gains a latch-up class | checked |
+| **1860 I²C, host side of the EVB translators** | **expects 3.3 V** — `[fetched]` UG-2017 Fig 14 | **⚠ exposure** |
+| everything else on the 28 pins | unknown | `[gap]` **unaudited — this is still the blocker** |
+
+`[gap]` **Unchanged: how the bank voltage is actually set on our carrier.** `GPIO_VREF` is a CM5
+connector pin, so *something* on the carrier drives it, but `kicad/aerosense-cm5/` in this repo is an
+empty mirror and the live design is unversioned at `~/aerosense/`. **The mechanism must be read off
+that project before anyone promises the bank can move.** The R5→R4 Vref resistor is the *official IO
+board's* mechanism, not necessarily ours.
+
 ## 6. The honest part — what I got wrong and what I could not get
 
 - **I expected the ICM-45686 to be the blocker** and it is the opposite: the part is happier at 1.8 V
