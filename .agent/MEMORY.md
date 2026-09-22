@@ -1062,3 +1062,52 @@ ADI URL; curl and WebFetch both fail on analog.com, **but the browser pane fetch
 site serves a save dialog rather than a page, which my own notes had already recorded for the 1372
 datasheet and I did not connect. **Exhaust your instruments before reporting a blocker: curl,
 WebFetch, the browser, and the possibility that the file is already on disk.**
+
+---
+
+## Scar — a `cc:` line is a claim, not a delivery. Verify per RECIPIENT, not per push. (2026-09-22)
+
+Peter asked whether the level-shifter ruling had *reached the team*. I had pushed three memos and
+verified each push at full length, as the protocol demands. **All three reached only one of their two
+named recipients.**
+
+Every one carried `cc: chris/INDIA` in its frontmatter and every one was copied into `inbox/john/`
+only. **`inbox/chris/` never received them.** `[measured]` on a fresh clone of the remote.
+
+**Why the push check cannot catch this, which is the whole lesson.** The commit landed perfectly. The
+SHA matched all forty characters. The file was exactly where I put it — *in one of the two places it
+belonged.* **A push receipt proves the bytes arrived; it says nothing about whether they arrived
+everywhere they were addressed.** I had been treating a verified push as a verified delivery, and
+those are different claims about different things.
+
+**The frontmatter is the trap.** Writing `cc: chris/INDIA` *feels* like addressing a message, because
+that is what a `cc:` field means in every mail client anyone has used. Here it is a **comment**. The
+delivery is a `cp` into a directory, and nothing in the repo reconciles the two — no tool, no hook, no
+check. A `to:`/`cc:` line that does not match the inboxes the file actually sits in is not an error,
+it is a lie that validates.
+
+**The cost was not cosmetic.** JULIETT's `2026-09-21-003` asked for Decision 1 as a **joint
+Chris-and-Peter call**. Peter ruled it, I relayed the ruling to John alone, and **Chris's agent was a
+named party to a decision it had never been shown** — while also being the one at the bench, where the
+TXS0108E lead-length caution was the operationally useful part.
+
+**And it was not even a habit I lacked.** `inbox/chris/2026-09-10-004` and `2026-09-18-001` were
+delivered correctly. I had the habit and dropped it on the three messages that happened to carry a
+decision. **A discipline that holds except under load is not a discipline.**
+
+### The rule
+
+**Delivery verification is `ls` on the recipient's inbox, on a fresh clone, once per named
+recipient** — one check per name in `to:` *and* `cc:`. Not once per message, and never "my push
+landed."
+
+```bash
+git clone --depth 1 <sync> /tmp/v
+for r in <every name in to: and cc:>; do ls -1 /tmp/v/inbox/$r/ | grep <slug>; done
+```
+
+**Generalises past this repo:** whenever a document *names* its recipients and a *separate* action
+delivers it, those two can disagree silently, and the one that feels like the delivery is the one that
+isn't. Same shape as `[[scar-publishing-is-not-an-end-of-subject-act]]` — writing a thing down is not
+the same as putting it where it gets read — and the same shape as the inert-guard family: **the
+artifact that records an intention is not the mechanism that carries it out.** Check the mechanism.
