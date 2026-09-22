@@ -105,4 +105,11 @@ fetch \
 # via the browser - analog.com refuses curl and WebFetch.
 verify_manual "$ROOT/docs/datasheets/ADXL354_355_RevD.pdf" 'd54235c1db7ffea74ee9c4a361294204eb8927c20657484aefb935eafb29e56c'
 
+# IM73A135V01 datasheet V1.20 (18 pp, Infineon). The analog differential mic - the cups' FF/FB
+# sensors. Cited by docs/mic-comparison-im73-vs-im72.md. Infineon serves this to curl directly.
+fetch \
+  'https://www.infineon.com/dgdl/Infineon-IM73A135-DataSheet-v01_00-EN.pdf' \
+  "$ROOT/docs/datasheets/IM73A135V01_v1_20.pdf" \
+  'c45dffc1cd10abcca82df0fd62f502564e5c5b67e69324756e06286228e0993a'
+
 echo "done"
