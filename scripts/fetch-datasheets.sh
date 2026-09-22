@@ -14,7 +14,9 @@ fetch() { # url dest sha256
   mkdir -p "$(dirname "$dest")"
   echo "fetch $url"
   local tmp; tmp="$(mktemp)"
-  curl -fsSL --max-time 300 -o "$tmp" "$url"
+  # A User-Agent is REQUIRED for infineon.com: without one it returns an empty body, and the
+  # checksum then fails against e3b0c442... (the sha256 of zero bytes). Measured 2026-09-22.
+  curl -fsSL --max-time 300 -A "Mozilla/5.0" -o "$tmp" "$url"
   local got; got="$(shasum -a 256 "$tmp" | cut -d' ' -f1)"
   if [ "$got" != "$want" ]; then
     rm -f "$tmp"
