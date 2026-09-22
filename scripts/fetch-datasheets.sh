@@ -92,4 +92,12 @@ verify_manual "$ROOT/docs/datasheets/ADAU1787_RevA.pdf" '69da92c07764915eea7e3dd
 verify_manual "$ROOT/docs/datasheets/AD242x_RevC.pdf"   '1d4e9efe621917e7638d0b5423ce1dc2a352ac1ac6f8a5b56c823daa813c311e'
 verify_manual "$ROOT/docs/datasheets/ADAU1861.pdf"      '79740d4eab12475be316d7fcf3d21d227bbc2fc9d2391ff337af3acd2ff217e6'
 
+# IM72D128V datasheet v01.00 (19 pp, Infineon). Cited by docs/dvnc-phase-budget.md for Table 2
+# (phase response, group delay, LF roll-off, POLARITY) and Figures 4/5. Infineon serves this to
+# curl directly - no browser needed, unlike analog.com.
+fetch \
+  'https://www.infineon.com/dgdl/Infineon-IM72D128V-DataSheet-v01_00-EN.pdf' \
+  "$ROOT/docs/datasheets/IM72D128V_v01_00.pdf" \
+  '14f9b744735d3c9c5dd62e9e09f092c44efdea37bf5c131e568dd1661acdbde2'
+
 echo "done"
