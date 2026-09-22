@@ -1591,3 +1591,44 @@ runs at 1.8 V**, and the part I expected to block that turned out to prefer it.
 - **Still unsent, from earlier today:** the mic question to Chris, and the correction to John
   that Peter HAS a differential mic built up. **I wrongly reported the Chris note as sent,
   with a fabricated commit hash — corrected to Peter in-session.**
+
+---
+
+## 2026-09-22 — the audio board decision record is written
+
+- **Delivered.** `docs/audio-board-decision-record.md`, commit `0d7f344`, push verified at full
+  length `[measured]`. `h1-audio-board-codec-selection.md` keeps its reasoning and gains a banner
+  pointing here — its "research, no decision taken" line has stood since 6 September.
+- **Ruled:** ANC runs in the earcup (John's Rev G — already true, I had failed to connect it to the
+  codec question); translators not a 1.8 V bank (Peter, sync `98cdd18`).
+- **Recommended, NEEDS PETER'S RULING:** the **ADAU1787**. Four single-ended analog inputs,
+  8 independent DMICs, dedicated DMIC clock balls, FastDSP to 768 kHz, 5 µs group delay, two MICBIAS,
+  two DACs. Beats the 1372 (no DSP, paired filters, DMIC steals `ADC_SDATA1`) and the 1860 (3 ADCs,
+  1 mono DAC, no MICBIAS).
+- **Finding:** A2B gives the Pi 4 channels while the bus carries 32 — it buys distance, not channel
+  count. Rev G wants 6 upstream. **Six into four does not go** and the subset is unmade.
+- **New datasheets pinned** by hand-download checksum: ADAU1787 Rev. A, AD242x Rev. C, plus UG-2257
+  and the ADAU1860 datasheet from yesterday. `verify_manual()` added to `fetch-datasheets.sh` for the
+  analog.com documents curl cannot reach.
+
+### Open, and item 1 gates the rest
+
+1. **Peter's ruling on the 1787.** Everything else assumes it.
+2. `[gap]` **42-ball WLCSP, 0.35 mm pitch** — confirm the assembler can place and inspect it. The one
+   item that could veto the part for non-silicon reasons.
+3. `[gap]` The **A2B upstream subset** — flight wants 2 channels, development wants 6, the pipe is 4.
+4. `[gap]` **Accel↔PDM-mic skew** — must be measured on the shipping config; ADI publishes neither
+   path's group delay. Applies to the 1787 exactly as to the 1860.
+5. `[gap]` **Two devices on one RP1 block** — never measured; needs an `EVAL-AD2428WG1BZ` we do not
+   have. Worth adding to the EVAL-ADAU1787 order.
+6. `[gap]` **Which carrier the CM5 is on** — still Peter's, still unanswered, not answerable remotely.
+7. `[gap]` **Rail sequencing** 1.8 / 0.9 / 3.3 V against the 1.98 V ceiling.
+
+### Carry — correspondence
+
+- **Nothing sent about any of this.** The decision record has not gone to JULIETT or INDIA, and it
+  contradicts nothing of John's but *extends* his Rev G architecture onto the board. **Peter's ruling
+  should land before it is circulated.**
+- Still Peter's from yesterday: the differential mic he built up (JULIETT and the 22 Sep no-mic bench
+  sheet both still assume he has none), and the 1860–Pi harness wiring question that JULIETT asked be
+  passed to Chris.
