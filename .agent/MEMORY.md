@@ -1111,3 +1111,32 @@ delivers it, those two can disagree silently, and the one that feels like the de
 isn't. Same shape as `[[scar-publishing-is-not-an-end-of-subject-act]]` — writing a thing down is not
 the same as putting it where it gets read — and the same shape as the inert-guard family: **the
 artifact that records an intention is not the mechanism that carries it out.** Check the mechanism.
+
+## 2026-09-22 — Read page 1 of the manual you are quoting
+
+I spent a day citing UG-2257 — frame-clock modes, slot routing, clock-source selects — and
+recommended the ADAU1787 as the product codec on a 42-ball 0.35 mm WLCSP, flagging the package
+as a risk I could see no way around. **Peter found the ADAU1861: the same silicon in a 64-lead
+side-solderable LFCSP.**
+
+Its existence is on **page 1 of UG-2257**: *"includes ADAU1860 and ADAU1861."* I had that file
+open all day and read past the sentence naming the part that solved the problem.
+
+**Two compounding errors, and the second is the instructive one:**
+
+1. I recommended the 1787 for its **DSP** — one turn after establishing that ANC runs in the
+   earcups and the board therefore needs no DSP. **I optimised for a requirement my own previous
+   answer had deleted.** When a decision changes the requirements, re-derive the choice from the
+   new requirements, don't carry the old shortlist forward.
+2. I searched UG-2257 for *mechanisms* and never once read its **scope**. A reference manual's
+   first page says which parts it covers — that is a menu of alternatives, free, and I skipped it.
+
+**Rule: when a part looks like the only option and its package or price is painful, read the
+family scope on page 1 of its reference manual before accepting the constraint.** ADI (and TI,
+and everyone) ships the same die in several packages and temperature grades; the manual tells you
+so in its first paragraph. Related: [[eval-board-jumper-list-is-not-the-device-limit]] and
+[[negative-result-from-one-document]] — all three are the same failure, trusting the document I
+happened to open over the one that answers the question.
+
+Bonus the same page paid for: the 1861's PLL takes 30 kHz–36 MHz and so locks to a 48 kHz FSYNC
+directly, closing an MCLK-distribution item the 1372's 8–27 MHz PLL had forced.

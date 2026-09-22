@@ -1632,3 +1632,41 @@ runs at 1.8 V**, and the part I expected to block that turned out to prefer it.
 - Still Peter's from yesterday: the differential mic he built up (JULIETT and the 22 Sep no-mic bench
   sheet both still assume he has none), and the 1860–Pi harness wiring question that JULIETT asked be
   passed to Chris.
+
+---
+
+## 2026-09-22 (later) — Decision B ruled: ADAU1861, and the record is rewritten around it
+
+- **Delivered.** `docs/audio-board-decision-record.md` rewritten, commit `f74b74f`, push verified at
+  full length `[measured]`. `h1-audio-board-codec-selection.md` banner updated to name the 1861.
+  Datasheet pinned by hand-download checksum in `fetch-datasheets.sh`.
+- **The package decided it.** `[fetched]` Every ADI low-latency ANC codec is WLCSP and single-option
+  — 1777, 1787, 1788, 1860. **That objection applied to the existing board design too**, which
+  already carries an 1860; it had simply never been surfaced. The **ADAU1861** is the same silicon
+  (UG-2257 covers both) in a **64-lead side-solderable LFCSP, 9 × 9 mm**.
+- **Better on merit as well:** −40/+105°C, a **W-grade automotive variant**, 106/110 dB SNR, same
+  FastDSP 768 kHz + Tensilica HiFi 3z, same 5 µs group delay, 8 independent DMICs.
+- **Closes MCLK distribution:** its PLL takes 30 kHz–36 MHz, so it locks to a 48 kHz FSYNC directly.
+- **One part, both boards.** 3 ADC + 1 DAC is exactly Rev G's per-cup allocation; on the audio board
+  3 single-ended inputs + the independent DMIC path give three accel axes **and** a PDM mic, which
+  the 1372 cannot do at all.
+- **Costs recorded:** no MICBIAS (pin 25 is only a 0.85 V `CM` reference) so the 2.75 V mic supply
+  stays and `3V3_MIC` stays separate; 1.8 V logic, 1.98 V abs max, translators mandatory; 3 ADC /
+  1 DAC; 9 × 9 mm.
+- **New scar in `MEMORY.md`:** read page 1 of the manual you are quoting. Plus the admission that I
+  recommended the 1787 for a DSP the board does not need, one turn after ruling ANC into the cups.
+
+### Open — six items, none blocking a start on the schematic
+
+A2B upstream subset · accel↔PDM-mic skew (measure on the shipping config) · two devices on one RP1
+block (needs an `EVAL-AD2428WG1BZ`, not on the bench) · which carrier the CM5 is on (Peter's) · rail
+sequencing against the 1.98 V ceiling · ADAU1861 availability and whether the W grade earns its
+premium.
+
+### Correspondence carry — nothing about any of this has been sent
+
+The decision record has not gone to JULIETT or INDIA. It **extends** John's Rev G rather than
+contradicting it, and the 1861 is a package substitution for the 1860 he already assumed — so it
+should be an easy memo, but it has not been written. Also still Peter's from yesterday: the
+differential mic he built up (John's 22 Sep no-mic bench sheet still assumes none exists), and the
+1860–Pi harness wiring question JULIETT asked be passed to Chris.
