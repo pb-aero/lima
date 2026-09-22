@@ -217,6 +217,13 @@ this rig had the 1372 driving the host at 3.3 V.
 
 ## 8 · Propagation delay and phase lag with the translator inserted — measured against two separate budgets
 
+> **⚠ If you came here asking about phase between the accelerometer and the PDM mic, this is the
+> wrong section.** A translator shared by both channels is **common-mode and cancels in the
+> difference** — it is not a term in that question at all. See
+> [`accel-vs-pdm-mic-skew.md`](accel-vs-pdm-mic-skew.md), which is about the two codec front ends not
+> sharing decimation filters. This section is about **absolute** delay and the serial-bus timing
+> budget.
+
 **Date added:** 2026-09-22 · Peter asked what the level shifter costs in propagation delay and phase
 lag. The short answer is that it buys into **two unrelated budgets**, and it is negligible in the one
 people worry about and material only in the one nobody asks about.
