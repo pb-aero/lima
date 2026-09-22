@@ -1,6 +1,13 @@
 # H1 audio board — codec selection for analog accel + analog mic
 
-**Date:** 2026-09-06 · **Agent:** LIMA · **Status:** research, no decision taken.
+**Date:** 2026-09-06 · **Agent:** LIMA · **Status:** research — **superseded 2026-09-22.**
+
+> **THE DECISION IS NOW TAKEN, AND IT IS NOT IN THIS FILE.** See
+> **`docs/audio-board-decision-record.md`**. In short: ANC runs in the earcup on a per-cup codec, not
+> on this board (John's Rev G); the board's codec is recommended as the **ADAU1787**, not the ADAU1761
+> or ADAU1860 compared below; A2B carries distance, not channel count. The research below stands as
+> the reasoning of the day and is kept intact — but §1–§4's framing assumed the board would host the
+> cancellation, and §5 predates the ADXL354 and PDM-mic architecture entirely.
 
 Peter, 2026-09-06: *"I'm not sure the ADAU1761 will have enough features. We need to connect an
 analog accelerometer and an analog mic to whichever chip we choose, as well as connect it to the Pi

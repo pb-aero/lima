@@ -81,4 +81,13 @@ verify_manual \
   "$ROOT/linux/adau1860-pi5/ADAU186x_HRM_UG-2257.pdf" \
   '7c9b64be89d887d1594daa0e01881fa042cfa35b80788b04939062ef95fa58c2'
 
+# ADAU1787 datasheet Rev. A (280 pp) and the AD242x A2B family datasheet Rev. C (38 pp). Cited by
+# docs/audio-board-decision-record.md. BOTH ARE HAND-DOWNLOADED, same reason as UG-2257 above:
+# analog.com refuses curl and WebFetch, and serves a browser a SAVE DIALOG rather than a page. Every
+# third-party mirror tried for these two returned HTML. Download by hand from:
+#   https://www.analog.com/media/en/technical-documentation/data-sheets/ADAU1787.pdf
+#   https://www.analog.com/media/en/technical-documentation/data-sheets/AD2420(W)-AD2426(W)-AD2427(W)-AD2428(W)-AD2429(W).pdf
+verify_manual "$ROOT/docs/datasheets/ADAU1787_RevA.pdf" '69da92c07764915eea7e3dd61ad4351d28fbb06e5b01ba2205809ddbd657a14e'
+verify_manual "$ROOT/docs/datasheets/AD242x_RevC.pdf"   '1d4e9efe621917e7638d0b5423ce1dc2a352ac1ac6f8a5b56c823daa813c311e'
+
 echo "done"
