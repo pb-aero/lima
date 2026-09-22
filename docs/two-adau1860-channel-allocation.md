@@ -167,6 +167,54 @@ to the analog budget on Chip A. `[gap]` **Confirm the 8 DMIC channels and 3 ADCs
 simultaneously** — the abridged ADAU1860 datasheet still carries no register map, which is a
 long-standing gap in this repo, not a new one.
 
+> **GAP CLOSED 2026-09-22. They can, and the mechanism is a per-channel routing field rather than a
+> mode.** Peter's read — *"the ADAU1860 looks like it will work with the PDM mic and the analog
+> accelerometer"* — is correct.
+>
+> `[fetched]` UG-2257 Rev. 0 pp.145–146, Tables 206 ff: there are **eight Fast-to-Slow Decimator
+> channels, each with its own input routing register** (`FDEC_ROUTE0`…`FDEC_ROUTE7`, `0x4000C084`
+> upward). Each carries a **6-bit source field** selecting from one flat list:
+>
+> | Code | Source |
+> |---|---|
+> | **36, 37, 38** | **ADC Channel 0, 1, 2** — the three analog inputs |
+> | **39–42** | **DMIC Channel 0–3** |
+> | **47–50** | **DMIC Channel 4–7** |
+> | 0–3, 34–35, 43 | FastDSP, input ASRC, EQ0 |
+>
+> **Every decimator channel picks any one source independently.** There is **no pairing constraint
+> and no analog/digital mode** — which is worth stating explicitly because **the ADAU1372 does have
+> one**: on that part `[repo]` the digital mic inputs share filters with the ADCs and switch in pairs
+> (4 analog, 4 digital, or 2 + 2). **The 1860 does not work that way.** I had been carrying the 1372's
+> limitation as an unexamined worry about the 1860.
+>
+> Cross-check that raises confidence: the same numbering (ADC 36–38, DMIC 39–42 and 55–58) was already
+> recorded in this lane for `SPT0_ROUTEn` from the vendor SDK's bitfield header. It is a **shared
+> source enumeration** reused by `SPT0_ROUTEn`, `DAC_ROUTEn` and `FDEC_ROUTEn` alike, which is why two
+> independently-derived reads agree.
+
+### What the closed gap actually buys — and the one thing it breaks
+
+**Three analog ADCs is exactly an accelerometer's X, Y and Z, with the microphones moved to PDM.** One
+ADAU1860 can therefore carry a complete sensor payload — 3 analog axes plus a digital reference mic —
+**which is the whole job the ADAU1372 was brought in to do.** That removes, in one stroke, the
+1.8 V/3.3 V inter-codec threshold failure, the `R2`/`R3` MCLK rework, the `S1` board-voltage switch,
+the 1372's output ASRC sitting in the accelerometer path, and a second codec to clock.
+
+> ⚠ **But it moves the P11 defect onto the critical path, and that is a promotion, not a footnote.**
+> `[repo]` ADC2 is the channel behind `P11`, which reads **~64 dB quieter than ADC0 with both jacks
+> empty** and is still unexplained. Three axes need ADC0, ADC1 **and ADC2**. So the shortfall stops
+> costing us *a third microphone* and starts **blocking the Z axis.** Until it is explained, one 1860
+> carries **two** usable analog channels, and a three-axis accelerometer does not fit.
+>
+> **This is now the highest-value ninety seconds on the bench:** a known level into P9 and then the
+> same level into P11, back to back, with John's RME. It was an if-time item in
+> `inbox/peter/2026-09-18-003`; on this architecture it gates an axis.
+
+`[gap]` **Lane budget is exact, with nothing spare.** `[repo]` One 1860 reaches the host as two stereo
+lanes (`SDATAO_0`, `SDATAO_1`) = **4 channels**. Three axes plus one reference mic is **exactly 4**.
+Any fifth signal needs a second serial port pair or a different part.
+
 ---
 
 ## 4. Running two EVBs together — what UG-2017 actually says
