@@ -151,7 +151,56 @@ start-up dependency, not just a signalling reference.
 | **1860 I²C, host side of the EVB translators** | **expects 3.3 V** — `[fetched]` UG-2017 Fig 14 | **⚠ exposure** |
 | everything else on the 28 pins | unknown | `[gap]` **unaudited — this is still the blocker** |
 
-`[gap]` **Unchanged: how the bank voltage is actually set on our carrier.** `GPIO_VREF` is a CM5
+### GAP CLOSED 2026-09-22→25 — it is a 3-pin 0 Ω selector, and I owe a correction
+
+`[fetched]` **Waveshare `CM5-IO-BASE-A` schematic**, published into the company repo by GOLF on
+2026-09-25 (`chris/golf/baseplate-2026-09-25/waveshare-CM5-IO-BASE-A_Sch.pdf`), read by rendering the
+sheet at 600 dpi. `[repo]` INDIA's base-plate brief confirms this is DEV-B's carrier: *"Raspberry Pi
+CM5 … on a **Waveshare Mini Base Board (A)**"*, part number **`CM5-IO-BASE-A`** — the marketing name
+and the part number are the same board, which was the ambiguity I had flagged.
+
+**The bank voltage is a purpose-built selector, not a resistor to relocate.** In a block titled
+**`VDD_IO`** sits a 3-pin link **`H1`**, marked **`0R`**:
+
+| `H1` pin | Net |
+|---|---|
+| 3 | `CM4_3V3` |
+| **2** | **`GPIO_VREF`** |
+| 1 | `CM4_1V8` |
+
+`GPIO_VREF` is the **centre** pin, selectable between 3.3 V and 1.8 V, **both sourced from the CM5's
+own outputs** (the connector brings out `+3.3v (Output)` and `+1.8v (Output)`). `GPIO_VREF` itself is
+CM5 connector **pin 78**.
+
+> **So this carrier makes the 1.8 V bank move EASIER than the official IO board does** — a documented
+> selector rather than moving an `R5`→`R4` resistor that was never intended to move.
+
+#### ⚠ The correction: I said option (b) was unavailable. It was available.
+
+In `peter/outbox/2026-09-22-002` §1 I told JULIETT and INDIA that Peter's translator ruling *"was
+correct for a reason nobody had established — option (b), the 1.8 V bank move, was never available on
+this hardware."* **That was wrong.** I turned *"not established"* into *"not available"*, which is the
+same overreach this lane has already scarred on twice. The correct statement at the time was simply
+*"unread, therefore unknown."*
+
+**The ruling itself is unaffected, for the reasons originally given** — translators need no 28-pin bank
+audit and match the product route — but **it did not need the false support I gave it**, and anyone
+re-reading that memo would inherit a wrong fact about our own hardware.
+
+#### What moving `H1` would and would not disturb — and this narrows the audit
+
+`[fetched]` the only consumers of `GPIO_VREF` **on the carrier itself** are four ID-bus pull-ups:
+`CM-R1`/`CM-R4` on the MIPI/CSI connector's `SCL0`/`SDA0`, and `CM-R2`/`CM-R3` on `DISP0`'s
+`ID_SCL'`/`ID_SDA'`. **All four are marked `NC/1.8K` — not fitted.**
+
+> **So the carrier adds nothing to the bank audit.** Moving `H1` changes the level on the 28 GPIO bank
+> pins and nothing else on the board. The exposure is entirely in **what we attach to the 40-pin
+> header** — which `[repo]` is the ADAU1372/1860 I²S lines (wanted at 1.8 V), the ICM-45686 (fine, and
+> better), and the 1860 EVB's I²C translators, whose **host side expects 3.3 V**. That last one is
+> still the live exposure, and JULIETT's dodge for it — configure the 1860s from the PC over their own
+> USB — still applies.
+
+`[gap]` **Superseded: how the bank voltage is set on our carrier.** `GPIO_VREF` is a CM5
 connector pin, so *something* on the carrier drives it, but `kicad/aerosense-cm5/` in this repo is an
 empty mirror and the live design is unversioned at `~/aerosense/`. **The mechanism must be read off
 that project before anyone promises the bank can move.** The R5→R4 Vref resistor is the *official IO
