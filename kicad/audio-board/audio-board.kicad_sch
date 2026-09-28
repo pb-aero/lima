@@ -2431,6 +2431,173 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Infineon:IM72D128V"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "U"
+				(at 0 12.7000 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "IM72D128VV01"
+				(at 0 -12.7000 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "IM72D128V_0_1"
+				(rectangle
+					(start -10.1600 -10.1600)
+					(end 10.1600 10.1600)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin output line
+					(at -12.7 1.27 0)
+					(length 2.54)
+					(name "DATA"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 -12.7 90)
+					(length 2.54)
+					(name "VDD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 12.7 1.27 180)
+					(length 2.54)
+					(name "CLOCK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 12.7 -1.27 180)
+					(length 2.54)
+					(name "LR"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 12.7 270)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(no_connect
 		(at 285.75 151.13)
@@ -2483,6 +2650,10 @@
 	(no_connect
 		(at 72.39 86.36)
 		(uuid "03cea363-1025-4fe1-8e1c-22252e3dfeba")
+	)
+	(no_connect
+		(at 234.95 142.24)
+		(uuid "123e4f0a-7fa5-4bb9-8a05-34d4aa5823df")
 	)
 	(wire
 		(pts
@@ -3442,10 +3613,100 @@
 		)
 		(uuid "fbf24766-8f5a-479d-ba2b-79589d4f4e27")
 	)
-  (text "PRELIM - ADXL354 single-ended front end into the ADAU1861.\nPer docs/sensor-head-design-note.md and\ndocs/audio-board-decision-record.md (Decision B: ADAU1861\nruled, ADAU1372 rejected for this board).\n\nWIRED: ADAU1861 full power tree (1V8/AGND) + boot straps\n(PD, SELFBOOT, ROM_BOOT_MODE, REG_EN - tied to safe\ndefaults, [assumed], not checked against UG-2257's boot\nsection yet). ADXL354 X/Y/Z -> 100nF C0G coupling ->\n1Mohm bias to buffered CM -> LTC6242 unity-gain buffers\n-> AINN0/1/2, single-ended (AINP0/1/2 tied to raw CM).\n4th LTC6242 unit buffers CM per design note S6.\n\nNOT WIRED (deliberately, out of scope this pass):\ncontrol port (I2C/SPI), SAP0/SAP1 digital audio, JTAG,\nDMIC, UART, IRQ, QSPIM self-boot flash, headphone/line\noutputs, XTAL. ERC's 35 \"not connected\" errors are\nexactly these pins - expected, not a defect.\n\nOPEN ITEMS (design note S10 + new): buffer-to-AINNx\ncoupling (DC direct vs. footprint a series cap + 0R\njumper) not resolved here. CM pin loading not measured.\nSupply rail \"3V3_ACCEL\" is my judgment call, not in the\nnote - confirm before layout. REG_EN tied low assumes\nDVDD is externally supplied on 1V8, not the internal\nregulator - reasoned, not confirmed against the\ndatasheet's regulator sequencing section."
+	(label "1V8"
+		(at 177.8 121.92 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "44a33fb5-5de3-4a24-b401-55893aa2f86b")
+	)
+	(label "AGND"
+		(at 177.8 129.54 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3f664257-f3fa-4622-9ffe-a400eebea341")
+	)
+	(label "DMIC_DATA"
+		(at 165.1 146.05 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "4e2d2343-25b0-4feb-8c3b-6ee7cf146072")
+	)
+	(label "DMIC_CLK"
+		(at 190.5 146.05 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "df2c23c1-bce5-442d-854d-930080d1b8d5")
+	)
+	(label "AGND"
+		(at 190.5 148.59 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "fe809660-7eb5-4b60-8278-009a510fcd2e")
+	)
+	(label "1V8"
+		(at 177.8 160.02 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "479dab2b-1894-4d20-a7d1-1058d7963f37")
+	)
+	(label "AGND"
+		(at 177.8 134.62 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "79724854-88ea-4e30-b64e-630bd22485ed")
+	)
+	(label "DMIC_DATA"
+		(at 234.95 139.7 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "09a4c5e9-1a69-4ec9-a19e-4cbcbc895fdc")
+	)
+	(label "DMIC_CLK"
+		(at 234.95 144.78 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "4fd966e4-9eb4-4f15-bc99-0fdd54f1379c")
+	)
+  (text "PRELIM - ADXL354 single-ended front end into the ADAU1861.\nPer docs/sensor-head-design-note.md and\ndocs/audio-board-decision-record.md (Decision B: ADAU1861\nruled, ADAU1372 rejected for this board).\n\nWIRED: ADAU1861 full power tree (1V8/AGND) + boot straps\n(PD, SELFBOOT, ROM_BOOT_MODE, REG_EN - tied to safe\ndefaults, [assumed], not checked against UG-2257's boot\nsection yet). ADXL354 X/Y/Z -> 100nF C0G coupling ->\n1Mohm bias to buffered CM -> LTC6242 unity-gain buffers\n-> AINN0/1/2, single-ended (AINP0/1/2 tied to raw CM).\n4th LTC6242 unit buffers CM per design note S6.\nIM72D128V PDM mic -> DMIC01/DMIC_CLK on U1, per design\nnote S8 (digital-only, no coupling/buffer). VDD on 1V8\nwith 1uF bypass per datasheet footnote 3; LR tied to\nAGND (DATA1 channel). DMIC23/MP2 (2nd mic pair) marked\nno-connect - this board carries one mic.\n\nNOT WIRED (deliberately, out of scope this pass):\ncontrol port (I2C/SPI), SAP0/SAP1 digital audio, JTAG,\nUART, IRQ, QSPIM self-boot flash, headphone/line\noutputs, XTAL. ERC's \"not connected\" errors are exactly\nthese pins - expected, not a defect.\n\nOPEN ITEMS (design note S10 + new): buffer-to-AINNx\ncoupling (DC direct vs. footprint a series cap + 0R\njumper) not resolved here. CM pin loading not measured.\nSupply rail \"3V3_ACCEL\" is my judgment call, not in the\nnote - confirm before layout. REG_EN tied low assumes\nDVDD is externally supplied on 1V8, not the internal\nregulator - reasoned, not confirmed against the\ndatasheet's regulator sequencing section. DMIC LR=GND\n(DATA1) is my channel choice, not specified anywhere -\nconfirm against however the DSP expects the PDM stream\nframed."
     (at 100 215 0)
     (effects (font (size 1.2 1.2)))
-    (uuid "8fd805db-5645-4443-a87e-3b0d5b81dc4c")
+    (uuid "93144646-6a1d-4828-8f97-ee5b2babd1c0")
   )
 	(symbol
 		(lib_id "AnalogDevices:ADAU1861")
@@ -5009,6 +5270,110 @@
 			(project "audio-board"
 				(path "58a3c587-b916-49c7-924f-a7f93d6c8ece"
 					(reference "3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Infineon:IM72D128V")
+		(at 177.8 147.32 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "59d72701-b96f-4c0c-bbab-d1e5a1d0137a")
+		(property "Reference" "U4"
+			(at 177.8 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "IM72D128VV01"
+			(at 177.8 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 177.8 147.32 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "${KIPRJMOD}/../../docs/datasheets/IM72D128V_v01_00.pdf"
+			(at 177.8 147.32 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "U4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 177.8 125.73 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c7f740c6-5705-48f7-9c09-e3f4409d5933")
+		(property "Reference" "C18"
+			(at 178.435 123.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "1uF"
+			(at 178.435 128.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 177.8 125.73 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 177.8 125.73 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "C18")
 					(unit 1)
 				)
 			)
