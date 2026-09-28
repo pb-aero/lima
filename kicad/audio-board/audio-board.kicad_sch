@@ -4360,6 +4360,331 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Connector_Generic:Conn_01x02"
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "J"
+				(at 0 2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "Conn_01x02"
+				(at 0 -5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "connector"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "Connector*:*_1x??_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "Conn_01x02_1_1"
+				(rectangle
+					(start -1.27 1.27)
+					(end 1.27 -3.81)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(rectangle
+					(start -1.27 0.127)
+					(end 0 -0.127)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 -2.413)
+					(end 0 -2.667)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at -5.08 0 0)
+					(length 3.81)
+					(name "Pin_1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -2.54 0)
+					(length 3.81)
+					(name "Pin_2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "AnalogDevices:ADP7118"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "U"
+				(at 0 3.8100 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "ADP7118AUJZ-1.8-R7"
+				(at 0 -15.2400 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "ADP7118_0_1"
+				(rectangle
+					(start -10.1600 -12.7000)
+					(end 10.1600 1.2700)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin power_in line
+					(at 12.7 1.27 180)
+					(length 2.54)
+					(name "VIN"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 3.81 270)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 12.7 -1.27 180)
+					(length 2.54)
+					(name "EN"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -12.7 -1.27 0)
+					(length 2.54)
+					(name "SENSE/ADJ"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_out line
+					(at -12.7 1.27 0)
+					(length 2.54)
+					(name "VOUT"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(no_connect
 		(at 285.75 151.13)
@@ -4430,24 +4755,28 @@
 	)
 	(wire
 		(pts
-			(xy 240.03 90.17)
-			(xy 240.03 92.71)
-		)
-		(uuid "7079a845-5faf-48f4-a010-f96dd241f15b")
-	)
-	(wire
-		(pts
 			(xy 250.19 90.17)
 			(xy 250.19 92.71)
 		)
 		(uuid "ecf0be74-8841-46a6-b838-5cdc928c6b99")
 	)
-	(wire
-		(pts
-			(xy 39.37 59.69)
-			(xy 39.37 62.23)
+	(text "PRELIM - ADXL354 single-ended front end into the ADAU1861.\nPer docs/sensor-head-design-note.md and\ndocs/audio-board-decision-record.md (Decision B: ADAU1861\nruled, ADAU1372 rejected for this board).\n\nWIRED: ADAU1861 full power tree (1V8/AGND) + boot straps\n(PD, SELFBOOT, ROM_BOOT_MODE, REG_EN - tied to safe\ndefaults, [assumed], not checked against UG-2257's boot\nsection yet). ADXL354 X/Y/Z -> 100nF C0G coupling ->\n1Mohm bias to buffered CM -> LTC6242 unity-gain buffers\n-> AINN0/1/2, single-ended (AINP0/1/2 tied to raw CM).\n4th LTC6242 unit buffers CM per design note S6.\nIM72D128V PDM mic -> DMIC01/DMIC_CLK on U1, per design\nnote S8 (digital-only, no coupling/buffer). VDD on 1V8\nwith 1uF bypass per datasheet footnote 3; LR tied to\nAGND (DATA1 channel). DMIC23/MP2 (2nd mic pair) marked\nno-connect - this board carries one mic.\nU1's control port and both serial audio ports now cross\nto the 3.3V host - see the separate note by U6/U7/U8.\n\nAD2428 (U5) PLACED for future A2B connection to the\nearcups, per docs/audio-board-decision-record.md Decision\nC - this is the A2B bus MASTER node, host side. Only the\nchip's own regulator/decoupling network is wired: VIN's\non-chip LDOs -> VOUT1 (1.9V) -> DVDD/PLLVDD with 4.7uF\nper datasheet p.27; VOUT2 (3.3V) -> ATRXVDD/BTRXVDD with\n4.7uF plus a shared 100nF+10nF per datasheet p.26; VSS\nand EPAD -> AGND (EPAD-to-GND is mandatory, not optional).\nPin numbers and all values taken from AD242x Rev. C\nTable 15 / p.26-27, not guessed. Its own I2S/TDM and I2C\nto the host are NOT part of this pass - see U5's open\nitems below; U6/U7/U8 carry only U1's traffic, not U5's.\n\nNOT WIRED on U1 (deliberately, out of scope this pass):\nJTAG (TCK/TMS/TDO/TDI), the debug UART (UART_COMM_RX/TX -\nnot the control port, which is now I2C), QSPIM self-boot\nflash, headphone/line outputs (HPOUTN/P), and XTAL. Also\nU5's entire host-facing I2S/TDM interface (BCLK, SYNC,\nDTX0/1, DRX0/1, PDMCLK), its I2C control port (SCL/SDA/\nIRQ/ADR1/ADR2), both A2B line pairs (AP/AN/ACM towards a\nmaster - unused, U5 IS the master; BP/BN/BCM towards the\nfirst/last slave), SWP/VSSN/SENSE (bus power-forwarding to\nthe cups), and IOVDD (needs a domain decision, 3.3V vs\n1.8V, before it can be sourced). ERC's \"not connected\"\nerrors are exactly these pins - expected, not a defect.\n\nOPEN ITEMS (design note S10 + new): buffer-to-AINNx\ncoupling (DC direct vs. footprint a series cap + 0R\njumper) not resolved here. CM pin loading not measured.\nSupply rail \"3V3_ACCEL\" is my judgment call, not in the\nnote - confirm before layout. REG_EN tied low assumes\nDVDD is externally supplied on 1V8, not the internal\nregulator - reasoned, not confirmed against the\ndatasheet's regulator sequencing section. DMIC LR=GND\n(DATA1) is my channel choice, not specified anywhere -\nconfirm against however the DSP expects the PDM stream\nframed.\n\nAD2428 open items, all new: (1) net \"A2B_VIN\" has no\nsource - the datasheet requires 3.7-9.0V AT THE VIN PIN\n(Table 15 p.9), and this board has no rail above 3V3\ntoday. A real supply (5V? higher?) is undesigned.\n(2) IOVDD is left unconnected on purpose - it can run\n3.3V or 1.8V (Operating Conditions p.8); picking 3.3V\nwould let U5 talk to RP1 without the translators Decision\nD mandates for the 1861, but that is my reading, not a\nruling. (3) The A2B bus-coupling network (common-mode\nchoke, AC-coupling caps, diodes D1/D3, VSSN bias inductor)\nis explicitly \"contact your local Analog Devices rep for\nthe latest schematic recommendations\" per datasheet p.33\n- decision record S6 item 3 already flags needing the\nEVAL-AD2428WG1BZ; I have not invented this circuit.\n(4) Whether the cups are bus-powered over A2B or locally\npowered decides SWP/VSSN/SENSE, and is not decided\nanywhere I can find. (5) Upstream channel subset (S4 -\nRev G wants 6, the RP1 link carries 4) still unmade."
+		(at 100 215 0)
+		(effects
+			(font
+				(size 1.2 1.2)
+			)
 		)
-		(uuid "c1edf24d-dff1-4d0f-8dcf-1fb89c2039d8")
+		(uuid "5aedd055-7cc5-4db0-a0c9-0759614df5d7")
+	)
+	(text "I2S + I2C crossing to the host (CM5/RP1), per\ndocs/audio-board-level-shifter.md (this note's \"1860\" is\nthe same silicon as our 1861, UG-2257 p.1) and Decision D\nin docs/audio-board-decision-record.md.\n\nFIVE signals cross, all per the doc's own ruling, nothing\nguessed: BCLK_0, FSYNC_0, SDATAO_0, SDATAO_1 go UP through\nU6 (SN74LVC8T245, DIR=1V8 so A->B); SDATAI_0 (host\nplayback) goes DOWN through U7 (same part, DIR=AGND so\nB->A). Both OE tied AGND (enabled). DIR/OE are VCCA-\nreferenced per the datasheet, hence tied on the 1.8V side.\nU6/U7 are the SAME part per the doc's own rule (\"route\nclock and all data through the same device type so their\ndelays track\") - U7 is oversized for one line on purpose.\n\nBCLK_1<-BCLK_0 and FSYNC_1<-FSYNC_0 are wired LOCALLY on\nU1 (net labels, no translator) per level-shifter.md S3.1 -\nthis is what keeps SPT0/SPT1 sample-aligned across the two\nserial ports carrying the 3-mic array. SPT0/SPT1_CTRL2\nregister settings (BCLK_SRC/LRCLK_SRC) are firmware, not\ndrawn here - S3.1 has the values. SDATAI_1 is genuinely\nunused (port 1 only outputs) and marked no-connect on U1,\nnot left dangling.\n\nI2C: U1 defaults to I2C mode at power-up (UG-2257 \"Control\nPort\" section) - no mode strap needed. ADDR0/ADDR1 tied\nAGND -> address 0x64 (Table 23), my choice since nothing\nelse is on this bus yet. SCL/SDA pull-ups are 2.0k to 1V8\n- an exact datasheet number (ADAU1861 pin descriptions,\npins 2 and 4), not assumed. PCA9517A (U8) is the doc's\nnamed part (\"the part on the EVB\"). Its host-side pull-ups\n(R6/R7, SCL_3V3/SDA_3V3 to 3V3_CM5) are 4.7k - ASSUMED,\nper the konnect design-rules default, because the doc\nitself only says \"sized for the bus capacitance\" and no\ndocument here states the CM5 cable/trace capacitance.\nConfirm before layout.\n\n3V3_CM5 is a NEW rail - assumed supplied by the CM5 header\nover J1 (PWR_FLAG placed accordingly), not generated on\nthis board. This is distinct from 3V3_ACCEL and 3V3_MIC.\n\nJ1 is a generic 9-pin connector (BCLK_3V3, FSYNC_3V3,\nSDATAO_0_3V3, SDATAO_1_3V3, SDATAI_0_3V3, SCL_3V3, SDA_3V3,\n3V3_CM5, AGND) standing in for the physical link to the\nCM5. It carries NO real header pin numbers because\ndocs/audio-board-decision-record.md S6 item 4 says which\nCM5 carrier this is has never been established -\nkicad/aerosense-cm5/ is an empty mirror. Map J1 onto real\nRP1/40-pin GPIOs once that carrier is known; until then\nthis connector is deliberately generic.\n\nNOT reused from docs/audio-board-level-shifter.md: the\nPCA9306 alternative (area-driven, not needed here) and the\nSN74AVC4T774 pick (superseded by Peter's 2026-09-22\nSN74LVC8T245 ruling, Decision D)."
+		(at 160 200 0)
+		(effects
+			(font
+				(size 1.2 1.2)
+			)
+		)
+		(uuid "40d6cf2d-7642-4d5c-a3fe-ce3187169660")
 	)
 	(label "X_ACCEL_OUT"
 		(at 72.39 88.9 0)
@@ -5349,16 +5678,6 @@
 		)
 		(uuid "14715693-4a30-4747-b26a-a7fd495e8c9c")
 	)
-	(label "1V8"
-		(at 240.03 92.71 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "7c32fbcc-b598-48fe-8ba7-e6c02bdf1288")
-	)
 	(label "AGND"
 		(at 250.19 92.71 0)
 		(effects
@@ -5368,16 +5687,6 @@
 			(justify left bottom)
 		)
 		(uuid "3bd87b38-f8ff-4969-b035-a6602a2919d1")
-	)
-	(label "3V3_ACCEL"
-		(at 39.37 62.23 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "fbf24766-8f5a-479d-ba2b-79589d4f4e27")
 	)
 	(label "1V8"
 		(at 177.8 121.92 0)
@@ -6189,75 +6498,320 @@
 		)
 		(uuid "cecc9029-ef1b-4f29-8913-612529cd99b5")
 	)
-  (label "AGND"
-    (at 229.87 257.80999999999995 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "c0704904-4bd9-46b5-ad94-37fbecee5419")
-  )
-  (label "AGND"
-    (at 229.87 260.34999999999997 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "4af96df9-75f0-41bb-a349-51c36e23234f")
-  )
-  (label "AGND"
-    (at 207.01000000000002 250.18999999999997 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "f817aa64-42cb-44b4-8e96-6c4644b48df3")
-  )
-  (label "AGND"
-    (at 209.55 250.18999999999997 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "82e79ac6-1d52-40fc-b5dd-59746c566b54")
-  )
-  (label "AGND"
-    (at 212.09 250.18999999999997 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "2d39ac48-f950-475a-8bea-e4a545f29d94")
-  )
-  (label "SDATAI_0"
-    (at 229.87 262.89 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "4412e9f4-665d-4a98-9e70-1fd913cdbedd")
-  )
-  (label "SDATAI_0_3V3"
-    (at 189.23000000000002 262.89 180)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid "dac4c2e3-ff08-4fd2-8254-9f01228c0909")
-  )
-  (label "1V8"
-    (at 207.01000000000002 290.83 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "6dc7cb9f-6c59-4412-9bf2-2182948dd42f")
-  )
-  (label "3V3_CM5"
-    (at 209.55 290.83 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "d6202809-e00e-4d6f-be46-02aa5902a52f")
-  )
-  (label "3V3_CM5"
-    (at 212.09 290.83 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "301c1868-363c-440b-ba53-6a4358321d12")
-  )
-  (text "PRELIM - ADXL354 single-ended front end into the ADAU1861.\nPer docs/sensor-head-design-note.md and\ndocs/audio-board-decision-record.md (Decision B: ADAU1861\nruled, ADAU1372 rejected for this board).\n\nWIRED: ADAU1861 full power tree (1V8/AGND) + boot straps\n(PD, SELFBOOT, ROM_BOOT_MODE, REG_EN - tied to safe\ndefaults, [assumed], not checked against UG-2257's boot\nsection yet). ADXL354 X/Y/Z -> 100nF C0G coupling ->\n1Mohm bias to buffered CM -> LTC6242 unity-gain buffers\n-> AINN0/1/2, single-ended (AINP0/1/2 tied to raw CM).\n4th LTC6242 unit buffers CM per design note S6.\nIM72D128V PDM mic -> DMIC01/DMIC_CLK on U1, per design\nnote S8 (digital-only, no coupling/buffer). VDD on 1V8\nwith 1uF bypass per datasheet footnote 3; LR tied to\nAGND (DATA1 channel). DMIC23/MP2 (2nd mic pair) marked\nno-connect - this board carries one mic.\nU1's control port and both serial audio ports now cross\nto the 3.3V host - see the separate note by U6/U7/U8.\n\nAD2428 (U5) PLACED for future A2B connection to the\nearcups, per docs/audio-board-decision-record.md Decision\nC - this is the A2B bus MASTER node, host side. Only the\nchip's own regulator/decoupling network is wired: VIN's\non-chip LDOs -> VOUT1 (1.9V) -> DVDD/PLLVDD with 4.7uF\nper datasheet p.27; VOUT2 (3.3V) -> ATRXVDD/BTRXVDD with\n4.7uF plus a shared 100nF+10nF per datasheet p.26; VSS\nand EPAD -> AGND (EPAD-to-GND is mandatory, not optional).\nPin numbers and all values taken from AD242x Rev. C\nTable 15 / p.26-27, not guessed. Its own I2S/TDM and I2C\nto the host are NOT part of this pass - see U5's open\nitems below; U6/U7/U8 carry only U1's traffic, not U5's.\n\nNOT WIRED on U1 (deliberately, out of scope this pass):\nJTAG (TCK/TMS/TDO/TDI), the debug UART (UART_COMM_RX/TX -\nnot the control port, which is now I2C), QSPIM self-boot\nflash, headphone/line outputs (HPOUTN/P), and XTAL. Also\nU5's entire host-facing I2S/TDM interface (BCLK, SYNC,\nDTX0/1, DRX0/1, PDMCLK), its I2C control port (SCL/SDA/\nIRQ/ADR1/ADR2), both A2B line pairs (AP/AN/ACM towards a\nmaster - unused, U5 IS the master; BP/BN/BCM towards the\nfirst/last slave), SWP/VSSN/SENSE (bus power-forwarding to\nthe cups), and IOVDD (needs a domain decision, 3.3V vs\n1.8V, before it can be sourced). ERC's \"not connected\"\nerrors are exactly these pins - expected, not a defect.\n\nOPEN ITEMS (design note S10 + new): buffer-to-AINNx\ncoupling (DC direct vs. footprint a series cap + 0R\njumper) not resolved here. CM pin loading not measured.\nSupply rail \"3V3_ACCEL\" is my judgment call, not in the\nnote - confirm before layout. REG_EN tied low assumes\nDVDD is externally supplied on 1V8, not the internal\nregulator - reasoned, not confirmed against the\ndatasheet's regulator sequencing section. DMIC LR=GND\n(DATA1) is my channel choice, not specified anywhere -\nconfirm against however the DSP expects the PDM stream\nframed.\n\nAD2428 open items, all new: (1) net \"A2B_VIN\" has no\nsource - the datasheet requires 3.7-9.0V AT THE VIN PIN\n(Table 15 p.9), and this board has no rail above 3V3\ntoday. A real supply (5V? higher?) is undesigned.\n(2) IOVDD is left unconnected on purpose - it can run\n3.3V or 1.8V (Operating Conditions p.8); picking 3.3V\nwould let U5 talk to RP1 without the translators Decision\nD mandates for the 1861, but that is my reading, not a\nruling. (3) The A2B bus-coupling network (common-mode\nchoke, AC-coupling caps, diodes D1/D3, VSSN bias inductor)\nis explicitly \"contact your local Analog Devices rep for\nthe latest schematic recommendations\" per datasheet p.33\n- decision record S6 item 3 already flags needing the\nEVAL-AD2428WG1BZ; I have not invented this circuit.\n(4) Whether the cups are bus-powered over A2B or locally\npowered decides SWP/VSSN/SENSE, and is not decided\nanywhere I can find. (5) Upstream channel subset (S4 -\nRev G wants 6, the RP1 link carries 4) still unmade."
-    (at 100 215 0)
+	(label "AGND"
+		(at 229.87 257.81 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "c0704904-4bd9-46b5-ad94-37fbecee5419")
+	)
+	(label "AGND"
+		(at 229.87 260.35 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4af96df9-75f0-41bb-a349-51c36e23234f")
+	)
+	(label "AGND"
+		(at 207.01 250.19 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f817aa64-42cb-44b4-8e96-6c4644b48df3")
+	)
+	(label "AGND"
+		(at 209.55 250.19 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "82e79ac6-1d52-40fc-b5dd-59746c566b54")
+	)
+	(label "AGND"
+		(at 212.09 250.19 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "2d39ac48-f950-475a-8bea-e4a545f29d94")
+	)
+	(label "SDATAI_0"
+		(at 229.87 262.89 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4412e9f4-665d-4a98-9e70-1fd913cdbedd")
+	)
+	(label "SDATAI_0_3V3"
+		(at 189.23 262.89 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "dac4c2e3-ff08-4fd2-8254-9f01228c0909")
+	)
+	(label "1V8"
+		(at 207.01 290.83 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "6dc7cb9f-6c59-4412-9bf2-2182948dd42f")
+	)
+	(label "3V3_CM5"
+		(at 209.55 290.83 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "d6202809-e00e-4d6f-be46-02aa5902a52f")
+	)
+	(label "3V3_CM5"
+		(at 212.09 290.83 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "301c1868-363c-440b-ba53-6a4358321d12")
+	)
+	(label "VBAT"
+		(at 134.62 39.37 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "e31ba62b-5c18-4d7c-b51a-3992c61d8de9")
+	)
+	(label "VBAT"
+		(at 193.04 38.1 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "59c81b12-0ea5-4e86-8a6a-54e989729d60")
+	)
+	(label "VBAT"
+		(at 193.04 40.64 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "08797043-588b-41cd-b659-cba525b097ad")
+	)
+	(label "VBAT"
+		(at 232.41 38.1 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "c4664c78-b8ff-4cf4-a4fc-d0c1cf317853")
+	)
+	(label "VBAT"
+		(at 232.41 40.64 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "fb73c7bd-c216-4f9e-8b5e-347a23590e58")
+	)
+	(label "VBAT"
+		(at 191.77 17.78 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3f13ef04-acc3-473b-8577-00c3363500a7")
+	)
+	(label "VBAT"
+		(at 232.41 17.78 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4d2e8643-049e-496a-aff0-814def232f3a")
+	)
+	(label "AGND"
+		(at 134.62 41.91 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "cad6d032-5e5e-4cd5-8e84-5dd96ddd4882")
+	)
+	(label "AGND"
+		(at 180.34 35.56 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "c8fce4b8-74aa-47fa-9347-604f43c49b47")
+	)
+	(label "AGND"
+		(at 219.71 35.56 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f80edbb4-3a42-41a0-9303-49e49b53007e")
+	)
+	(label "AGND"
+		(at 167.64 25.4 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a2f5362f-1dd7-42da-a378-3f9cb1700ae9")
+	)
+	(label "AGND"
+		(at 191.77 25.4 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "78838e28-67c4-4a8a-9407-ffd69771bc3e")
+	)
+	(label "AGND"
+		(at 208.28 25.4 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4ee15429-fe51-4dd2-81d7-14f410fe02e0")
+	)
+	(label "AGND"
+		(at 232.41 25.4 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "80e11a58-2b94-4356-b556-c7d40eb659b7")
+	)
+	(label "1V8"
+		(at 167.64 38.1 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "4452fac9-f3ad-4938-b947-fabeb2dfac8d")
+	)
+	(label "1V8"
+		(at 167.64 40.64 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "f174818d-2789-47c1-b280-97b9d8f7772c")
+	)
+	(label "1V8"
+		(at 167.64 17.78 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "68c617af-3d48-4fb2-8ffe-f01a9e89708c")
+	)
+	(label "3V3_ACCEL"
+		(at 207.01 38.1 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "425a9f54-1422-4cab-bd3b-425afe4aa582")
+	)
+	(label "3V3_ACCEL"
+		(at 207.01 40.64 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "ce61c227-f774-43ca-a3ff-f2ca8ebeb4aa")
+	)
+	(label "3V3_ACCEL"
+		(at 208.28 17.78 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "aa9568b4-da31-479b-89eb-2a12c79b6e50")
+	)
+	(label "VBAT"
+		(at 149.86 39.37 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "7409d1be-fe06-4737-9d1a-b2051be6dc25")
+	)
+  (text "Power in: VBAT from the aeronode board (U9/U10, J2).\n\nVBAT is aeronode's raw 2S LiFePO4 pack net (ahead of its\ncharger/buck stage) - per\nkicad/aeronode/doc/ARCHITECTURE.md: \"the pack never falls\nbelow 5.0V\" and \"the pack sits at 7.2V\" at full charge, so\nVBAT runs 5.0-7.3V. Fetched from that doc, not assumed.\nJ2 is a generic 2-pin placeholder for the board-to-board\nlink, same treatment as J1 for the CM5 - the actual\ninterconnect between aeronode and this board is undesigned.\n\nU9 = ADP7118AUJZ-1.8-R7 -> 1V8. U10 = ADP7118AUJZ-3.3-R7\n-> 3V3_ACCEL. NOT the ADP1715 the EVAL-ADAU1860 uses for\nthe same two rails (docs/rig-logic-levels.md) - that part\nis 2.5-5.5V in and VBAT hits 7.3V, over its max. ADP7118\nis the same family's wide-input sibling, 2.7-20V, comfortably\ncovering VBAT with margin. Pin numbers and the EN/SENSE\nwiring (EN->VIN for auto-start, SENSE/ADJ->VOUT for the\nfixed-voltage grade, both from datasheet Table 4/Fig. 1)\nare from the datasheet, not guessed. 2.2uF on each VIN and\nVOUT per the datasheet's own minimum.\n\n1V8 and 3V3_ACCEL no longer carry a PWR_FLAG - they have a\nreal local source now. VBAT gets the PWR_FLAG instead,\nsince it is the new board-boundary net. 3V3_CM5 is\nDELIBERATELY NOT fed from U10 - it is the host's own rail,\nper the I2S/I2C note; folding it into this LDO would\nrequire the translators to run 3.3V-not-exactly-CM5's-3.3V,\nwhich is a decision, not a default.\n\nOPEN: no current budget was computed against the ADP7118's\n200mA/rail limit - the load here (one codec, one DMIC, a\nfew kOhm of I2C pull-ups, some CMOS logic) is almost\ncertainly well inside it, but \"almost certainly\" is not\n\"measured.\" Board-to-board connector for VBAT unresolved,\nsame as J1. NOTE: AD2428's VIN (3.7-9.0V, still\nunconnected - see the AD2428 open items) now has an\nin-range candidate in VBAT that did not exist before this\npass - raised to Peter, not wired here without a decision."
+    (at 100 50 0)
     (effects (font (size 1.2 1.2)))
-    (uuid "5aedd055-7cc5-4db0-a0c9-0759614df5d7")
-  )
-  (text "I2S + I2C crossing to the host (CM5/RP1), per\ndocs/audio-board-level-shifter.md (this note's \"1860\" is\nthe same silicon as our 1861, UG-2257 p.1) and Decision D\nin docs/audio-board-decision-record.md.\n\nFIVE signals cross, all per the doc's own ruling, nothing\nguessed: BCLK_0, FSYNC_0, SDATAO_0, SDATAO_1 go UP through\nU6 (SN74LVC8T245, DIR=1V8 so A->B); SDATAI_0 (host\nplayback) goes DOWN through U7 (same part, DIR=AGND so\nB->A). Both OE tied AGND (enabled). DIR/OE are VCCA-\nreferenced per the datasheet, hence tied on the 1.8V side.\nU6/U7 are the SAME part per the doc's own rule (\"route\nclock and all data through the same device type so their\ndelays track\") - U7 is oversized for one line on purpose.\n\nBCLK_1<-BCLK_0 and FSYNC_1<-FSYNC_0 are wired LOCALLY on\nU1 (net labels, no translator) per level-shifter.md S3.1 -\nthis is what keeps SPT0/SPT1 sample-aligned across the two\nserial ports carrying the 3-mic array. SPT0/SPT1_CTRL2\nregister settings (BCLK_SRC/LRCLK_SRC) are firmware, not\ndrawn here - S3.1 has the values. SDATAI_1 is genuinely\nunused (port 1 only outputs) and marked no-connect on U1,\nnot left dangling.\n\nI2C: U1 defaults to I2C mode at power-up (UG-2257 \"Control\nPort\" section) - no mode strap needed. ADDR0/ADDR1 tied\nAGND -> address 0x64 (Table 23), my choice since nothing\nelse is on this bus yet. SCL/SDA pull-ups are 2.0k to 1V8\n- an exact datasheet number (ADAU1861 pin descriptions,\npins 2 and 4), not assumed. PCA9517A (U8) is the doc's\nnamed part (\"the part on the EVB\"). Its host-side pull-ups\n(R6/R7, SCL_3V3/SDA_3V3 to 3V3_CM5) are 4.7k - ASSUMED,\nper the konnect design-rules default, because the doc\nitself only says \"sized for the bus capacitance\" and no\ndocument here states the CM5 cable/trace capacitance.\nConfirm before layout.\n\n3V3_CM5 is a NEW rail - assumed supplied by the CM5 header\nover J1 (PWR_FLAG placed accordingly), not generated on\nthis board. This is distinct from 3V3_ACCEL and 3V3_MIC.\n\nJ1 is a generic 9-pin connector (BCLK_3V3, FSYNC_3V3,\nSDATAO_0_3V3, SDATAO_1_3V3, SDATAI_0_3V3, SCL_3V3, SDA_3V3,\n3V3_CM5, AGND) standing in for the physical link to the\nCM5. It carries NO real header pin numbers because\ndocs/audio-board-decision-record.md S6 item 4 says which\nCM5 carrier this is has never been established -\nkicad/aerosense-cm5/ is an empty mirror. Map J1 onto real\nRP1/40-pin GPIOs once that carrier is known; until then\nthis connector is deliberately generic.\n\nNOT reused from docs/audio-board-level-shifter.md: the\nPCA9306 alternative (area-driven, not needed here) and the\nSN74AVC4T774 pick (superseded by Peter's 2026-09-22\nSN74LVC8T245 ruling, Decision D)."
-    (at 160 200 0)
-    (effects (font (size 1.2 1.2)))
-    (uuid "40d6cf2d-7642-4d5c-a3fe-ce3187169660")
+    (uuid "a11756b3-5dd5-4113-a5b8-03c2fdc29f19")
   )
 	(symbol
 		(lib_id "AnalogDevices:ADAU1861")
@@ -7672,58 +8226,6 @@
 	)
 	(symbol
 		(lib_id "power:PWR_FLAG")
-		(at 240.03 90.17 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "9c0d6729-ee51-4513-a6bd-47374af234ba")
-		(property "Reference" "?"
-			(at 240.03 88.265 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "PWR_FLAG"
-			(at 240.03 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 240.03 90.17 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 240.03 90.17 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "audio-board"
-				(path "58a3c587-b916-49c7-924f-a7f93d6c8ece"
-					(reference "1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:PWR_FLAG")
 		(at 250.19 90.17 0)
 		(unit 1)
 		(in_bom yes)
@@ -7769,58 +8271,6 @@
 			(project "audio-board"
 				(path "58a3c587-b916-49c7-924f-a7f93d6c8ece"
 					(reference "2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:PWR_FLAG")
-		(at 39.37 59.69 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "e60da997-8728-4e4d-a6ec-d1b1eeccd19b")
-		(property "Reference" "?"
-			(at 39.37 57.785 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "PWR_FLAG"
-			(at 39.37 55.88 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 39.37 59.69 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 39.37 59.69 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "audio-board"
-				(path "58a3c587-b916-49c7-924f-a7f93d6c8ece"
-					(reference "3")
 					(unit 1)
 				)
 			)
@@ -8648,6 +9098,423 @@
 			(project "audio-board"
 				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
 					(reference "U7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector_Generic:Conn_01x02")
+		(at 139.7 39.37 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "58f72123-f394-40c4-9500-f571625affb3")
+		(property "Reference" "J2"
+			(at 139.7 36.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "VBAT_IN"
+			(at 139.7 44.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 139.7 39.37 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 139.7 39.37 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "J2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "AnalogDevices:ADP7118")
+		(at 180.34 39.37 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "1096b398-9907-444a-9c24-3415e1c070d1")
+		(property "Reference" "U9"
+			(at 180.34 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "ADP7118AUJZ-1.8-R7"
+			(at 180.34 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 180.34 39.37 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "${KIPRJMOD}/../../docs/datasheets/ADP7118.pdf"
+			(at 180.34 39.37 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "U9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "AnalogDevices:ADP7118")
+		(at 219.71 39.37 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c122b96c-9e0d-46a0-b6d3-912395980eaa")
+		(property "Reference" "U10"
+			(at 219.71 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "ADP7118AUJZ-3.3-R7"
+			(at 219.71 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 219.71 39.37 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "${KIPRJMOD}/../../docs/datasheets/ADP7118.pdf"
+			(at 219.71 39.37 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "U10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 167.64 21.59 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d7a526dd-0473-4d58-a6bd-a8b0eed719e2")
+		(property "Reference" "C23"
+			(at 168.275 19.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "2.2uF"
+			(at 168.275 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 167.64 21.59 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 167.64 21.59 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "C23")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 191.77 21.59 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "120d321e-7634-482b-9e08-48d418abc876")
+		(property "Reference" "C24"
+			(at 192.405 19.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "2.2uF"
+			(at 192.405 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 191.77 21.59 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 191.77 21.59 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "C24")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 208.28 21.59 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "522dc5dc-d744-4df7-820e-dad1ad368c05")
+		(property "Reference" "C25"
+			(at 208.915 19.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "2.2uF"
+			(at 208.915 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 208.28 21.59 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 208.28 21.59 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "C25")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 232.41 21.59 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "588e63ee-e2a0-4d57-b9ba-92a44c2991f4")
+		(property "Reference" "C26"
+			(at 233.045 19.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "2.2uF"
+			(at 233.045 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 232.41 21.59 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 232.41 21.59 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "C26")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 149.86 39.37 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e8a50fef-416a-4e99-8115-6b05821f5472")
+		(property "Reference" "?"
+			(at 149.86 37.465 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 149.86 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 149.86 39.37 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 149.86 39.37 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "?")
 					(unit 1)
 				)
 			)

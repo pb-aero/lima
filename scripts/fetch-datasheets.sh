@@ -133,4 +133,15 @@ fetch \
   "$ROOT/docs/datasheets/PCA9517A.pdf" \
   '7a7be74ba0cf6f7c7238dad170ac429b6b412ad95d627ef7ceabdbe1f077a50e'
 
+# ADP7118 datasheet Rev. PrD (Analog Devices, 20 V/200 mA CMOS LDO). Powers the audio board's 1V8
+# and 3V3_ACCEL rails from the aeronode's raw VBAT (2S LiFePO4, ~5.0-7.3 V per
+# kicad/aeronode/doc/ARCHITECTURE.md) - the in-family ADP1715 the EVAL-ADAU1860 uses for the same
+# job (docs/rig-logic-levels.md) only takes 2.5-5.5 V and cannot take VBAT directly. TSOT-5 pinout
+# (Table 4) used for U9/U10 in kicad/audio-board/audio-board.kicad_sch. analog.com refuses curl and
+# WebFetch (same block noted throughout this file); this octopart mirror serves the real PDF.
+fetch \
+  'https://datasheet.octopart.com/ADP7118AUJZ-3.3-R7-Analog-Devices-datasheet-24575968.pdf' \
+  "$ROOT/docs/datasheets/ADP7118.pdf" \
+  'c5b5d477ca63ebeb5369734f873fec98a9d8aaa685c841ee5f0d701e6e5a4a4a'
+
 echo "done"
