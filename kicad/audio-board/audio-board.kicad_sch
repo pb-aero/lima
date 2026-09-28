@@ -2598,6 +2598,677 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "AnalogDevices:AD2428"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "U"
+				(at 0 21.5900 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "AD2428WBCPZ"
+				(at 0 -21.5900 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "AD2428_0_1"
+				(rectangle
+					(start -17.7800 -19.0500)
+					(end 17.7800 19.0500)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin bidirectional line
+					(at 20.32 13.97 180)
+					(length 2.54)
+					(name "SCL"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 20.32 11.43 180)
+					(length 2.54)
+					(name "SDA"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 20.32 8.89 180)
+					(length 2.54)
+					(name "IRQ/IO0"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 20.32 6.35 180)
+					(length 2.54)
+					(name "ADR1/IO1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 20.32 3.81 180)
+					(length 2.54)
+					(name "ADR2/IO2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 20.32 1.27 180)
+					(length 2.54)
+					(name "BCLK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "10"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 20.32 -1.27 180)
+					(length 2.54)
+					(name "SYNC"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "11"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 20.32 -3.81 180)
+					(length 2.54)
+					(name "DTX0/IO3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "12"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 20.32 -6.35 180)
+					(length 2.54)
+					(name "DTX1/IO4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "13"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 20.32 -8.89 180)
+					(length 2.54)
+					(name "DRX0/IO5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "14"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 20.32 -11.43 180)
+					(length 2.54)
+					(name "DRX1/IO6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "15"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 20.32 -13.97 180)
+					(length 2.54)
+					(name "PDMCLK/IO7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "16"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -20.32 8.89 0)
+					(length 2.54)
+					(name "ACM"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "17"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -20.32 6.35 0)
+					(length 2.54)
+					(name "AN"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "18"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -20.32 3.81 0)
+					(length 2.54)
+					(name "AP"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "19"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -20.32 1.27 0)
+					(length 2.54)
+					(name "BCM"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "24"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -20.32 -1.27 0)
+					(length 2.54)
+					(name "BN"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "23"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -20.32 -3.81 0)
+					(length 2.54)
+					(name "BP"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "22"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at -20.32 -6.35 0)
+					(length 2.54)
+					(name "SWP"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "27"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -20.32 -8.89 0)
+					(length 2.54)
+					(name "SENSE"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "28"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at -7.62 -21.59 90)
+					(length 2.54)
+					(name "PLLVDD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at -5.08 -21.59 90)
+					(length 2.54)
+					(name "DVDD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at -2.54 -21.59 90)
+					(length 2.54)
+					(name "DVDD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 -21.59 90)
+					(length 2.54)
+					(name "IOVDD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "9"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 2.54 -21.59 90)
+					(length 2.54)
+					(name "ATRXVDD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "20"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 5.08 -21.59 90)
+					(length 2.54)
+					(name "BTRXVDD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "21"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 7.62 -21.59 90)
+					(length 2.54)
+					(name "VIN"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "30"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_out line
+					(at -6.35 21.59 270)
+					(length 2.54)
+					(name "VOUT1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "32"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_out line
+					(at -3.81 21.59 270)
+					(length 2.54)
+					(name "VOUT2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "29"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -1.27 21.59 270)
+					(length 2.54)
+					(name "VSSN"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "26"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 1.27 21.59 270)
+					(length 2.54)
+					(name "VSS"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "25"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 3.81 21.59 270)
+					(length 2.54)
+					(name "VSS"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "31"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 6.35 21.59 270)
+					(length 2.54)
+					(name "EPAD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "33"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(no_connect
 		(at 285.75 151.13)
@@ -3703,10 +4374,200 @@
 		)
 		(uuid "4fd966e4-9eb4-4f15-bc99-0fdd54f1379c")
 	)
-  (text "PRELIM - ADXL354 single-ended front end into the ADAU1861.\nPer docs/sensor-head-design-note.md and\ndocs/audio-board-decision-record.md (Decision B: ADAU1861\nruled, ADAU1372 rejected for this board).\n\nWIRED: ADAU1861 full power tree (1V8/AGND) + boot straps\n(PD, SELFBOOT, ROM_BOOT_MODE, REG_EN - tied to safe\ndefaults, [assumed], not checked against UG-2257's boot\nsection yet). ADXL354 X/Y/Z -> 100nF C0G coupling ->\n1Mohm bias to buffered CM -> LTC6242 unity-gain buffers\n-> AINN0/1/2, single-ended (AINP0/1/2 tied to raw CM).\n4th LTC6242 unit buffers CM per design note S6.\nIM72D128V PDM mic -> DMIC01/DMIC_CLK on U1, per design\nnote S8 (digital-only, no coupling/buffer). VDD on 1V8\nwith 1uF bypass per datasheet footnote 3; LR tied to\nAGND (DATA1 channel). DMIC23/MP2 (2nd mic pair) marked\nno-connect - this board carries one mic.\n\nNOT WIRED (deliberately, out of scope this pass):\ncontrol port (I2C/SPI), SAP0/SAP1 digital audio, JTAG,\nUART, IRQ, QSPIM self-boot flash, headphone/line\noutputs, XTAL. ERC's \"not connected\" errors are exactly\nthese pins - expected, not a defect.\n\nOPEN ITEMS (design note S10 + new): buffer-to-AINNx\ncoupling (DC direct vs. footprint a series cap + 0R\njumper) not resolved here. CM pin loading not measured.\nSupply rail \"3V3_ACCEL\" is my judgment call, not in the\nnote - confirm before layout. REG_EN tied low assumes\nDVDD is externally supplied on 1V8, not the internal\nregulator - reasoned, not confirmed against the\ndatasheet's regulator sequencing section. DMIC LR=GND\n(DATA1) is my channel choice, not specified anywhere -\nconfirm against however the DSP expects the PDM stream\nframed."
+	(label "A2B_VOUT1"
+		(at 325.12 111.76 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "07e1f0aa-8950-4987-ab54-59779b9affe7")
+	)
+	(label "AGND"
+		(at 325.12 119.38 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "143d5bf2-b223-479c-a078-ae1652c011db")
+	)
+	(label "A2B_VOUT2"
+		(at 335.28 111.76 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "40862c3f-0e34-4a0d-978a-2f3de7eb6633")
+	)
+	(label "AGND"
+		(at 335.28 119.38 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "2057a6fd-9e4a-4009-be5b-db80963adc66")
+	)
+	(label "A2B_VOUT2"
+		(at 345.44 111.76 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "539935f2-8f2a-485c-8663-58e9de988b37")
+	)
+	(label "AGND"
+		(at 345.44 119.38 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "864243f0-8226-41c1-8bc6-f94915202470")
+	)
+	(label "A2B_VOUT2"
+		(at 355.6 111.76 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f0001ac1-2fca-4278-ad94-f55ca7420e1c")
+	)
+	(label "AGND"
+		(at 355.6 119.38 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f12b4904-fec4-4eec-a883-18b199242c55")
+	)
+	(label "A2B_VOUT1"
+		(at 342.9 181.61 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "0f023822-65f2-47da-b4ae-78da3872a6b7")
+	)
+	(label "A2B_VOUT1"
+		(at 345.44 181.61 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a24bbfc5-bff7-4eb1-aa87-aad9d28f255e")
+	)
+	(label "A2B_VOUT1"
+		(at 347.98 181.61 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f022d7b4-a241-47a1-b337-e0a6b9138a62")
+	)
+	(label "A2B_VOUT2"
+		(at 353.06 181.61 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "7f6968f1-61fb-403d-b897-22098f5db4bc")
+	)
+	(label "A2B_VOUT2"
+		(at 355.6 181.61 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "cd899cec-ae8f-417b-908c-40f5c9ce0916")
+	)
+	(label "A2B_VIN"
+		(at 358.14 181.61 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "d8ac6a4e-49f5-4b48-9150-a924e073ec58")
+	)
+	(label "A2B_VOUT1"
+		(at 344.17 138.43 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "865b596d-c7cc-4963-9982-a41f00efad0b")
+	)
+	(label "A2B_VOUT2"
+		(at 346.71 138.43 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a7844f40-d274-4546-a034-7e3f7c8d18aa")
+	)
+	(label "AGND"
+		(at 351.79 138.43 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "826fbcd3-23b3-452d-8e69-53bb2ea6098f")
+	)
+	(label "AGND"
+		(at 354.33 138.43 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "90e44e11-2604-4ff0-b0cb-787661a9ccfc")
+	)
+	(label "AGND"
+		(at 356.87 138.43 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b5cbb454-7d59-4e20-a172-1c5866e5137b")
+	)
+  (text "PRELIM - ADXL354 single-ended front end into the ADAU1861.\nPer docs/sensor-head-design-note.md and\ndocs/audio-board-decision-record.md (Decision B: ADAU1861\nruled, ADAU1372 rejected for this board).\n\nWIRED: ADAU1861 full power tree (1V8/AGND) + boot straps\n(PD, SELFBOOT, ROM_BOOT_MODE, REG_EN - tied to safe\ndefaults, [assumed], not checked against UG-2257's boot\nsection yet). ADXL354 X/Y/Z -> 100nF C0G coupling ->\n1Mohm bias to buffered CM -> LTC6242 unity-gain buffers\n-> AINN0/1/2, single-ended (AINP0/1/2 tied to raw CM).\n4th LTC6242 unit buffers CM per design note S6.\nIM72D128V PDM mic -> DMIC01/DMIC_CLK on U1, per design\nnote S8 (digital-only, no coupling/buffer). VDD on 1V8\nwith 1uF bypass per datasheet footnote 3; LR tied to\nAGND (DATA1 channel). DMIC23/MP2 (2nd mic pair) marked\nno-connect - this board carries one mic.\n\nAD2428 (U5) PLACED for future A2B connection to the\nearcups, per docs/audio-board-decision-record.md Decision\nC - this is the A2B bus MASTER node, host side. Only the\nchip's own regulator/decoupling network is wired: VIN's\non-chip LDOs -> VOUT1 (1.9V) -> DVDD/PLLVDD with 4.7uF\nper datasheet p.27; VOUT2 (3.3V) -> ATRXVDD/BTRXVDD with\n4.7uF plus a shared 100nF+10nF per datasheet p.26; VSS\nand EPAD -> AGND (EPAD-to-GND is mandatory, not optional).\nPin numbers and all values taken from AD242x Rev. C\nTable 15 / p.26-27, not guessed.\n\nNOT WIRED (deliberately, out of scope this pass):\ncontrol port (I2C/SPI), SAP0/SAP1 digital audio, JTAG,\nUART, IRQ, QSPIM self-boot flash, headphone/line\noutputs, XTAL. Also U5's entire host-facing I2S/TDM\ninterface (BCLK, SYNC, DTX0/1, DRX0/1, PDMCLK), its I2C\ncontrol port (SCL/SDA/IRQ/ADR1/ADR2), both A2B line pairs\n(AP/AN/ACM towards a master - unused, U5 IS the master;\nBP/BN/BCM towards the first/last slave), SWP/VSSN/SENSE\n(bus power-forwarding to the cups), and IOVDD (needs a\ndomain decision, 3.3V vs 1.8V, before it can be sourced).\nERC's \"not connected\" errors are exactly these pins -\nexpected, not a defect.\n\nOPEN ITEMS (design note S10 + new): buffer-to-AINNx\ncoupling (DC direct vs. footprint a series cap + 0R\njumper) not resolved here. CM pin loading not measured.\nSupply rail \"3V3_ACCEL\" is my judgment call, not in the\nnote - confirm before layout. REG_EN tied low assumes\nDVDD is externally supplied on 1V8, not the internal\nregulator - reasoned, not confirmed against the\ndatasheet's regulator sequencing section. DMIC LR=GND\n(DATA1) is my channel choice, not specified anywhere -\nconfirm against however the DSP expects the PDM stream\nframed.\n\nAD2428 open items, all new: (1) net \"A2B_VIN\" has no\nsource - the datasheet requires 3.7-9.0V AT THE VIN PIN\n(Table 15 p.9), and this board has no rail above 3V3\ntoday. A real supply (5V? higher?) is undesigned.\n(2) IOVDD is left unconnected on purpose - it can run\n3.3V or 1.8V (Operating Conditions p.8); picking 3.3V\nwould let U5 talk to RP1 without the translators Decision\nD mandates for the 1861, but that is my reading, not a\nruling. (3) The A2B bus-coupling network (common-mode\nchoke, AC-coupling caps, diodes D1/D3, VSSN bias inductor)\nis explicitly \"contact your local Analog Devices rep for\nthe latest schematic recommendations\" per datasheet p.33\n- decision record S6 item 3 already flags needing the\nEVAL-AD2428WG1BZ; I have not invented this circuit.\n(4) Whether the cups are bus-powered over A2B or locally\npowered decides SWP/VSSN/SENSE, and is not decided\nanywhere I can find. (5) Upstream channel subset (S4 -\nRev G wants 6, the RP1 link carries 4) still unmade."
     (at 100 215 0)
     (effects (font (size 1.2 1.2)))
-    (uuid "93144646-6a1d-4828-8f97-ee5b2babd1c0")
+    (uuid "fa028809-bee6-4142-8720-7f83e0b64cea")
   )
 	(symbol
 		(lib_id "AnalogDevices:ADAU1861")
@@ -5374,6 +6235,269 @@
 			(project "audio-board"
 				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
 					(reference "C18")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "AnalogDevices:AD2428")
+		(at 350.52 160.02 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "9807e615-a5b3-4553-b45a-63d7c672f1cd")
+		(property "Reference" "U5"
+			(at 350.52 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "AD2428WBCPZ"
+			(at 350.52 181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 350.52 160.02 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "${KIPRJMOD}/../../docs/datasheets/AD242x_RevC.pdf"
+			(at 350.52 160.02 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "U5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 325.12 115.57 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d0f1347d-481b-4cd4-a337-4d45dc9c1920")
+		(property "Reference" "C19"
+			(at 325.755 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "4.7uF"
+			(at 325.755 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 325.12 115.57 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 325.12 115.57 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "C19")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 335.28 115.57 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e998a4b3-340d-4102-a492-a6dc81e14042")
+		(property "Reference" "C20"
+			(at 335.915 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "4.7uF"
+			(at 335.915 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 335.28 115.57 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 335.28 115.57 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "C20")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 345.44 115.57 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "45b95482-2d34-4aea-83e7-ec2b2fd33886")
+		(property "Reference" "C21"
+			(at 346.075 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 346.075 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 345.44 115.57 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 345.44 115.57 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "C21")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 355.6 115.57 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "108fa17c-8408-45ad-8994-dff795c6062c")
+		(property "Reference" "C22"
+			(at 356.235 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10nF"
+			(at 356.235 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 355.6 115.57 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 355.6 115.57 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "C22")
 					(unit 1)
 				)
 			)
