@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+
+  (lib (name "AnalogDevices") (type "KiCad") (uri "${KIPRJMOD}/../lib/AnalogDevices.kicad_sym") (options "") (descr "")))
