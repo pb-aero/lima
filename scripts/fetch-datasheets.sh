@@ -114,4 +114,23 @@ fetch \
   "$ROOT/docs/datasheets/IM73A135V01_v1_20.pdf" \
   'c45dffc1cd10abcca82df0fd62f502564e5c5b67e69324756e06286228e0993a'
 
+# SN74LVC8T245 datasheet SCES584 (Texas Instruments). Cited by docs/audio-board-level-shifter.md
+# §4.1 (Peter's 2026-09-22 ruling) and docs/audio-board-decision-record.md Decision D. Pin
+# configuration (Section 4) gives the 24-pin DW/PW package numbering used in
+# kicad/audio-board/audio-board.kicad_sch (U6/U7). ti.com serves this to curl directly, unlike
+# analog.com.
+fetch \
+  'https://www.ti.com/lit/gpn/SN74LVC8T245' \
+  "$ROOT/docs/datasheets/SN74LVC8T245.pdf" \
+  'a2493b65471e5c873e3f71afbe152ac4d0f9233045c5ec289bda602a4b453cf0'
+
+# PCA9517A datasheet Rev. 4.1 (NXP). Cited by docs/audio-board-level-shifter.md §4.1 (control port
+# I2C translator - "the part on the EVB") for the I2C crossing on the audio board (U8). Pinning
+# (Section 5) gives the TSSOP8/SO8 numbering used in kicad/audio-board/audio-board.kicad_sch.
+# nxp.com serves this to curl directly.
+fetch \
+  'https://www.nxp.com/docs/en/data-sheet/PCA9517A.pdf' \
+  "$ROOT/docs/datasheets/PCA9517A.pdf" \
+  '7a7be74ba0cf6f7c7238dad170ac429b6b412ad95d627ef7ceabdbe1f077a50e'
+
 echo "done"

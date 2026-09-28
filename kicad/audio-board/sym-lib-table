@@ -2,4 +2,6 @@
   (version 7)
 
   (lib (name "AnalogDevices") (type "KiCad") (uri "${KIPRJMOD}/../lib/AnalogDevices.kicad_sym") (options "") (descr ""))
-  (lib (name "Infineon") (type "KiCad") (uri "${KIPRJMOD}/../lib/Infineon.kicad_sym") (options "") (descr "")))
+  (lib (name "Infineon") (type "KiCad") (uri "${KIPRJMOD}/../lib/Infineon.kicad_sym") (options "") (descr ""))
+  (lib (name "TexasInstruments") (type "KiCad") (uri "${KIPRJMOD}/../lib/TexasInstruments.kicad_sym") (options "") (descr ""))
+  (lib (name "NXP") (type "KiCad") (uri "${KIPRJMOD}/../lib/NXP.kicad_sym") (options "") (descr "")))

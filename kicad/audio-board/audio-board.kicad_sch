@@ -3269,6 +3269,1097 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "TexasInstruments:SN74LVC8T245"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "U"
+				(at 0 21.5900 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "SN74LVC8T245PWR"
+				(at 0 -19.0500 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "SN74LVC8T245_0_1"
+				(rectangle
+					(start -17.7800 -16.5100)
+					(end 17.7800 19.0500)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin input line
+					(at 20.32 13.97 180)
+					(length 2.54)
+					(name "DIR"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input inverted
+					(at 20.32 11.43 180)
+					(length 2.54)
+					(name "~OE"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "22"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 20.32 8.89 180)
+					(length 2.54)
+					(name "A1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 20.32 6.35 180)
+					(length 2.54)
+					(name "A2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 20.32 3.81 180)
+					(length 2.54)
+					(name "A3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 20.32 1.27 180)
+					(length 2.54)
+					(name "A4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 20.32 -1.27 180)
+					(length 2.54)
+					(name "A5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 20.32 -3.81 180)
+					(length 2.54)
+					(name "A6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 20.32 -6.35 180)
+					(length 2.54)
+					(name "A7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "9"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 20.32 -8.89 180)
+					(length 2.54)
+					(name "A8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "10"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -20.32 8.89 0)
+					(length 2.54)
+					(name "B1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "21"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -20.32 6.35 0)
+					(length 2.54)
+					(name "B2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "20"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -20.32 3.81 0)
+					(length 2.54)
+					(name "B3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "19"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -20.32 1.27 0)
+					(length 2.54)
+					(name "B4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "18"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -20.32 -1.27 0)
+					(length 2.54)
+					(name "B5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "17"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -20.32 -3.81 0)
+					(length 2.54)
+					(name "B6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "16"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -20.32 -6.35 0)
+					(length 2.54)
+					(name "B7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "15"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -20.32 -8.89 0)
+					(length 2.54)
+					(name "B8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "14"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at -2.54 -19.05 90)
+					(length 2.54)
+					(name "VCCA"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 -19.05 90)
+					(length 2.54)
+					(name "VCCB"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "23"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 2.54 -19.05 90)
+					(length 2.54)
+					(name "VCCB"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "24"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at -2.54 21.59 270)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "11"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 21.59 270)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "12"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 2.54 21.59 270)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "13"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "NXP:PCA9517A"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "U"
+				(at 0 13.9700 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "PCA9517ADP"
+				(at 0 -13.9700 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "PCA9517A_0_1"
+				(rectangle
+					(start -12.7000 -11.4300)
+					(end 12.7000 11.4300)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin bidirectional line
+					(at 15.24 1.27 180)
+					(length 2.54)
+					(name "SCLA"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 15.24 -1.27 180)
+					(length 2.54)
+					(name "SDAA"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -15.24 1.27 0)
+					(length 2.54)
+					(name "SCLB"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -15.24 -1.27 0)
+					(length 2.54)
+					(name "SDAB"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at -2.54 -13.97 90)
+					(length 2.54)
+					(name "VCC(A)"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 2.54 -13.97 90)
+					(length 2.54)
+					(name "VCC(B)"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at -2.54 13.97 270)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 2.54 13.97 270)
+					(length 2.54)
+					(name "EN"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "Connector_Generic:Conn_01x09"
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "J"
+				(at 0 12.7 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "Conn_01x09"
+				(at 0 -12.7 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Generic connector, single row, 01x09, script generated (kicad-library-utils/schlib/autogen/connector/)"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "connector"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "Connector*:*_1x??_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "Conn_01x09_1_1"
+				(rectangle
+					(start -1.27 11.43)
+					(end 1.27 -11.43)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(rectangle
+					(start -1.27 10.287)
+					(end 0 10.033)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 7.747)
+					(end 0 7.493)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 5.207)
+					(end 0 4.953)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 2.667)
+					(end 0 2.413)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 0.127)
+					(end 0 -0.127)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 -2.413)
+					(end 0 -2.667)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 -4.953)
+					(end 0 -5.207)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 -7.493)
+					(end 0 -7.747)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 -10.033)
+					(end 0 -10.287)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at -5.08 10.16 0)
+					(length 3.81)
+					(name "Pin_1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 7.62 0)
+					(length 3.81)
+					(name "Pin_2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 5.08 0)
+					(length 3.81)
+					(name "Pin_3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 2.54 0)
+					(length 3.81)
+					(name "Pin_4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 0 0)
+					(length 3.81)
+					(name "Pin_5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -2.54 0)
+					(length 3.81)
+					(name "Pin_6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -5.08 0)
+					(length 3.81)
+					(name "Pin_7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -7.62 0)
+					(length 3.81)
+					(name "Pin_8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -10.16 0)
+					(length 3.81)
+					(name "Pin_9"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "9"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(no_connect
 		(at 285.75 151.13)
@@ -3325,6 +4416,10 @@
 	(no_connect
 		(at 234.95 142.24)
 		(uuid "123e4f0a-7fa5-4bb9-8a05-34d4aa5823df")
+	)
+	(no_connect
+		(at 285.75 140.97)
+		(uuid "12665665-2cbc-4c22-908b-d14d67eef288")
 	)
 	(wire
 		(pts
@@ -4564,10 +5659,605 @@
 		)
 		(uuid "b5cbb454-7d59-4e20-a172-1c5866e5137b")
 	)
-  (text "PRELIM - ADXL354 single-ended front end into the ADAU1861.\nPer docs/sensor-head-design-note.md and\ndocs/audio-board-decision-record.md (Decision B: ADAU1861\nruled, ADAU1372 rejected for this board).\n\nWIRED: ADAU1861 full power tree (1V8/AGND) + boot straps\n(PD, SELFBOOT, ROM_BOOT_MODE, REG_EN - tied to safe\ndefaults, [assumed], not checked against UG-2257's boot\nsection yet). ADXL354 X/Y/Z -> 100nF C0G coupling ->\n1Mohm bias to buffered CM -> LTC6242 unity-gain buffers\n-> AINN0/1/2, single-ended (AINP0/1/2 tied to raw CM).\n4th LTC6242 unit buffers CM per design note S6.\nIM72D128V PDM mic -> DMIC01/DMIC_CLK on U1, per design\nnote S8 (digital-only, no coupling/buffer). VDD on 1V8\nwith 1uF bypass per datasheet footnote 3; LR tied to\nAGND (DATA1 channel). DMIC23/MP2 (2nd mic pair) marked\nno-connect - this board carries one mic.\n\nAD2428 (U5) PLACED for future A2B connection to the\nearcups, per docs/audio-board-decision-record.md Decision\nC - this is the A2B bus MASTER node, host side. Only the\nchip's own regulator/decoupling network is wired: VIN's\non-chip LDOs -> VOUT1 (1.9V) -> DVDD/PLLVDD with 4.7uF\nper datasheet p.27; VOUT2 (3.3V) -> ATRXVDD/BTRXVDD with\n4.7uF plus a shared 100nF+10nF per datasheet p.26; VSS\nand EPAD -> AGND (EPAD-to-GND is mandatory, not optional).\nPin numbers and all values taken from AD242x Rev. C\nTable 15 / p.26-27, not guessed.\n\nNOT WIRED (deliberately, out of scope this pass):\ncontrol port (I2C/SPI), SAP0/SAP1 digital audio, JTAG,\nUART, IRQ, QSPIM self-boot flash, headphone/line\noutputs, XTAL. Also U5's entire host-facing I2S/TDM\ninterface (BCLK, SYNC, DTX0/1, DRX0/1, PDMCLK), its I2C\ncontrol port (SCL/SDA/IRQ/ADR1/ADR2), both A2B line pairs\n(AP/AN/ACM towards a master - unused, U5 IS the master;\nBP/BN/BCM towards the first/last slave), SWP/VSSN/SENSE\n(bus power-forwarding to the cups), and IOVDD (needs a\ndomain decision, 3.3V vs 1.8V, before it can be sourced).\nERC's \"not connected\" errors are exactly these pins -\nexpected, not a defect.\n\nOPEN ITEMS (design note S10 + new): buffer-to-AINNx\ncoupling (DC direct vs. footprint a series cap + 0R\njumper) not resolved here. CM pin loading not measured.\nSupply rail \"3V3_ACCEL\" is my judgment call, not in the\nnote - confirm before layout. REG_EN tied low assumes\nDVDD is externally supplied on 1V8, not the internal\nregulator - reasoned, not confirmed against the\ndatasheet's regulator sequencing section. DMIC LR=GND\n(DATA1) is my channel choice, not specified anywhere -\nconfirm against however the DSP expects the PDM stream\nframed.\n\nAD2428 open items, all new: (1) net \"A2B_VIN\" has no\nsource - the datasheet requires 3.7-9.0V AT THE VIN PIN\n(Table 15 p.9), and this board has no rail above 3V3\ntoday. A real supply (5V? higher?) is undesigned.\n(2) IOVDD is left unconnected on purpose - it can run\n3.3V or 1.8V (Operating Conditions p.8); picking 3.3V\nwould let U5 talk to RP1 without the translators Decision\nD mandates for the 1861, but that is my reading, not a\nruling. (3) The A2B bus-coupling network (common-mode\nchoke, AC-coupling caps, diodes D1/D3, VSSN bias inductor)\nis explicitly \"contact your local Analog Devices rep for\nthe latest schematic recommendations\" per datasheet p.33\n- decision record S6 item 3 already flags needing the\nEVAL-AD2428WG1BZ; I have not invented this circuit.\n(4) Whether the cups are bus-powered over A2B or locally\npowered decides SWP/VSSN/SENSE, and is not decided\nanywhere I can find. (5) Upstream channel subset (S4 -\nRev G wants 6, the RP1 link carries 4) still unmade."
+	(label "SCL"
+		(at 234.95 111.76 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "a7506067-6610-48d9-8f7f-899fcef4e01a")
+	)
+	(label "SCL"
+		(at 195.58 104.14 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "11223c39-8196-458a-a0e6-556630799c6a")
+	)
+	(label "SCL"
+		(at 294.64 254 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "474006df-c0b2-4c42-8fe6-33fc7926c10f")
+	)
+	(label "SDA"
+		(at 234.95 109.22 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "ab5587f4-ef8a-4dc4-bf64-0d6c1d07d280")
+	)
+	(label "SDA"
+		(at 204.47 104.14 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "459fdf10-b465-4dfc-8d24-4c07502f2978")
+	)
+	(label "SDA"
+		(at 294.64 256.54 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a6ab9350-1905-4dcb-99ed-3452f7a8af49")
+	)
+	(label "AGND"
+		(at 234.95 114.3 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "53938677-ed6a-4506-9f92-07d29cc31ce4")
+	)
+	(label "AGND"
+		(at 234.95 116.84 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "f5a79e74-d245-42e4-8e6c-8fab547e251b")
+	)
+	(label "AGND"
+		(at 229.87 213.36 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "deb2f870-5b94-44ab-ba71-306d47cdfd9c")
+	)
+	(label "AGND"
+		(at 207.01 203.2 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "dfdfb5e5-9169-4e30-8681-672459236b9e")
+	)
+	(label "AGND"
+		(at 209.55 203.2 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "51bfd726-6633-4467-8a63-187859c9094c")
+	)
+	(label "AGND"
+		(at 212.09 203.2 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "5fd26485-4dd8-471a-8427-f3525fbdf0db")
+	)
+	(label "AGND"
+		(at 276.86 241.3 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "06380118-824f-4cb8-8f3a-2aec0202150a")
+	)
+	(label "AGND"
+		(at 340.36 265.43 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "bced220d-81c8-4018-9342-1d14d2e9f55f")
+	)
+	(label "BCLK_0"
+		(at 285.75 128.27 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "d8a31a1c-9846-4429-b9e6-1d609521f0f9")
+	)
+	(label "BCLK_0"
+		(at 285.75 138.43 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "96710369-4693-4672-9af1-2a4286f3b482")
+	)
+	(label "BCLK_0"
+		(at 229.87 215.9 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b77f3fe9-c8ec-4488-9987-2e37d039006c")
+	)
+	(label "FSYNC_0"
+		(at 285.75 125.73 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3a6ceb2b-fb83-499a-b9e5-d6648537001b")
+	)
+	(label "FSYNC_0"
+		(at 285.75 135.89 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "06be3797-8576-4b0c-98d0-ed5e640c6a10")
+	)
+	(label "FSYNC_0"
+		(at 229.87 218.44 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "6834f88a-a55e-4c70-8cf1-f4eb9a3c2f63")
+	)
+	(label "SDATAO_0"
+		(at 285.75 133.35 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "1dea085b-3f67-4cb0-abf5-f14ca4c63852")
+	)
+	(label "SDATAO_0"
+		(at 229.87 220.98 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a0ae8887-009a-4b1f-b7da-d8f67b650924")
+	)
+	(label "SDATAO_1"
+		(at 285.75 143.51 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "40532bd4-6743-4527-839c-a4988269816b")
+	)
+	(label "SDATAO_1"
+		(at 229.87 223.52 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4f3b7426-00fb-487a-aff7-8c83ed9788f7")
+	)
+	(label "SDATAI_0"
+		(at 285.75 130.81 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "12280ee5-f922-4881-b5e0-400aa3716fd2")
+	)
+	(label "BCLK_3V3"
+		(at 189.23 215.9 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "40bc33a0-1b9a-4c96-9244-d68b00a75e4d")
+	)
+	(label "BCLK_3V3"
+		(at 340.36 245.11 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "0320c60e-4b6f-4187-b530-615dc91e1580")
+	)
+	(label "FSYNC_3V3"
+		(at 189.23 218.44 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "41c77455-be3a-4678-a627-2c7deb24f1e7")
+	)
+	(label "FSYNC_3V3"
+		(at 340.36 247.65 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "85d1aff4-f37b-47c9-bf8e-d747e2522192")
+	)
+	(label "SDATAO_0_3V3"
+		(at 189.23 220.98 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "3464791f-5a8f-4db9-9af4-fe493f1f06ff")
+	)
+	(label "SDATAO_0_3V3"
+		(at 340.36 250.19 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "a40cdd9e-2144-4556-9ccb-3accc8fd86e7")
+	)
+	(label "SDATAO_1_3V3"
+		(at 189.23 223.52 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "3c16d2b1-1565-438f-8778-0f0de1f75caf")
+	)
+	(label "SDATAO_1_3V3"
+		(at 340.36 252.73 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "9990ade9-2604-468c-849f-421e5247da83")
+	)
+	(label "SDATAI_0_3V3"
+		(at 340.36 255.27 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "70067f18-d320-44fd-86f6-abc6e9c8da0e")
+	)
+	(label "SCL_3V3"
+		(at 264.16 254 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "4f29814f-4f4c-48a1-bd5d-9385c87b44af")
+	)
+	(label "SCL_3V3"
+		(at 314.96 233.68 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "d6ab85f9-8a4f-40d9-a166-9689991184f4")
+	)
+	(label "SCL_3V3"
+		(at 340.36 257.81 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "8f66ccd3-20ca-437a-8b99-4982f66e6c40")
+	)
+	(label "SDA_3V3"
+		(at 264.16 256.54 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "5b11d7fb-77d5-4330-92f4-10bd9f6a99c0")
+	)
+	(label "SDA_3V3"
+		(at 325.12 233.68 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a5177ff2-e4cd-4de1-8448-0c248a21ea58")
+	)
+	(label "SDA_3V3"
+		(at 340.36 260.35 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "d67c5983-6f5e-49e7-81d0-2eb5ffc0b8fc")
+	)
+	(label "3V3_CM5"
+		(at 209.55 243.84 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4496178d-31d9-4103-a4f1-981329c2f7b5")
+	)
+	(label "3V3_CM5"
+		(at 212.09 243.84 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "486980cc-042c-45eb-9e2d-f465f13f94ad")
+	)
+	(label "3V3_CM5"
+		(at 281.94 269.24 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "63e6f8b2-7209-4004-80f8-77b7f3dc53d2")
+	)
+	(label "3V3_CM5"
+		(at 281.94 241.3 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4c60c939-92d9-41aa-a994-d68575680d4e")
+	)
+	(label "3V3_CM5"
+		(at 314.96 226.06 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "cf75c471-4a43-4f24-9e1a-3c8543a6ffde")
+	)
+	(label "3V3_CM5"
+		(at 325.12 226.06 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "826b1d8a-bdad-49bc-939f-fc20d1d84380")
+	)
+	(label "3V3_CM5"
+		(at 340.36 262.89 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "7b5d4c30-cda1-4a05-af25-2485dd5ada79")
+	)
+	(label "1V8"
+		(at 195.58 96.52 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "84488f5f-2270-4907-b12f-82670987d757")
+	)
+	(label "1V8"
+		(at 204.47 96.52 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "de24ed8f-b907-468c-adc1-9dd37c729be0")
+	)
+	(label "1V8"
+		(at 207.01 243.84 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "064a1b4c-fec9-4cc4-ae35-56524e803662")
+	)
+	(label "1V8"
+		(at 229.87 210.82 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "536540bc-2534-492d-b69f-50e7b5402c29")
+	)
+	(label "1V8"
+		(at 276.86 269.24 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "584aa6da-c28c-475f-a5fd-c61d817f63a6")
+	)
+	(label "3V3_CM5"
+		(at 299.72 265.43 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "cecc9029-ef1b-4f29-8913-612529cd99b5")
+	)
+  (label "AGND"
+    (at 229.87 257.80999999999995 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "c0704904-4bd9-46b5-ad94-37fbecee5419")
+  )
+  (label "AGND"
+    (at 229.87 260.34999999999997 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "4af96df9-75f0-41bb-a349-51c36e23234f")
+  )
+  (label "AGND"
+    (at 207.01000000000002 250.18999999999997 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "f817aa64-42cb-44b4-8e96-6c4644b48df3")
+  )
+  (label "AGND"
+    (at 209.55 250.18999999999997 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "82e79ac6-1d52-40fc-b5dd-59746c566b54")
+  )
+  (label "AGND"
+    (at 212.09 250.18999999999997 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "2d39ac48-f950-475a-8bea-e4a545f29d94")
+  )
+  (label "SDATAI_0"
+    (at 229.87 262.89 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "4412e9f4-665d-4a98-9e70-1fd913cdbedd")
+  )
+  (label "SDATAI_0_3V3"
+    (at 189.23000000000002 262.89 180)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid "dac4c2e3-ff08-4fd2-8254-9f01228c0909")
+  )
+  (label "1V8"
+    (at 207.01000000000002 290.83 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "6dc7cb9f-6c59-4412-9bf2-2182948dd42f")
+  )
+  (label "3V3_CM5"
+    (at 209.55 290.83 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "d6202809-e00e-4d6f-be46-02aa5902a52f")
+  )
+  (label "3V3_CM5"
+    (at 212.09 290.83 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "301c1868-363c-440b-ba53-6a4358321d12")
+  )
+  (text "PRELIM - ADXL354 single-ended front end into the ADAU1861.\nPer docs/sensor-head-design-note.md and\ndocs/audio-board-decision-record.md (Decision B: ADAU1861\nruled, ADAU1372 rejected for this board).\n\nWIRED: ADAU1861 full power tree (1V8/AGND) + boot straps\n(PD, SELFBOOT, ROM_BOOT_MODE, REG_EN - tied to safe\ndefaults, [assumed], not checked against UG-2257's boot\nsection yet). ADXL354 X/Y/Z -> 100nF C0G coupling ->\n1Mohm bias to buffered CM -> LTC6242 unity-gain buffers\n-> AINN0/1/2, single-ended (AINP0/1/2 tied to raw CM).\n4th LTC6242 unit buffers CM per design note S6.\nIM72D128V PDM mic -> DMIC01/DMIC_CLK on U1, per design\nnote S8 (digital-only, no coupling/buffer). VDD on 1V8\nwith 1uF bypass per datasheet footnote 3; LR tied to\nAGND (DATA1 channel). DMIC23/MP2 (2nd mic pair) marked\nno-connect - this board carries one mic.\nU1's control port and both serial audio ports now cross\nto the 3.3V host - see the separate note by U6/U7/U8.\n\nAD2428 (U5) PLACED for future A2B connection to the\nearcups, per docs/audio-board-decision-record.md Decision\nC - this is the A2B bus MASTER node, host side. Only the\nchip's own regulator/decoupling network is wired: VIN's\non-chip LDOs -> VOUT1 (1.9V) -> DVDD/PLLVDD with 4.7uF\nper datasheet p.27; VOUT2 (3.3V) -> ATRXVDD/BTRXVDD with\n4.7uF plus a shared 100nF+10nF per datasheet p.26; VSS\nand EPAD -> AGND (EPAD-to-GND is mandatory, not optional).\nPin numbers and all values taken from AD242x Rev. C\nTable 15 / p.26-27, not guessed. Its own I2S/TDM and I2C\nto the host are NOT part of this pass - see U5's open\nitems below; U6/U7/U8 carry only U1's traffic, not U5's.\n\nNOT WIRED on U1 (deliberately, out of scope this pass):\nJTAG (TCK/TMS/TDO/TDI), the debug UART (UART_COMM_RX/TX -\nnot the control port, which is now I2C), QSPIM self-boot\nflash, headphone/line outputs (HPOUTN/P), and XTAL. Also\nU5's entire host-facing I2S/TDM interface (BCLK, SYNC,\nDTX0/1, DRX0/1, PDMCLK), its I2C control port (SCL/SDA/\nIRQ/ADR1/ADR2), both A2B line pairs (AP/AN/ACM towards a\nmaster - unused, U5 IS the master; BP/BN/BCM towards the\nfirst/last slave), SWP/VSSN/SENSE (bus power-forwarding to\nthe cups), and IOVDD (needs a domain decision, 3.3V vs\n1.8V, before it can be sourced). ERC's \"not connected\"\nerrors are exactly these pins - expected, not a defect.\n\nOPEN ITEMS (design note S10 + new): buffer-to-AINNx\ncoupling (DC direct vs. footprint a series cap + 0R\njumper) not resolved here. CM pin loading not measured.\nSupply rail \"3V3_ACCEL\" is my judgment call, not in the\nnote - confirm before layout. REG_EN tied low assumes\nDVDD is externally supplied on 1V8, not the internal\nregulator - reasoned, not confirmed against the\ndatasheet's regulator sequencing section. DMIC LR=GND\n(DATA1) is my channel choice, not specified anywhere -\nconfirm against however the DSP expects the PDM stream\nframed.\n\nAD2428 open items, all new: (1) net \"A2B_VIN\" has no\nsource - the datasheet requires 3.7-9.0V AT THE VIN PIN\n(Table 15 p.9), and this board has no rail above 3V3\ntoday. A real supply (5V? higher?) is undesigned.\n(2) IOVDD is left unconnected on purpose - it can run\n3.3V or 1.8V (Operating Conditions p.8); picking 3.3V\nwould let U5 talk to RP1 without the translators Decision\nD mandates for the 1861, but that is my reading, not a\nruling. (3) The A2B bus-coupling network (common-mode\nchoke, AC-coupling caps, diodes D1/D3, VSSN bias inductor)\nis explicitly \"contact your local Analog Devices rep for\nthe latest schematic recommendations\" per datasheet p.33\n- decision record S6 item 3 already flags needing the\nEVAL-AD2428WG1BZ; I have not invented this circuit.\n(4) Whether the cups are bus-powered over A2B or locally\npowered decides SWP/VSSN/SENSE, and is not decided\nanywhere I can find. (5) Upstream channel subset (S4 -\nRev G wants 6, the RP1 link carries 4) still unmade."
     (at 100 215 0)
     (effects (font (size 1.2 1.2)))
-    (uuid "fa028809-bee6-4142-8720-7f83e0b64cea")
+    (uuid "5aedd055-7cc5-4db0-a0c9-0759614df5d7")
+  )
+  (text "I2S + I2C crossing to the host (CM5/RP1), per\ndocs/audio-board-level-shifter.md (this note's \"1860\" is\nthe same silicon as our 1861, UG-2257 p.1) and Decision D\nin docs/audio-board-decision-record.md.\n\nFIVE signals cross, all per the doc's own ruling, nothing\nguessed: BCLK_0, FSYNC_0, SDATAO_0, SDATAO_1 go UP through\nU6 (SN74LVC8T245, DIR=1V8 so A->B); SDATAI_0 (host\nplayback) goes DOWN through U7 (same part, DIR=AGND so\nB->A). Both OE tied AGND (enabled). DIR/OE are VCCA-\nreferenced per the datasheet, hence tied on the 1.8V side.\nU6/U7 are the SAME part per the doc's own rule (\"route\nclock and all data through the same device type so their\ndelays track\") - U7 is oversized for one line on purpose.\n\nBCLK_1<-BCLK_0 and FSYNC_1<-FSYNC_0 are wired LOCALLY on\nU1 (net labels, no translator) per level-shifter.md S3.1 -\nthis is what keeps SPT0/SPT1 sample-aligned across the two\nserial ports carrying the 3-mic array. SPT0/SPT1_CTRL2\nregister settings (BCLK_SRC/LRCLK_SRC) are firmware, not\ndrawn here - S3.1 has the values. SDATAI_1 is genuinely\nunused (port 1 only outputs) and marked no-connect on U1,\nnot left dangling.\n\nI2C: U1 defaults to I2C mode at power-up (UG-2257 \"Control\nPort\" section) - no mode strap needed. ADDR0/ADDR1 tied\nAGND -> address 0x64 (Table 23), my choice since nothing\nelse is on this bus yet. SCL/SDA pull-ups are 2.0k to 1V8\n- an exact datasheet number (ADAU1861 pin descriptions,\npins 2 and 4), not assumed. PCA9517A (U8) is the doc's\nnamed part (\"the part on the EVB\"). Its host-side pull-ups\n(R6/R7, SCL_3V3/SDA_3V3 to 3V3_CM5) are 4.7k - ASSUMED,\nper the konnect design-rules default, because the doc\nitself only says \"sized for the bus capacitance\" and no\ndocument here states the CM5 cable/trace capacitance.\nConfirm before layout.\n\n3V3_CM5 is a NEW rail - assumed supplied by the CM5 header\nover J1 (PWR_FLAG placed accordingly), not generated on\nthis board. This is distinct from 3V3_ACCEL and 3V3_MIC.\n\nJ1 is a generic 9-pin connector (BCLK_3V3, FSYNC_3V3,\nSDATAO_0_3V3, SDATAO_1_3V3, SDATAI_0_3V3, SCL_3V3, SDA_3V3,\n3V3_CM5, AGND) standing in for the physical link to the\nCM5. It carries NO real header pin numbers because\ndocs/audio-board-decision-record.md S6 item 4 says which\nCM5 carrier this is has never been established -\nkicad/aerosense-cm5/ is an empty mirror. Map J1 onto real\nRP1/40-pin GPIOs once that carrier is known; until then\nthis connector is deliberately generic.\n\nNOT reused from docs/audio-board-level-shifter.md: the\nPCA9306 alternative (area-driven, not needed here) and the\nSN74AVC4T774 pick (superseded by Peter's 2026-09-22\nSN74LVC8T245 ruling, Decision D)."
+    (at 160 200 0)
+    (effects (font (size 1.2 1.2)))
+    (uuid "40d6cf2d-7642-4d5c-a3fe-ce3187169660")
   )
 	(symbol
 		(lib_id "AnalogDevices:ADAU1861")
@@ -6498,6 +8188,466 @@
 			(project "audio-board"
 				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
 					(reference "C22")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "TexasInstruments:SN74LVC8T245")
+		(at 209.55 224.79 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "44659dc7-2fcf-4746-bd9c-123dae836938")
+		(property "Reference" "U6"
+			(at 209.55 203.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "SN74LVC8T245PWR"
+			(at 209.55 243.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 209.55 224.79 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "${KIPRJMOD}/../../docs/datasheets/SN74LVC8T245.pdf"
+			(at 209.55 224.79 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "U6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "NXP:PCA9517A")
+		(at 279.4 255.27 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "9b55980d-8455-4755-8bed-32dd2e08215d")
+		(property "Reference" "U8"
+			(at 279.4 241.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PCA9517ADP"
+			(at 279.4 269.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 279.4 255.27 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "${KIPRJMOD}/../../docs/datasheets/PCA9517A.pdf"
+			(at 279.4 255.27 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "U8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 195.58 100.33 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "382c9ab2-ad68-4a87-90dd-a6b4238034f5")
+		(property "Reference" "R4"
+			(at 197.612 100.33 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "2.0k"
+			(at 195.58 100.33 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 195.58 100.33 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 195.58 100.33 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "R4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 204.47 100.33 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "866f5c99-60a7-455e-bc93-8c6682ed4674")
+		(property "Reference" "R5"
+			(at 206.502 100.33 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "2.0k"
+			(at 204.47 100.33 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 204.47 100.33 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 204.47 100.33 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "R5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 314.96 229.87 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "fa0043e0-fa42-47ca-8acb-f1507f251e4c")
+		(property "Reference" "R6"
+			(at 316.992 229.87 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "4.7k"
+			(at 314.96 229.87 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 314.96 229.87 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 314.96 229.87 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "R6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 325.12 229.87 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "084fff48-d38a-4fb2-997d-47a834c59f71")
+		(property "Reference" "R7"
+			(at 327.152 229.87 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "4.7k"
+			(at 325.12 229.87 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 325.12 229.87 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 325.12 229.87 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "R7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector_Generic:Conn_01x09")
+		(at 345.44 255.27 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "20a45051-5d5f-4deb-ac39-fc8a7dabba12")
+		(property "Reference" "J1"
+			(at 345.44 242.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TO_CM5"
+			(at 345.44 267.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 345.44 255.27 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 345.44 255.27 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "J1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 299.72 265.43 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "681409d3-5000-46fa-9a31-5fce12d6c881")
+		(property "Reference" "?"
+			(at 299.72 263.525 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 299.72 261.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 299.72 265.43 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 299.72 265.43 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "TexasInstruments:SN74LVC8T245")
+		(at 209.55 271.78 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f526c93a-dccf-40cd-88ff-e36cb448e73c")
+		(property "Reference" "U7"
+			(at 209.55 250.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "SN74LVC8T245PWR"
+			(at 209.55 290.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 209.55 271.78 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "${KIPRJMOD}/../../docs/datasheets/SN74LVC8T245.pdf"
+			(at 209.55 271.78 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(reference "U7")
 					(unit 1)
 				)
 			)
