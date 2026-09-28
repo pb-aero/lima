@@ -5175,15 +5175,6 @@
 		)
 		(uuid "ecf0be74-8841-46a6-b838-5cdc928c6b99")
 	)
-	(text "Power in: VBAT from the aeronode board (U9/U10, J2).\n\nVBAT is aeronode's raw 2S LiFePO4 pack net (ahead of its\ncharger/buck stage) - per\nkicad/aeronode/doc/ARCHITECTURE.md: \"the pack never falls\nbelow 5.0V\" and \"the pack sits at 7.2V\" at full charge, so\nVBAT runs 5.0-7.3V. Fetched from that doc, not assumed.\nJ2 is a generic 2-pin placeholder for the board-to-board\nlink, same treatment as J1 for the CM5 - the actual\ninterconnect between aeronode and this board is undesigned.\n\nU9 = ADP7118AUJZ-1.8-R7 -> 1V8. U10 = ADP7118AUJZ-3.3-R7\n-> 3V3_ACCEL. NOT the ADP1715 the EVAL-ADAU1860 uses for\nthe same two rails (docs/rig-logic-levels.md) - that part\nis 2.5-5.5V in and VBAT hits 7.3V, over its max. ADP7118\nis the same family's wide-input sibling, 2.7-20V, comfortably\ncovering VBAT with margin. Pin numbers and the EN/SENSE\nwiring (EN->VIN for auto-start, SENSE/ADJ->VOUT for the\nfixed-voltage grade, both from datasheet Table 4/Fig. 1)\nare from the datasheet, not guessed. 2.2uF on each VIN and\nVOUT per the datasheet's own minimum.\n\n1V8 and 3V3_ACCEL no longer carry a PWR_FLAG - they have a\nreal local source now. VBAT gets the PWR_FLAG instead,\nsince it is the new board-boundary net. 3V3_CM5 is\nDELIBERATELY NOT fed from U10 - it is the host's own rail,\nper the I2S/I2C note; folding it into this LDO would\nrequire the translators to run 3.3V-not-exactly-CM5's-3.3V,\nwhich is a decision, not a default.\n\nVBAT also now feeds U5's (AD2428) VIN pin, per Peter - the\ndatasheet needs 3.7-9.0V there (AD242x Rev. C Table 15\np.9) and VBAT's 5.0-7.3V sits inside that with margin at\nboth ends. This is the SAME VBAT net as U9/U10's input, not\na separate regulated rail - AD2428's own on-chip LDOs\n(VOUT1/VOUT2, see the AD2428 note) still do the actual\n1.9V/3.3V regulation for its DVDD/PLLVDD/TRXVDD from here.\n\nOPEN: no current budget was computed against the ADP7118's\n200mA/rail limit - the load here (one codec, one DMIC, a\nfew kOhm of I2C pull-ups, some CMOS logic) is almost\ncertainly well inside it, but \"almost certainly\" is not\n\"measured.\" Board-to-board connector for VBAT unresolved,\nsame as J1. No transient/inrush check has been done for\nthree loads (U9, U10, U5's on-chip regulator) sharing one\nVBAT feed through J2 - worth a look before layout, not\nbefore this schematic."
-		(at 100 50 0)
-		(effects
-			(font
-				(size 1.2 1.2)
-			)
-		)
-		(uuid "bc5d43f1-209d-464a-bcc5-59040577e0d0")
-	)
 	(label "X_ACCEL_OUT"
 		(at 72.39 88.9 0)
 		(effects
@@ -6664,66 +6655,6 @@
 		)
 		(uuid "a5177ff2-e4cd-4de1-8448-0c248a21ea58")
 	)
-	(label "3V3_CM5"
-		(at 209.55 243.84 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "4496178d-31d9-4103-a4f1-981329c2f7b5")
-	)
-	(label "3V3_CM5"
-		(at 212.09 243.84 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "486980cc-042c-45eb-9e2d-f465f13f94ad")
-	)
-	(label "3V3_CM5"
-		(at 281.94 269.24 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "63e6f8b2-7209-4004-80f8-77b7f3dc53d2")
-	)
-	(label "3V3_CM5"
-		(at 281.94 241.3 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "4c60c939-92d9-41aa-a994-d68575680d4e")
-	)
-	(label "3V3_CM5"
-		(at 314.96 226.06 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "cf75c471-4a43-4f24-9e1a-3c8543a6ffde")
-	)
-	(label "3V3_CM5"
-		(at 325.12 226.06 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "826b1d8a-bdad-49bc-939f-fc20d1d84380")
-	)
 	(label "1V8"
 		(at 195.58 96.52 0)
 		(effects
@@ -6773,16 +6704,6 @@
 			(justify left bottom)
 		)
 		(uuid "584aa6da-c28c-475f-a5fd-c61d817f63a6")
-	)
-	(label "3V3_CM5"
-		(at 299.72 265.43 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "cecc9029-ef1b-4f29-8913-612529cd99b5")
 	)
 	(label "AGND"
 		(at 229.87 257.81 0)
@@ -6863,26 +6784,6 @@
 			(justify left bottom)
 		)
 		(uuid "6dc7cb9f-6c59-4412-9bf2-2182948dd42f")
-	)
-	(label "3V3_CM5"
-		(at 209.55 290.83 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "d6202809-e00e-4d6f-be46-02aa5902a52f")
-	)
-	(label "3V3_CM5"
-		(at 212.09 290.83 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "301c1868-363c-440b-ba53-6a4358321d12")
 	)
 	(label "VBAT"
 		(at 134.62 39.37 180)
@@ -7240,12 +7141,6 @@
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid "9314c5d2-f771-43e5-862a-3f8854b0481f")
   )
-  (label "3V3_CM5"
-    (at 340.36 260.35 180)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid "7f9d9210-cd7f-4e88-9d80-eaa1a0c4bbcb")
-  )
   (label "AGND"
     (at 340.36 262.89 180)
     (fields_autoplaced yes)
@@ -7305,10 +7200,63 @@
     (effects (font (size 1.2 1.2)))
     (uuid "29fe09cf-2d82-4441-b2e6-6f06857eee56")
   )
-  (text "I2S + I2C crossing to the host (CM5/RP1), per\ndocs/audio-board-level-shifter.md (this note's \"1860\" is\nthe same silicon as our 1861, UG-2257 p.1) and Decision D\nin docs/audio-board-decision-record.md.\n\nSIX signals now cross to the host, on TWO I2S/TDM lanes\nsharing ONE clock pair: BCLK_0, FSYNC_0, SDATAO_0, and NOW\nU5's DTX0 go UP through U6 (SN74LVC8T245, DIR=1V8 so A->B,\nusing the two channels freed when SPT1 was rerouted -\nsee below); SDATAI_0 and NOW U5's DRX0 go DOWN through U7\n(same part, DIR=AGND so B->A, also using freed channels).\nBoth OE tied AGND (enabled). U6/U7 remain the SAME part\nper the doc's own rule (\"route clock and all data through\nthe same device type so their delays track\").\n\nLANE 1 (U1's SPT0): BCLK_0/FSYNC_0/SDATAO_0 up, SDATAI_0\ndown - unchanged from before, carries mic1+mic2 up and\nplayback down, per level-shifter.md S3.1/S3.1.2.\n\nLANE 2 (U5's DTX0/DRX0, Peter's call, NEW): DTX0_3V3 up\n(U5 transmits upstream A2B data to RP1), DRX0_3V3 down\n(RP1 sends data to U5 to push downstream over A2B). This\nlane rides the SAME BCLK_3V3/FSYNC_3V3 that Lane 1 already\nuses - RP1 would configure a SECOND SAI/I2S peripheral\ninstance against that one shared clock pair to read/write\nDTX0_3V3/DRX0_3V3, the same pattern this board already uses\nlocally for SPT0/SPT1 sharing one clock. Whether RP1's\nhardware/driver stack actually supports a second peripheral\nslaved to an externally-shared BCLK/FSYNC this way is\nASSERTED, not measured - flagged as a new AD2428 open item.\n\nBCLK_1<-BCLK_0, FSYNC_1<-FSYNC_0, AND NOW U5's BCLK/SYNC<-\nBCLK_0/FSYNC_0 are all wired LOCALLY on U1 (net labels, no\ntranslator) per level-shifter.md S3.1 extended by Peter's\ncalls last session. U1 is the single clock source for SPT0,\nSPT1, U5's local port, AND (via U6's translated copy) Lane\n2 to RP1 - one clock, driven from one place, fanned out\nfour ways. This is the same BCLK/FSYNC net crossing the\ntranslator twice over (once as Lane 1's clock, again\nimplicitly for Lane 2) rather than a second physical clock\npair - RP1 sees ONE bit clock and ONE frame sync total.\n\nSPT1 (U1<->U5 local link, unchanged this pass): U1 SDATAO_1\n-> U5 DRX1/IO6; U1 SDATAI_1 <- U5 DTX1/IO4. This is fully\nlocal to the board now - it does NOT reach RP1. Mic3's data\n(carried on SDATAO_1 per the ADC-routing registers) lands\nat U5 via DRX1, and from there can only reach RP1 by\ncrossing the A2B bus and coming back out DTX0 - competing\nwith whatever upstream A2B traffic already occupies DTX0's\n2 slots. Confirm mic3 is meant to travel this route, or\nthis is a capacity problem waiting to be found on the\nbench.\n\nCHANNEL ARITHMETIC, corrected from this note's earlier\ndraft: the decision record's \"two lanes x two slots = four\nchannels\" figure was for DTX0 AND DTX1 BOTH reaching RP1.\nThat is no longer the design - DTX1 goes to U1, not RP1.\nRP1's actual upstream A2B capacity via U5 is now ONE lane\n(DTX0), up to 2 slots. This is a real reduction from what\nthe decision record sized the upstream subset question\nagainst - see the main note's AD2428 open items.\n\nI2C: U1 defaults to I2C mode at power-up (UG-2257 \"Control\nPort\" section) - no mode strap needed. ADDR0/ADDR1 tied\nAGND -> address 0x64 (Table 23), my choice since nothing\nelse was on this bus yet. SCL/SDA pull-ups are 2.0k to 1V8\n- an exact datasheet number (ADAU1861 pin descriptions,\npins 2 and 4), not assumed. PCA9517A (U8) is the doc's\nnamed part (\"the part on the EVB\"). Its host-side pull-ups\n(R6/R7, SCL_3V3/SDA_3V3 to 3V3_CM5) are 4.7k - ASSUMED,\nper the konnect design-rules default, because the doc\nitself only says \"sized for the bus capacitance\" and no\ndocument here states the CM5 cable/trace capacitance.\nConfirm before layout.\n\nU5 (AD2428) SHARES this same SCL/SDA net with U1 (Peter's\ncall) - no new translator, no new pull-ups, it is the same\nphysical bus. This is why U5's IOVDD went to 1V8, which is\nalso what makes every 1.8V-side link above (SPT1, BCLK/\nSYNC, DTX0/DRX0's A-side) native, translator-free hops.\nU5's own ADR1/ADR2 straps (tied AGND) give it a base\naddress distinct from U1's 0x64 by the datasheet's own\nmulti-master-on-one-bus mechanism, though the resulting\nhex value isn't confirmed here. The host reaches both\nchips through the SAME U8 repeater.\n\n3V3_CM5 is a NEW rail - assumed supplied by the CM5 header\nover J1 (PWR_FLAG placed accordingly), not generated on\nthis board. This is distinct from 3V3_ACCEL and 3V3_MIC.\n\nJ1 is now a generic 11-pin connector (BCLK_3V3, FSYNC_3V3,\nSDATAO_0_3V3, spare, SDATAI_0_3V3, SCL_3V3, SDA_3V3,\n3V3_CM5, AGND, DTX0_3V3, DRX0_3V3) standing in for the\nphysical link to the CM5 - pin 4 (formerly SDATAO_1_3V3)\nis spare since SPT1 no longer reaches the host; pins 10/11\nare the new Lane 2 data pins. It carries NO real header pin\nnumbers because docs/audio-board-decision-record.md S6\nitem 4 says which CM5 carrier this is has never been\nestablished - kicad/aerosense-cm5/ is an empty mirror. Map\nJ1 onto real RP1/40-pin GPIOs once that carrier is known;\nuntil then this connector is deliberately generic.\n\nNOT reused from docs/audio-board-level-shifter.md: the\nPCA9306 alternative (area-driven, not needed here) and the\nSN74AVC4T774 pick (superseded by Peter's 2026-09-22\nSN74LVC8T245 ruling, Decision D)."
+  (label "3V3_ACCEL"
+    (at 209.55 243.84 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "eceede6c-a750-4595-ab72-002a07263d8a")
+  )
+  (label "3V3_ACCEL"
+    (at 212.09 243.84 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "68fb6520-8193-4516-a02f-702231a1149e")
+  )
+  (label "3V3_ACCEL"
+    (at 209.55 290.83 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "abdf9170-6107-4b97-8080-8acd3a481a7c")
+  )
+  (label "3V3_ACCEL"
+    (at 212.09 290.83 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "1c005b28-c323-4f93-bb6b-e68962fa5db0")
+  )
+  (label "3V3_ACCEL"
+    (at 281.94 269.24 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "2befbd5f-32c7-4472-9b88-fd90c5fa9f33")
+  )
+  (label "3V3_ACCEL"
+    (at 281.94 241.3 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "bde818f1-a355-4d65-b21c-ebe3cd6eb5b1")
+  )
+  (label "3V3_ACCEL"
+    (at 314.96 226.06 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "d4504126-8551-4289-8786-365c1ebc27db")
+  )
+  (label "3V3_ACCEL"
+    (at 325.12 226.06 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "bbdafadf-bed4-4613-9542-e98d023c27a5")
+  )
+  (text "Power in: VBAT from the aeronode board (U9/U10, J2). This\nis the ONLY supply arriving on this board - Peter confirmed\nno 3.3V rail comes over from the CM5 side at all.\n\nVBAT is aeronode's raw 2S LiFePO4 pack net (ahead of its\ncharger/buck stage) - per\nkicad/aeronode/doc/ARCHITECTURE.md: \"the pack never falls\nbelow 5.0V\" and \"the pack sits at 7.2V\" at full charge, so\nVBAT runs 5.0-7.3V. Fetched from that doc, not assumed.\nJ2 is a generic 2-pin placeholder for the board-to-board\nlink, same treatment as J1 for the CM5 - the actual\ninterconnect between aeronode and this board is undesigned.\n\nU9 = ADP7118AUJZ-1.8-R7 -> 1V8. U10 = ADP7118AUJZ-3.3-R7\n-> 3V3_ACCEL. NOT the ADP1715 the EVAL-ADAU1860 uses for\nthe same two rails (docs/rig-logic-levels.md) - that part\nis 2.5-5.5V in and VBAT hits 7.3V, over its max. ADP7118\nis the same family's wide-input sibling, 2.7-20V, comfortably\ncovering VBAT with margin. Pin numbers and the EN/SENSE\nwiring (EN->VIN for auto-start, SENSE/ADJ->VOUT for the\nfixed-voltage grade, both from datasheet Table 4/Fig. 1)\nare from the datasheet, not guessed. 2.2uF on each VIN and\nVOUT per the datasheet's own minimum.\n\n1V8 and 3V3_ACCEL no longer carry a PWR_FLAG - they have a\nreal local source now. VBAT gets the PWR_FLAG instead,\nsince it is the new board-boundary net.\n\nCORRECTED THIS PASS: there is no separate \"3V3_CM5\" rail\narriving from the CM5 side - Peter confirmed only VBAT\ncrosses the board boundary. The net previously called\n3V3_CM5 (VCCB for U6/U7, VCC(B)/EN for U8, R6/R7's pull-up\nreference, and a J1 pin) has been MERGED into 3V3_ACCEL -\nU10 is now the single 3.3V source for the accelerometer AND\nthe whole host-facing translator stack (U6, U7, U8, R6, R7).\nThe old 3V3_CM5 PWR_FLAG and its J1 pin are both removed;\nJ1 pins 4 and 8 are both spare now. RP1 does not need to\nsupply this board's 3.3V logic-level reference - its own\nGPIO bank has its own 3.3V rail, and U10's independently-\ngenerated 3.3V is close enough (both \"3.3V nominal\") for\nthe translators and repeater to interoperate correctly,\nthe same way any two boards with separate 3.3V supplies and\na shared ground normally do.\n\nOPEN, sharpened by the merge: U10 (ADP7118, 200mA/rail) now\ncarries the accelerometer's own supply AND both I2S\ntranslators' VCCB AND the I2C repeater's VCC(B)/EN AND two\n4.7k pull-ups. Still almost certainly well inside 200mA,\nbut this is now a real aggregate worth computing before\nlayout, not just \"the accelerometer's load.\" Board-to-board\nconnector for VBAT unresolved, same as J1. No transient/\ninrush check has been done for U9, U10, and U5's on-chip\nregulator sharing one VBAT feed through J2."
+    (at 100 50 0)
+    (effects (font (size 1.2 1.2)))
+    (uuid "c2cd3653-d800-4213-b884-20bd2eb0ab1f")
+  )
+  (text "I2S + I2C crossing to the host (CM5/RP1), per\ndocs/audio-board-level-shifter.md (this note's \"1860\" is\nthe same silicon as our 1861, UG-2257 p.1) and Decision D\nin docs/audio-board-decision-record.md.\n\nSIX signals now cross to the host, on TWO I2S/TDM lanes\nsharing ONE clock pair: BCLK_0, FSYNC_0, SDATAO_0, and NOW\nU5's DTX0 go UP through U6 (SN74LVC8T245, DIR=1V8 so A->B,\nusing the two channels freed when SPT1 was rerouted -\nsee below); SDATAI_0 and NOW U5's DRX0 go DOWN through U7\n(same part, DIR=AGND so B->A, also using freed channels).\nBoth OE tied AGND (enabled). U6/U7 remain the SAME part\nper the doc's own rule (\"route clock and all data through\nthe same device type so their delays track\").\n\nLANE 1 (U1's SPT0): BCLK_0/FSYNC_0/SDATAO_0 up, SDATAI_0\ndown - unchanged from before, carries mic1+mic2 up and\nplayback down, per level-shifter.md S3.1/S3.1.2.\n\nLANE 2 (U5's DTX0/DRX0, Peter's call): DTX0_3V3 up\n(U5 transmits upstream A2B data to RP1), DRX0_3V3 down\n(RP1 sends data to U5 to push downstream over A2B). This\nlane rides the SAME BCLK_3V3/FSYNC_3V3 that Lane 1 already\nuses - RP1 would configure a SECOND SAI/I2S peripheral\ninstance against that one shared clock pair to read/write\nDTX0_3V3/DRX0_3V3, the same pattern this board already uses\nlocally for SPT0/SPT1 sharing one clock. Whether RP1's\nhardware/driver stack actually supports a second peripheral\nslaved to an externally-shared BCLK/FSYNC this way is\nASSERTED, not measured - flagged as an AD2428 open item.\n\nBCLK_1<-BCLK_0, FSYNC_1<-FSYNC_0, AND U5's BCLK/SYNC<-\nBCLK_0/FSYNC_0 are all wired LOCALLY on U1 (net labels, no\ntranslator) per level-shifter.md S3.1 extended by Peter's\ncalls. U1 is the single clock source for SPT0, SPT1, U5's\nlocal port, AND (via U6's translated copy) Lane 2 to RP1 -\none clock, driven from one place, fanned out four ways.\nRP1 sees ONE bit clock and ONE frame sync total.\n\nSPT1 (U1<->U5 local link): U1 SDATAO_1 -> U5 DRX1/IO6; U1\nSDATAI_1 <- U5 DTX1/IO4. Fully local to the board - does\nNOT reach RP1. Mic3's data lands at U5 via DRX1, and from\nthere can only reach RP1 by crossing the A2B bus and coming\nback out DTX0 - competing with whatever upstream A2B\ntraffic already occupies DTX0's 2 slots. Confirm mic3 is\nmeant to travel this route.\n\nCHANNEL ARITHMETIC: the decision record's \"two lanes x two\nslots = four channels\" figure was for DTX0 AND DTX1 BOTH\nreaching RP1. That is not the design - DTX1 goes to U1, not\nRP1. RP1's actual upstream A2B capacity via U5 is ONE lane\n(DTX0), up to 2 slots - a real reduction from what the\ndecision record sized the upstream subset question against.\n\nI2C: U1 defaults to I2C mode at power-up (UG-2257 \"Control\nPort\" section) - no mode strap needed. ADDR0/ADDR1 tied\nAGND -> address 0x64 (Table 23), my choice since nothing\nelse was on this bus yet. SCL/SDA pull-ups are 2.0k to 1V8\n- an exact datasheet number (ADAU1861 pin descriptions,\npins 2 and 4), not assumed. PCA9517A (U8) is the doc's\nnamed part (\"the part on the EVB\"). Its host-side pull-ups\n(R6/R7 to 3V3_ACCEL) are 4.7k - ASSUMED, per the konnect\ndesign-rules default, because the doc itself only says\n\"sized for the bus capacitance\" and no document here states\nthe actual bus capacitance. Confirm before layout.\n\nU5 (AD2428) SHARES this same SCL/SDA net with U1 (Peter's\ncall) - no new translator, no new pull-ups, it is the same\nphysical bus. This is why U5's IOVDD went to 1V8, which is\nalso what makes every 1.8V-side link above (SPT1, BCLK/\nSYNC, DTX0/DRX0's A-side) native, translator-free hops.\nU5's own ADR1/ADR2 straps (tied AGND) give it a base\naddress distinct from U1's 0x64 by the datasheet's own\nmulti-master-on-one-bus mechanism, though the resulting\nhex value isn't confirmed here. The host reaches both\nchips through the SAME U8 repeater.\n\n3.3V-SIDE RAIL, CORRECTED THIS PASS: there is no \"3V3_CM5\"\nnet anymore. Peter confirmed only VBAT arrives from the\nCM5/aeronode side - no 3.3V rail crosses the board boundary\nat all. U6/U7's VCCB, U8's VCC(B)/EN, and R6/R7's pull-up\nreference are now all just 3V3_ACCEL, generated locally by\nU10 (see the power note). RP1 keeps its own 3.3V supply on\nits own board, as it already must; the two boards' 3.3V\nrails are independent, tied only by a shared ground and the\ntranslated signal lines, which is the normal way two boards\nwith separate supplies interoperate. The J1 pin that used\nto carry 3V3_CM5 (pin 8) is now spare, alongside pin 4\n(spare since the SPT1 reroute).\n\nJ1 is a generic 11-pin connector (BCLK_3V3, FSYNC_3V3,\nSDATAO_0_3V3, spare, SDATAI_0_3V3, SCL_3V3, SDA_3V3, spare,\nAGND, DTX0_3V3, DRX0_3V3) standing in for the physical link\nto the CM5. It carries NO real header pin numbers because\ndocs/audio-board-decision-record.md S6 item 4 says which\nCM5 carrier this is has never been established -\nkicad/aerosense-cm5/ is an empty mirror. Map J1 onto real\nRP1/40-pin GPIOs once that carrier is known; until then\nthis connector is deliberately generic.\n\nNOT reused from docs/audio-board-level-shifter.md: the\nPCA9306 alternative (area-driven, not needed here) and the\nSN74AVC4T774 pick (superseded by Peter's 2026-09-22\nSN74LVC8T245 ruling, Decision D)."
     (at 160 200 0)
     (effects (font (size 1.2 1.2)))
-    (uuid "4e26a664-f73f-4c11-a4fd-cd31f6c09efe")
+    (uuid "63e93428-916d-4378-957f-07485b74544d")
   )
 	(symbol
 		(lib_id "AnalogDevices:ADAU1861")
@@ -9441,58 +9389,6 @@
 			(project "audio-board"
 				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
 					(reference "R7")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:PWR_FLAG")
-		(at 299.72 265.43 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "681409d3-5000-46fa-9a31-5fce12d6c881")
-		(property "Reference" "?"
-			(at 299.72 263.525 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "PWR_FLAG"
-			(at 299.72 261.62 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 299.72 265.43 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 299.72 265.43 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "audio-board"
-				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
-					(reference "4")
 					(unit 1)
 				)
 			)
