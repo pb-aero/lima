@@ -6012,6 +6012,10 @@
 		(at 234.95 142.24)
 		(uuid "123e4f0a-7fa5-4bb9-8a05-34d4aa5823df")
 	)
+	(no_connect
+		(at 285.75 146.05)
+		(uuid "5f0932f6-e779-4513-ba2f-0cff0df24264")
+	)
 	(wire
 		(pts
 			(xy 234.95 170.18)
@@ -6025,6 +6029,41 @@
 			(xy 250.19 92.71)
 		)
 		(uuid "ecf0be74-8841-46a6-b838-5cdc928c6b99")
+	)
+	(wire
+		(pts
+			(xy 285.75 148.59)
+			(xy 288.29 148.59)
+		)
+		(uuid "9a729faf-7f22-4f91-bf12-3712da9dcb27")
+	)
+	(wire
+		(pts
+			(xy 340.36 250.19)
+			(xy 337.82 250.19)
+		)
+		(uuid "1dc731ae-72da-4849-995d-8faef95e9f21")
+	)
+	(wire
+		(pts
+			(xy 40 202.54)
+			(xy 37.46 202.54)
+		)
+		(uuid "86caf84c-a8a5-44cb-9938-e1276a25a2ee")
+	)
+	(wire
+		(pts
+			(xy 40 205.08)
+			(xy 37.46 205.08)
+		)
+		(uuid "be2747e6-4fbb-469a-beee-0708a64e516f")
+	)
+	(wire
+		(pts
+			(xy 40 207.62)
+			(xy 37.46 207.62)
+		)
+		(uuid "11ff82c4-bdfe-41d2-b430-069d19bd913a")
 	)
 	(text "Power in: VBAT from the aeronode board (U9/U10, J2). This\nis the ONLY supply arriving on this board - Peter confirmed\nno 3.3V rail comes over from the CM5 side at all.\n\nVBAT is aeronode's raw 2S LiFePO4 pack net (ahead of its\ncharger/buck stage) - per\nkicad/aeronode/doc/ARCHITECTURE.md: \"the pack never falls\nbelow 5.0V\" and \"the pack sits at 7.2V\" at full charge, so\nVBAT runs 5.0-7.3V. Fetched from that doc, not assumed.\nJ2 is a generic 2-pin placeholder for the board-to-board\nlink, same treatment as J1 for the CM5 - the actual\ninterconnect between aeronode and this board is undesigned.\n\nU9 = ADP7118AUJZ-1.8-R7 -> 1V8. U10 = ADP7118AUJZ-3.3-R7\n-> 3V3_ACCEL. NOT the ADP1715 the EVAL-ADAU1860 uses for\nthe same two rails (docs/rig-logic-levels.md) - that part\nis 2.5-5.5V in and VBAT hits 7.3V, over its max. ADP7118\nis the same family's wide-input sibling, 2.7-20V, comfortably\ncovering VBAT with margin. Pin numbers and the EN/SENSE\nwiring (EN->VIN for auto-start, SENSE/ADJ->VOUT for the\nfixed-voltage grade, both from datasheet Table 4/Fig. 1)\nare from the datasheet, not guessed. 2.2uF on each VIN and\nVOUT per the datasheet's own minimum.\n\n1V8 and 3V3_ACCEL no longer carry a PWR_FLAG - they have a\nreal local source now. VBAT gets the PWR_FLAG instead,\nsince it is the new board-boundary net.\n\nCORRECTED THIS PASS: there is no separate \"3V3_CM5\" rail\narriving from the CM5 side - Peter confirmed only VBAT\ncrosses the board boundary. The net previously called\n3V3_CM5 (VCCB for U6/U7, VCC(B)/EN for U8, R6/R7's pull-up\nreference, and a J1 pin) has been MERGED into 3V3_ACCEL -\nU10 is now the single 3.3V source for the accelerometer AND\nthe whole host-facing translator stack (U6, U7, U8, R6, R7).\nThe old 3V3_CM5 PWR_FLAG and its J1 pin are both removed;\nJ1 pins 4 and 8 are both spare now. RP1 does not need to\nsupply this board's 3.3V logic-level reference - its own\nGPIO bank has its own 3.3V rail, and U10's independently-\ngenerated 3.3V is close enough (both \"3.3V nominal\") for\nthe translators and repeater to interoperate correctly,\nthe same way any two boards with separate 3.3V supplies and\na shared ground normally do.\n\nOPEN, sharpened by the merge: U10 (ADP7118, 200mA/rail) now\ncarries the accelerometer's own supply AND both I2S\ntranslators' VCCB AND the I2C repeater's VCC(B)/EN AND two\n4.7k pull-ups. Still almost certainly well inside 200mA,\nbut this is now a real aggregate worth computing before\nlayout, not just \"the accelerometer's load.\" Board-to-board\nconnector for VBAT unresolved, same as J1. No transient/\ninrush check has been done for U9, U10, and U5's on-chip\nregulator sharing one VBAT feed through J2."
 		(at 100 50 0)
@@ -6043,6 +6082,33 @@
 			)
 		)
 		(uuid "63e93428-916d-4378-957f-07485b74544d")
+	)
+	(text "PRELIM - ADXL354 single-ended front end into the ADAU1861.\nPer docs/sensor-head-design-note.md and\ndocs/audio-board-decision-record.md (Decision B: ADAU1861\nruled, ADAU1372 rejected for this board).\n\nWIRED: ADAU1861 full power tree (1V8/AGND) + boot straps\n(PD, SELFBOOT, ROM_BOOT_MODE, REG_EN - tied to safe\ndefaults, [assumed], not checked against UG-2257's boot\nsection yet). ADXL354 X/Y/Z -> 100nF C0G coupling ->\n1Mohm bias to buffered CM -> LTC6242 unity-gain buffers\n-> AINN0/1/2, single-ended (AINP0/1/2 tied to raw CM).\n4th LTC6242 unit buffers CM per design note S6.\nIM72D128V PDM mic -> DMIC01/DMIC_CLK on U1, per design\nnote S8 (digital-only, no coupling/buffer). VDD on 1V8\nwith 1uF bypass per datasheet footnote 3; LR tied to\nAGND (DATA1 channel). DMIC23/MP2 (2nd mic pair) marked\nno-connect - this board carries one mic.\nU1's control port and SPT0 cross to the 3.3V host via U6/\nU7/U8. U1's SPT1 goes locally to U5 instead. U5's DTX0/\nDRX0 also cross to the host as a second lane - see the\nI2S/I2C note.\n1V8 and 3V3_ACCEL are locally regulated from VBAT (the\naeronode's raw battery) - see the power note by U9/U10.\n\nAD2428 (U5) is the A2B bus MASTER node, host side, per\ndocs/audio-board-decision-record.md Decision C. Its own\nregulator/decoupling network is wired: VIN's on-chip LDOs\n-> VOUT1 (1.9V) -> DVDD/PLLVDD with 4.7uF per datasheet\np.27; VOUT2 (3.3V) -> ATRXVDD/BTRXVDD with 4.7uF plus a\nshared 100nF+10nF per datasheet p.26; VSS and EPAD -> AGND\n(EPAD-to-GND is mandatory, not optional). Pin numbers and\nvalues from AD242x Rev. C Table 15 / p.26-27, not guessed.\nVIN runs off VBAT directly - see the power note for why\nthat's in spec (3.7-9.0V needed, VBAT is 5.0-7.3V).\nU5's I2C SHARES U1's bus - IOVDD -> 1V8 follows from that.\nU5's SPT1 link to U1 uses DRX1/DTX1 and shares U1's clock\n(BCLK/SYNC looped from BCLK_0/FSYNC_0).\nU5's B-side A2B line interface is now WIRED - see the\nseparate A2B note by FL1/J3 for the reference it came\nfrom and the compliance caveat that goes with it.\n\nNOT WIRED on U1 (deliberately, out of scope this pass):\nJTAG (TCK/TMS/TDO/TDI), the debug UART (UART_COMM_RX/TX -\nnot the control port, which is now I2C), QSPIM self-boot\nflash, headphone/line outputs (HPOUTN/P), and XTAL. Also\nU5's IRQ/IO0, PDMCLK/IO7, its A-side A2B pair (AP/AN/ACM -\nunused, U5 IS the master), and SWP/SENSE (bus-power\nswitching - see the A2B note). ERC's \"not connected\"\nerrors are exactly these pins - expected, not a defect.\n\nOPEN ITEMS (design note S10 + new): buffer-to-AINNx\ncoupling (DC direct vs. footprint a series cap + 0R\njumper) not resolved here. CM pin loading not measured.\nSupply rail \"3V3_ACCEL\" is my judgment call, not in the\nnote - confirm before layout. REG_EN tied low assumes\nDVDD is externally supplied on 1V8, not the internal\nregulator - reasoned, not confirmed against the\ndatasheet's regulator sequencing section. DMIC LR=GND\n(DATA1) is my channel choice, not specified anywhere -\nconfirm against however the DSP expects the PDM stream\nframed.\n\nAD2428 open items, remaining: (1) Whether the cups are\nbus-powered over A2B or locally powered - this is now the\ngating question, because it decides SWP/VSSN/SENSE AND the\nsource for A2B_BIAS_P (see the A2B note). (2) The A2B\nnetwork is transcribed from ADI's eval board, NOT an\nADI-issued recommendation for this board - p.33 says that\ndistinction matters for automotive-grade compliance.\nReview with ADI before fab. (3) Upstream channel subset\n(S4 - Rev G wants 6) is SMALLER than the decision record's\n\"four channels\" ceiling: DTX1 went to U1, so only DTX0\n(one lane, up to 2 slots) reaches RP1 upstream. (4) U5's\nI2C base address (ADR1/ADR2 tied AGND) - the resulting\n7-bit value isn't confirmed, that table lives in a\nseparate Technical Reference not in this repo. (5) RP1's\nability to run a SECOND I2S lane sharing SPT0's clock is\nasserted by this schematic, not measured."
+		(at 100 215 0)
+		(effects
+			(font
+				(size 1.2 1.2)
+			)
+		)
+		(uuid "84fbb430-db79-413d-a089-f011f23875a7")
+	)
+	(text "A2B LINE INTERFACE - U5 B-side, to the earcups\nValues TRANSCRIBED from ADI's own master-node eval\nboard, EVAL-AD2428WD1BZ Rev 1.1 sheet 2 of 7 (archived\nin docs/datasheets, pinned in fetch-datasheets.sh).\nAn eval board is NOT ADI's issued recommendation -\nAD242x Rev. C p.33 makes that distinction decide\nautomotive-grade compliance. REVIEW WITH ADI BEFORE FAB.\nA2B_BIAS_P has NO SOURCE yet - the bus-power switch is\nnot drawn, it waits on the bus-powered vs locally-\npowered decision for the cups.\nA-side (AP/AN/ACM) unconnected on purpose: U5 IS master.\nLayout rules are mandatory and are NOT in this\nschematic - AD242x Rev. C p.34.\nFULL DETAIL + open items: docs/a2b-bus-coupling-note.md"
+		(at 299 200 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+		)
+		(uuid "654b9c18-ae1b-46ec-828c-0e4c0e913ed6")
+	)
+	(text "HPOUTN intentionally left no-connect: HPOUTP now feeds the new\nBOOM MIC / TX SELECT sheet (page 2) single-ended. Differential\npair, other leg left open not grounded - same treatment as the H1\nheadset-mute board's HPOUTN. J1 pin 4 (previously spare) now\ncarries GPIO_RLY_TX_SEL_3V3 to that sheet's relay driver."
+		(at 288.29 180 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "f950bdf3-7571-49a2-8102-e4599bb42c1d")
 	)
 	(label "X_ACCEL_OUT"
 		(at 72.39 88.9 0)
@@ -8204,268 +8270,526 @@
 		)
 		(uuid "bbdafadf-bed4-4613-9542-e98d023c27a5")
 	)
-  (label "A2B_BP"
-    (at 330.2 163.83 180)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid "b0a9f47c-51ab-4534-9a86-ba8f03248bd9")
-  )
-  (label "A2B_BP"
-    (at 358.14 191.77 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "99a7bbf1-3d83-4c4a-b31a-9c18f4256fe6")
-  )
-  (label "A2B_BP"
-    (at 382.27 191.77 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "a758b5c2-b00d-4209-8c28-2cb68367f023")
-  )
-  (label "A2B_BP"
-    (at 358.14 208.28 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "10a0b862-b1ea-4792-9af0-90a5061e5e93")
-  )
-  (label "A2B_BCM"
-    (at 330.2 158.75 180)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid "390e0bc3-c0cf-41fa-9c44-a4453bd166dc")
-  )
-  (label "A2B_BCM"
-    (at 358.14 199.39000000000001 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "bb739dfa-1ea9-4bee-8c64-7250ebdff4fa")
-  )
-  (label "A2B_BCM"
-    (at 369.57 191.77 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "8391e8f5-53db-48c3-99a5-b9a54dbe6134")
-  )
-  (label "A2B_BN"
-    (at 330.2 161.29000000000002 180)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid "7cf6258f-1425-45f4-ada5-7d83145a24a4")
-  )
-  (label "A2B_BN"
-    (at 369.57 199.39000000000001 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "681a2413-7c82-4c82-a8d0-67a238c8ea45")
-  )
-  (label "A2B_BN"
-    (at 382.27 199.39000000000001 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "146ffdea-61bf-4b86-9f2c-b2fe98014ea1")
-  )
-  (label "A2B_BN"
-    (at 369.57 208.28 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "ed0bf0ac-a44a-4f08-8cfe-473b802ceeed")
-  )
-  (label "A2B_BP_F"
-    (at 358.14 215.9 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "9735166e-3be2-4832-b848-0ef4fff14cc4")
-  )
-  (label "A2B_BP_F"
-    (at 382.27 208.28 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "53640fef-d2f6-44a6-9433-e2a22fb78ddb")
-  )
-  (label "A2B_BP_F"
-    (at 360.68 231.14000000000001 180)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid "a2e1a3f0-4395-42c3-b42e-771f930bb5c8")
-  )
-  (label "A2B_BN_F"
-    (at 369.57 215.9 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "d8be7113-f2c9-4741-87e1-bf7660dcac74")
-  )
-  (label "A2B_BN_F"
-    (at 360.68 236.22 180)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid "b6c0f80b-e635-4dcd-b8f3-f5240055cc85")
-  )
-  (label "A2B_BP_T"
-    (at 370.84 231.14000000000001 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "f85206f0-d2ed-46ef-968e-9eacc9508f3a")
-  )
-  (label "A2B_BP_T"
-    (at 388.62 229.87 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "00953ce7-5e96-42c0-b00f-956d913c3df2")
-  )
-  (label "A2B_BP_T"
-    (at 358.14 247.65 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "0d0209c7-a1ff-45ed-8432-b1ac1569161e")
-  )
-  (label "A2B_BN_T"
-    (at 370.84 236.22 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "c6bba260-18cc-4d5d-a71e-19076ddcc379")
-  )
-  (label "A2B_BN_T"
-    (at 400.05 237.49 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "260c5af5-29d7-4ac1-84e1-cb38cbc7b555")
-  )
-  (label "A2B_BN_T"
-    (at 369.57 247.65 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "823acc13-d80f-44a9-bae4-ad411e1dd64c")
-  )
-  (label "A2B_TERM_CT"
-    (at 388.62 237.49 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "c7e28e5c-e82a-4ddf-a797-2e9b72cabfe4")
-  )
-  (label "A2B_TERM_CT"
-    (at 400.05 229.87 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "3739adc0-84b9-4bad-b26b-c927eaf40cd5")
-  )
-  (label "A2B_TERM_CT"
-    (at 393.7 208.28 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "b1371966-f895-4973-9dbd-0484881c124c")
-  )
-  (label "A2B_LINE_P"
-    (at 358.14 255.27 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "99cdb063-d4bb-45be-903d-b1909a49392b")
-  )
-  (label "A2B_LINE_P"
-    (at 382.27 247.65 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "f1826d75-d97a-4c3e-b292-360e3f6f6acd")
-  )
-  (label "A2B_LINE_P"
-    (at 358.14 266.7 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "bd0066b2-9882-41ac-8543-761d7d71a6f7")
-  )
-  (label "A2B_LINE_P"
-    (at 382.27 266.7 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "ea2ea772-6ed4-4308-b703-deb68a782d00")
-  )
-  (label "A2B_LINE_P"
-    (at 394.97 270.51 180)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid "1cf609cb-6da0-4c3a-af40-a7e03d180d88")
-  )
-  (label "A2B_LINE_N"
-    (at 369.57 255.27 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "cbc07653-6c63-4f37-b92a-d868a1d1a0e6")
-  )
-  (label "A2B_LINE_N"
-    (at 393.7 247.65 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "aaadd5b8-3359-4bdc-b605-0a6e064ce893")
-  )
-  (label "A2B_LINE_N"
-    (at 369.57 266.7 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "6bc83c64-b300-4b49-95e1-b1a3a4416bb9")
-  )
-  (label "A2B_LINE_N"
-    (at 382.27 274.32 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "9c77f55f-766d-420b-8c1f-b82f1db51b33")
-  )
-  (label "A2B_LINE_N"
-    (at 394.97 273.05 180)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid "1fcccc09-8098-4b94-9362-7bb085397d00")
-  )
-  (label "AGND"
-    (at 382.27 215.9 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "e31cbb1f-0538-435c-b2a7-8e611ab3f4c5")
-  )
-  (label "AGND"
-    (at 393.7 215.9 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "69dace00-2e24-42e1-93ca-ade1e9def855")
-  )
-  (label "AGND"
-    (at 358.14 274.32 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "5c0ac2b8-0046-4bbd-85f4-6b3508fa1578")
-  )
-  (label "AGND"
-    (at 369.57 274.32 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "f2ac739d-e70e-417e-a156-f9a653b1c720")
-  )
-  (label "A2B_BIAS_P"
-    (at 382.27 255.27 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "96f7f22a-ebc9-4905-a371-b1077a0b918f")
-  )
-  (label "A2B_BIAS_N"
-    (at 393.7 255.27 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "7387506a-1114-40f8-b548-dbca838e8c7a")
-  )
-  (label "A2B_BIAS_N"
-    (at 349.25 138.43 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "5c55e21a-0ca4-4199-a8e0-ec2a33a4e511")
-  )
-  (text "PRELIM - ADXL354 single-ended front end into the ADAU1861.\nPer docs/sensor-head-design-note.md and\ndocs/audio-board-decision-record.md (Decision B: ADAU1861\nruled, ADAU1372 rejected for this board).\n\nWIRED: ADAU1861 full power tree (1V8/AGND) + boot straps\n(PD, SELFBOOT, ROM_BOOT_MODE, REG_EN - tied to safe\ndefaults, [assumed], not checked against UG-2257's boot\nsection yet). ADXL354 X/Y/Z -> 100nF C0G coupling ->\n1Mohm bias to buffered CM -> LTC6242 unity-gain buffers\n-> AINN0/1/2, single-ended (AINP0/1/2 tied to raw CM).\n4th LTC6242 unit buffers CM per design note S6.\nIM72D128V PDM mic -> DMIC01/DMIC_CLK on U1, per design\nnote S8 (digital-only, no coupling/buffer). VDD on 1V8\nwith 1uF bypass per datasheet footnote 3; LR tied to\nAGND (DATA1 channel). DMIC23/MP2 (2nd mic pair) marked\nno-connect - this board carries one mic.\nU1's control port and SPT0 cross to the 3.3V host via U6/\nU7/U8. U1's SPT1 goes locally to U5 instead. U5's DTX0/\nDRX0 also cross to the host as a second lane - see the\nI2S/I2C note.\n1V8 and 3V3_ACCEL are locally regulated from VBAT (the\naeronode's raw battery) - see the power note by U9/U10.\n\nAD2428 (U5) is the A2B bus MASTER node, host side, per\ndocs/audio-board-decision-record.md Decision C. Its own\nregulator/decoupling network is wired: VIN's on-chip LDOs\n-> VOUT1 (1.9V) -> DVDD/PLLVDD with 4.7uF per datasheet\np.27; VOUT2 (3.3V) -> ATRXVDD/BTRXVDD with 4.7uF plus a\nshared 100nF+10nF per datasheet p.26; VSS and EPAD -> AGND\n(EPAD-to-GND is mandatory, not optional). Pin numbers and\nvalues from AD242x Rev. C Table 15 / p.26-27, not guessed.\nVIN runs off VBAT directly - see the power note for why\nthat's in spec (3.7-9.0V needed, VBAT is 5.0-7.3V).\nU5's I2C SHARES U1's bus - IOVDD -> 1V8 follows from that.\nU5's SPT1 link to U1 uses DRX1/DTX1 and shares U1's clock\n(BCLK/SYNC looped from BCLK_0/FSYNC_0).\nU5's B-side A2B line interface is now WIRED - see the\nseparate A2B note by FL1/J3 for the reference it came\nfrom and the compliance caveat that goes with it.\n\nNOT WIRED on U1 (deliberately, out of scope this pass):\nJTAG (TCK/TMS/TDO/TDI), the debug UART (UART_COMM_RX/TX -\nnot the control port, which is now I2C), QSPIM self-boot\nflash, headphone/line outputs (HPOUTN/P), and XTAL. Also\nU5's IRQ/IO0, PDMCLK/IO7, its A-side A2B pair (AP/AN/ACM -\nunused, U5 IS the master), and SWP/SENSE (bus-power\nswitching - see the A2B note). ERC's \"not connected\"\nerrors are exactly these pins - expected, not a defect.\n\nOPEN ITEMS (design note S10 + new): buffer-to-AINNx\ncoupling (DC direct vs. footprint a series cap + 0R\njumper) not resolved here. CM pin loading not measured.\nSupply rail \"3V3_ACCEL\" is my judgment call, not in the\nnote - confirm before layout. REG_EN tied low assumes\nDVDD is externally supplied on 1V8, not the internal\nregulator - reasoned, not confirmed against the\ndatasheet's regulator sequencing section. DMIC LR=GND\n(DATA1) is my channel choice, not specified anywhere -\nconfirm against however the DSP expects the PDM stream\nframed.\n\nAD2428 open items, remaining: (1) Whether the cups are\nbus-powered over A2B or locally powered - this is now the\ngating question, because it decides SWP/VSSN/SENSE AND the\nsource for A2B_BIAS_P (see the A2B note). (2) The A2B\nnetwork is transcribed from ADI's eval board, NOT an\nADI-issued recommendation for this board - p.33 says that\ndistinction matters for automotive-grade compliance.\nReview with ADI before fab. (3) Upstream channel subset\n(S4 - Rev G wants 6) is SMALLER than the decision record's\n\"four channels\" ceiling: DTX1 went to U1, so only DTX0\n(one lane, up to 2 slots) reaches RP1 upstream. (4) U5's\nI2C base address (ADR1/ADR2 tied AGND) - the resulting\n7-bit value isn't confirmed, that table lives in a\nseparate Technical Reference not in this repo. (5) RP1's\nability to run a SECOND I2S lane sharing SPT0's clock is\nasserted by this schematic, not measured."
-    (at 100 215 0)
-    (effects (font (size 1.2 1.2)))
-    (uuid "84fbb430-db79-413d-a089-f011f23875a7")
-  )
-  (text "A2B LINE INTERFACE - U5 B-side, to the earcups\nValues TRANSCRIBED from ADI's own master-node eval\nboard, EVAL-AD2428WD1BZ Rev 1.1 sheet 2 of 7 (archived\nin docs/datasheets, pinned in fetch-datasheets.sh).\nAn eval board is NOT ADI's issued recommendation -\nAD242x Rev. C p.33 makes that distinction decide\nautomotive-grade compliance. REVIEW WITH ADI BEFORE FAB.\nA2B_BIAS_P has NO SOURCE yet - the bus-power switch is\nnot drawn, it waits on the bus-powered vs locally-\npowered decision for the cups.\nA-side (AP/AN/ACM) unconnected on purpose: U5 IS master.\nLayout rules are mandatory and are NOT in this\nschematic - AD242x Rev. C p.34.\nFULL DETAIL + open items: docs/a2b-bus-coupling-note.md"
-    (at 299 200 0)
-    (effects (font (size 1.1 1.1)))
-    (uuid "654b9c18-ae1b-46ec-828c-0e4c0e913ed6")
-  )
+	(label "A2B_BP"
+		(at 330.2 163.83 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "b0a9f47c-51ab-4534-9a86-ba8f03248bd9")
+	)
+	(label "A2B_BP"
+		(at 358.14 191.77 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "99a7bbf1-3d83-4c4a-b31a-9c18f4256fe6")
+	)
+	(label "A2B_BP"
+		(at 382.27 191.77 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a758b5c2-b00d-4209-8c28-2cb68367f023")
+	)
+	(label "A2B_BP"
+		(at 358.14 208.28 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "10a0b862-b1ea-4792-9af0-90a5061e5e93")
+	)
+	(label "A2B_BCM"
+		(at 330.2 158.75 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "390e0bc3-c0cf-41fa-9c44-a4453bd166dc")
+	)
+	(label "A2B_BCM"
+		(at 358.14 199.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "bb739dfa-1ea9-4bee-8c64-7250ebdff4fa")
+	)
+	(label "A2B_BCM"
+		(at 369.57 191.77 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "8391e8f5-53db-48c3-99a5-b9a54dbe6134")
+	)
+	(label "A2B_BN"
+		(at 330.2 161.29 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "7cf6258f-1425-45f4-ada5-7d83145a24a4")
+	)
+	(label "A2B_BN"
+		(at 369.57 199.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "681a2413-7c82-4c82-a8d0-67a238c8ea45")
+	)
+	(label "A2B_BN"
+		(at 382.27 199.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "146ffdea-61bf-4b86-9f2c-b2fe98014ea1")
+	)
+	(label "A2B_BN"
+		(at 369.57 208.28 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ed0bf0ac-a44a-4f08-8cfe-473b802ceeed")
+	)
+	(label "A2B_BP_F"
+		(at 358.14 215.9 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "9735166e-3be2-4832-b848-0ef4fff14cc4")
+	)
+	(label "A2B_BP_F"
+		(at 382.27 208.28 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "53640fef-d2f6-44a6-9433-e2a22fb78ddb")
+	)
+	(label "A2B_BP_F"
+		(at 360.68 231.14 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "a2e1a3f0-4395-42c3-b42e-771f930bb5c8")
+	)
+	(label "A2B_BN_F"
+		(at 369.57 215.9 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "d8be7113-f2c9-4741-87e1-bf7660dcac74")
+	)
+	(label "A2B_BN_F"
+		(at 360.68 236.22 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "b6c0f80b-e635-4dcd-b8f3-f5240055cc85")
+	)
+	(label "A2B_BP_T"
+		(at 370.84 231.14 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f85206f0-d2ed-46ef-968e-9eacc9508f3a")
+	)
+	(label "A2B_BP_T"
+		(at 388.62 229.87 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "00953ce7-5e96-42c0-b00f-956d913c3df2")
+	)
+	(label "A2B_BP_T"
+		(at 358.14 247.65 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "0d0209c7-a1ff-45ed-8432-b1ac1569161e")
+	)
+	(label "A2B_BN_T"
+		(at 370.84 236.22 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "c6bba260-18cc-4d5d-a71e-19076ddcc379")
+	)
+	(label "A2B_BN_T"
+		(at 400.05 237.49 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "260c5af5-29d7-4ac1-84e1-cb38cbc7b555")
+	)
+	(label "A2B_BN_T"
+		(at 369.57 247.65 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "823acc13-d80f-44a9-bae4-ad411e1dd64c")
+	)
+	(label "A2B_TERM_CT"
+		(at 388.62 237.49 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "c7e28e5c-e82a-4ddf-a797-2e9b72cabfe4")
+	)
+	(label "A2B_TERM_CT"
+		(at 400.05 229.87 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3739adc0-84b9-4bad-b26b-c927eaf40cd5")
+	)
+	(label "A2B_TERM_CT"
+		(at 393.7 208.28 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b1371966-f895-4973-9dbd-0484881c124c")
+	)
+	(label "A2B_LINE_P"
+		(at 358.14 255.27 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "99cdb063-d4bb-45be-903d-b1909a49392b")
+	)
+	(label "A2B_LINE_P"
+		(at 382.27 247.65 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f1826d75-d97a-4c3e-b292-360e3f6f6acd")
+	)
+	(label "A2B_LINE_P"
+		(at 358.14 266.7 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "bd0066b2-9882-41ac-8543-761d7d71a6f7")
+	)
+	(label "A2B_LINE_P"
+		(at 382.27 266.7 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ea2ea772-6ed4-4308-b703-deb68a782d00")
+	)
+	(label "A2B_LINE_P"
+		(at 394.97 270.51 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "1cf609cb-6da0-4c3a-af40-a7e03d180d88")
+	)
+	(label "A2B_LINE_N"
+		(at 369.57 255.27 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "cbc07653-6c63-4f37-b92a-d868a1d1a0e6")
+	)
+	(label "A2B_LINE_N"
+		(at 393.7 247.65 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "aaadd5b8-3359-4bdc-b605-0a6e064ce893")
+	)
+	(label "A2B_LINE_N"
+		(at 369.57 266.7 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "6bc83c64-b300-4b49-95e1-b1a3a4416bb9")
+	)
+	(label "A2B_LINE_N"
+		(at 382.27 274.32 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "9c77f55f-766d-420b-8c1f-b82f1db51b33")
+	)
+	(label "A2B_LINE_N"
+		(at 394.97 273.05 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "1fcccc09-8098-4b94-9362-7bb085397d00")
+	)
+	(label "AGND"
+		(at 382.27 215.9 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e31cbb1f-0538-435c-b2a7-8e611ab3f4c5")
+	)
+	(label "AGND"
+		(at 393.7 215.9 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "69dace00-2e24-42e1-93ca-ade1e9def855")
+	)
+	(label "AGND"
+		(at 358.14 274.32 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "5c0ac2b8-0046-4bbd-85f4-6b3508fa1578")
+	)
+	(label "AGND"
+		(at 369.57 274.32 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f2ac739d-e70e-417e-a156-f9a653b1c720")
+	)
+	(label "A2B_BIAS_P"
+		(at 382.27 255.27 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "96f7f22a-ebc9-4905-a371-b1077a0b918f")
+	)
+	(label "A2B_BIAS_N"
+		(at 393.7 255.27 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "7387506a-1114-40f8-b548-dbca838e8c7a")
+	)
+	(label "A2B_BIAS_N"
+		(at 349.25 138.43 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "5c55e21a-0ca4-4199-a8e0-ec2a33a4e511")
+	)
+	(label "HPOUTP"
+		(at 288.29 148.59 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "cacdaa34-6fb4-4bcc-8cc7-c5466b3ca7ff")
+	)
+	(label "GPIO_RLY_TX_SEL_3V3"
+		(at 337.82 250.19 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "c9edfe35-0bbb-41cb-b26e-379df65860f9")
+	)
+	(label "GPIO_RLY_TX_SEL_3V3"
+		(at 37.46 202.54 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "7314272b-7e3e-49f3-89ed-ea1bda5cfd52")
+	)
+	(label "HPOUTP"
+		(at 37.46 205.08 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "1e9f944f-90d5-404d-88ff-3697b8365c6c")
+	)
+	(label "AGND"
+		(at 37.46 207.62 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "1719a835-9ed0-489d-bd6c-c30035d4f7e3")
+	)
+	(sheet
+		(at 40 200)
+		(size 50 50)
+		(fields_autoplaced)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0)
+		)
+		(uuid "fb20a544-30e3-4d6b-acfd-e420a90726f9")
+		(property "Sheetname" "BOOM MIC / TX SELECT"
+			(at 20 199.365 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "boom-mic-tx-select.kicad_sch"
+			(at 20 250.635 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "GPIO_RLY_TX_SEL_3V3" input
+			(at 40 202.54 180)
+			(uuid "fcbdb01b-5362-43cc-87ea-ce1d569a9338")
+		)
+		(pin "HPOUTP" input
+			(at 40 205.08 180)
+			(uuid "a0bd35b1-d640-4e9e-8a41-c138a8651960")
+		)
+		(pin "AGND" passive
+			(at 40 207.62 180)
+			(uuid "dc54b057-d16f-4c21-b5db-187f977a730a")
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
+					(page "2")
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "AnalogDevices:ADAU1861")
 		(at 260.35 149.86 0)
