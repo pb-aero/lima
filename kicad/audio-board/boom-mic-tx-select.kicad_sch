@@ -1915,6 +1915,363 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Diode:BAT54S"
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "D"
+				(at 2.54 -5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "BAT54S"
+				(at -6.35 3.175 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
+				(at 1.905 3.175 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Datasheet" "https://www.diodes.com/assets/Datasheets/ds11005.pdf"
+				(at -3.048 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Vr 30V, If 200mA, Dual schottky barrier diode, in series, SOT-323"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "schottky diode"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "SOT?23*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "BAT54S_0_1"
+				(polyline
+					(pts
+						(xy -4.445 1.27)
+						(xy -4.445 -1.27)
+						(xy -2.54 0)
+						(xy -4.445 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -3.81 0)
+						(xy -1.27 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -3.175 -1.27)
+						(xy -3.175 -1.016)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -2.54 1.27)
+						(xy -1.905 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -2.54 -1.27)
+						(xy -3.175 -1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -2.54 -1.27)
+						(xy -2.54 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.905 1.27)
+						(xy -1.905 1.016)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.905 0)
+						(xy 1.905 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 0 0)
+					(radius 0.254)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 0)
+						(xy 3.81 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.905 1.27)
+						(xy 1.905 -1.27)
+						(xy 3.81 0)
+						(xy 1.905 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.175 -1.27)
+						(xy 3.175 -1.016)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.81 1.27)
+						(xy 4.445 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.81 -1.27)
+						(xy 3.175 -1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.81 -1.27)
+						(xy 3.81 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 4.445 1.27)
+						(xy 4.445 1.016)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "BAT54S_1_1"
+				(pin passive line
+					(at -7.62 0 0)
+					(length 3.81)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 7.62 0 180)
+					(length 3.81)
+					(name "K"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -5.08 90)
+					(length 5.08)
+					(name "COM"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(junction
 		(at 140.97 64.77)
@@ -1976,6 +2333,12 @@
 		(at 294.64 53.34)
 		(diameter 0)
 		(uuid "6ef2d72c-3ef9-455a-877e-de7ecad03aba")
+	)
+	(junction
+		(at 104.14 54.61)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "e32ac71f-2e20-4d53-97e7-570ff4bd38c1")
 	)
 	(no_connect
 		(at 140.97 62.23)
@@ -2092,13 +2455,6 @@
 			(xy 78.74 128.27)
 		)
 		(uuid "51efb2db-40ba-44dc-8b79-14ea3b9dd178")
-	)
-	(wire
-		(pts
-			(xy 104.14 57.15)
-			(xy 104.14 30.48)
-		)
-		(uuid "6301e1f8-bb65-4cc8-9bc0-eae05d491b0d")
 	)
 	(wire
 		(pts
@@ -2306,6 +2662,78 @@
 		)
 		(uuid "6d1b458a-fe02-412a-b696-11fd95c251f5")
 	)
+	(wire
+		(pts
+			(xy 104.14 41.91)
+			(xy 104.14 44.45)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bd2fc8b2-af5a-425b-82aa-4790b66993b0")
+	)
+	(wire
+		(pts
+			(xy 104.14 30.48)
+			(xy 104.14 34.29)
+		)
+		(uuid "5df49c5a-78aa-40a8-bdfd-d6ee3d95da38")
+	)
+	(wire
+		(pts
+			(xy 104.14 52.07)
+			(xy 104.14 57.15)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "86349573-d055-499d-9e40-ce969dee1813")
+	)
+	(wire
+		(pts
+			(xy 134.62 54.61)
+			(xy 104.14 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4f517c2f-aaa0-4dbc-b98a-9992b8b42b38")
+	)
+	(wire
+		(pts
+			(xy 104.14 54.61)
+			(xy 104.14 52.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c0668720-fb23-4d9b-a7e1-4780af944160")
+	)
+	(wire
+		(pts
+			(xy 129.54 46.99)
+			(xy 129.54 44.45)
+		)
+		(uuid "dbe150b5-e782-4d06-a877-76856ead267d")
+	)
+	(wire
+		(pts
+			(xy 129.54 44.45)
+			(xy 129.54 38.1)
+		)
+		(uuid "f0cf215c-312d-45c9-b6b3-2f96728dd8d7")
+	)
+	(wire
+		(pts
+			(xy 129.54 62.23)
+			(xy 129.54 72.39)
+		)
+		(uuid "d2560cdf-d490-4296-b9d7-bf8b831fc297")
+	)
 	(label "AGND"
 		(at 43.18 43.18 180)
 		(effects
@@ -2426,6 +2854,26 @@
 		)
 		(uuid "ce27d228-edd4-4a4f-b7d7-b6659b7f3a97")
 	)
+	(label "1V8"
+		(at 129.54 44.45 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "83dac8af-9242-4457-bec6-33b70d924a13")
+	)
+	(label "AGND"
+		(at 129.54 72.39 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "dae6bc0d-b254-465c-8411-9045a87e7d37")
+	)
 	(hierarchical_label "GPIO_RLY_TX_SEL_3V3"
 		(shape input)
 		(at 54.61 121.92 180)
@@ -2470,10 +2918,21 @@
 		)
 		(uuid "f82709e9-d441-4e4a-a4fe-969aca0fef48")
 	)
-  (text "TX AUDIO SELECT - relay switches what reaches the aircraft's mic\njack between ADAU1861's own analog output (AeroNode speaking) and\nthe pilot's boom mic (from the earcup), per Peter 2026-09-29.\n\nK1 = G6K-2F-Y (same qualified relay used on the H1 headset-mute\nboard - bifurcated crossbar contacts, rated for dry-circuit audio,\nNOT a generic silver-contact relay). Only pole A is used; pole B\n(pins 21/22/24) is unused and marked no-connect.\n\nFAIL-PASSIVE CHOICE (mine, not yet confirmed by Peter): de-energized\n(NC, pin 12) = BOOM_MIC_FROM_EARCUP - the pilot's own mic still\nreaches the aircraft if power/control is lost. Energized (NO, pin\n14) = HPOUTP - AeroNode's audio reaches the aircraft mic input only\nwhen actively driven. Confirm this is the wanted default before fab.\n\nQ1/D1/R10 = standard low-side coil driver: GPIO_RLY_TX_SEL_3V3 (a\nnew signal on J1 pin 4, previously spare) -> 2N7002 gate, R10 100k\ngate pulldown for fail-passive (relay stays de-energized if the GPIO\nis high-Z during host boot), D1 flyback diode across the coil.\n\nRELAY COIL SUPPLY - RESOLVED per Peter 2026-09-29, option 1 of 4\nconsidered (see chat: dedicated regulator / PWM coil economiser /\ndifferent relay / borrow a 5V rail from aeronode). Fetched Omron's\nown G6K datasheet (not cached anywhere in this repo before now):\nmust-operate <=80% of rated, must-release >=10%, max voltage 150%\nof rated is EXPLICITLY INSTANTANEOUS ONLY, not continuous. Checked\nevery stock coil option (3/4.5/5/12/24 VDC) against VBAT 5.0-7.3V -\nnone spans it cleanly. The 5V coil is the only contender, but\nVBAT_max (7.3V = 146% of rated) held continuously is right at the\nedge of a rating the datasheet says not to run continuously.\n\nFIX: U11 (ADP7118AUJZ-1.8-R7 - the SAME part already used twice on\nthis board as U9/U10, just wired in its ADJUSTABLE configuration\ninstead of the fixed pass-through) regulates VBAT down to a fixed\n4.5V RLY_COIL_SUPPLY rail, independent of VBAT's swing entirely.\n4.5V sits above the 5V coil's 4.0V guaranteed-operate floor (80%)\nwith margin, and 0.5V below VBAT_min (5.0V) gives an LDO at 21mA\ncomfortable dropout headroom (datasheet: 200mV @ 200mA - trivial\nat this load). R11 (15k)/R12 (10k) set VOUT = 1.8V*(1+R1/R2) = 4.5V,\nper the ADP7118 datasheet's own adjustable-mode formula (Fig. 39),\nR2 well under its 200k max-recommended value. EN tied to VIN for\nauto-start, 2.2uF on VIN and VOUT per datasheet minimum - same\npattern as U9/U10's power note on the main sheet.\n\nOPEN ITEMS - not resolved by this pass:\n1. HPOUTP is tapped RAW off U1 (no series R/C, no clamp). The H1\n   board's equivalent injection used a 220nF+10k blocking network\n   plus a BAT54S clamp because the far end carries aircraft mic\n   bias (8-16V) that could exceed the ADAU1861's 2.1V abs-max input\n   ceiling. That protection is NOT yet replicated here - do this\n   before connecting to a real aircraft mic circuit.\n2. J5 (3.5mm TRS -> PJ068 adapter) Ring is left NO-CONNECT - bias\n   pass-through from the aircraft to the boom mic capsule is\n   undesigned. Sleeve ties straight to this board's AGND, i.e. NO\n   isolation from aircraft ground (unlike the transformer-isolated\n   H1 board) - flagged, not designed out.\n3. J4 (boom mic from earcup) and J5 are generic placeholders, same\n   convention as J1/J2/J3 on the main sheet - real connectors once\n   the mechanical interface is chosen.\n4. Second transistor/relay pole, footprint for K1 (G6K package is\n   1-8, not the generic Relay_DPDT symbol's EN50005 numbering) -\n   same open item as the H1 board's K1/K2, not resolved here either.\n5. U11's aggregate load on VBAT is trivial (21mA) and doesn't touch\n   the U10/3V3_ACCEL budget flagged in the power note - a genuinely\n   separate rail, deliberately, so the relay coil can never brown\n   out the accelerometer/translator stack or vice versa."
+	(hierarchical_label "1V8"
+		(shape input)
+		(at 129.54 38.1 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "859d2c07-08c5-4b83-8a36-185755fffded")
+	)
+  (text "TX AUDIO SELECT - relay switches what reaches the aircraft's mic\njack between ADAU1861's own analog output (AeroNode speaking) and\nthe pilot's boom mic (from the earcup), per Peter 2026-09-29.\n\nK1 = G6K-2F-Y (same qualified relay used on the H1 headset-mute\nboard - bifurcated crossbar contacts, rated for dry-circuit audio,\nNOT a generic silver-contact relay). Only pole A is used; pole B\n(pins 21/22/24) is unused and marked no-connect.\n\nFAIL-PASSIVE CHOICE (mine, not yet confirmed by Peter): de-energized\n(NC, pin 12) = BOOM_MIC_FROM_EARCUP - the pilot's own mic still\nreaches the aircraft if power/control is lost. Energized (NO, pin\n14) = HPOUTP - AeroNode's audio reaches the aircraft mic input only\nwhen actively driven. Confirm this is the wanted default before fab.\n\nQ1/D1/R10 = standard low-side coil driver: GPIO_RLY_TX_SEL_3V3 (a\nnew signal on J1 pin 4, previously spare) -> 2N7002 gate, R10 100k\ngate pulldown for fail-passive (relay stays de-energized if the GPIO\nis high-Z during host boot), D1 flyback diode across the coil.\n\nRELAY COIL SUPPLY - RESOLVED per Peter 2026-09-29, option 1 of 4\nconsidered (see chat: dedicated regulator / PWM coil economiser /\ndifferent relay / borrow a 5V rail from aeronode). Fetched Omron's\nown G6K datasheet (not cached anywhere in this repo before now):\nmust-operate <=80% of rated, must-release >=10%, max voltage 150%\nof rated is EXPLICITLY INSTANTANEOUS ONLY, not continuous. Checked\nevery stock coil option (3/4.5/5/12/24 VDC) against VBAT 5.0-7.3V -\nnone spans it cleanly. The 5V coil is the only contender, but\nVBAT_max (7.3V = 146% of rated) held continuously is right at the\nedge of a rating the datasheet says not to run continuously.\n\nFIX: U11 (ADP7118AUJZ-1.8-R7 - the SAME part already used twice on\nthis board as U9/U10, just wired in its ADJUSTABLE configuration\ninstead of the fixed pass-through) regulates VBAT down to a fixed\n4.5V RLY_COIL_SUPPLY rail, independent of VBAT's swing entirely.\n4.5V sits above the 5V coil's 4.0V guaranteed-operate floor (80%)\nwith margin, and 0.5V below VBAT_min (5.0V) gives an LDO at 21mA\ncomfortable dropout headroom (datasheet: 200mV @ 200mA - trivial\nat this load). R11 (15k)/R12 (10k) set VOUT = 1.8V*(1+R1/R2) = 4.5V,\nper the ADP7118 datasheet's own adjustable-mode formula (Fig. 39),\nR2 well under its 200k max-recommended value. EN tied to VIN for\nauto-start, 2.2uF on VIN and VOUT per datasheet minimum - same\npattern as U9/U10's power note on the main sheet.\n\nHPOUTP PROTECTION - RESOLVED per Peter 2026-09-29. Same topology\nas the H1 headset-mute board's mic-line injection (section 10.1 of\nthat design note), reused rather than re-derived: HPOUTP -> C37\n(220nF, C0G/film - NOT X7R, whose DC-bias derating would walk the\ncorner into the voice band) -> R13 (10k) -> the K1.14/NO_A node,\nwith D2 (BAT54S) clamping that same node between AGND and 1V8.\nR13 sits AFTER C37 deliberately: if C37 fails short, worst case is\nVBAT-ish fault voltage/10k, staying inside the diode/relay contact\nratings, same reasoning as the H1 board's R1. Corner freq with\n10k+220nF is ~72 Hz, below the voice band.\nClamp rails chosen to track the ADAU1861's OWN abs-max spec rather\nthan an arbitrary value: \"Analog Input Voltage (Signal Pins) -0.3V\nto AVDD+0.3V\" (Rev. 0 abs max, same figure the H1 note used) - so\nclamping to 1V8 and AGND holds HPOUTP between -0.3V and 2.1V no\nmatter what the aircraft side does when the relay is energized,\nby construction rather than by a margin that could drift if AVDD\never changed. New sheet pins added to carry 1V8 in from the main\nsheet's U9 rail, same as the 3 pins already crossing.\nResidual, matching the H1 board's own open item: whether the\nADAU1861 HP amp is specified to drive into this load with the\nrelay's other throw open is unread - the abridged datasheet has no\noutput-stage description. Not resolved here either.\n\nOPEN ITEMS - not resolved by this pass:\n1. J5 (3.5mm TRS -> PJ068 adapter) Ring is left NO-CONNECT - bias\n   pass-through from the aircraft to the boom mic capsule is\n   undesigned. Sleeve ties straight to this board's AGND, i.e. NO\n   isolation from aircraft ground (unlike the transformer-isolated\n   H1 board) - flagged, not designed out.\n2. J4 (boom mic from earcup) and J5 are generic placeholders, same\n   convention as J1/J2/J3 on the main sheet - real connectors once\n   the mechanical interface is chosen.\n3. Second transistor/relay pole, footprint for K1 (G6K package is\n   1-8, not the generic Relay_DPDT symbol's EN50005 numbering) -\n   same open item as the H1 board's K1/K2, not resolved here either.\n4. U11's aggregate load on VBAT is trivial (21mA) and doesn't touch\n   the U10/3V3_ACCEL budget flagged in the power note - a genuinely\n   separate rail, deliberately, so the relay coil can never brown\n   out the accelerometer/translator stack or vice versa."
     (at 240 180 0)
     (effects (font (size 1.27 1.27)))
-    (uuid "c70de790-0870-495a-9d8a-4c63101c048a")
+    (uuid "4a3bc0c2-681b-48f2-bdac-7544a93b1ad8")
   )
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x02")
@@ -3039,6 +3498,163 @@
 			(project "audio-board"
 				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
 					(reference "R12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 104.14 38.1 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4c4fe0db-a302-4e66-88af-8329b67c194c")
+		(property "Reference" "C37"
+			(at 104.775 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "220nF C0G (film)"
+			(at 104.775 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 104.14 38.1 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 104.14 38.1 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
+					(reference "C37")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 104.14 48.26 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "543cc2c2-2242-4cd4-8307-4a5fb72b8edb")
+		(property "Reference" "R13"
+			(at 106.172 48.26 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 104.14 48.26 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 104.14 48.26 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 104.14 48.26 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
+					(reference "R13")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Diode:BAT54S")
+		(at 129.54 54.61 90)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "336018e8-896a-409b-a82a-1572b9956884")
+		(property "Reference" "D2"
+			(at 134.62 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "BAT54S"
+			(at 126.365 60.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 129.54 54.61 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 129.54 54.61 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
+					(reference "D2")
 					(unit 1)
 				)
 			)
