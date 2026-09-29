@@ -144,4 +144,15 @@ fetch \
   "$ROOT/docs/datasheets/ADP7118.pdf" \
   'c5b5d477ca63ebeb5369734f873fec98a9d8aaa685c841ee5f0d701e6e5a4a4a'
 
+# EVAL-AD2428WD1BZ schematic, Rev 1.1 (board A0983-2017, 7 sheets). ADI's own A2B MASTER-node eval
+# board - the source for the A2B bus-coupling network on kicad/audio-board (FB1/FB2, L1-L4, FL1,
+# R8/R9, C27-C34, J3). Sheet 2 carries the transceiver and both line interfaces. HAND-DOWNLOADED:
+# analog.com refuses curl at the connection level (HTTP/2 INTERNAL_ERROR) and times out to WebFetch,
+# the same block noted throughout this file; a browser fetches it fine. Download by hand from:
+#   https://www.analog.com/media/en/technical-documentation/eval-board-schematic/eval-ad2428wd1bz-schematics.pdf
+# NOTE: an eval board is NOT ADI's issued circuit recommendation - AD242x Rev. C p.33 requires
+# contacting an ADI rep for the compliance-grade BOM. See the A2B note on the schematic.
+verify_manual "$ROOT/docs/datasheets/EVAL-AD2428WD1BZ_schematics.pdf" \
+  '964eae7c1f8b6262d424a115863e751cbfaa6aae2e805811e31fc321ca3577b8'
+
 echo "done"
