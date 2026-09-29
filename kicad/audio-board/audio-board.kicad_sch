@@ -6065,6 +6065,13 @@
 		)
 		(uuid "11ff82c4-bdfe-41d2-b430-069d19bd913a")
 	)
+	(wire
+		(pts
+			(xy 40 210.16)
+			(xy 37.46 210.16)
+		)
+		(uuid "8be8c38d-425c-453e-82a5-869e7f241ab2")
+	)
 	(text "Power in: VBAT from the aeronode board (U9/U10, J2). This\nis the ONLY supply arriving on this board - Peter confirmed\nno 3.3V rail comes over from the CM5 side at all.\n\nVBAT is aeronode's raw 2S LiFePO4 pack net (ahead of its\ncharger/buck stage) - per\nkicad/aeronode/doc/ARCHITECTURE.md: \"the pack never falls\nbelow 5.0V\" and \"the pack sits at 7.2V\" at full charge, so\nVBAT runs 5.0-7.3V. Fetched from that doc, not assumed.\nJ2 is a generic 2-pin placeholder for the board-to-board\nlink, same treatment as J1 for the CM5 - the actual\ninterconnect between aeronode and this board is undesigned.\n\nU9 = ADP7118AUJZ-1.8-R7 -> 1V8. U10 = ADP7118AUJZ-3.3-R7\n-> 3V3_ACCEL. NOT the ADP1715 the EVAL-ADAU1860 uses for\nthe same two rails (docs/rig-logic-levels.md) - that part\nis 2.5-5.5V in and VBAT hits 7.3V, over its max. ADP7118\nis the same family's wide-input sibling, 2.7-20V, comfortably\ncovering VBAT with margin. Pin numbers and the EN/SENSE\nwiring (EN->VIN for auto-start, SENSE/ADJ->VOUT for the\nfixed-voltage grade, both from datasheet Table 4/Fig. 1)\nare from the datasheet, not guessed. 2.2uF on each VIN and\nVOUT per the datasheet's own minimum.\n\n1V8 and 3V3_ACCEL no longer carry a PWR_FLAG - they have a\nreal local source now. VBAT gets the PWR_FLAG instead,\nsince it is the new board-boundary net.\n\nCORRECTED THIS PASS: there is no separate \"3V3_CM5\" rail\narriving from the CM5 side - Peter confirmed only VBAT\ncrosses the board boundary. The net previously called\n3V3_CM5 (VCCB for U6/U7, VCC(B)/EN for U8, R6/R7's pull-up\nreference, and a J1 pin) has been MERGED into 3V3_ACCEL -\nU10 is now the single 3.3V source for the accelerometer AND\nthe whole host-facing translator stack (U6, U7, U8, R6, R7).\nThe old 3V3_CM5 PWR_FLAG and its J1 pin are both removed;\nJ1 pins 4 and 8 are both spare now. RP1 does not need to\nsupply this board's 3.3V logic-level reference - its own\nGPIO bank has its own 3.3V rail, and U10's independently-\ngenerated 3.3V is close enough (both \"3.3V nominal\") for\nthe translators and repeater to interoperate correctly,\nthe same way any two boards with separate 3.3V supplies and\na shared ground normally do.\n\nOPEN, sharpened by the merge: U10 (ADP7118, 200mA/rail) now\ncarries the accelerometer's own supply AND both I2S\ntranslators' VCCB AND the I2C repeater's VCC(B)/EN AND two\n4.7k pull-ups. Still almost certainly well inside 200mA,\nbut this is now a real aggregate worth computing before\nlayout, not just \"the accelerometer's load.\" Board-to-board\nconnector for VBAT unresolved, same as J1. No transient/\ninrush check has been done for U9, U10, and U5's on-chip\nregulator sharing one VBAT feed through J2."
 		(at 100 50 0)
 		(effects
@@ -8740,6 +8747,16 @@
 		)
 		(uuid "1719a835-9ed0-489d-bd6c-c30035d4f7e3")
 	)
+	(label "VBAT"
+		(at 37.46 210.16 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "21a24865-07b2-47f9-be17-c06a3058dd4e")
+	)
 	(sheet
 		(at 40 200)
 		(size 50 50)
@@ -8781,6 +8798,10 @@
 		(pin "AGND" passive
 			(at 40 207.62 180)
 			(uuid "dc54b057-d16f-4c21-b5db-187f977a730a")
+		)
+		(pin "VBAT" input
+			(at 40 210.16 180)
+			(uuid "4553d6a2-7b5a-4355-a9cc-8901f0ab56f4")
 		)
 		(instances
 			(project "audio-board"

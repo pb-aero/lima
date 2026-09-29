@@ -3,7 +3,7 @@
 	(generator "konnect")
 	(generator_version "10.0")
 	(uuid "a1092e9c-94c2-41e9-8f00-e175d72a790b")
-	(paper "A4")
+	(paper "A3")
 	(lib_symbols
 		(symbol "Connector_Generic:Conn_01x02"
 			(pin_names
@@ -1591,6 +1591,330 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "AnalogDevices:ADP7118"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "U"
+				(at 0 3.8100 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "ADP7118AUJZ-1.8-R7"
+				(at 0 -15.2400 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "ADP7118_0_1"
+				(rectangle
+					(start -10.1600 -12.7000)
+					(end 10.1600 1.2700)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin power_in line
+					(at 12.7 1.27 180)
+					(length 2.54)
+					(name "VIN"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 3.81 270)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 12.7 -1.27 180)
+					(length 2.54)
+					(name "EN"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -12.7 -1.27 0)
+					(length 2.54)
+					(name "SENSE/ADJ"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_out line
+					(at -12.7 1.27 0)
+					(length 2.54)
+					(name "VOUT"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "Device:C"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0.254)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "C"
+				(at 0.635 2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "C"
+				(at 0.635 -2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 0.9652 -3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Unpolarized capacitor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "cap capacitor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "C_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "C_0_1"
+				(polyline
+					(pts
+						(xy -2.032 0.762)
+						(xy 2.032 0.762)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -2.032 -0.762)
+						(xy 2.032 -0.762)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "C_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 2.794)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 2.794)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(junction
 		(at 140.97 64.77)
@@ -1613,6 +1937,45 @@
 		(at 78.74 121.92)
 		(diameter 0)
 		(uuid "b089ed91-3c27-44e3-9f76-1e3cbe8d75e8")
+	)
+	(junction
+		(at 285.75 53.34)
+		(diameter 0)
+		(uuid "beef3de1-ccbc-4214-833f-3cd6cdbd3cea")
+	)
+	(junction
+		(at 255.27 53.34)
+		(diameter 0)
+		(uuid "922d9476-f8e7-4405-ab7e-c357a34fe905")
+	)
+	(junction
+		(at 240.03 53.34)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "32a4c635-843e-4aec-8149-76092c60c338")
+	)
+	(junction
+		(at 224.79 39.37)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "dc323e66-7550-4042-8de9-c247942ac691")
+	)
+	(junction
+		(at 224.79 45.72)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "62573d70-e0c8-466b-a530-a666a29e7e51")
+	)
+	(junction
+		(at 224.79 53.34)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "c72d6151-ef8a-48dd-901c-5a746ffaf151")
+	)
+	(junction
+		(at 294.64 53.34)
+		(diameter 0)
+		(uuid "6ef2d72c-3ef9-455a-877e-de7ecad03aba")
 	)
 	(no_connect
 		(at 140.97 62.23)
@@ -1779,6 +2142,170 @@
 		)
 		(uuid "01011159-68ed-4e09-921c-323ebe547abf")
 	)
+	(wire
+		(pts
+			(xy 283.21 53.34)
+			(xy 283.21 55.88)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ce6e56b9-4b73-458d-bab7-c08692e44805")
+	)
+	(wire
+		(pts
+			(xy 283.21 53.34)
+			(xy 299.72 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e88d5527-0d9b-4631-85ed-6b21b79e193f")
+	)
+	(wire
+		(pts
+			(xy 299.72 53.34)
+			(xy 299.72 50.8)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3a864c16-5b69-4ad2-8fff-84191b134073")
+	)
+	(wire
+		(pts
+			(xy 283.21 53.34)
+			(xy 285.75 53.34)
+		)
+		(uuid "691cda58-f2ca-4cde-9b29-6120501f5a46")
+	)
+	(wire
+		(pts
+			(xy 299.72 58.42)
+			(xy 299.72 60.96)
+		)
+		(uuid "25435265-9c9c-454d-a26a-771abce1b41a")
+	)
+	(wire
+		(pts
+			(xy 270.51 50.8)
+			(xy 270.51 48.26)
+		)
+		(uuid "18ea5e59-6fc3-474b-9523-d93758a812b9")
+	)
+	(wire
+		(pts
+			(xy 257.81 53.34)
+			(xy 240.03 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "67bfd7d4-6162-4229-b6cd-7ab78de5b078")
+	)
+	(wire
+		(pts
+			(xy 240.03 53.34)
+			(xy 240.03 50.8)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "792b2724-c593-429f-ab06-3cf28ff7de84")
+	)
+	(wire
+		(pts
+			(xy 240.03 58.42)
+			(xy 240.03 60.96)
+		)
+		(uuid "b90c87da-35b3-48bc-bf85-2995eb6369fd")
+	)
+	(wire
+		(pts
+			(xy 257.81 53.34)
+			(xy 255.27 53.34)
+		)
+		(uuid "72ee00c3-e60f-4280-a4c1-7d2c37c9270d")
+	)
+	(wire
+		(pts
+			(xy 224.79 39.37)
+			(xy 224.79 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0dcdee12-11ae-48a4-86ba-08648fb79758")
+	)
+	(wire
+		(pts
+			(xy 224.79 53.34)
+			(xy 224.79 55.88)
+		)
+		(uuid "9fc6f15e-5bc1-4385-99a6-d173bf543fc7")
+	)
+	(wire
+		(pts
+			(xy 257.81 55.88)
+			(xy 246.38 55.88)
+		)
+		(uuid "17bcba83-d899-4d6b-a56e-118f4150c124")
+	)
+	(wire
+		(pts
+			(xy 246.38 55.88)
+			(xy 246.38 45.72)
+		)
+		(uuid "eecedc93-cea5-4760-939c-34621682a87a")
+	)
+	(wire
+		(pts
+			(xy 246.38 45.72)
+			(xy 224.79 45.72)
+		)
+		(uuid "22798ffb-aa98-43d2-ad51-3c36252593a4")
+	)
+	(wire
+		(pts
+			(xy 257.81 53.34)
+			(xy 257.81 25.4)
+		)
+		(uuid "f95380ae-289e-4c9a-89c2-1d1b2a2b15f5")
+	)
+	(wire
+		(pts
+			(xy 257.81 25.4)
+			(xy 224.79 25.4)
+		)
+		(uuid "e2457da1-04fb-401c-9a89-5eb37036952b")
+	)
+	(wire
+		(pts
+			(xy 224.79 25.4)
+			(xy 224.79 31.75)
+		)
+		(uuid "afa5c208-f7f3-47a9-8b06-7fa9882af5d5")
+	)
+	(wire
+		(pts
+			(xy 285.75 53.34)
+			(xy 294.64 53.34)
+		)
+		(uuid "62e96da7-d341-4b35-820b-f214fddf82ae")
+	)
+	(wire
+		(pts
+			(xy 285.75 53.34)
+			(xy 285.75 53.34)
+		)
+		(uuid "6d1b458a-fe02-412a-b696-11fd95c251f5")
+	)
 	(label "AGND"
 		(at 43.18 43.18 180)
 		(effects
@@ -1839,6 +2366,66 @@
 		)
 		(uuid "ce25f736-1272-4813-8534-5eb1e66771b5")
 	)
+	(label "AGND"
+		(at 299.72 60.96 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "0d9b99b7-4fca-4b83-8146-6c654bf85c94")
+	)
+	(label "AGND"
+		(at 270.51 48.26 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "c595c2d3-7f05-40a5-a76a-206b303252a4")
+	)
+	(label "AGND"
+		(at 240.03 60.96 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "292046af-70d4-439c-a1ca-8f4c4ee8d5d4")
+	)
+	(label "RLY_COIL_SUPPLY"
+		(at 255.27 53.34 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "6c68606d-6e02-4ece-accc-192889968d65")
+	)
+	(label "AGND"
+		(at 224.79 55.88 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b850c628-79d1-41a3-8b14-b4e3b41a0d7e")
+	)
+	(label "VBAT"
+		(at 285.75 53.34 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ce27d228-edd4-4a4f-b7d7-b6659b7f3a97")
+	)
 	(hierarchical_label "GPIO_RLY_TX_SEL_3V3"
 		(shape input)
 		(at 54.61 121.92 180)
@@ -1872,10 +2459,21 @@
 		)
 		(uuid "ebacba89-1d50-4468-acb7-11aaca7fd4e0")
 	)
-  (text "TX AUDIO SELECT - relay switches what reaches the aircraft's mic\njack between ADAU1861's own analog output (AeroNode speaking) and\nthe pilot's boom mic (from the earcup), per Peter 2026-09-29.\n\nK1 = G6K-2F-Y (same qualified relay used on the H1 headset-mute\nboard - bifurcated crossbar contacts, rated for dry-circuit audio,\nNOT a generic silver-contact relay). Only pole A is used; pole B\n(pins 21/22/24) is unused and marked no-connect.\n\nFAIL-PASSIVE CHOICE (mine, not yet confirmed by Peter): de-energized\n(NC, pin 12) = BOOM_MIC_FROM_EARCUP - the pilot's own mic still\nreaches the aircraft if power/control is lost. Energized (NO, pin\n14) = HPOUTP - AeroNode's audio reaches the aircraft mic input only\nwhen actively driven. Confirm this is the wanted default before fab.\n\nQ1/D1/R10 = standard low-side coil driver: GPIO_RLY_TX_SEL_3V3 (a\nnew signal on J1 pin 4, previously spare) -> 2N7002 gate, R10 100k\ngate pulldown for fail-passive (relay stays de-energized if the GPIO\nis high-Z during host boot), D1 flyback diode across the coil.\n\nOPEN ITEMS - not resolved by this pass:\n1. RLY_COIL_SUPPLY has NO SOURCE. G6K-2F-Y is a 5V-coil part; VBAT\n   (5.0-7.3V) would overvolt it. Needs either a dedicated 5V rail or\n   a different coil-voltage variant before this can be built.\n2. HPOUTP is tapped RAW off U1 (no series R/C, no clamp). The H1\n   board's equivalent injection used a 220nF+10k blocking network\n   plus a BAT54S clamp because the far end carries aircraft mic\n   bias (8-16V) that could exceed the ADAU1861's 2.1V abs-max input\n   ceiling. That protection is NOT yet replicated here - do this\n   before connecting to a real aircraft mic circuit.\n3. J5 (3.5mm TRS -> PJ068 adapter) Ring is left NO-CONNECT - bias\n   pass-through from the aircraft to the boom mic capsule is\n   undesigned. Sleeve ties straight to this board's AGND, i.e. NO\n   isolation from aircraft ground (unlike the transformer-isolated\n   H1 board) - flagged, not designed out.\n4. J4 (boom mic from earcup) and J5 are generic placeholders, same\n   convention as J1/J2/J3 on the main sheet - real connectors once\n   the mechanical interface is chosen.\n5. Second transistor/relay pole, footprint for K1 (G6K package is\n   1-8, not the generic Relay_DPDT symbol's EN50005 numbering) -\n   same open item as the H1 board's K1/K2, not resolved here either."
-    (at 20 160 0)
+	(hierarchical_label "VBAT"
+		(shape input)
+		(at 294.64 53.34 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "f82709e9-d441-4e4a-a4fe-969aca0fef48")
+	)
+  (text "TX AUDIO SELECT - relay switches what reaches the aircraft's mic\njack between ADAU1861's own analog output (AeroNode speaking) and\nthe pilot's boom mic (from the earcup), per Peter 2026-09-29.\n\nK1 = G6K-2F-Y (same qualified relay used on the H1 headset-mute\nboard - bifurcated crossbar contacts, rated for dry-circuit audio,\nNOT a generic silver-contact relay). Only pole A is used; pole B\n(pins 21/22/24) is unused and marked no-connect.\n\nFAIL-PASSIVE CHOICE (mine, not yet confirmed by Peter): de-energized\n(NC, pin 12) = BOOM_MIC_FROM_EARCUP - the pilot's own mic still\nreaches the aircraft if power/control is lost. Energized (NO, pin\n14) = HPOUTP - AeroNode's audio reaches the aircraft mic input only\nwhen actively driven. Confirm this is the wanted default before fab.\n\nQ1/D1/R10 = standard low-side coil driver: GPIO_RLY_TX_SEL_3V3 (a\nnew signal on J1 pin 4, previously spare) -> 2N7002 gate, R10 100k\ngate pulldown for fail-passive (relay stays de-energized if the GPIO\nis high-Z during host boot), D1 flyback diode across the coil.\n\nRELAY COIL SUPPLY - RESOLVED per Peter 2026-09-29, option 1 of 4\nconsidered (see chat: dedicated regulator / PWM coil economiser /\ndifferent relay / borrow a 5V rail from aeronode). Fetched Omron's\nown G6K datasheet (not cached anywhere in this repo before now):\nmust-operate <=80% of rated, must-release >=10%, max voltage 150%\nof rated is EXPLICITLY INSTANTANEOUS ONLY, not continuous. Checked\nevery stock coil option (3/4.5/5/12/24 VDC) against VBAT 5.0-7.3V -\nnone spans it cleanly. The 5V coil is the only contender, but\nVBAT_max (7.3V = 146% of rated) held continuously is right at the\nedge of a rating the datasheet says not to run continuously.\n\nFIX: U11 (ADP7118AUJZ-1.8-R7 - the SAME part already used twice on\nthis board as U9/U10, just wired in its ADJUSTABLE configuration\ninstead of the fixed pass-through) regulates VBAT down to a fixed\n4.5V RLY_COIL_SUPPLY rail, independent of VBAT's swing entirely.\n4.5V sits above the 5V coil's 4.0V guaranteed-operate floor (80%)\nwith margin, and 0.5V below VBAT_min (5.0V) gives an LDO at 21mA\ncomfortable dropout headroom (datasheet: 200mV @ 200mA - trivial\nat this load). R11 (15k)/R12 (10k) set VOUT = 1.8V*(1+R1/R2) = 4.5V,\nper the ADP7118 datasheet's own adjustable-mode formula (Fig. 39),\nR2 well under its 200k max-recommended value. EN tied to VIN for\nauto-start, 2.2uF on VIN and VOUT per datasheet minimum - same\npattern as U9/U10's power note on the main sheet.\n\nOPEN ITEMS - not resolved by this pass:\n1. HPOUTP is tapped RAW off U1 (no series R/C, no clamp). The H1\n   board's equivalent injection used a 220nF+10k blocking network\n   plus a BAT54S clamp because the far end carries aircraft mic\n   bias (8-16V) that could exceed the ADAU1861's 2.1V abs-max input\n   ceiling. That protection is NOT yet replicated here - do this\n   before connecting to a real aircraft mic circuit.\n2. J5 (3.5mm TRS -> PJ068 adapter) Ring is left NO-CONNECT - bias\n   pass-through from the aircraft to the boom mic capsule is\n   undesigned. Sleeve ties straight to this board's AGND, i.e. NO\n   isolation from aircraft ground (unlike the transformer-isolated\n   H1 board) - flagged, not designed out.\n3. J4 (boom mic from earcup) and J5 are generic placeholders, same\n   convention as J1/J2/J3 on the main sheet - real connectors once\n   the mechanical interface is chosen.\n4. Second transistor/relay pole, footprint for K1 (G6K package is\n   1-8, not the generic Relay_DPDT symbol's EN50005 numbering) -\n   same open item as the H1 board's K1/K2, not resolved here either.\n5. U11's aggregate load on VBAT is trivial (21mA) and doesn't touch\n   the U10/3V3_ACCEL budget flagged in the power note - a genuinely\n   separate rail, deliberately, so the relay coil can never brown\n   out the accelerometer/translator stack or vice versa."
+    (at 240 180 0)
     (effects (font (size 1.27 1.27)))
-    (uuid "42a3bbbc-6125-4a56-ba82-2b0a7bea269d")
+    (uuid "c70de790-0870-495a-9d8a-4c63101c048a")
   )
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x02")
@@ -2182,6 +2780,265 @@
 			(project "audio-board"
 				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
 					(reference "R10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "AnalogDevices:ADP7118")
+		(at 270.51 54.61 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "31514933-ffd6-4f27-83ca-3d5df582bb12")
+		(property "Reference" "U11"
+			(at 270.51 50.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "ADP7118AUJZ-1.8-R7"
+			(at 270.51 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 270.51 54.61 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 270.51 54.61 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
+					(reference "U11")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 299.72 54.61 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "da158bc3-05ad-4675-b757-23b82fd72e0d")
+		(property "Reference" "C35"
+			(at 300.355 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "2.2uF"
+			(at 300.355 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 299.72 54.61 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 299.72 54.61 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
+					(reference "C35")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 240.03 54.61 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "01379f3a-9e70-4edb-b416-949fbdb9f537")
+		(property "Reference" "C36"
+			(at 240.665 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "2.2uF"
+			(at 240.665 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 240.03 54.61 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 240.03 54.61 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
+					(reference "C36")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 224.79 35.56 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d121efb6-bc58-4c2a-8acb-a4fd5d589506")
+		(property "Reference" "R11"
+			(at 226.822 35.56 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "15k"
+			(at 224.79 35.56 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 224.79 35.56 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 224.79 35.56 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
+					(reference "R11")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 224.79 49.53 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "90a7aa23-617b-4458-850b-fcc47af70d52")
+		(property "Reference" "R12"
+			(at 226.822 49.53 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 224.79 49.53 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 224.79 49.53 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 224.79 49.53 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
+					(reference "R12")
 					(unit 1)
 				)
 			)
