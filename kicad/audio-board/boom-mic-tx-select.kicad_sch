@@ -2731,9 +2731,20 @@
 		(color 0 0 0 0)
 		(uuid "45a2aafa-6bfb-44b6-be6d-6a0f7b87f617")
 	)
-	(no_connect
-		(at 185.42 62.23)
-		(uuid "d916e496-78d6-4e8a-a604-9217603fff24")
+	(junction
+		(at 185.42 214.63)
+		(diameter 0)
+		(uuid "b67a3d22-d7a4-4199-8100-e42509c6284c")
+	)
+	(junction
+		(at 104.14 247.65)
+		(diameter 0)
+		(uuid "56049b6a-8777-4332-8e80-e80fbc95f25a")
+	)
+	(junction
+		(at 78.74 271.78)
+		(diameter 0)
+		(uuid "7ef60815-f513-44b5-807e-0ff38163cc03")
 	)
 	(no_connect
 		(at 111.76 72.39)
@@ -2746,6 +2757,22 @@
 	(no_connect
 		(at 114.3 57.15)
 		(uuid "7df14931-b824-4990-ba36-9584711da65a")
+	)
+	(no_connect
+		(at 104.14 207.01)
+		(uuid "c635ffa6-6b26-4d9d-835a-f7ef9ca704e7")
+	)
+	(no_connect
+		(at 111.76 222.25)
+		(uuid "7cdb59d6-07ef-4e9e-91a1-a8e93af384a4")
+	)
+	(no_connect
+		(at 109.22 207.01)
+		(uuid "37ddd931-f261-45ab-8722-13e7c211d8c0")
+	)
+	(no_connect
+		(at 114.3 207.01)
+		(uuid "6169f81e-ccdc-448f-a4e3-99d074cdd4d8")
 	)
 	(wire
 		(pts
@@ -3163,6 +3190,139 @@
 		)
 		(uuid "0b2ae40d-f3f1-4462-a71f-5a7e8072e653")
 	)
+	(wire
+		(pts
+			(xy 99.06 149.86)
+			(xy 99.06 207.01)
+		)
+		(uuid "d069d66f-5fc5-4b64-b76b-47913532c83a")
+	)
+	(wire
+		(pts
+			(xy 91.44 207.01)
+			(xy 91.44 204.47)
+		)
+		(uuid "77bfbda3-2642-4779-b7d6-adf4c1127781")
+	)
+	(wire
+		(pts
+			(xy 91.44 222.25)
+			(xy 91.44 247.65)
+		)
+		(uuid "cf6abef8-249b-421d-9be1-23616ccb2a77")
+	)
+	(wire
+		(pts
+			(xy 91.44 247.65)
+			(xy 104.14 247.65)
+		)
+		(uuid "19d8f467-d65a-4b8d-b235-781f993d573a")
+	)
+	(wire
+		(pts
+			(xy 104.14 242.57)
+			(xy 104.14 266.7)
+		)
+		(uuid "b7af02e7-75da-45a9-bb4b-5980c7222aae")
+	)
+	(wire
+		(pts
+			(xy 121.92 242.57)
+			(xy 104.14 242.57)
+		)
+		(uuid "9ed200e2-ad9d-41ba-8a7f-04d57a9b7326")
+	)
+	(wire
+		(pts
+			(xy 121.92 250.19)
+			(xy 121.92 252.73)
+		)
+		(uuid "c168d1f7-750a-4c76-ba76-dcd323651425")
+	)
+	(wire
+		(pts
+			(xy 185.42 214.63)
+			(xy 182.88 214.63)
+		)
+		(uuid "f56c5dfa-8f51-4496-a47e-a2efdcf8f767")
+	)
+	(wire
+		(pts
+			(xy 54.61 271.78)
+			(xy 96.52 271.78)
+		)
+		(uuid "6a324206-1a50-48b4-885f-70b380fea28e")
+	)
+	(wire
+		(pts
+			(xy 78.74 271.78)
+			(xy 78.74 267.97)
+		)
+		(uuid "75be3e02-1e24-4bf4-89fb-ef9e3f666726")
+	)
+	(wire
+		(pts
+			(xy 78.74 275.59)
+			(xy 78.74 278.13)
+		)
+		(uuid "acc9c301-f89e-4317-b561-701c1d3c78f4")
+	)
+	(wire
+		(pts
+			(xy 104.14 276.86)
+			(xy 104.14 279.4)
+		)
+		(uuid "cffc5970-bb5f-4807-901d-56058787512d")
+	)
+	(wire
+		(pts
+			(xy 185.42 62.23)
+			(xy 175.26 62.23)
+		)
+		(uuid "15f991ba-3902-4c83-98d6-80fc6dd2ef68")
+	)
+	(wire
+		(pts
+			(xy 175.26 62.23)
+			(xy 175.26 149.86)
+		)
+		(uuid "39d40b34-dfbd-4daa-ba16-51ded0ec5a04")
+	)
+	(wire
+		(pts
+			(xy 175.26 149.86)
+			(xy 99.06 149.86)
+		)
+		(uuid "b4e34256-095c-4eeb-af06-53cabbf8a2dd")
+	)
+	(wire
+		(pts
+			(xy 101.6 222.25)
+			(xy 101.6 245.11)
+		)
+		(uuid "36ef53f9-3fb0-4a4e-bf19-c53b80c1b075")
+	)
+	(wire
+		(pts
+			(xy 101.6 245.11)
+			(xy 199.39 245.11)
+		)
+		(uuid "133d7987-3152-447d-8928-acac674e6418")
+	)
+	(wire
+		(pts
+			(xy 199.39 245.11)
+			(xy 199.39 212.09)
+		)
+		(uuid "3008a50a-9bae-4d16-9fa1-3282e2bb2375")
+	)
+	(wire
+		(pts
+			(xy 199.39 212.09)
+			(xy 185.42 212.09)
+		)
+		(uuid "e9976683-e2a5-4c54-9eb4-b6bcab318d4e")
+	)
 	(label "RLY_COIL_SUPPLY"
 		(at 91.44 54.61 0)
 		(effects
@@ -3323,6 +3483,56 @@
 		)
 		(uuid "ac7b627e-57d7-492a-83cf-91caad70b065")
 	)
+	(label "RLY_COIL_SUPPLY"
+		(at 91.44 204.47 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "96863a6e-fb95-4689-b103-1180db0771a4")
+	)
+	(label "RLY_COIL_SUPPLY"
+		(at 121.92 252.73 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "f14aacf4-61cd-490f-874d-36d0989eb827")
+	)
+	(label "AC_GND"
+		(at 182.88 214.63 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "8a290b8d-2e63-482e-8bf9-f00f95309b1d")
+	)
+	(label "AGND"
+		(at 78.74 278.13 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e0ec0526-7e09-4064-9645-0ac32d268278")
+	)
+	(label "AGND"
+		(at 104.14 279.4 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "7b49f80e-a98f-43b0-949b-ee07f90cbcde")
+	)
 	(hierarchical_label "GPIO_RLY_TX_SEL_3V3"
 		(shape input)
 		(at 54.61 121.92 180)
@@ -3378,10 +3588,26 @@
 		)
 		(uuid "859d2c07-08c5-4b83-8a36-185755fffded")
 	)
-  (text "TX AUDIO SELECT - relay switches what reaches the aircraft's mic\njack between ADAU1861's own analog output (AeroNode speaking) and\nthe pilot's boom mic (from the earcup), per Peter 2026-09-29.\n\nK1 = G6K-2F-Y (same qualified relay used on the H1 headset-mute\nboard - bifurcated crossbar contacts, rated for dry-circuit audio,\nNOT a generic silver-contact relay). Only pole A is used; pole B\n(pins 21/22/24) is unused and marked no-connect - see the isolation\nsection below for why HPOUTN isn't in this circuit at all.\n\nFAIL-PASSIVE CHOICE (mine, not yet confirmed by Peter): de-energized\n(NC, pin 12) = BOOM_MIC_FROM_EARCUP - the pilot's own mic still\nreaches the aircraft if power/control is lost. Energized (NO, pin\n14) = HPOUTP - AeroNode's audio reaches the aircraft mic input only\nwhen actively driven. Confirm this is the wanted default before fab.\n\nQ1/D1/R10 = standard low-side coil driver: GPIO_RLY_TX_SEL_3V3 (a\nnew signal on J1 pin 4, previously spare) -> 2N7002 gate, R10 100k\ngate pulldown for fail-passive (relay stays de-energized if the GPIO\nis high-Z during host boot), D1 flyback diode across the coil.\n\nRELAY COIL SUPPLY - RESOLVED per Peter 2026-09-29, option 1 of 4\nconsidered (see chat: dedicated regulator / PWM coil economiser /\ndifferent relay / borrow a 5V rail from aeronode). Fetched Omron's\nown G6K datasheet (not cached anywhere in this repo before now):\nmust-operate <=80% of rated, must-release >=10%, max voltage 150%\nof rated is EXPLICITLY INSTANTANEOUS ONLY, not continuous. Checked\nevery stock coil option (3/4.5/5/12/24 VDC) against VBAT 5.0-7.3V -\nnone spans it cleanly. The 5V coil is the only contender, but\nVBAT_max (7.3V = 146% of rated) held continuously is right at the\nedge of a rating the datasheet says not to run continuously.\n\nFIX: U11 (ADP7118AUJZ-1.8-R7 - the SAME part already used twice on\nthis board as U9/U10, just wired in its ADJUSTABLE configuration\ninstead of the fixed pass-through) regulates VBAT down to a fixed\n4.5V RLY_COIL_SUPPLY rail, independent of VBAT's swing entirely.\nR11 (15k)/R12 (10k) set VOUT = 1.8V*(1+R1/R2) = 4.5V, per the\nADP7118 datasheet's own adjustable-mode formula (Fig. 39). EN tied\nto VIN for auto-start, 2.2uF on VIN and VOUT per datasheet minimum -\nsame pattern as U9/U10's power note on the main sheet.\n\nAIRCRAFT-SIDE ISOLATION - CORRECTED 2026-09-29. T1 isolates ONLY\nthe AeroNode injection leg now, not the whole K1 common. Earlier\nthis session T1 sat between K1's common and J5, isolating BOTH the\nAeroNode path AND the boom-mic path from the aircraft. Peter caught\nthe consequence: \"bias will come from aircraft so DC must pass\nthrough to the boom mic\" - the aircraft supplies the electret\ncapsule's bias (8-16V, per the Bose A20 reference below) as a\ncomplete DC loop through Tip and Sleeve, and a transformer in that\nloop breaks the mic entirely, in both relay states, not just when\nAeroNode is talking.\n\nFix: T1 now sits between C38 and K1.14 (NO_A) ONLY - HPOUTP -> C38\n-> T1 primary -> T1 secondary -> R13 -> K1.14. K1.11 (COM_A) wires\nDIRECTLY to J5 Tip, no transformer in the way. This means:\n- De-energized (boom mic mode): J4 -> K1.12 -> K1.11 -> J5 Tip is a\n  fully direct, unisolated path. The aircraft's bias flows Tip ->\n  relay contact -> J4.1 -> capsule -> J4.2 -> Sleeve -> aircraft,\n  exactly as it would with no board in the way at all.\n- Energized (AeroNode mode): HPOUTP's signal crosses T1's isolation\n  boundary, through R13, through the (now-closed) relay contact, to\n  Tip. T1 still isolates AeroNode's own electronics from the\n  aircraft during this state - the isolation goal survives, just\n  scoped to the leg that actually needs it.\nThis ALSO means J4 (the boom mic connector) is electrically part of\nthe aircraft's circuit now, not AeroNode's: J4 pin 2 is wired to\nAC_GND, not AGND (changed this pass) - the capsule's return has to\ncomplete the SAME aircraft-side loop Sleeve does, or the bias never\nreaches it either. AGND and AC_GND still meet nowhere on this sheet\nexcept through T1's windings.\nThis CLOSES the \"boom mic gets no bias\" open item from two commits\nago outright, rather than carrying it forward - it was never a gap\nto size a local supply for, it was a routing mistake.\n\nSCAR: rerouting K1.11 to J5 Tip directly first auto-routed through\nthe exact point (185.42, 64.77) where J5's Sleeve/AC_GND stub\nalready landed - shorting Tip to AC_GND. find_shorted_nets caught\nit immediately (a visual check would not have - the two wires only\ntouched at one coordinate, easy to miss by eye); rerouted via a\ndifferent corner to clear it. Same class of bug as the collinear-\nwire shorts earlier in this sheet's history - checking net identity\nafter every reroute, not just after the first pass, is the lesson\nthat keeps needing relearning.\n\nT1 = Bourns SM-LP-5001, 600:600 1:1, same part H1's board uses, LCSC\nC7503474. Generic Device:Transformer_1P_1S symbol (pins 1-4) - H1's\nown note already flags the REAL part's pinout as 1/3/4/6 with 2/5\nN/C, a mismatch to resolve at footprint time, not assumed here.\n\nDRIVE CONFIGURATION - SINGLE-ENDED, per Peter 2026-09-29, changed\nfrom an earlier differential (HPOUTP+HPOUTN) attempt. Differential\nwould have matched H1's section 11.2 circuit exactly and is what\nthe ADAU186x Hardware Reference Manual (UG-2257) actually documents\nfor this output stage - it describes the headphone/line output as\ndifferential throughout, and unlike the analog INPUTS (which get an\nexplicit single-ended mode and an AINx_INPUT_MODE register bit),\nthere is no equivalent single-ended output mode anywhere in the\nmanual or the HP_CTRL register. Single-ended HPOUTP use is\ntherefore an undocumented configuration - flagged, not resolved.\n\nC38 (2.2uF) is in series with HPOUTP, and it is NOT there for the\nold reason (blocking the aircraft's 8-16V mic bias - T1 already\ndoes that unconditionally for this leg). It blocks a different DC:\nHPOUTP sits at the DAC's ~0.85V common-mode bias, and tying T1's\nother primary leg to AGND (instead of HPOUTN) would otherwise push\nthat 0.85V across the winding continuously - roughly 0.85V/115R\n(winding DCR) = 7.4mA of DC bias current toward core saturation.\nC38 removes that DC path. 2.2uF against the ~1.2k reflected\nsecondary-side load (R13+DCR+the assumed aircraft bias resistor)\ngives a corner around 60 Hz, below the voice band. X7R is fine here\n(not film/C0G like the old C37) - the DC bias across this cap is\nonly ~0.85V, nowhere near the 16V that made X7R derating a real\nproblem on H1's aircraft-facing capacitor.\n\nD2 (BAT54S) KEPT on HPOUTP's own node (before C38), clamping the IC\npin directly between AGND and 1V8 - \"belt-and-braces\" per H1's own\nframing, since T1's isolation is what actually stands between the\ncodec and any aircraft-side fault now, not this clamp.\n\nLEVEL/IMPEDANCE MATCHING - R13 changed from 10k to 470R, 2026-09-29.\n10k was copied from H1's R1 without checking it against what this\nmic actually looks like. The already-fetched reference for this\nexact boom mic (Bose A20, docs/h1-headset-mute-relay.md): bias\n8-16 VDC through 220-2200 ohm, sensitivity 600 mV rms at 114 dB SPL.\nThat 220-2200R IS the mic's own source impedance as seen from the\naircraft's mic input. R13=10k made our path present ~10.1k - 20-40x\nhigher than a real mic, and (at the old level) only 35 mV rms at the\nmic node, 24.7 dB under the mic's rated max.\nR13=470R (matching the \"typical\" 470R already assumed elsewhere in\nthis design, same placeholder H1 used) puts our presented impedance\nat ~585R (470+115 DCR, the relay contact's 100mR max is negligible\nin series) - inside the mic's real 220-2200R range. Level: single-\nended HPOUTP (0.5V rms) x T1's 2dB insertion loss x the\n470/(470+115+470) divider = ~177 mV rms at the mic node, -10.6dB\nunder the 600mV/114dB SPL max - much closer than the old 35mV, and\nconsistent with going single-ended (6dB under the differential\ncase's ~352mV). [assumed] the 470R aircraft bias resistor is a\nplaceholder within the stated 220-2200R range, not measured. This\nmath is unchanged by moving T1/R13 to before the relay instead of\nafter it - the contact it now transits is negligible resistance.\n\nFIRMWARE, not a schematic item but decided alongside this circuit:\nHP_MODE (bit 0 of HP_CTRL, address 0x4000C060) should be set to 1\n(line-out mode) for this path, not left at its 0 (headphone mode)\nreset default. Headphone mode is rated for >=10R loads; line-out\nfor >=10k. T1's primary presents ~7-72k of inductive reactance\nacross the voice band (3.8H) - a line-out load, not a headphone one.\n\nOPEN ITEMS - not resolved by this pass:\n1. J5 Ring: NO-CONNECT. The Tip/Sleeve loop now carries the\n   aircraft's bias to the boom mic directly, so Ring has no defined\n   role either way - leave it NC unless the real PJ068 adapter cable\n   needs it for something else.\n2. J4 and J5 are generic placeholders, same convention as J1/J2/J3\n   on the main sheet - real connectors once the mechanical interface\n   is chosen.\n3. T1 (SM-LP-5001) is NOT a flight part - same disclosure as H1's\n   note: -20 to +85C operating range (a cold-soaked GA cockpit can\n   go below that) and UL60950 (IT-equipment), not DO-160. Right for\n   a bench/proof-of-concept board, wrong for a flight article without\n   requalification - a sourcing exercise nobody has started.\n4. Single-ended HPOUTP drive is outside the documented operating\n   mode for this output stage (see DRIVE CONFIGURATION above). C38\n   handles the DC consequence; it does not make this a spec'd mode.\n5. U11's aggregate load on VBAT is trivial (21mA) and doesn't touch\n   the U10/3V3_ACCEL budget flagged in the power note - a genuinely\n   separate rail, deliberately, so the relay coil can never brown\n   out the accelerometer/translator stack or vice versa."
+	(hierarchical_label "GPIO_RLY_RX_MUTE_3V3"
+		(shape input)
+		(at 54.61 271.78 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "3b95bf53-a6e1-434d-8bb3-4ebe2c79e453")
+	)
+  (text "TX AUDIO SELECT - relay switches what reaches the aircraft's mic\njack between ADAU1861's own analog output (AeroNode speaking) and\nthe pilot's boom mic (from the earcup), per Peter 2026-09-29.\n\nThis sheet was renamed AIRCRAFT AUDIO I/O 2026-09-30 - it now also\nhosts the earphone/RX audio mute circuit (K2/J6/Q2/D3/R14), which\nreuses this sheet's J5 (Ring, previously NC) and RLY_COIL_SUPPLY.\nSee the separate EARPHONE / RX AUDIO MUTE note block on this sheet.\n\nK1 = G6K-2F-Y (same qualified relay used on the H1 headset-mute\nboard - bifurcated crossbar contacts, rated for dry-circuit audio,\nNOT a generic silver-contact relay). Only pole A is used; pole B\n(pins 21/22/24) is unused and marked no-connect - see the isolation\nsection below for why HPOUTN isn't in this circuit at all.\n\nFAIL-PASSIVE CHOICE (mine, not yet confirmed by Peter): de-energized\n(NC, pin 12) = BOOM_MIC_FROM_EARCUP - the pilot's own mic still\nreaches the aircraft if power/control is lost. Energized (NO, pin\n14) = HPOUTP - AeroNode's audio reaches the aircraft mic input only\nwhen actively driven. Confirm this is the wanted default before fab.\n\nQ1/D1/R10 = standard low-side coil driver: GPIO_RLY_TX_SEL_3V3 (a\nnew signal on J1 pin 4, previously spare) -> 2N7002 gate, R10 100k\ngate pulldown for fail-passive (relay stays de-energized if the GPIO\nis high-Z during host boot), D1 flyback diode across the coil.\n\nRELAY COIL SUPPLY - RESOLVED per Peter 2026-09-29, option 1 of 4\nconsidered (see chat: dedicated regulator / PWM coil economiser /\ndifferent relay / borrow a 5V rail from aeronode). Fetched Omron's\nown G6K datasheet (not cached anywhere in this repo before now):\nmust-operate <=80% of rated, must-release >=10%, max voltage 150%\nof rated is EXPLICITLY INSTANTANEOUS ONLY, not continuous. Checked\nevery stock coil option (3/4.5/5/12/24 VDC) against VBAT 5.0-7.3V -\nnone spans it cleanly. The 5V coil is the only contender, but\nVBAT_max (7.3V = 146% of rated) held continuously is right at the\nedge of a rating the datasheet says not to run continuously.\n\nFIX: U11 (ADP7118AUJZ-1.8-R7 - the SAME part already used twice on\nthis board as U9/U10, just wired in its ADJUSTABLE configuration\ninstead of the fixed pass-through) regulates VBAT down to a fixed\n4.5V RLY_COIL_SUPPLY rail, independent of VBAT's swing entirely.\nR11 (15k)/R12 (10k) set VOUT = 1.8V*(1+R1/R2) = 4.5V, per the\nADP7118 datasheet's own adjustable-mode formula (Fig. 39). EN tied\nto VIN for auto-start, 2.2uF on VIN and VOUT per datasheet minimum -\nsame pattern as U9/U10's power note on the main sheet. NOW SHARED\nwith K2 (the RX mute relay added 2026-09-30) - see that note's open\nitems for the revised aggregate coil-current check.\n\nAIRCRAFT-SIDE ISOLATION - CORRECTED 2026-09-29. T1 isolates ONLY\nthe AeroNode injection leg now, not the whole K1 common. Earlier\nthis session T1 sat between K1's common and J5, isolating BOTH the\nAeroNode path AND the boom-mic path from the aircraft. Peter caught\nthe consequence: \"bias will come from aircraft so DC must pass\nthrough to the boom mic\" - the aircraft supplies the electret\ncapsule's bias (8-16V, per the Bose A20 reference below) as a\ncomplete DC loop through Tip and Sleeve, and a transformer in that\nloop breaks the mic entirely, in both relay states, not just when\nAeroNode is talking.\n\nFix: T1 now sits between C38 and K1.14 (NO_A) ONLY - HPOUTP -> C38\n-> T1 primary -> T1 secondary -> R13 -> K1.14. K1.11 (COM_A) wires\nDIRECTLY to J5 Tip, no transformer in the way. This means:\n- De-energized (boom mic mode): J4 -> K1.12 -> K1.11 -> J5 Tip is a\n  fully direct, unisolated path. The aircraft's bias flows Tip ->\n  relay contact -> J4.1 -> capsule -> J4.2 -> Sleeve -> aircraft,\n  exactly as it would with no board in the way at all.\n- Energized (AeroNode mode): HPOUTP's signal crosses T1's isolation\n  boundary, through R13, through the (now-closed) relay contact, to\n  Tip. T1 still isolates AeroNode's own electronics from the\n  aircraft during this state - the isolation goal survives, just\n  scoped to the leg that actually needs it.\nThis ALSO means J4 (the boom mic connector) is electrically part of\nthe aircraft's circuit now, not AeroNode's: J4 pin 2 is wired to\nAC_GND, not AGND (changed this pass) - the capsule's return has to\ncomplete the SAME aircraft-side loop Sleeve does, or the bias never\nreaches it either. AGND and AC_GND still meet nowhere on this sheet\nexcept through T1's windings (and, as of 2026-09-30, nowhere in the\nnew RX mute circuit either - it lives entirely on the AC_GND side).\nThis CLOSES the \"boom mic gets no bias\" open item from two commits\nago outright, rather than carrying it forward - it was never a gap\nto size a local supply for, it was a routing mistake.\n\nSCAR: rerouting K1.11 to J5 Tip directly first auto-routed through\nthe exact point (185.42, 64.77) where J5's Sleeve/AC_GND stub\nalready landed - shorting Tip to AC_GND. find_shorted_nets caught\nit immediately (a visual check would not have - the two wires only\ntouched at one coordinate, easy to miss by eye); rerouted via a\ndifferent corner to clear it. Same class of bug as the collinear-\nwire shorts earlier in this sheet's history - checking net identity\nafter every reroute, not just after the first pass, is the lesson\nthat keeps needing relearning. SAME BUG HIT AGAIN 2026-09-30 wiring\nJ5 Ring to the new RX mute relay - see that note's SCAR entry.\n\nT1 = Bourns SM-LP-5001, 600:600 1:1, same part H1's board uses, LCSC\nC7503474. Generic Device:Transformer_1P_1S symbol (pins 1-4) - H1's\nown note already flags the REAL part's pinout as 1/3/4/6 with 2/5\nN/C, a mismatch to resolve at footprint time, not assumed here.\n\nDRIVE CONFIGURATION - SINGLE-ENDED, per Peter 2026-09-29, changed\nfrom an earlier differential (HPOUTP+HPOUTN) attempt. Differential\nwould have matched H1's section 11.2 circuit exactly and is what\nthe ADAU186x Hardware Reference Manual (UG-2257) actually documents\nfor this output stage - it describes the headphone/line output as\ndifferential throughout, and unlike the analog INPUTS (which get an\nexplicit single-ended mode and an AINx_INPUT_MODE register bit),\nthere is no equivalent single-ended output mode anywhere in the\nmanual or the HP_CTRL register. Single-ended HPOUTP use is\ntherefore an undocumented configuration - flagged, not resolved.\n\nC38 (2.2uF) is in series with HPOUTP, and it is NOT there for the\nold reason (blocking the aircraft's 8-16V mic bias - T1 already\ndoes that unconditionally for this leg). It blocks a different DC:\nHPOUTP sits at the DAC's ~0.85V common-mode bias, and tying T1's\nother primary leg to AGND (instead of HPOUTN) would otherwise push\nthat 0.85V across the winding continuously - roughly 0.85V/115R\n(winding DCR) = 7.4mA of DC bias current toward core saturation.\nC38 removes that DC path. 2.2uF against the ~1.2k reflected\nsecondary-side load (R13+DCR+the assumed aircraft bias resistor)\ngives a corner around 60 Hz, below the voice band. X7R is fine here\n(not film/C0G like the old C37) - the DC bias across this cap is\nonly ~0.85V, nowhere near the 16V that made X7R derating a real\nproblem on H1's aircraft-facing capacitor.\n\nD2 (BAT54S) KEPT on HPOUTP's own node (before C38), clamping the IC\npin directly between AGND and 1V8 - \"belt-and-braces\" per H1's own\nframing, since T1's isolation is what actually stands between the\ncodec and any aircraft-side fault now, not this clamp.\n\nLEVEL/IMPEDANCE MATCHING - R13 changed from 10k to 470R, 2026-09-29.\n10k was copied from H1's R1 without checking it against what this\nmic actually looks like. The already-fetched reference for this\nexact boom mic (Bose A20, docs/h1-headset-mute-relay.md): bias\n8-16 VDC through 220-2200 ohm, sensitivity 600 mV rms at 114 dB SPL.\nThat 220-2200R IS the mic's own source impedance as seen from the\naircraft's mic input. R13=10k made our path present ~10.1k - 20-40x\nhigher than a real mic, and (at the old level) only 35 mV rms at the\nmic node, 24.7 dB under the mic's rated max.\nR13=470R (matching the \"typical\" 470R already assumed elsewhere in\nthis design, same placeholder H1 used) puts our presented impedance\nat ~585R (470+115 DCR, the relay contact's 100mR max is negligible\nin series) - inside the mic's real 220-2200R range. Level: single-\nended HPOUTP (0.5V rms) x T1's 2dB insertion loss x the\n470/(470+115+470) divider = ~177 mV rms at the mic node, -10.6dB\nunder the 600mV/114dB SPL max - much closer than the old 35mV, and\nconsistent with going single-ended (6dB under the differential\ncase's ~352mV). [assumed] the 470R aircraft bias resistor is a\nplaceholder within the stated 220-2200R range, not measured. This\nmath is unchanged by moving T1/R13 to before the relay instead of\nafter it - the contact it now transits is negligible resistance.\n\nFIRMWARE, not a schematic item but decided alongside this circuit:\nHP_MODE (bit 0 of HP_CTRL, address 0x4000C060) should be set to 1\n(line-out mode) for this path, not left at its 0 (headphone mode)\nreset default. Headphone mode is rated for >=10R loads; line-out\nfor >=10k. T1's primary presents ~7-72k of inductive reactance\nacross the voice band (3.8H) - a line-out load, not a headphone one.\n\nOPEN ITEMS - not resolved by this pass:\n1. J5 Ring: NOW IN USE (changed 2026-09-30, was NO-CONNECT). It\n   carries the aircraft's own earphone/intercom audio into the new\n   RX mute relay (K2) - see the EARPHONE / RX AUDIO MUTE note. The\n   Tip/Sleeve loop is unaffected and still carries the boom mic's\n   bias directly, unrelated to this change.\n2. J4 and J5 are generic placeholders, same convention as J1/J2/J3\n   on the main sheet - real connectors once the mechanical interface\n   is chosen.\n3. T1 (SM-LP-5001) is NOT a flight part - same disclosure as H1's\n   note: -20 to +85C operating range (a cold-soaked GA cockpit can\n   go below that) and UL60950 (IT-equipment), not DO-160. Right for\n   a bench/proof-of-concept board, wrong for a flight article without\n   requalification - a sourcing exercise nobody has started.\n4. Single-ended HPOUTP drive is outside the documented operating\n   mode for this output stage (see DRIVE CONFIGURATION above). C38\n   handles the DC consequence; it does not make this a spec'd mode.\n5. U11's aggregate load on VBAT is trivial (21mA) and doesn't touch\n   the U10/3V3_ACCEL budget flagged in the power note - a genuinely\n   separate rail, deliberately, so the relay coil can never brown\n   out the accelerometer/translator stack or vice versa. As of\n   2026-09-30 U11 also feeds K2's coil - see that note's open items."
     (at 420 200 0)
     (effects (font (size 1.27 1.27)))
-    (uuid "9a98c05e-855d-4ccf-a2b6-1cabc154f8fb")
+    (uuid "e2532307-c1fb-419c-a338-cfbee8e83e53")
+  )
+  (text "EARPHONE / RX AUDIO MUTE - added 2026-09-30, per Peter's question\n\"should we use another relay to switch between audio coming from\nthe aircraft to the cup and audio coming from the pi via the a2b or\na summing arrangement?\" This is the AIRCRAFT-TO-CUP direction (RX),\nseparate from the TX circuit above (aircraft's mic input).\n\nWHY ON THIS SHEET: J5 (TRS_TO_PJ068_AIRCRAFT) already carries the\naircraft-side connector this signal needs - its Ring conductor was\npreviously NO-CONNECT (standard PJ068 wiring: Tip=mic out to\naircraft, Ring=phone/earphone in from aircraft, Sleeve=common).\nPutting K2 here reuses J5.Ring directly instead of adding a second\naircraft-side connector, and reuses RLY_COIL_SUPPLY (U11, above)\ninstead of a second regulator - same 4.5V rail, same AC_GND domain.\n\nMUTE, NOT SUM - per Peter 2026-09-30, after I fetched\ndocs/audio-board-decision-record.md Decision A: \"ANC runs in the\nearcup, on a per-cup codec - not on the audio board\" (ruled by John,\nRev G). H1's board (docs/h1-headset-mute-relay.md S20-26) ruled\nSUMMING for its earphone path specifically because it injects ANC\ncontinuously and can't afford to mute the aircraft feed to do it.\nThat forcing reason doesn't apply here - ANC is local to the earcup,\nnot this board - so a simple mute relay is sufficient: block the\naircraft feed only while AeroNode/the Pi is actively speaking.\n\nGPIO - INDEPENDENT, per Peter 2026-09-30 (explicitly not shared\nwith GPIO_RLY_TX_SEL_3V3, asked and answered before wiring this).\nGPIO_RLY_RX_MUTE_3V3 is a NEW signal on J1 pin 8 (previously spare,\nalongside pin 4 which TX already claimed) - see the main sheet's\npower/J1 note.\n\nK2 = G6K-2F-Y, same part as K1, same reasoning (bifurcated crossbar\ncontacts, dry-circuit rated). Only pole A used; pole B (21/22/24)\nunused and marked no-connect, matching K1's convention.\n\nTOPOLOGY - series break, not a shunt. J5.Ring (aircraft earphone\naudio in) -> K2.12 (NC) -> K2.11 (COM) -> J6.1 (AUDIO_OUT_TO_CUP).\nK2.14 (NO) is left no-connect - muting simply opens the path rather\nthan routing to an alternate signal. [assumed] the aircraft's\nearphone output carries no DC bias that a series break would\ndisrupt, unlike the boom mic's 8-16V capsule bias on the TX side -\nnot verified against a real PJ068/intercom spec, and worth checking\nbefore fab since it drove the whole TX-side transformer decision.\n\nFAIL-PASSIVE CHOICE (mine, not yet confirmed by Peter, same\nphilosophy as K1): de-energized (NC, pin 12) = aircraft audio flows\nto the cup unmuted - the pilot still hears the aircraft/ATC if\npower or control is lost. Energized (NO path open) = muted, only\nwhile AeroNode is actively driving HPOUTP on the TX side. Nothing\nhere interlocks K1 and K2 electrically - firmware is expected to\nenergize both together, but each fails passive independently if it\ndoesn't.\n\nQ2/D3/R14 = same low-side coil driver pattern as Q1/D1/R10:\nGPIO_RLY_RX_MUTE_3V3 -> 2N7002 gate, R14 100k gate pulldown\n(fail-passive if the GPIO is high-Z during host boot), D3 flyback\ndiode across the coil, coil fed from the SAME RLY_COIL_SUPPLY as K1.\n\nJ6 = AUDIO_OUT_TO_CUP, generic 2-pin placeholder (same convention as\nJ4/J5 on this sheet and J1/J2/J3 on the main sheet) - pin 1 is the\nswitched audio signal, pin 2 is AC_GND. Where this actually lands\n(a connector to the earcup's own wiring) is undesigned, same status\nas J3 (A2B_TO_CUPS) on the main sheet.\n\nSCAR: first attempt routed J5.Ring straight down at the same X as\nJ5's own Sleeve/AC_GND stub, and separately routed K2's COM->J6\nreturn through J6's own AC_GND pin's X - both auto-routes crossed\ntheir neighbor's AC_GND stub at a single coincident point and\nsilently merged the signal onto AC_GND (get_component_nets showed\nK2.11/12 and J6 both reading net \"AC_GND\" instead of an unnamed\nsignal net). find_shorted_nets did NOT catch this (both sides of\nthe merge carry the same single label, so there's no pair of\nDIFFERENT named nets to flag as a short) - only checking each\npin's net name after wiring caught it. Fixed by jogging the Ring\nwire to a clear column before dropping, and by approaching J6.1\nhorizontally at its own row instead of dropping straight down\nthrough J6.2's column. Same lesson as the TX-side SCAR above,\nnow hit on both halves of this sheet.\n\nOPEN ITEMS - not resolved by this pass:\n1. U11 now feeds TWO relay coils (K1 and K2). The 21mA figure in\n   the TX note's open item 5 was for K1 alone - the aggregate\n   against U11's actual current rating has not been computed and\n   should be before layout, though G6K coil draw is small enough\n   that this is very unlikely to be tight.\n2. J6 is a generic placeholder, same status as J4/J5/J3 - no real\n   connector or cup-side interconnect chosen yet.\n3. No level or impedance matching is done on this path - it's a\n   straight relay pass-through of whatever the aircraft's earphone\n   output already is, unlike the TX side's R13/T1 matching to the\n   boom mic. If the aircraft's earphone level or impedance doesn't\n   suit whatever is on the cup side, that mismatch is unaddressed\n   here.\n4. Fail-passive polarity (de-energized = unmuted) is my choice, not\n   yet confirmed by Peter, same status as K1's.\n5. No galvanic isolation on this path (no transformer) - unlike the\n   TX side, this was not asked for and Decision A gives no reason to\n   add one, but it hasn't been explicitly ruled out either."
+    (at 280 350 0)
+    (effects (font (size 1.27 1.27)))
+    (uuid "38bbae2a-4151-4743-8bde-913d536c7385")
   )
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x02")
@@ -4155,6 +4381,265 @@
 			(project "audio-board"
 				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
 					(reference "R13")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Relay:Relay_DPDT")
+		(at 101.6 214.63 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5560199d-2663-4e61-8627-21542f9bcdd6")
+		(property "Reference" "K2"
+			(at 118.11 210.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "G6K-2F-Y"
+			(at 118.11 213.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 101.6 214.63 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 101.6 214.63 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
+					(reference "K2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector_Generic:Conn_01x02")
+		(at 190.5 212.09 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e39b26e3-20eb-4f09-970f-ef13b06da529")
+		(property "Reference" "J6"
+			(at 190.5 209.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "AUDIO_OUT_TO_CUP"
+			(at 190.5 217.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 190.5 212.09 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 190.5 212.09 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
+					(reference "J6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Transistor_FET:2N7002")
+		(at 101.6 271.78 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "97b7d0e2-5d63-4f30-b07f-112e9bc11bbd")
+		(property "Reference" "Q2"
+			(at 106.68 269.875 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "2N7002"
+			(at 106.68 271.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 101.6 271.78 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 101.6 271.78 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
+					(reference "Q2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Diode:1N4148")
+		(at 121.92 246.38 90)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f527132c-2c4d-42a6-99e7-aa93f3cd4d5c")
+		(property "Reference" "D3"
+			(at 119.38 246.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "1N4148"
+			(at 124.46 246.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 121.92 246.38 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 121.92 246.38 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
+					(reference "D3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 78.74 271.78 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a378392f-24b6-4217-a918-4f50e4a781a1")
+		(property "Reference" "R14"
+			(at 80.772 271.78 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "100k"
+			(at 78.74 271.78 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 78.74 271.78 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 78.74 271.78 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
+					(reference "R14")
 					(unit 1)
 				)
 			)

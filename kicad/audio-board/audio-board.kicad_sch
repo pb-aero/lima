@@ -6079,6 +6079,20 @@
 		)
 		(uuid "5b102afe-2a56-41a4-895a-e2ec90a594dc")
 	)
+	(wire
+		(pts
+			(xy 340.36 260.35)
+			(xy 337.82 260.35)
+		)
+		(uuid "69647cc9-1c7c-4928-b152-51c67932f9d4")
+	)
+	(wire
+		(pts
+			(xy 40 215.24)
+			(xy 37.46 215.24)
+		)
+		(uuid "6f503841-c66d-4ac4-a8aa-b57d8dc9e657")
+	)
 	(text "Power in: VBAT from the aeronode board (U9/U10, J2). This\nis the ONLY supply arriving on this board - Peter confirmed\nno 3.3V rail comes over from the CM5 side at all.\n\nVBAT is aeronode's raw 2S LiFePO4 pack net (ahead of its\ncharger/buck stage) - per\nkicad/aeronode/doc/ARCHITECTURE.md: \"the pack never falls\nbelow 5.0V\" and \"the pack sits at 7.2V\" at full charge, so\nVBAT runs 5.0-7.3V. Fetched from that doc, not assumed.\nJ2 is a generic 2-pin placeholder for the board-to-board\nlink, same treatment as J1 for the CM5 - the actual\ninterconnect between aeronode and this board is undesigned.\n\nU9 = ADP7118AUJZ-1.8-R7 -> 1V8. U10 = ADP7118AUJZ-3.3-R7\n-> 3V3_ACCEL. NOT the ADP1715 the EVAL-ADAU1860 uses for\nthe same two rails (docs/rig-logic-levels.md) - that part\nis 2.5-5.5V in and VBAT hits 7.3V, over its max. ADP7118\nis the same family's wide-input sibling, 2.7-20V, comfortably\ncovering VBAT with margin. Pin numbers and the EN/SENSE\nwiring (EN->VIN for auto-start, SENSE/ADJ->VOUT for the\nfixed-voltage grade, both from datasheet Table 4/Fig. 1)\nare from the datasheet, not guessed. 2.2uF on each VIN and\nVOUT per the datasheet's own minimum.\n\n1V8 and 3V3_ACCEL no longer carry a PWR_FLAG - they have a\nreal local source now. VBAT gets the PWR_FLAG instead,\nsince it is the new board-boundary net.\n\nCORRECTED THIS PASS: there is no separate \"3V3_CM5\" rail\narriving from the CM5 side - Peter confirmed only VBAT\ncrosses the board boundary. The net previously called\n3V3_CM5 (VCCB for U6/U7, VCC(B)/EN for U8, R6/R7's pull-up\nreference, and a J1 pin) has been MERGED into 3V3_ACCEL -\nU10 is now the single 3.3V source for the accelerometer AND\nthe whole host-facing translator stack (U6, U7, U8, R6, R7).\nThe old 3V3_CM5 PWR_FLAG and its J1 pin are both removed;\nJ1 pins 4 and 8 are both spare now. RP1 does not need to\nsupply this board's 3.3V logic-level reference - its own\nGPIO bank has its own 3.3V rail, and U10's independently-\ngenerated 3.3V is close enough (both \"3.3V nominal\") for\nthe translators and repeater to interoperate correctly,\nthe same way any two boards with separate 3.3V supplies and\na shared ground normally do.\n\nOPEN, sharpened by the merge: U10 (ADP7118, 200mA/rail) now\ncarries the accelerometer's own supply AND both I2S\ntranslators' VCCB AND the I2C repeater's VCC(B)/EN AND two\n4.7k pull-ups. Still almost certainly well inside 200mA,\nbut this is now a real aggregate worth computing before\nlayout, not just \"the accelerometer's load.\" Board-to-board\nconnector for VBAT unresolved, same as J1. No transient/\ninrush check has been done for U9, U10, and U5's on-chip\nregulator sharing one VBAT feed through J2."
 		(at 100 50 0)
 		(effects
@@ -8765,6 +8779,26 @@
 		)
 		(uuid "e79f9167-8d92-4554-b934-f044cf58345e")
 	)
+	(label "GPIO_RLY_RX_MUTE_3V3"
+		(at 337.82 260.35 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "47e40e42-1f6b-4bf0-89f5-e20cfb62fc51")
+	)
+	(label "GPIO_RLY_RX_MUTE_3V3"
+		(at 37.46 215.24 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "a477ba48-3e45-44e8-a83e-8497653b5b06")
+	)
 	(sheet
 		(at 40 200)
 		(size 50 50)
@@ -8777,7 +8811,7 @@
 			(color 0 0 0 0.0)
 		)
 		(uuid "fb20a544-30e3-4d6b-acfd-e420a90726f9")
-		(property "Sheetname" "BOOM MIC / TX SELECT"
+		(property "Sheetname" "AIRCRAFT AUDIO I/O"
 			(at 20 199.365 0)
 			(effects
 				(font
@@ -8815,6 +8849,10 @@
 			(at 40 212.7 180)
 			(uuid "bc898da5-3579-4443-a669-47408fb1ce2f")
 		)
+		(pin "GPIO_RLY_RX_MUTE_3V3" input
+			(at 40 215.24 180)
+			(uuid "9dd082bd-ebd6-4f12-9ab0-ced7baa651d0")
+		)
 		(instances
 			(project "audio-board"
 				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece"
@@ -8823,10 +8861,10 @@
 			)
 		)
 	)
-  (text "HPOUTN intentionally left no-connect (corrected back, 2026-09-29 -\nthis sheet briefly used both HPOUTP/HPOUTN differentially into the\nBOOM MIC / TX SELECT sheet's transformer, then reverted to\nsingle-ended HPOUTP only). A series blocking cap on that sheet now\nhandles what the differential connection used to handle for free:\nHPOUTP sits at the DAC's ~0.85V common-mode bias, and driving a\ntransformer primary single-ended (other leg tied to AGND, not\nHPOUTN) would push that DC across the winding as a continuous\n~7mA bias current toward core saturation. The cap blocks it.\nResidual, not resolved by the cap: the ADAU186x Hardware Reference\nManual (UG-2257) documents this output stage as DIFFERENTIAL ONLY -\ninputs get an explicit single-ended mode and register bit\n(AINx_INPUT_MODE), the DAC/headphone/line output never does, in\nprose or in the HP_CTRL register map. Running single-ended is\ntherefore an undocumented configuration, not a specified one - the\ncap fixes the DC problem, it doesn't make this a supported mode.\nJ1 pin 4 (previously spare) carries GPIO_RLY_TX_SEL_3V3 to that\nsheet's relay driver."
+  (text "HPOUTN intentionally left no-connect (corrected back, 2026-09-29 -\nthis sheet briefly used both HPOUTP/HPOUTN differentially into the\nBOOM MIC / TX SELECT sheet's transformer, then reverted to\nsingle-ended HPOUTP only). A series blocking cap on that sheet now\nhandles what the differential connection used to handle for free:\nHPOUTP sits at the DAC's ~0.85V common-mode bias, and driving a\ntransformer primary single-ended (other leg tied to AGND, not\nHPOUTN) would push that DC across the winding as a continuous\n~7mA bias current toward core saturation. The cap blocks it.\nResidual, not resolved by the cap: the ADAU186x Hardware Reference\nManual (UG-2257) documents this output stage as DIFFERENTIAL ONLY -\ninputs get an explicit single-ended mode and register bit\n(AINx_INPUT_MODE), the DAC/headphone/line output never does, in\nprose or in the HP_CTRL register map. Running single-ended is\ntherefore an undocumented configuration, not a specified one - the\ncap fixes the DC problem, it doesn't make this a supported mode.\nJ1 pin 4 (previously spare) carries GPIO_RLY_TX_SEL_3V3 to that\nsheet's relay driver.\n\nThat sheet was renamed AIRCRAFT AUDIO I/O 2026-09-30 (still page 2,\nsame file) when an earphone/RX audio mute relay was added alongside\nthe original boom-mic/TX circuit. J1 pin 8 (the other pin left spare\nby the SPT1/3V3_CM5 cleanup above) now carries GPIO_RLY_RX_MUTE_3V3\nto that relay's driver - a deliberately independent GPIO from pin 4,\nper Peter, so the two relays can be sequenced separately in\nfirmware. Neither pin is spare on J1 any longer."
     (at 288.29 180 0)
     (effects (font (size 1.27 1.27)))
-    (uuid "76b0fced-2247-42fc-b598-dcb0adc0e9cf")
+    (uuid "1ef2d43a-8c92-489d-8456-ec13372ee2a2")
   )
 	(symbol
 		(lib_id "AnalogDevices:ADAU1861")
