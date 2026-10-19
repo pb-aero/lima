@@ -62,12 +62,45 @@ the codec side.
 | Translator | SN74LVC8T245, at the **Pi end**. The cable runs at **1.8 V**, the product's cup-side level |
 | I²C targets | EVB control port, plus LSM6DSV16BX and MAXM86161 breakouts if we have them (the cup-board bus) |
 | Cables (A/B) | **A:** ribbon, GND between every signal. **B:** twisted pair per signal (each with its own GND), e.g. CAT6. **C:** the real headset-cord type, if known `[gap]` |
+| Cable H | **Repurposed 1 m passive HDMI cable**, see §3.1. The practical choice for cable B |
 | Series R | 33 Ω footprints at **each driver**: BCLK + FSYNC + SDI at the codec end, SDO at the Pi end. Fit 0 Ω or 33 Ω per run |
 | Scope | ≥ 500 MHz bandwidth, spring ground tips. Probe at the **receiving** pin, not the driver |
 
 **Caution on the EVB I²C:** `[repo]` its control port goes through an on-board PCA9517 to a 3.3 V
 side. Cable on that side tests a 3.3 V bus, not the cup board's 1.8 V bus. Run the I²C tests mainly
 against the breakouts at 1.8 V, and treat the EVB control port as a secondary target.
+
+### 3.1 Repurposed HDMI cable (added 2026-10-19, per Peter)
+
+A standard HDMI type A cable has **four individually shielded twisted pairs** (the TMDS lanes), plus
+a separate **DDC I²C pair** (SCL/SDA) with its own ground. That matches the four I2S signals plus I²C
+exactly. Two HDMI-to-screw-terminal breakout boards make it a bench cable.
+
+| HDMI pin | Normal use | PoC use |
+|---|---|---|
+| 1 / 2 / 3 | TMDS D2+ / D2 shield / D2− | **BCLK** / GND / GND (return) |
+| 4 / 5 / 6 | TMDS D1+ / D1 shield / D1− | **FSYNC** / GND / GND |
+| 7 / 8 / 9 | TMDS D0+ / D0 shield / D0− | **SDO** (Pi → codec) / GND / GND |
+| 10 / 11 / 12 | TMDS CLK+ / CLK shield / CLK− | **SDI** (codec → Pi) / GND / GND |
+| 15 / 16 | DDC SCL / SDA | **SCL / SDA** |
+| 17 | DDC/CEC ground | GND (I²C return) |
+| 13, 14, 18, 19 | CEC, utility, +5 V, hot-plug | Unused. Leave open; don't power anything through 18 |
+
+Each I2S signal rides one wire of a shielded pair with its twin and the pair's drain as ground, so
+every signal gets its own return and shield. The connector shell goes to GND at **one end only**
+for the first runs; try both ends as a variable if emissions or crosstalk come up.
+
+Caveats:
+- **Passive cables only.** Active or "RedMere" cables have chips in them.
+- **Beep out every pin with a meter before use.** `[assumed]` The pinout above is the HDMI type A
+  standard, but cheap cables sometimes merge shields or omit pins 13/14. Record what the cable
+  actually has.
+- **It flatters the result.** Shielded 100 Ω pairs beat most headset cords, so a pass on HDMI is a
+  best case for the product cord, not proof of it. The DDC wires are usually *not* twisted or
+  shielded, which makes them a fair stand-in for I²C in a cord.
+- `[assumed]` The single-ended impedance of one wire of a shielded pair with its twin grounded is
+  roughly 50–60 Ω. A 33 Ω series resistor plus a typical CMOS driver's output impedance lands near
+  that. Measure overshoot with and without it rather than trusting the estimate.
 
 ## 4. I2S test — bit-exact loopback
 
