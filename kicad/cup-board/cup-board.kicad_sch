@@ -4134,6 +4134,460 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Device:Transformer_1P_2S"
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "T"
+				(at 0 12.7 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "Transformer_1P_2S"
+				(at 0 -12.7 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Transformer, single primary, dual secondary"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "transformer coil magnet"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "Transformer_1P_2S_0_1"
+				(arc
+					(start -1.27 3.81)
+					(mid -1.656 2.9336)
+					(end -2.54 2.5654)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -1.27 1.27)
+					(mid -1.656 0.3936)
+					(end -2.54 0.0254)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -1.27 -1.27)
+					(mid -1.656 -2.1464)
+					(end -2.54 -2.5146)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -1.27 -3.81)
+					(mid -1.656 -4.6864)
+					(end -2.54 -5.0546)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -2.54 5.08)
+					(mid -1.642 4.708)
+					(end -1.27 3.81)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -2.54 2.54)
+					(mid -1.642 2.168)
+					(end -1.27 1.27)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -2.54 0)
+					(mid -1.642 -0.372)
+					(end -1.27 -1.27)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -2.54 -2.54)
+					(mid -1.642 -2.912)
+					(end -1.27 -3.81)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.508 -10.16)
+						(xy -0.508 10.16)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.508 10.16)
+						(xy 0.508 -10.16)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.2954 8.89)
+					(mid 1.6457 9.7917)
+					(end 2.54 10.16)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.2954 6.35)
+					(mid 1.6457 7.2517)
+					(end 2.54 7.62)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.2954 3.81)
+					(mid 1.6457 4.7117)
+					(end 2.54 5.08)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.2954 -3.81)
+					(mid 1.6457 -2.9083)
+					(end 2.54 -2.54)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.2954 -6.35)
+					(mid 1.6457 -5.4483)
+					(end 2.54 -5.08)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.2954 -8.89)
+					(mid 1.6457 -7.9883)
+					(end 2.54 -7.62)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 2.54 7.6454)
+					(mid 1.6599 8.0099)
+					(end 1.2954 8.89)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 2.54 5.1054)
+					(mid 1.6599 5.4699)
+					(end 1.2954 6.35)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 2.54 2.5654)
+					(mid 1.6599 2.9299)
+					(end 1.2954 3.81)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 2.54 -5.0546)
+					(mid 1.6599 -4.6901)
+					(end 1.2954 -3.81)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 2.54 -7.5946)
+					(mid 1.6599 -7.2301)
+					(end 1.2954 -6.35)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 2.54 -10.1346)
+					(mid 1.6599 -9.7701)
+					(end 1.2954 -8.89)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "Transformer_1P_2S_1_1"
+				(pin passive line
+					(at -10.16 5.08 0)
+					(length 7.62)
+					(name "AA"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -10.16 -5.08 0)
+					(length 7.62)
+					(name "AB"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 10.16 10.16 180)
+					(length 7.62)
+					(name "SA"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 10.16 2.54 180)
+					(length 7.62)
+					(name "SB"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 10.16 -2.54 180)
+					(length 7.62)
+					(name "SC"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 10.16 -10.16 180)
+					(length 7.62)
+					(name "SD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(no_connect
 		(at 165.1 118.11)
@@ -4278,10 +4732,6 @@
 	(no_connect
 		(at 314.96 231.14)
 		(uuid "03b9fc3c-fc4a-423a-86b8-aeae17dc8665")
-	)
-	(no_connect
-		(at 88.9 228.6)
-		(uuid "1aea689f-fe2a-4feb-8366-fd442a968e16")
 	)
 	(wire
 		(pts
@@ -4971,48 +5421,6 @@
 	)
 	(wire
 		(pts
-			(xy 88.9 223.52)
-			(xy 86.36 223.52)
-		)
-		(uuid "43f7fdd1-9474-4a02-9a10-4e1158a4812c")
-	)
-	(wire
-		(pts
-			(xy 88.9 233.68)
-			(xy 86.36 233.68)
-		)
-		(uuid "81089cdc-b744-4e19-b96d-fd9bb67fe680")
-	)
-	(wire
-		(pts
-			(xy 109.22 218.44)
-			(xy 111.76 218.44)
-		)
-		(uuid "47889f4d-0763-4ed1-9607-0bb5b6b5ac31")
-	)
-	(wire
-		(pts
-			(xy 109.22 226.06)
-			(xy 111.76 226.06)
-		)
-		(uuid "51a75fa9-e771-4767-a346-923b01bc79bd")
-	)
-	(wire
-		(pts
-			(xy 109.22 231.14)
-			(xy 111.76 231.14)
-		)
-		(uuid "e01a4a23-3a25-4bb4-9c2a-0cd7ee3c36f5")
-	)
-	(wire
-		(pts
-			(xy 109.22 238.76)
-			(xy 111.76 238.76)
-		)
-		(uuid "33817272-311f-439d-853b-96274dd8806a")
-	)
-	(wire
-		(pts
 			(xy 118.11 185.42)
 			(xy 115.57 185.42)
 		)
@@ -5178,6 +5586,48 @@
 			(xy 246.38 148.59)
 		)
 		(uuid "43d24b19-6a5c-487f-aa75-3ab2a67d11ad")
+	)
+	(wire
+		(pts
+			(xy 88.9 223.52)
+			(xy 86.36 223.52)
+		)
+		(uuid "af7ae6ce-f042-4b7c-befb-3af6a21e554f")
+	)
+	(wire
+		(pts
+			(xy 88.9 233.68)
+			(xy 86.36 233.68)
+		)
+		(uuid "89729732-b129-42c1-b8eb-fb6c54811c47")
+	)
+	(wire
+		(pts
+			(xy 109.22 218.44)
+			(xy 111.76 218.44)
+		)
+		(uuid "e834335d-d461-4c45-bd3e-490e36a576a4")
+	)
+	(wire
+		(pts
+			(xy 109.22 226.06)
+			(xy 111.76 226.06)
+		)
+		(uuid "514e5790-f1a1-4137-a27a-7922f22391aa")
+	)
+	(wire
+		(pts
+			(xy 109.22 231.14)
+			(xy 111.76 231.14)
+		)
+		(uuid "4caa4d2a-4e83-4e2c-96b7-adfa31cd68f8")
+	)
+	(wire
+		(pts
+			(xy 109.22 238.76)
+			(xy 111.76 238.76)
+		)
+		(uuid "96662bfd-ed32-464f-9290-befe60263b48")
 	)
 	(label "1V8"
 		(at 160.02 82.55 0)
@@ -6039,66 +6489,6 @@
 		)
 		(uuid "5f6c1b42-c180-4992-a35f-0091bf092431")
 	)
-	(label "AC_AUDIO"
-		(at 86.36 223.52 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "0d81e94d-d20e-4395-b676-25dc919b5777")
-	)
-	(label "AC_GND"
-		(at 86.36 233.68 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "17de8a89-f037-4a0b-a7c7-81cab19f3c20")
-	)
-	(label "XF_SEC_A"
-		(at 111.76 218.44 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "52fe6cda-e32b-4c07-bfd0-c0f021f04eb5")
-	)
-	(label "XF_SEC_B"
-		(at 111.76 226.06 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "82ce6b26-0c5b-42a7-b9a0-78da7d6a9d70")
-	)
-	(label "XF_SEC_A"
-		(at 111.76 231.14 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "716af41a-21bc-4d9a-a91d-c4b04b1ebb62")
-	)
-	(label "XF_SEC_B"
-		(at 111.76 238.76 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "89153fb9-eae1-414a-b94f-c5d95946a730")
-	)
 	(label "XF_SEC_A"
 		(at 115.57 185.42 180)
 		(effects
@@ -6338,6 +6728,66 @@
 			(justify right bottom)
 		)
 		(uuid "67dba5ae-4f9f-43e5-a031-c7548dc96e33")
+	)
+	(label "AC_AUDIO"
+		(at 86.36 223.52 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "f807f20e-52d9-436c-a56f-dcd761f6a895")
+	)
+	(label "AC_GND"
+		(at 86.36 233.68 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "b1c39d01-4660-4ac2-95c4-d631dc073ab5")
+	)
+	(label "XF_SEC_A"
+		(at 111.76 218.44 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3c87cbf2-999c-4267-a78e-9f04c477d963")
+	)
+	(label "XF_SEC_B"
+		(at 111.76 226.06 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b5d4e5b5-31d3-4b05-8c26-b64a5ff671f3")
+	)
+	(label "XF_SEC_A"
+		(at 111.76 231.14 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "502894be-9c05-4610-b4c8-1d16b65be8b6")
+	)
+	(label "XF_SEC_B"
+		(at 111.76 238.76 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e88227c5-dc97-4f7b-bb55-c79b7940d493")
 	)
 	(symbol
 		(lib_id "AnalogDevices:ADAU1861")
@@ -7998,7 +8448,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:Transformer_SP_2S")
+		(lib_id "Device:Transformer_1P_2S")
 		(at 99.06 228.6 0)
 		(unit 1)
 		(in_bom yes)

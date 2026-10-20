@@ -19,7 +19,7 @@ been updated to match — see open items.
 | MK2 | IM73A135V01 | Feedback (error) ANC mic → AINP1/AINN1, differential |
 | ~~MK3~~ | — | **Removed 2026-10-20, per Peter** — ADC2 now carries the aircraft audio (below) |
 | J5 | 2-pin | Aircraft audio in: pin 1 `AC_AUDIO` (this cup's earphone line), pin 2 `AC_GND` |
-| T1 | Triad SP-74 | 80 Ω : 32 Ω (series) / 8 Ω (parallel), 3.143:1:1, no centre tap. Primary 1–2 across J5; secondaries 3–4 and 5–6 **in parallel** → `XF_SEC_A`/`XF_SEC_B` (symbol swap pending, see open items) |
+| T1 | Triad SP-74 | 80 Ω : 32 Ω (series) / 8 Ω (parallel), 3.143:1:1, no centre tap. Primary 1–2 across J5; secondaries 3–4 and 5–6 **in parallel** → `XF_SEC_A`/`XF_SEC_B` (symbol is `Device:Transformer_1P_2S`, numbered as Triad's; swap done 2026-10-20) |
 | K1 | Omron G6K-2F-Y DC5 | DPDT, non-latching. **Unpowered (NC): speaker ← T1 secondary. Energised (NO): speaker ← HPOUTN/HPOUTP** |
 | C9/C10, R4/R5, R6 | 1 µF ×2, 10 kΩ ×2, 22 kΩ | ADC2 tap off the T1 secondary → `ADC2_P`/`ADC2_N` = AINP2/AINN2 |
 | D1 | 1N4148W | K1 coil flyback |
@@ -135,13 +135,13 @@ SP-74 for the bypass path.
 
 ### Open — introduced by this change
 
-- **T1's symbol is wrong and must be swapped before layout.** It is KiCad's
-  `Device:Transformer_SP_2S`: 7 pins, with a centre tap the SP-74 doesn't have. Its pin numbers
-  don't match the part, so a footprint would put symbol pin 3 (wired to `AC_GND`) on the SP-74's
-  secondary pin 3. The fix is `Device:Transformer_1P_2S`, whose 1–2 / 3–4 / 5–6 numbering matches
-  Triad's, wired per the pinout table above. The schematic **logic** is right — full primary,
-  secondaries in parallel; only the pin numbering is wrong. Not done yet: the KiCad tool
-  connection dropped, and schematic files are only edited through it.
+- ~~**T1's symbol is wrong and must be swapped before layout.**~~ **Done 2026-10-20.** T1 was
+  KiCad's `Device:Transformer_SP_2S` (7 pins, with a centre tap the SP-74 doesn't have, and pin
+  numbers that didn't match the part). It is now `Device:Transformer_1P_2S`, whose 1–2 / 3–4 / 5–6
+  numbering matches Triad's, wired per the pinout table above. `[measured]` kicad-cli netlist:
+  `AC_AUDIO` = J5.1, T1.1; `AC_GND` = J5.2, T1.2; `XF_SEC_A` = C9.1, K1.2, T1.3, T1.5;
+  `XF_SEC_B` = C10.1, K1.7, T1.4, T1.6. ERC: 0 errors and the same 8 pre-existing warnings.
+  No shorted nets, no overlaps.
 - **SP-74 core level.** `[fetched]` DigiKey: 50 mW, 300 Hz–100 kHz ±2 dB, 1000 V isolation,
   −40 to +85 °C, THT 10.4 × 7.9 mm, $19.48, **24-week lead time**. 50 mW at its 80 Ω rating is
   ≈ 2 V rms. `[assumed]` 3.9 V rms at 300 Hz is about twice the rated flux, so expect distortion
