@@ -7470,7 +7470,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "82fe5f96-f3bc-4a85-9c94-d07c63acfcca")
-		(property "Reference" "?"
+		(property "Reference" "#FLG01"
 			(at 160.02 78.105 0)
 			(hide yes)
 			(effects
@@ -7508,7 +7508,7 @@
 		(instances
 			(project "cup-board"
 				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
-					(reference "?")
+					(reference "#FLG01")
 					(unit 1)
 				)
 			)
@@ -7522,7 +7522,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "57e755b5-9515-446c-bbfd-418b183193b9")
-		(property "Reference" "?"
+		(property "Reference" "#FLG02"
 			(at 165.1 78.105 0)
 			(hide yes)
 			(effects
@@ -7560,7 +7560,7 @@
 		(instances
 			(project "cup-board"
 				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
-					(reference "?")
+					(reference "#FLG02")
 					(unit 1)
 				)
 			)
@@ -7574,7 +7574,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "69a421b2-0c7b-456b-86a3-b9fdd19fd8c5")
-		(property "Reference" "?"
+		(property "Reference" "#FLG03"
 			(at 170.18 78.105 0)
 			(hide yes)
 			(effects
@@ -7612,7 +7612,7 @@
 		(instances
 			(project "cup-board"
 				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
-					(reference "?")
+					(reference "#FLG03")
 					(unit 1)
 				)
 			)
@@ -7938,7 +7938,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "6ad6f744-bfb6-47c6-81ac-a166b6b8952f")
-		(property "Reference" "?"
+		(property "Reference" "#FLG04"
 			(at 325.12 183.515 0)
 			(hide yes)
 			(effects
@@ -7976,7 +7976,7 @@
 		(instances
 			(project "cup-board"
 				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
-					(reference "?")
+					(reference "#FLG04")
 					(unit 1)
 				)
 			)
