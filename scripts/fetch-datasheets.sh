@@ -164,4 +164,15 @@ fetch \
   "$ROOT/docs/datasheets/Triad_SP-74.pdf" \
   '56e0569d1475c3e6cb35644022db1e1cad10d6daa735743e72e4172462aa3720'
 
+# Panasonic PhotoMOS GU SOP8 1 Form A & 1 Form B (AQW612S / AQW610S), catalogue ASCTB137E
+# 202601 ("2026.1"), 18 pp. Candidate fail-passive replacement for cup-board K1: the N.C.
+# (Form B) switch on pins 7-8 is closed at IF = 0 mA. Ratings, Ron and timing are in the text
+# layer (pp. 2-3). The schematic (LED anodes on pins 1 and 3) is DRAWN on p. 6: render it.
+# Panasonic's own download portal is script-driven and returns HTML to curl; this Digi-Key
+# copy of the same catalogue serves the real PDF.
+fetch \
+  'https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/8811/semi_eng_gu1a1b_aqw61_s%20(1).pdf' \
+  "$ROOT/docs/datasheets/Panasonic_AQW61xS_GU-SOP8-1a1b.pdf" \
+  'aa01a1cf6ffafdca709cb9782d3eefc4d04f4a87fed3e0afdfff6ee2b6790b43'
+
 echo "done"
