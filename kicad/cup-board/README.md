@@ -19,7 +19,7 @@ been updated to match — see open items.
 | MK2 | IM73A135V01 | Feedback (error) ANC mic → AINP1/AINN1, differential |
 | ~~MK3~~ | — | **Removed 2026-10-20, per Peter** — ADC2 now carries the aircraft audio (below) |
 | J5 | 2-pin | Aircraft audio in: pin 1 `AC_AUDIO` (this cup's earphone line), pin 2 `AC_GND` |
-| T1 | Triad SP-74 | 80 Ω CT : 8 Ω, 3.143:1:1. Full primary across J5, CT no-connect, both secondaries **in parallel** → `XF_SEC_A`/`XF_SEC_B` |
+| T1 | Triad SP-74 | 80 Ω : 32 Ω (series) / 8 Ω (parallel), 3.143:1:1, no centre tap. Primary 1–2 across J5; secondaries 3–4 and 5–6 **in parallel** → `XF_SEC_A`/`XF_SEC_B` (symbol swap pending, see open items) |
 | K1 | Omron G6K-2F-Y DC5 | DPDT, non-latching. **Unpowered (NC): speaker ← T1 secondary. Energised (NO): speaker ← HPOUTN/HPOUTP** |
 | C9/C10, R4/R5, R6 | 1 µF ×2, 10 kΩ ×2, 22 kΩ | ADC2 tap off the T1 secondary → `ADC2_P`/`ADC2_N` = AINP2/AINN2 |
 | D1 | 1N4148W | K1 coil flyback |
@@ -72,7 +72,7 @@ SP-74 for the bypass path.
 ```
  J5 AC_AUDIO ─┐                 ┌─ XF_SEC_A ──┬── K1 NC ─┐
               T1 SP-74 (pri)    T1 (2 sec ∥) │          ├─ K1 COM ── J2 speaker 32 Ω
- J5 AC_GND  ──┘   CT n/c        └─ XF_SEC_B ─┼── K1 NC ─┘     K1 NO ── HPOUTN / HPOUTP
+ J5 AC_GND  ──┘   pins 1–2      └─ XF_SEC_B ─┼── K1 NC ─┘     K1 NO ── HPOUTN / HPOUTP
                                              └── C9/R4, C10/R5, R6 ── AINP2 / AINN2
 ```
 
@@ -80,10 +80,45 @@ SP-74 for the bypass path.
   the full primary and the two secondaries in parallel, the turns ratio is 3.143:1, so the
   impedance ratio is 9.88:1 and a 32 Ω speaker looks like **≈ 316 Ω** to the panel. Two cups
   on a mono panel come to ≈ 158 Ω, which is inside the ≥ 150 Ω the panel is rated for.
-  `[fetched]` The Garmin GMA 340 is specified at 100 mW per channel into 150 Ω. The centre tap
-  would give 79 Ω (≈ 40 Ω for two cups), which is too low, so it is left unconnected. Against the
+  `[fetched]` The Garmin GMA 340 is specified at 100 mW per channel into 150 Ω. Against the
   120 Ω series resistor considered first, the transformer is ≈ 3.6 dB louder at the same panel
-  voltage and halves the panel loading.
+  voltage and halves the panel loading. Triad's own rating is 80 Ω : **32 Ω with the secondaries
+  in series**, or 8 Ω in parallel. We deliberately use the parallel connection with a 32 Ω load,
+  so the panel sees 316 Ω and not 80 Ω.
+  **Correction, 2026-10-21:** the SP-74 has **no primary centre tap.** DigiKey's "80 CT"
+  description is wrong, and Triad's drawing shows pins 1–2 only. My 2026-10-20 note that "the
+  centre tap would give 79 Ω" was built on that listing and is withdrawn. The conclusion stands,
+  because the full primary was the connection used anyway.
+
+### SP-74 pinout — `[fetched]` Triad datasheet, publish date 2024-05-30 (`docs/datasheets/Triad_SP-74.pdf`)
+
+| Pin | Winding | Dot | Net here |
+|---|---|---|---|
+| 1 | Primary, 80 Ω, 12.5 Ω DCR | ● | `AC_AUDIO` |
+| 2 | Primary | | `AC_GND` |
+| 3 | Secondary 1 | ● | `XF_SEC_A` |
+| 4 | Secondary 1 | | `XF_SEC_B` |
+| 5 | Secondary 2 | ● | `XF_SEC_A` |
+| 6 | Secondary 2 | | `XF_SEC_B` |
+
+- **Parallel (8 Ω, this design):** 3∥5 and 4∥6, dot to dot. **Series (32 Ω):** link 4–5 and
+  take the output across 3–6.
+- **Package:** six gold-plated 0.020″ pins, with a tab at pin 1. The body is
+  0.410 × 0.310 × 0.465″ max and the leads are 0.750″ min.
+  `[derived]` **Two rows of three: 1-3-5 and 2-4-6, with 2 opposite 1, 4 opposite 3 and 6
+  opposite 5.** Pitch is 0.100″ along each row and the rows are 0.300″ apart. The face marked PRI
+  reads 1 3 5 and the opposite face, marked SEC, reads 6 4 2; seen from the same side that reverses
+  to 2 4 6. The plan view's .100/.200/.300 dimensions agree. **So it is a DIP-6 grid, but not
+  DIP-6 numbering** (DIP runs 1-2-3 / 6-5-4). A stock DIP-6 footprint would put the wrong pins
+  on the primary, so draw a custom one. `[gap]` The plan view itself is an embedded low-resolution
+  bitmap and stays unreadable even at 600 dpi. Check one physical part before releasing the
+  footprint.
+- **Max DC unbalance in the primary: 3.0 mA.** `[derived]` Across 12.5 Ω that is only 37 mV. If
+  a panel's earphone output carries any DC offset, it could exceed that and push the core toward
+  saturation. `[gap]` Whether panel outputs are capacitor-coupled isn't established. A series
+  blocking capacitor on the primary would remove the question.
+- Rated 50 mW, ±2 dB from 300 Hz to 100 kHz, 1000 V rms hipot, 150 V DC working voltage,
+  −40 to +85 °C, MIL-T-27E "Red Spec".
 - **Powered, coil energised:** the speaker moves to HPOUTN/HPOUTP and T1's secondary is left
   driving only the ADC tap. That tap is galvanically isolated from the aircraft, so it breaks the
   aircraft-ground loop, and the 1861 datasheet gives no CMRR figure to lean on otherwise.
@@ -100,9 +135,13 @@ SP-74 for the bypass path.
 
 ### Open — introduced by this change
 
-- **SP-74 pinout and polarity dots, not read.** The symbol is KiCad's generic
-  `Transformer_SP_2S`. If the two secondaries are paralleled out of phase they short each other.
-  Read Triad's drawing before layout.
+- **T1's symbol is wrong and must be swapped before layout.** It is KiCad's
+  `Device:Transformer_SP_2S`: 7 pins, with a centre tap the SP-74 doesn't have. Its pin numbers
+  don't match the part, so a footprint would put symbol pin 3 (wired to `AC_GND`) on the SP-74's
+  secondary pin 3. The fix is `Device:Transformer_1P_2S`, whose 1–2 / 3–4 / 5–6 numbering matches
+  Triad's, wired per the pinout table above. The schematic **logic** is right — full primary,
+  secondaries in parallel; only the pin numbering is wrong. Not done yet: the KiCad tool
+  connection dropped, and schematic files are only edited through it.
 - **SP-74 core level.** `[fetched]` DigiKey: 50 mW, 300 Hz–100 kHz ±2 dB, 1000 V isolation,
   −40 to +85 °C, THT 10.4 × 7.9 mm, $19.48, **24-week lead time**. 50 mW at its 80 Ω rating is
   ≈ 2 V rms. `[assumed]` 3.9 V rms at 300 Hz is about twice the rated flux, so expect distortion

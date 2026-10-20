@@ -155,4 +155,13 @@ fetch \
 verify_manual "$ROOT/docs/datasheets/EVAL-AD2428WD1BZ_schematics.pdf" \
   '964eae7c1f8b6262d424a115863e751cbfaa6aae2e805811e31fc321ca3577b8'
 
+# Triad SP-74 audio transformer, 1 p, publish date 2024-05-30. Cup-board T1 (aircraft audio
+# bypass + isolated ADC2 tap). The pinout and polarity dots are DRAWN, not text: pdftotext
+# returns only the spec table. Render the page and read it as an image.
+# NOTE: there is NO primary centre tap (pins 1-2 only), despite DigiKey's "80 CT" description.
+fetch \
+  'https://catalog.triadmagnetics.com/Asset/SP-74.pdf' \
+  "$ROOT/docs/datasheets/Triad_SP-74.pdf" \
+  '56e0569d1475c3e6cb35644022db1e1cad10d6daa735743e72e4172462aa3720'
+
 echo "done"
