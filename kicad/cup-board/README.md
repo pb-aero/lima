@@ -17,7 +17,8 @@ been updated to match — see open items.
 | U1 | ADAU1861 | Codec, 3 ADC + 1 DAC (ruled 2026-09-22) |
 | MK1 | IM73A135V01 | Feed-forward ANC mic → AINP0/AINN0, differential |
 | MK2 | IM73A135V01 | Feedback (error) ANC mic → AINP1/AINN1, differential |
-| ~~MK3~~ | — | **Removed 2026-10-20, per Peter** — ADC2 now carries the aircraft audio (below) |
+| MK3 | IM72D128VV01 (PDM) | **Voice pickup, added 2026-10-20, per Peter** — DATA → `DMIC_DATA` → U1 DMIC01/MP1; CLOCK ← `DMIC_CLK` ← U1 DMIC_CLK/MP0; VDD on 1V8; LR → GND. Replaces the analog IM73A135 MK3 removed earlier the same day (ADC2 now carries the aircraft audio, below). See "Voice mic" |
+| C11 | 1 µF | MK3 VDD bypass (IM72D128V datasheet, Table 5 note 3) |
 | J5 | 2-pin | Aircraft audio in: pin 1 `AC_AUDIO` (this cup's earphone line), pin 2 `AC_GND` |
 | T1 | Triad SP-74 | 80 Ω : 32 Ω (series) / 8 Ω (parallel), 3.143:1:1, no centre tap. Primary 1–2 across J5; secondaries 3–4 and 5–6 **in parallel** → `XF_SEC_A`/`XF_SEC_B` (symbol is `Device:Transformer_1P_2S`, numbered as Triad's; swap done 2026-10-20) |
 | K1 | Omron G6K-2F-Y DC5 | DPDT, non-latching. **Unpowered (NC): speaker ← T1 secondary. Energised (NO): speaker ← HPOUTN/HPOUTP** |
@@ -157,10 +158,37 @@ SP-74 for the bypass path.
 - **The unpowered ADC sees signal.** In bypass, ≈ 1.2 V rms is applied through 10 kΩ into an
   unpowered U1. `[assumed]` The ESD-diode current is about 0.1 mA, which should be harmless.
   Not checked against an abs-max input-current figure.
-- **Voice pickup is gone from the cups.** It now depends on the boom mic on the audio board, and
-  the Rev G slot map needs to reflect that.
+- ~~**Voice pickup is gone from the cups.**~~ **Restored 2026-10-20:** MK3 is now a PDM mic
+  (IM72D128V) on U1's DMIC input, which leaves ADC2 for the aircraft audio. See "Voice mic" below.
 - **DSP:** ADC2 → DAC mixing, and the feedback-ANC loop must treat ADC2 content as wanted
   signal and not cancel it. Firmware, not on this sheet.
+
+## Voice mic (MK3, PDM) — 2026-10-20, per Peter
+
+Peter asked for one IM72D128V for voice pickup. It uses U1's digital-mic port, which was
+otherwise unused, so the three analog inputs are unchanged: ADC0/ADC1 for the ANC mics and ADC2
+for the aircraft audio. Wiring copies the audio board's IM72D128V (commit `4f1c7a8`), with the
+same net names.
+
+- `[fetched]` IM72D128V datasheet v01.00, Table 9: 1 DATA, 2 VDD, 3 CLOCK, 4 LR, 5 GND. That
+  matches `kicad/lib/Infineon.kicad_sym`. The library is now registered in this project's
+  `sym-lib-table`.
+- **VDD on 1V8**, inside the mic's 1.62–3.6 V range. U1's IOVDD is also 1V8, so the PDM logic
+  levels match with no shifter. C11 (1 µF) is the bypass the datasheet asks for at the VDD pad.
+- **LR → GND** `[fetched]` (Table 8) makes the mic DATA1: data driven on the falling clock edge,
+  high-Z on the rising edge. This was a free choice on the audio board too. `[gap]` Which of
+  U1's DMIC channel numbers that edge maps to has to be confirmed when the DSP is configured.
+- **DMIC23/MP2 keeps its no-connect.** DMIC01 has room for a second mic (LR → 1V8) if one is
+  ever wanted.
+- **Clock: run DMIC_CLK at 3.072 MHz.** `[fetched]` The mic's high-performance mode is
+  2.9–3.4 MHz, so U1's other DMIC rate, 6.144 MHz (ADAU1861 Figures 41–45), is out of its range.
+- **Headroom** `[repo]` (`docs/mic-comparison-im73-vs-im72.md`): the IM72D128V's AOP is
+  128 dBSPL, so in a loud cockpit the mic clips before the codec does. Worth checking against
+  in-cup levels.
+- **Cosmetic:** the library symbol anchors its Reference and Value text on the GND and VDD pin
+  ends, so "MK3" and "IM72D128VV01" overlap those stubs on the drawing. Konnect has no tool to
+  move individual field text. A fix belongs in the library symbol, and it would also change the
+  audio board.
 
 ## How it was drawn, and why differently from the earlier two
 
@@ -180,6 +208,10 @@ The remaining direct wires (mics → U1, U1 → J2) use grid-exact lane coordina
 - After adding U3, re-checked the same way: VLED = J4.1, C6.1, U3.5 only; PPG_VLDO = C7.1, U3.4;
   PPG_VREF = C8.1, U3.12; PPG_INT = R3.2, U3.14; SDA/SCL each = U1, U2, U3 + one pull-up;
   U3 pins 6/7/8 and GPIO unconnected. ERC still 0 errors, same 8 warnings.
+- After adding MK3 (2026-10-20) `[measured]`: kicad-cli netlist `DMIC_DATA` = MK3.1, U1.1;
+  `DMIC_CLK` = MK3.3, U1.7; MK3.2 and C11.1 on 1V8; MK3.4, MK3.5 and C11.2 on GND; U1.8
+  unconnected. Compared with the netlist before MK3, those are the only changes. ERC 0 errors,
+  same 8 warnings; `find_shorted_nets` 0; overlaps 0.
 
 ## Power budget (estimate, per cup) — 2026-10-19
 
@@ -191,6 +223,7 @@ output power (signal-dependent) and the A2B subnode, which isn't on this sheet y
 | U1 ADAU1861, ANC config | 1V8 | 6.4 mA (HP amp idle) – 11.3 mA (HP amp on, no load) | 11.5 – 20.3 mW | Table 7, "High performance, normal voltage": 3 ADCs + DAC + FastDSP @192 kHz, HiFi 3z bypassed. AVDD 3.04 / 7.87 mA + DVDD 3.06 mA + IOVDD 0.32 mA. `[assumed]` DVDD current is drawn from the 1V8 rail by the internal regulator — the datasheet doesn't name the regulator's input |
 | U2 LSM6DSV16BX | 1V8 | 0.60 (accel + TDM) – 0.95 mA (+ gyro) | 1.1 – 1.7 mW | Table 4, LA_IddHPT / IddHPT |
 | MK1–MK3 IM73A135 ×3 | mic rail, 2.75 V | 0.51 mA typ, 0.69 mA max | 1.4 – 1.9 mW | Table 7: 170 µA typ / 230 µA max each, normal mode. **2026-10-20: MK3 removed, now ×2 (≈ 0.34–0.46 mA); K1 coil adds 100 mW — budget below not yet re-run** |
+| MK3 IM72D128V (PDM voice), added 2026-10-20 | 1V8 | 0.43 mA typ, 0.525 mA max | 0.77 – 0.95 mW | Table 6, Fclock = 3.072 MHz. **Not yet in the totals below** |
 | U3 MAXM86161 LEDs + readout | VLED, 5 V `[assumed]` | 0.4 – 1.3 mA | 2.0 – 6.5 mW | Table: VLED = 5 V, 117 µs pulses, 100 sps; 0.4–0.6 mA at zero LED drive up to 1.3 mA with 3 LEDs at full scale. SpO₂ (red + IR, 2 LEDs, full scale) ≈ 0.97 mA |
 | R1–R3 pull-ups | 1V8 | ≈ 0 average | ≈ 0 | 0.18 mA each only while a line is held low |
 | **Total, per cup** | | **1V8 ≈ 7–12 mA · mic ≈ 0.5–0.7 mA · VLED ≈ 0.4–1.3 mA** | **≈ 16 – 30 mW** | |
@@ -275,7 +308,7 @@ term by roughly HPVDD_L/1.8, at the cost of output swing.
 - **SPT1 must master BCLK/WCLK for the IMU** (it is a TDM slave). Register configuration,
   unverified against the ADAU1861 manual.
 - **Aircraft-audio items** — see "Aircraft audio in" above: SP-74 polarity dots and core
-  saturation, relay coil power and who drives it, and that voice pickup is now off the cups.
+  saturation, and relay coil power and who drives it. (Voice pickup is back on the cups via MK3.)
 - **VLED voltage is undecided.** The datasheet gives only the 3.0–5.5 V range and says to set it
   for the LEDs' forward voltage plus driver headroom. The green LED is the one most likely to need
   more than 3.3 V; 5 V would be the conservative choice, but nothing here establishes it.

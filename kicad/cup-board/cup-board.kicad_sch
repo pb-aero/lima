@@ -4588,6 +4588,173 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Infineon:IM72D128V"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "U"
+				(at 0 12.7000 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "IM72D128VV01"
+				(at 0 -12.7000 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "IM72D128V_0_1"
+				(rectangle
+					(start -10.1600 -10.1600)
+					(end 10.1600 10.1600)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin output line
+					(at -12.7 1.27 0)
+					(length 2.54)
+					(name "DATA"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 -12.7 90)
+					(length 2.54)
+					(name "VDD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 12.7 1.27 180)
+					(length 2.54)
+					(name "CLOCK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 12.7 -1.27 180)
+					(length 2.54)
+					(name "LR"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 12.7 270)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(no_connect
 		(at 165.1 118.11)
@@ -4612,18 +4779,6 @@
 	(no_connect
 		(at 165.1 130.81)
 		(uuid "76048edf-2a0f-4931-9bd1-d452d7bff0a7")
-	)
-	(no_connect
-		(at 165.1 138.43)
-		(uuid "bbb3e716-2582-440b-8596-aa1aba9cd57f")
-	)
-	(no_connect
-		(at 165.1 140.97)
-		(uuid "6b66e794-a26f-4f9d-a817-36ab3241d0ce")
-	)
-	(no_connect
-		(at 165.1 143.51)
-		(uuid "402ea9bd-83df-4caa-885a-1de4deeda100")
 	)
 	(no_connect
 		(at 165.1 146.05)
@@ -4732,6 +4887,10 @@
 	(no_connect
 		(at 314.96 231.14)
 		(uuid "03b9fc3c-fc4a-423a-86b8-aeae17dc8665")
+	)
+	(no_connect
+		(at 165.1 140.97)
+		(uuid "b8c3ee01-c923-4556-9f75-6137e9d935f2")
 	)
 	(wire
 		(pts
@@ -5628,6 +5787,69 @@
 			(xy 111.76 238.76)
 		)
 		(uuid "96662bfd-ed32-464f-9290-befe60263b48")
+	)
+	(wire
+		(pts
+			(xy 107.95 114.3)
+			(xy 105.41 114.3)
+		)
+		(uuid "88fb606b-7bdf-4046-a087-6ee408569aca")
+	)
+	(wire
+		(pts
+			(xy 120.65 128.27)
+			(xy 120.65 130.81)
+		)
+		(uuid "4bf021f2-e72a-49f0-9e92-9fe17d0eebc7")
+	)
+	(wire
+		(pts
+			(xy 133.35 114.3)
+			(xy 135.89 114.3)
+		)
+		(uuid "29333b25-6a53-4687-b5d1-3502e871589c")
+	)
+	(wire
+		(pts
+			(xy 133.35 116.84)
+			(xy 135.89 116.84)
+		)
+		(uuid "6a4fca1b-d652-4534-8d02-0d19d37a45c0")
+	)
+	(wire
+		(pts
+			(xy 120.65 102.87)
+			(xy 120.65 100.33)
+		)
+		(uuid "806131f0-2a3b-4313-9710-f7354684b5ea")
+	)
+	(wire
+		(pts
+			(xy 165.1 138.43)
+			(xy 162.56 138.43)
+		)
+		(uuid "fda271c5-71ac-4f23-af3e-bf4b732a13c5")
+	)
+	(wire
+		(pts
+			(xy 165.1 143.51)
+			(xy 162.56 143.51)
+		)
+		(uuid "5c733554-95e6-42bf-a2a5-1555c4157583")
+	)
+	(wire
+		(pts
+			(xy 149.86 114.3)
+			(xy 149.86 111.76)
+		)
+		(uuid "63f64285-0c4d-4b83-aa37-51b8173ab821")
+	)
+	(wire
+		(pts
+			(xy 149.86 121.92)
+			(xy 149.86 124.46)
+		)
+		(uuid "4c0298a4-0b9e-4bf4-8806-80b7f11027f9")
 	)
 	(label "1V8"
 		(at 160.02 82.55 0)
@@ -6788,6 +7010,96 @@
 			(justify left bottom)
 		)
 		(uuid "e88227c5-dc97-4f7b-bb55-c79b7940d493")
+	)
+	(label "DMIC_DATA"
+		(at 105.41 114.3 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "b54a5d40-b58a-411e-a00d-7f8fc7b1523c")
+	)
+	(label "1V8"
+		(at 120.65 130.81 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4fd5e9fb-fbd9-4095-bdc5-ae3ad0b5fef6")
+	)
+	(label "DMIC_CLK"
+		(at 135.89 114.3 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ed6df7f9-72cb-4a0a-bbcd-8d68a59f8488")
+	)
+	(label "GND"
+		(at 135.89 116.84 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "5f860500-2d65-4e88-907e-eb5bce02631b")
+	)
+	(label "GND"
+		(at 120.65 100.33 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3498db15-c28f-48f2-81d0-99ebe6c96dd0")
+	)
+	(label "DMIC_DATA"
+		(at 162.56 138.43 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "7fb24309-4612-4535-bd70-20f93d36bb99")
+	)
+	(label "DMIC_CLK"
+		(at 162.56 143.51 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "df174437-dcfe-42b1-803e-86090df1c5fd")
+	)
+	(label "1V8"
+		(at 149.86 111.76 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "d7db7460-2679-4be8-9d1c-a8ccac12570f")
+	)
+	(label "GND"
+		(at 149.86 124.46 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ece6cf3b-0c90-4150-a05a-4bb9727ea35d")
 	)
 	(symbol
 		(lib_id "AnalogDevices:ADAU1861")
@@ -8493,6 +8805,110 @@
 			(project "cup-board"
 				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
 					(reference "T1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Infineon:IM72D128V")
+		(at 120.65 115.57 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8e9da08e-89ac-4665-89b5-3de7141d52d2")
+		(property "Reference" "MK3"
+			(at 120.65 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "IM72D128VV01"
+			(at 120.65 128.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 120.65 115.57 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 120.65 115.57 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "cup-board"
+				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
+					(reference "MK3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 149.86 118.11 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "84537f16-3cde-4f2e-acad-e20df4e9d83d")
+		(property "Reference" "C11"
+			(at 150.495 115.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "1uF"
+			(at 150.495 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 149.86 118.11 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 149.86 118.11 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "cup-board"
+				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
+					(reference "C11")
 					(unit 1)
 				)
 			)
