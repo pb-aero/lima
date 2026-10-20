@@ -1140,3 +1140,10 @@ happened to open over the one that answers the question.
 
 Bonus the same page paid for: the 1861's PLL takes 30 kHz–36 MHz and so locks to a 48 kHz FSYNC
 directly, closing an MCLK-distribution item the 1372's 8–27 MHz PLL had forced.
+
+## 2026-10-21 · A distributor's one-line description is not a pinout
+DigiKey lists the Triad SP-74 as "80 CT / 8 ohm". Triad's own drawing shows **no centre tap**. I
+reasoned about "the CT option" for a whole turn and drew a 7-pin centre-tap symbol on the strength
+of that listing. Before drawing a symbol, or arguing from a winding's topology, read the
+manufacturer's drawing. Distributor text counts as `[fetched]` only for price, stock and lead
+time. And Triad pinouts are drawn, not text: render the page and read it as an image.
