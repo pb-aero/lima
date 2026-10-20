@@ -21,13 +21,13 @@ been updated to match — see open items.
 | C11 | 1 µF | MK3 VDD bypass (IM72D128V datasheet, Table 5 note 3) |
 | J5 | 2-pin | Aircraft audio in: pin 1 `AC_AUDIO` (this cup's earphone line), pin 2 `AC_GND` |
 | T1 | Triad SP-74 | 80 Ω : 32 Ω (series) / 8 Ω (parallel), 3.143:1:1, no centre tap. Primary 1–2 across J5; secondaries 3–4 and 5–6 **in parallel** → `XF_SEC_A`/`XF_SEC_B` (symbol is `Device:Transformer_1P_2S`, numbered as Triad's; swap done 2026-10-20) |
-| K1 | Omron G6K-2F-Y DC5 | DPDT, non-latching. **Unpowered (NC): speaker ← T1 secondary. Energised (NO): speaker ← HPOUTN/HPOUTP** |
+| U4, U5 | Panasonic AQW612S ×2 | Solid-state speaker switch, one per speaker leg (replaced relay K1, 2026-10-20, per Peter). **Unpowered (N.C., pins 7–8 closed): speaker ← T1 secondary. Driven (N.O., pins 5–6 closed): speaker ← HPOUTN/HPOUTP.** See "Speaker switch" |
+| R7, R8 | 330 Ω ×2 | LED current limit for U4/U5, from `SW_DRV` |
 | C9/C10, R4/R5, R6 | 1 µF ×2, 10 kΩ ×2, 22 kΩ | ADC2 tap off the T1 secondary → `ADC2_P`/`ADC2_N` = AINP2/AINN2 |
-| D1 | 1N4148W | K1 coil flyback |
-| J6 | 2-pin | Relay coil in: `RLY_COIL`, GND — driven from upstream (see below) |
+| J6 | 2-pin | Speaker-switch drive in: `SW_DRV` (5 V `[assumed]`), GND — driven from upstream (see below). Was `RLY_COIL`; D1 (coil flyback) removed with K1 |
 | U2 | LSM6DSV16BX | DVNC reference, TDM slave into U1's SPT1 (`TDM_DATA`/`TDM_BCLK`/`TDM_WCLK`); I²C host mode for config |
 | U3 | MAXM86161 | In-ear optical HR/SpO₂ module (added 2026-10-19, per Peter) — I²C on the shared bus, own LED supply |
-| J2 | 2-pin | Earcup driver, 32 Ω: `SPKR_1`/`SPKR_2` from K1's commons (was HPOUTN/HPOUTP direct) |
+| J2 | 2-pin | Earcup driver, 32 Ω: `SPKR_1`/`SPKR_2` from the U4/U5 switch commons (was HPOUTN/HPOUTP direct) |
 | J3 | 3-pin | Power in: 1V8, 3V3_MIC, GND — source TBD |
 | J4 | 2-pin | LED supply in: VLED, GND — voltage and source TBD |
 | R1/R2 | 10 kΩ | I²C pull-ups to 1V8 (LSM6DSV16BX datasheet value) |
@@ -71,13 +71,13 @@ Peter ruled: aircraft audio goes into **ADC2 on each cup** (MK3 dropped), the sp
 SP-74 for the bypass path.
 
 ```
- J5 AC_AUDIO ─┐                 ┌─ XF_SEC_A ──┬── K1 NC ─┐
-              T1 SP-74 (pri)    T1 (2 sec ∥) │          ├─ K1 COM ── J2 speaker 32 Ω
- J5 AC_GND  ──┘   pins 1–2      └─ XF_SEC_B ─┼── K1 NC ─┘     K1 NO ── HPOUTN / HPOUTP
+ J5 AC_AUDIO ─┐                 ┌─ XF_SEC_A ──┬── U4/U5 N.C. ─┐
+              T1 SP-74 (pri)    T1 (2 sec ∥) │               ├─ SPKR_1/2 ── J2 speaker 32 Ω
+ J5 AC_GND  ──┘   pins 1–2      └─ XF_SEC_B ─┼── U4/U5 N.C. ─┘   U4/U5 N.O. ── HPOUTN / HPOUTP
                                              └── C9/R4, C10/R5, R6 ── AINP2 / AINN2
 ```
 
-- **Unpowered, or coil dropped:** K1 rests on NC and T1 drives the speaker. `[derived]` With
+- **Unpowered, or `SW_DRV` dropped:** U4/U5's N.C. switches are closed and T1 drives the speaker. `[derived]` With
   the full primary and the two secondaries in parallel, the turns ratio is 3.143:1, so the
   impedance ratio is 9.88:1 and a 32 Ω speaker looks like **≈ 316 Ω** to the panel. Two cups
   on a mono panel come to ≈ 158 Ω, which is inside the ≥ 150 Ω the panel is rated for.
@@ -120,7 +120,7 @@ SP-74 for the bypass path.
   blocking capacitor on the primary would remove the question.
 - Rated 50 mW, ±2 dB from 300 Hz to 100 kHz, 1000 V rms hipot, 150 V DC working voltage,
   −40 to +85 °C, MIL-T-27E "Red Spec".
-- **Powered, coil energised:** the speaker moves to HPOUTN/HPOUTP and T1's secondary is left
+- **Powered, `SW_DRV` on:** the speaker moves to HPOUTN/HPOUTP and T1's secondary is left
   driving only the ADC tap. That tap is galvanically isolated from the aircraft, so it breaks the
   aircraft-ground loop, and the 1861 datasheet gives no CMRR figure to lean on otherwise.
   `[derived]` The tap loads the secondary with ≈ 34 kΩ, which reflects to ≈ 330 kΩ on the
@@ -130,9 +130,50 @@ SP-74 for the bypass path.
   The aircraft line reaches **0 dBFS (0.98 V rms) at ≈ 7.6 V rms**, and 3.9 V rms (100 mW into
   150 Ω) lands at about −6 dBFS. If the PGA is enabled, the input resistance changes and so does
   this gain. C9/C10 give a corner near 10 Hz; T1's 300 Hz is the corner that actually limits.
-- **Relay coil comes in on J6 from upstream.** Power is applied only while the digital path is
-  healthy, so losing power, the cable, or the host drops the cup into bypass. That is the
-  fail-passive property.
+- **The switch drive (`SW_DRV`) comes in on J6 from upstream.** It is applied only while the
+  digital path is healthy, so losing power, the cable, or the host drops the cup into bypass.
+  That is the fail-passive property.
+
+### Speaker switch: AQW612S pair (U4/U5), 2026-10-20, per Peter
+
+Relay K1 is replaced by two Panasonic AQW612S PhotoMOS parts, one per speaker leg, keeping K1's
+pairing: U4 switches `SPKR_1` between `XF_SEC_A` (N.C.) and `HPOUTN` (N.O.); U5 switches `SPKR_2`
+between `XF_SEC_B` (N.C.) and `HPOUTP` (N.O.). Source: `[fetched]` Panasonic catalogue ASCTB137E
+202601, `docs/datasheets/Panasonic_AQW61xS_GU-SOP8-1a1b.pdf` (pinned in
+`scripts/fetch-datasheets.sh`). The symbol `Panasonic:AQW612S` (`kicad/lib/Panasonic.kicad_sym`)
+was drawn from the datasheet's p. 6 schematic: LED 1–2 (anode 1) drives N.C. 7–8, and LED 3–4
+(anode 3) drives N.O. 5–6.
+
+- **Fail-passive by construction:** the N.C. switch's on-resistance is specified at IF = 0 mA. It
+  is closed with no power at all, like K1's NC contacts. Both legs are switched, so the
+  transformer is never connected to an unpowered U1.
+- **Drive:** each part's two LEDs are in series (pins 2–3 linked, the datasheet's "1 Form A &
+  1 Form B use"), one string per part, from `SW_DRV` through 330 Ω. `[derived]` Assuming
+  `SW_DRV` is 5 V ± 5 %, with V_F ≈ 1.14 V typ at 5 mA (and ≤ 1.5 V): ≈ 8.2 mA typical, ≥ 5.3 mA
+  worst case, inside Panasonic's recommended 5–30 mA and well above the 3 mA maximum operate
+  current. **J6 must be able to source ≈ 16.5 mA (≈ 20 mA worst case).**
+- **On-resistance:** 1 Ω typ, 2.5 Ω max per switch, so 2 Ω typ / 5 Ω max in series with the 32 Ω
+  speaker. That is ≈ 0.5 dB loss typical, ≈ 1.3 dB worst case, in both modes. K1's contacts were
+  ≈ 0.1 Ω.
+- **Ratings:** 60 V abs max (48 V recommended), 0.45 A, 1 µA off-state leakage, −40 to +85 °C.
+  Our signals peak below 2 V.
+- **Timing:** on power-up, N.O. closes in ≈ 0.65 ms while N.C. takes up to 3 ms to open, so for a
+  few ms HPOUT can be connected to the T1 secondary. **Firmware must keep U1's headphone output
+  muted for ≥ 5 ms after `SW_DRV` comes up.** On power loss, N.O. opens in 0.08 ms and N.C. closes
+  in 0.2–1 ms: a sub-ms gap, no overlap.
+
+### Open — speaker switch
+
+- `[gap]` **Distortion is not specified.** Panasonic calls the part suitable for low-level analog
+  signals but gives no THD figure. The powered ANC path runs through two of these switches, so
+  measure THD and ANC performance on the bench.
+- **Drive power is ≈ 82 mW per cup, not a large saving.** `[derived]` 2 × 8.2 mA from 5 V,
+  against K1's 100 mW. (An earlier estimate of ≈ 50 mW assumed exactly 5 mA, with no tolerance
+  margin.) The gains are no contacts, no click, no wear and a smaller footprint, not power.
+- **"Not for automotive use"** per the datasheet. The ADAU1861 is AEC-Q100; this part is not.
+  Relevant to any qualification effort.
+- **No footprint assigned.** This matches the rest of the sheet. The package is SOP8 at 2.54 mm
+  pitch (4.4 × 9.37 mm), not a standard SOIC.
 
 ### Open — introduced by this change
 
@@ -149,11 +190,9 @@ SP-74 for the bypass path.
   at full panel volume. This needs a bench measurement.
 - **Everything goes through T1, so the digital path is band-limited too:** ≥ 300 Hz in normal
   use. That's fine for comms and alerts, but music input would lose its bass.
-- **The coil costs 100 mW per cup.** `[fetched, distributor]` G6K-2F-Y DC5: 237 Ω, 21 mA,
-  100 mW. That is more than the rest of the cup in normal use (≈ 34–40 mW), and 200 mW for the
-  headset. A latching relay saves it but is not fail-passive unless a capacitor resets it on
-  power loss.
-- **What drives J6 is undecided.** Likely candidates are the A2B subnode's GPIO through a
+- ~~**The coil costs 100 mW per cup.**~~ K1 replaced by U4/U5 (see "Speaker switch"). Their LED
+  drive is ≈ 82 mW per cup, still more than the rest of the cup in normal use.
+- **What drives J6 (`SW_DRV`) is undecided.** Likely candidates are the A2B subnode's GPIO through a
   low-side switch, or the audio board.
 - **The unpowered ADC sees signal.** In bypass, ≈ 1.2 V rms is applied through 10 kΩ into an
   unpowered U1. `[assumed]` The ESD-diode current is about 0.1 mA, which should be harmless.
@@ -212,6 +251,12 @@ The remaining direct wires (mics → U1, U1 → J2) use grid-exact lane coordina
   `DMIC_CLK` = MK3.3, U1.7; MK3.2 and C11.1 on 1V8; MK3.4, MK3.5 and C11.2 on GND; U1.8
   unconnected. Compared with the netlist before MK3, those are the only changes. ERC 0 errors,
   same 8 warnings; `find_shorted_nets` 0; overlaps 0.
+- After swapping K1 for U4/U5 (2026-10-20) `[measured]`: compared with the netlist before, the
+  only changes are K1/D1 removed, `RLY_COIL` renamed `SW_DRV` (J6.1, R7.1, R8.1), and
+  `SPKR_1` = U4.6, U4.8; `XF_SEC_A` = U4.7; `HPOUTN` = U4.5; `SPKR_2` = U5.6, U5.8;
+  `XF_SEC_B` = U5.7; `HPOUTP` = U5.5; U4.4 and U5.4 on GND; R7.2–U4.1, U4.2–U4.3, R8.2–U5.1 and
+  U5.2–U5.3 each a two-pin net. ERC 0 errors, same 8 warnings; `find_shorted_nets` 0; overlaps 0.
+  Checked visually in a render.
 
 ## Power budget (estimate, per cup) — 2026-10-19
 
@@ -222,7 +267,7 @@ output power (signal-dependent) and the A2B subnode, which isn't on this sheet y
 |---|---|---|---|---|
 | U1 ADAU1861, ANC config | 1V8 | 6.4 mA (HP amp idle) – 11.3 mA (HP amp on, no load) | 11.5 – 20.3 mW | Table 7, "High performance, normal voltage": 3 ADCs + DAC + FastDSP @192 kHz, HiFi 3z bypassed. AVDD 3.04 / 7.87 mA + DVDD 3.06 mA + IOVDD 0.32 mA. `[assumed]` DVDD current is drawn from the 1V8 rail by the internal regulator — the datasheet doesn't name the regulator's input |
 | U2 LSM6DSV16BX | 1V8 | 0.60 (accel + TDM) – 0.95 mA (+ gyro) | 1.1 – 1.7 mW | Table 4, LA_IddHPT / IddHPT |
-| MK1–MK3 IM73A135 ×3 | mic rail, 2.75 V | 0.51 mA typ, 0.69 mA max | 1.4 – 1.9 mW | Table 7: 170 µA typ / 230 µA max each, normal mode. **2026-10-20: MK3 removed, now ×2 (≈ 0.34–0.46 mA); K1 coil adds 100 mW — budget below not yet re-run** |
+| MK1–MK3 IM73A135 ×3 | mic rail, 2.75 V | 0.51 mA typ, 0.69 mA max | 1.4 – 1.9 mW | Table 7: 170 µA typ / 230 µA max each, normal mode. **2026-10-20: MK3 removed, now ×2 (≈ 0.34–0.46 mA); K1 coil adds 100 mW (since replaced by U4/U5 LED drive, ≈ 82 mW) — budget below not yet re-run** |
 | MK3 IM72D128V (PDM voice), added 2026-10-20 | 1V8 | 0.43 mA typ, 0.525 mA max | 0.77 – 0.95 mW | Table 6, Fclock = 3.072 MHz. **Not yet in the totals below** |
 | U3 MAXM86161 LEDs + readout | VLED, 5 V `[assumed]` | 0.4 – 1.3 mA | 2.0 – 6.5 mW | Table: VLED = 5 V, 117 µs pulses, 100 sps; 0.4–0.6 mA at zero LED drive up to 1.3 mA with 3 LEDs at full scale. SpO₂ (red + IR, 2 LEDs, full scale) ≈ 0.97 mA |
 | R1–R3 pull-ups | 1V8 | ≈ 0 average | ≈ 0 | 0.18 mA each only while a line is held low |
@@ -308,7 +353,8 @@ term by roughly HPVDD_L/1.8, at the cost of output swing.
 - **SPT1 must master BCLK/WCLK for the IMU** (it is a TDM slave). Register configuration,
   unverified against the ADAU1861 manual.
 - **Aircraft-audio items** — see "Aircraft audio in" above: SP-74 polarity dots and core
-  saturation, and relay coil power and who drives it. (Voice pickup is back on the cups via MK3.)
+  saturation, and speaker-switch drive power and who drives `SW_DRV`. (Voice pickup is back on
+  the cups via MK3.)
 - **VLED voltage is undecided.** The datasheet gives only the 3.0–5.5 V range and says to set it
   for the LEDs' forward voltage plus driver headroom. The green LED is the one most likely to need
   more than 3.3 V; 5 V would be the conservative choice, but nothing here establishes it.
