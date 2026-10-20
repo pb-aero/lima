@@ -1670,3 +1670,16 @@ contradicting it, and the 1861 is a package substitution for the 1860 he already
 should be an easy memo, but it has not been written. Also still Peter's from yesterday: the
 differential mic he built up (John's 22 Sep no-mic bench sheet still assumes none exists), and the
 1860–Pi harness wiring question JULIETT asked be passed to Chris.
+
+---
+
+## 2026-10-20 — cup-board: aircraft audio into the ADAU1861 — DONE (`312f9d1`)
+
+Peter ruled ADC2 on each cup (MK3 dropped), a fail-passive bypass, a 32 Ω speaker, and proposed the
+Triad SP-74. Drawn: J5 → T1 SP-74 (full primary, secondaries in parallel = 3.143:1, 32 Ω speaker →
+≈ 316 Ω at the panel) → K1 G6K-2F-Y NC → speaker; K1 NO = HPOUT. ADC2 is tapped off the isolated
+secondary. ERC 0 errors, nets checked in the netlist. The full write-up and open items are in
+`kicad/cup-board/README.md` "Aircraft audio in". Main open items: SP-74 polarity and pinout (paralleling
+the secondaries wrong shorts them), core level at full volume, 100 mW coil per cup, and who drives
+J6. Power budget not re-run.
+Housekeeping: this file is ~112 KB against the template's "few KB" — archive to journal.md.
