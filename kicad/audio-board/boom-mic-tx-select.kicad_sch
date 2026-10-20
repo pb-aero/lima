@@ -2642,18 +2642,681 @@
 			)
 			(embedded_fonts no)
 		)
-	)
-	(junction
-		(at 140.97 64.77)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "80e9e8d6-a985-4145-849a-89526c36f2c0")
-	)
-	(junction
-		(at 104.14 92.71)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "aaac1f32-9d64-418a-8131-84eeac8e96c5")
+		(symbol "Panasonic:AQW612S"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "U"
+				(at 0 8.8900 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "AQW612S"
+				(at 0 -8.8900 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "AQW612S_0_1"
+				(rectangle
+					(start -10.1600 -6.3500)
+					(end 10.1600 6.3500)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin passive line
+					(at -12.7 3.81 0)
+					(length 2.54)
+					(name "NC_LED_A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -12.7 1.27 0)
+					(length 2.54)
+					(name "NC_LED_K"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -12.7 -1.27 0)
+					(length 2.54)
+					(name "NO_LED_A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -12.7 -3.81 0)
+					(length 2.54)
+					(name "NO_LED_K"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 12.7 3.81 180)
+					(length 2.54)
+					(name "NC"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 12.7 1.27 180)
+					(length 2.54)
+					(name "NC"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 12.7 -1.27 180)
+					(length 2.54)
+					(name "NO"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 12.7 -3.81 180)
+					(length 2.54)
+					(name "NO"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "Device:Transformer_1P_2S"
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "T"
+				(at 0 12.7 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "Transformer_1P_2S"
+				(at 0 -12.7 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Transformer, single primary, dual secondary"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "transformer coil magnet"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "Transformer_1P_2S_0_1"
+				(arc
+					(start -1.27 3.81)
+					(mid -1.656 2.9336)
+					(end -2.54 2.5654)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -1.27 1.27)
+					(mid -1.656 0.3936)
+					(end -2.54 0.0254)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -1.27 -1.27)
+					(mid -1.656 -2.1464)
+					(end -2.54 -2.5146)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -1.27 -3.81)
+					(mid -1.656 -4.6864)
+					(end -2.54 -5.0546)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -2.54 5.08)
+					(mid -1.642 4.708)
+					(end -1.27 3.81)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -2.54 2.54)
+					(mid -1.642 2.168)
+					(end -1.27 1.27)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -2.54 0)
+					(mid -1.642 -0.372)
+					(end -1.27 -1.27)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -2.54 -2.54)
+					(mid -1.642 -2.912)
+					(end -1.27 -3.81)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.508 -10.16)
+						(xy -0.508 10.16)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.508 10.16)
+						(xy 0.508 -10.16)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.2954 8.89)
+					(mid 1.6457 9.7917)
+					(end 2.54 10.16)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.2954 6.35)
+					(mid 1.6457 7.2517)
+					(end 2.54 7.62)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.2954 3.81)
+					(mid 1.6457 4.7117)
+					(end 2.54 5.08)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.2954 -3.81)
+					(mid 1.6457 -2.9083)
+					(end 2.54 -2.54)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.2954 -6.35)
+					(mid 1.6457 -5.4483)
+					(end 2.54 -5.08)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.2954 -8.89)
+					(mid 1.6457 -7.9883)
+					(end 2.54 -7.62)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 2.54 7.6454)
+					(mid 1.6599 8.0099)
+					(end 1.2954 8.89)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 2.54 5.1054)
+					(mid 1.6599 5.4699)
+					(end 1.2954 6.35)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 2.54 2.5654)
+					(mid 1.6599 2.9299)
+					(end 1.2954 3.81)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 2.54 -5.0546)
+					(mid 1.6599 -4.6901)
+					(end 1.2954 -3.81)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 2.54 -7.5946)
+					(mid 1.6599 -7.2301)
+					(end 1.2954 -6.35)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 2.54 -10.1346)
+					(mid 1.6599 -9.7701)
+					(end 1.2954 -8.89)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "Transformer_1P_2S_1_1"
+				(pin passive line
+					(at -10.16 5.08 0)
+					(length 7.62)
+					(name "AA"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -10.16 -5.08 0)
+					(length 7.62)
+					(name "AB"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 10.16 10.16 180)
+					(length 7.62)
+					(name "SA"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 10.16 2.54 180)
+					(length 7.62)
+					(name "SB"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 10.16 -2.54 180)
+					(length 7.62)
+					(name "SC"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 10.16 -10.16 180)
+					(length 7.62)
+					(name "SD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(junction
 		(at 78.74 121.92)
@@ -2705,22 +3368,6 @@
 		(uuid "6ef2d72c-3ef9-455a-877e-de7ecad03aba")
 	)
 	(junction
-		(at 144.78 67.31)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "a0d713be-e9a8-492b-b061-a4f0b0431886")
-	)
-	(junction
-		(at 104.14 97.79)
-		(diameter 0)
-		(uuid "b6f6c821-8869-4257-aa2d-6ad2c0c4c475")
-	)
-	(junction
-		(at 111.76 92.71)
-		(diameter 0)
-		(uuid "fa1d3fcf-bded-4efd-89ed-e594bf27a4c5")
-	)
-	(junction
 		(at 104.14 35.56)
 		(diameter 0)
 		(uuid "a503d8f0-deab-44c0-a8bf-a12ce024f8d2")
@@ -2730,107 +3377,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "45a2aafa-6bfb-44b6-be6d-6a0f7b87f617")
-	)
-	(junction
-		(at 185.42 214.63)
-		(diameter 0)
-		(uuid "b67a3d22-d7a4-4199-8100-e42509c6284c")
-	)
-	(junction
-		(at 104.14 247.65)
-		(diameter 0)
-		(uuid "56049b6a-8777-4332-8e80-e80fbc95f25a")
-	)
-	(junction
-		(at 78.74 271.78)
-		(diameter 0)
-		(uuid "7ef60815-f513-44b5-807e-0ff38163cc03")
-	)
-	(no_connect
-		(at 111.76 72.39)
-		(uuid "02a84ec7-3b5f-4a98-b651-7651dc5fc7e1")
-	)
-	(no_connect
-		(at 109.22 57.15)
-		(uuid "bb3ffd18-a065-4f6f-886d-2146d633467b")
-	)
-	(no_connect
-		(at 114.3 57.15)
-		(uuid "7df14931-b824-4990-ba36-9584711da65a")
-	)
-	(no_connect
-		(at 104.14 207.01)
-		(uuid "c635ffa6-6b26-4d9d-835a-f7ef9ca704e7")
-	)
-	(no_connect
-		(at 111.76 222.25)
-		(uuid "7cdb59d6-07ef-4e9e-91a1-a8e93af384a4")
-	)
-	(no_connect
-		(at 109.22 207.01)
-		(uuid "37ddd931-f261-45ab-8722-13e7c211d8c0")
-	)
-	(no_connect
-		(at 114.3 207.01)
-		(uuid "6169f81e-ccdc-448f-a4e3-99d074cdd4d8")
-	)
-	(wire
-		(pts
-			(xy 45.72 40.64)
-			(xy 99.06 40.64)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "1812c4a8-43b6-4407-bb5a-3cdaa1d8ca2d")
-	)
-	(wire
-		(pts
-			(xy 99.06 40.64)
-			(xy 99.06 57.15)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4158c46b-802c-4770-bc65-47505540fd23")
-	)
-	(wire
-		(pts
-			(xy 91.44 57.15)
-			(xy 91.44 54.61)
-		)
-		(uuid "b4f3250d-bedf-4aa4-80c9-e6234a2d0ffd")
-	)
-	(wire
-		(pts
-			(xy 121.92 92.71)
-			(xy 104.14 92.71)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "87dc2664-06e7-40a0-9690-d93cb54a6086")
-	)
-	(wire
-		(pts
-			(xy 104.14 92.71)
-			(xy 104.14 116.84)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "6936d85b-82a7-4a73-bdcb-178728f7250c")
-	)
-	(wire
-		(pts
-			(xy 121.92 100.33)
-			(xy 121.92 102.87)
-		)
-		(uuid "8f55db22-fcf6-4de4-9f6c-21daa14e3d43")
 	)
 	(wire
 		(pts
@@ -3054,27 +3600,6 @@
 	)
 	(wire
 		(pts
-			(xy 91.44 72.39)
-			(xy 91.44 97.79)
-		)
-		(uuid "b9b40f25-79d8-459a-b837-fd53986e305c")
-	)
-	(wire
-		(pts
-			(xy 91.44 97.79)
-			(xy 104.14 97.79)
-		)
-		(uuid "29b4216d-199e-4aa1-aabc-a03653ec28cf")
-	)
-	(wire
-		(pts
-			(xy 104.14 97.79)
-			(xy 104.14 116.84)
-		)
-		(uuid "2356a078-c5a1-4d4c-b8f5-5a8bf2c4fc0f")
-	)
-	(wire
-		(pts
 			(xy 129.54 62.23)
 			(xy 129.54 64.77)
 		)
@@ -3150,27 +3675,6 @@
 	)
 	(wire
 		(pts
-			(xy 184.15 25.4)
-			(xy 184.15 53.34)
-		)
-		(uuid "ac128d6c-ed29-413e-83af-d25b894d671c")
-	)
-	(wire
-		(pts
-			(xy 184.15 53.34)
-			(xy 104.14 53.34)
-		)
-		(uuid "4d62f877-2dd0-4f6a-a10f-df49011bc624")
-	)
-	(wire
-		(pts
-			(xy 104.14 53.34)
-			(xy 104.14 57.15)
-		)
-		(uuid "30c85798-3eab-41a9-afcd-4b795f411e0b")
-	)
-	(wire
-		(pts
 			(xy 45.72 43.18)
 			(xy 43.18 43.18)
 		)
@@ -3178,170 +3682,80 @@
 	)
 	(wire
 		(pts
-			(xy 101.6 72.39)
-			(xy 101.6 59.69)
+			(xy 88.9 85.09)
+			(xy 86.36 85.09)
 		)
-		(uuid "5f7719b5-81f9-4bdf-9fde-bc5464dbd6fd")
+		(uuid "32bbd104-3ae1-46ba-be97-a8e6fcd54731")
 	)
 	(wire
 		(pts
-			(xy 101.6 59.69)
+			(xy 104.14 116.84)
+			(xy 104.14 114.3)
+		)
+		(uuid "8096de86-817b-4033-977b-121c8f0e0a8f")
+	)
+	(wire
+		(pts
+			(xy 114.3 77.47)
+			(xy 116.84 77.47)
+		)
+		(uuid "3cfae407-ed34-4003-8f03-409b814806b0")
+	)
+	(wire
+		(pts
+			(xy 114.3 80.01)
+			(xy 116.84 80.01)
+		)
+		(uuid "20dc508d-7f7b-44fd-9e4a-693e48d78ecf")
+	)
+	(wire
+		(pts
+			(xy 114.3 82.55)
+			(xy 116.84 82.55)
+		)
+		(uuid "aa0d9a4c-4542-49a3-a875-4f4394799cd3")
+	)
+	(wire
+		(pts
+			(xy 114.3 85.09)
+			(xy 116.84 85.09)
+		)
+		(uuid "29c314db-86ee-48e5-bed0-7ce1ca28a361")
+	)
+	(wire
+		(pts
 			(xy 185.42 59.69)
+			(xy 182.88 59.69)
 		)
-		(uuid "0b2ae40d-f3f1-4462-a71f-5a7e8072e653")
-	)
-	(wire
-		(pts
-			(xy 99.06 149.86)
-			(xy 99.06 207.01)
-		)
-		(uuid "d069d66f-5fc5-4b64-b76b-47913532c83a")
-	)
-	(wire
-		(pts
-			(xy 91.44 207.01)
-			(xy 91.44 204.47)
-		)
-		(uuid "77bfbda3-2642-4779-b7d6-adf4c1127781")
-	)
-	(wire
-		(pts
-			(xy 91.44 222.25)
-			(xy 91.44 247.65)
-		)
-		(uuid "cf6abef8-249b-421d-9be1-23616ccb2a77")
-	)
-	(wire
-		(pts
-			(xy 91.44 247.65)
-			(xy 104.14 247.65)
-		)
-		(uuid "19d8f467-d65a-4b8d-b235-781f993d573a")
-	)
-	(wire
-		(pts
-			(xy 104.14 242.57)
-			(xy 104.14 266.7)
-		)
-		(uuid "b7af02e7-75da-45a9-bb4b-5980c7222aae")
-	)
-	(wire
-		(pts
-			(xy 121.92 242.57)
-			(xy 104.14 242.57)
-		)
-		(uuid "9ed200e2-ad9d-41ba-8a7f-04d57a9b7326")
-	)
-	(wire
-		(pts
-			(xy 121.92 250.19)
-			(xy 121.92 252.73)
-		)
-		(uuid "c168d1f7-750a-4c76-ba76-dcd323651425")
-	)
-	(wire
-		(pts
-			(xy 185.42 214.63)
-			(xy 182.88 214.63)
-		)
-		(uuid "f56c5dfa-8f51-4496-a47e-a2efdcf8f767")
-	)
-	(wire
-		(pts
-			(xy 54.61 271.78)
-			(xy 96.52 271.78)
-		)
-		(uuid "6a324206-1a50-48b4-885f-70b380fea28e")
-	)
-	(wire
-		(pts
-			(xy 78.74 271.78)
-			(xy 78.74 267.97)
-		)
-		(uuid "75be3e02-1e24-4bf4-89fb-ef9e3f666726")
-	)
-	(wire
-		(pts
-			(xy 78.74 275.59)
-			(xy 78.74 278.13)
-		)
-		(uuid "acc9c301-f89e-4317-b561-701c1d3c78f4")
-	)
-	(wire
-		(pts
-			(xy 104.14 276.86)
-			(xy 104.14 279.4)
-		)
-		(uuid "cffc5970-bb5f-4807-901d-56058787512d")
+		(uuid "85d30a7e-4790-4354-a1a8-8bc90b20919e")
 	)
 	(wire
 		(pts
 			(xy 185.42 62.23)
-			(xy 175.26 62.23)
+			(xy 182.88 62.23)
 		)
-		(uuid "15f991ba-3902-4c83-98d6-80fc6dd2ef68")
+		(uuid "f707a246-5c9b-4fd5-abcc-760370a7e054")
 	)
 	(wire
 		(pts
-			(xy 175.26 62.23)
-			(xy 175.26 149.86)
+			(xy 45.72 40.64)
+			(xy 43.18 40.64)
 		)
-		(uuid "39d40b34-dfbd-4daa-ba16-51ded0ec5a04")
+		(uuid "e3dc77b8-d786-4dfa-b37d-53494003fa81")
 	)
 	(wire
 		(pts
-			(xy 175.26 149.86)
-			(xy 99.06 149.86)
+			(xy 184.15 25.4)
+			(xy 186.69 25.4)
 		)
-		(uuid "b4e34256-095c-4eeb-af06-53cabbf8a2dd")
+		(uuid "e453cd41-9e29-4115-b344-cd56e7018a58")
 	)
 	(wire
 		(pts
-			(xy 101.6 222.25)
-			(xy 101.6 245.11)
+			(xy 63.5 77.47)
+			(xy 60.96 77.47)
 		)
-		(uuid "36ef53f9-3fb0-4a4e-bf19-c53b80c1b075")
-	)
-	(wire
-		(pts
-			(xy 101.6 245.11)
-			(xy 199.39 245.11)
-		)
-		(uuid "133d7987-3152-447d-8928-acac674e6418")
-	)
-	(wire
-		(pts
-			(xy 199.39 245.11)
-			(xy 199.39 212.09)
-		)
-		(uuid "3008a50a-9bae-4d16-9fa1-3282e2bb2375")
-	)
-	(wire
-		(pts
-			(xy 199.39 212.09)
-			(xy 185.42 212.09)
-		)
-		(uuid "e9976683-e2a5-4c54-9eb4-b6bcab318d4e")
-	)
-	(label "RLY_COIL_SUPPLY"
-		(at 91.44 54.61 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "bb7e3efd-1bd6-4329-b13f-0818fbe7ecf7")
-	)
-	(label "RLY_COIL_SUPPLY"
-		(at 121.92 102.87 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "824670d2-e7ac-489f-abf0-b392d812076b")
+		(uuid "776abc10-5eeb-49e2-bef5-4bedc995e385")
 	)
 	(label "AGND"
 		(at 104.14 129.54 0)
@@ -3483,55 +3897,305 @@
 		)
 		(uuid "ac7b627e-57d7-492a-83cf-91caad70b065")
 	)
-	(label "RLY_COIL_SUPPLY"
-		(at 91.44 204.47 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "96863a6e-fb95-4689-b103-1180db0771a4")
-	)
-	(label "RLY_COIL_SUPPLY"
-		(at 121.92 252.73 180)
+	(label "TX_SW_K"
+		(at 86.36 85.09 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "f14aacf4-61cd-490f-874d-36d0989eb827")
+		(uuid "15129dfe-747a-4a1e-b6ee-35d5772fa3f3")
+	)
+	(label "TX_SW_K"
+		(at 104.14 114.3 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4af513e3-6798-44a3-a91e-948d3d22e7d7")
+	)
+	(label "MIC_TIP"
+		(at 116.84 77.47 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "52605ef6-675b-4479-aaff-f00a2544fd0e")
+	)
+	(label "BOOM_MIC"
+		(at 116.84 80.01 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "6daebaaf-a477-46c8-9d91-f6e9670daa6a")
+	)
+	(label "MIC_TIP"
+		(at 116.84 82.55 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "6b0a2411-a800-4116-b7a0-de99fbfece0d")
+	)
+	(label "TX_INJ"
+		(at 116.84 85.09 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "aae804b2-77fb-4e70-85eb-ec7f0d8a4c9b")
+	)
+	(label "MIC_TIP"
+		(at 182.88 59.69 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "2a64fef0-8bdf-40b0-b2e8-bd2be71db5a6")
+	)
+	(label "RX_RING"
+		(at 182.88 62.23 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "8900be1c-c866-4c82-b123-00a958b69157")
+	)
+	(label "BOOM_MIC"
+		(at 43.18 40.64 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "67adbd82-9666-4304-bcc7-74c135b557c9")
+	)
+	(label "TX_INJ"
+		(at 186.69 25.4 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "99a8cc0e-bdbf-4ac6-9d69-c0d71beea77f")
+	)
+	(label "RX_RING"
+		(at 91.44 209.55 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "1920b67c-5c13-465c-8e69-032beecdfbc5")
+	)
+	(label "RX_RING"
+		(at 91.44 243.84 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "63ebe55b-0bab-401d-a9d9-c1f6c9892560")
 	)
 	(label "AC_GND"
-		(at 182.88 214.63 180)
+		(at 91.44 219.71 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "8a290b8d-2e63-482e-8bf9-f00f95309b1d")
+		(uuid "4a3e8695-13a4-430e-b50e-fae3a530d309")
 	)
-	(label "AGND"
-		(at 78.74 278.13 0)
+	(label "AC_GND"
+		(at 91.44 254 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "72962976-6cab-4da1-b35d-3fe645462c27")
+	)
+	(label "XF_SEC_A_L"
+		(at 111.76 204.47 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "e0ec0526-7e09-4064-9645-0ac32d268278")
+		(uuid "20a1d398-f9a3-40c8-b5f0-1df7be3692bc")
 	)
-	(label "AGND"
-		(at 104.14 279.4 0)
+	(label "XF_SEC_A_L"
+		(at 111.76 217.17 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "7b49f80e-a98f-43b0-949b-ee07f90cbcde")
+		(uuid "871f0710-5275-4dad-823b-b7dcff79e89a")
+	)
+	(label "XF_SEC_A_L"
+		(at 185.42 212.09 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "7b908e4f-f6c6-412a-b0fb-7b5c2342453b")
+	)
+	(label "XF_SEC_B_L"
+		(at 111.76 212.09 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "04a4fe3c-72df-4747-accd-df8eb5adc2dd")
+	)
+	(label "XF_SEC_B_L"
+		(at 111.76 224.79 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "0995a296-f51a-49e6-8f50-299640f281c1")
+	)
+	(label "XF_SEC_B_L"
+		(at 185.42 214.63 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "074b8087-0e36-4168-a54e-73666068d6d7")
+	)
+	(label "XF_SEC_A_R"
+		(at 111.76 238.76 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b455b744-dea3-4744-b4bf-814f1903e3c9")
+	)
+	(label "XF_SEC_A_R"
+		(at 111.76 251.46 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "de705f34-cd79-4515-a0c8-4576f36f32f3")
+	)
+	(label "XF_SEC_A_R"
+		(at 185.42 246.38 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "3b97b417-e9b1-4d78-baf6-d95653f418bd")
+	)
+	(label "XF_SEC_B_R"
+		(at 111.76 246.38 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a34504a6-c59d-4f4c-8bab-34a9e20f2d0f")
+	)
+	(label "XF_SEC_B_R"
+		(at 111.76 259.08 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f09446df-4058-4111-a7c3-67106b4ce043")
+	)
+	(label "XF_SEC_B_R"
+		(at 185.42 248.92 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "84847192-27ca-4fb5-936c-aff3676b1df2")
+	)
+	(label "TX_SW_A"
+		(at 88.9 77.47 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "8dd432ed-06d4-4e9d-9731-719e233a1d80")
+	)
+	(label "TX_SW_MID"
+		(at 88.9 80.01 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "53a5302f-f1a2-475d-abc1-98e8b5e0d253")
+	)
+	(label "TX_SW_MID"
+		(at 88.9 82.55 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "d456c1e3-5915-4d68-a1a4-462a270854a5")
+	)
+	(label "RLY_COIL_SUPPLY"
+		(at 60.96 77.47 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "19f993ac-176e-427b-a8a7-eac658b31f3f")
 	)
 	(hierarchical_label "GPIO_RLY_TX_SEL_3V3"
 		(shape input)
@@ -3588,26 +4252,16 @@
 		)
 		(uuid "859d2c07-08c5-4b83-8a36-185755fffded")
 	)
-	(hierarchical_label "GPIO_RLY_RX_MUTE_3V3"
-		(shape input)
-		(at 54.61 271.78 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "3b95bf53-a6e1-434d-8bb3-4ebe2c79e453")
-	)
-  (text "TX AUDIO SELECT - relay switches what reaches the aircraft's mic\njack between ADAU1861's own analog output (AeroNode speaking) and\nthe pilot's boom mic (from the earcup), per Peter 2026-09-29.\n\nThis sheet was renamed AIRCRAFT AUDIO I/O 2026-09-30 - it now also\nhosts the earphone/RX audio mute circuit (K2/J6/Q2/D3/R14), which\nreuses this sheet's J5 (Ring, previously NC) and RLY_COIL_SUPPLY.\nSee the separate EARPHONE / RX AUDIO MUTE note block on this sheet.\n\nK1 = G6K-2F-Y (same qualified relay used on the H1 headset-mute\nboard - bifurcated crossbar contacts, rated for dry-circuit audio,\nNOT a generic silver-contact relay). Only pole A is used; pole B\n(pins 21/22/24) is unused and marked no-connect - see the isolation\nsection below for why HPOUTN isn't in this circuit at all.\n\nFAIL-PASSIVE CHOICE (mine, not yet confirmed by Peter): de-energized\n(NC, pin 12) = BOOM_MIC_FROM_EARCUP - the pilot's own mic still\nreaches the aircraft if power/control is lost. Energized (NO, pin\n14) = HPOUTP - AeroNode's audio reaches the aircraft mic input only\nwhen actively driven. Confirm this is the wanted default before fab.\n\nQ1/D1/R10 = standard low-side coil driver: GPIO_RLY_TX_SEL_3V3 (a\nnew signal on J1 pin 4, previously spare) -> 2N7002 gate, R10 100k\ngate pulldown for fail-passive (relay stays de-energized if the GPIO\nis high-Z during host boot), D1 flyback diode across the coil.\n\nRELAY COIL SUPPLY - RESOLVED per Peter 2026-09-29, option 1 of 4\nconsidered (see chat: dedicated regulator / PWM coil economiser /\ndifferent relay / borrow a 5V rail from aeronode). Fetched Omron's\nown G6K datasheet (not cached anywhere in this repo before now):\nmust-operate <=80% of rated, must-release >=10%, max voltage 150%\nof rated is EXPLICITLY INSTANTANEOUS ONLY, not continuous. Checked\nevery stock coil option (3/4.5/5/12/24 VDC) against VBAT 5.0-7.3V -\nnone spans it cleanly. The 5V coil is the only contender, but\nVBAT_max (7.3V = 146% of rated) held continuously is right at the\nedge of a rating the datasheet says not to run continuously.\n\nFIX: U11 (ADP7118AUJZ-1.8-R7 - the SAME part already used twice on\nthis board as U9/U10, just wired in its ADJUSTABLE configuration\ninstead of the fixed pass-through) regulates VBAT down to a fixed\n4.5V RLY_COIL_SUPPLY rail, independent of VBAT's swing entirely.\nR11 (15k)/R12 (10k) set VOUT = 1.8V*(1+R1/R2) = 4.5V, per the\nADP7118 datasheet's own adjustable-mode formula (Fig. 39). EN tied\nto VIN for auto-start, 2.2uF on VIN and VOUT per datasheet minimum -\nsame pattern as U9/U10's power note on the main sheet. NOW SHARED\nwith K2 (the RX mute relay added 2026-09-30) - see that note's open\nitems for the revised aggregate coil-current check.\n\nAIRCRAFT-SIDE ISOLATION - CORRECTED 2026-09-29. T1 isolates ONLY\nthe AeroNode injection leg now, not the whole K1 common. Earlier\nthis session T1 sat between K1's common and J5, isolating BOTH the\nAeroNode path AND the boom-mic path from the aircraft. Peter caught\nthe consequence: \"bias will come from aircraft so DC must pass\nthrough to the boom mic\" - the aircraft supplies the electret\ncapsule's bias (8-16V, per the Bose A20 reference below) as a\ncomplete DC loop through Tip and Sleeve, and a transformer in that\nloop breaks the mic entirely, in both relay states, not just when\nAeroNode is talking.\n\nFix: T1 now sits between C38 and K1.14 (NO_A) ONLY - HPOUTP -> C38\n-> T1 primary -> T1 secondary -> R13 -> K1.14. K1.11 (COM_A) wires\nDIRECTLY to J5 Tip, no transformer in the way. This means:\n- De-energized (boom mic mode): J4 -> K1.12 -> K1.11 -> J5 Tip is a\n  fully direct, unisolated path. The aircraft's bias flows Tip ->\n  relay contact -> J4.1 -> capsule -> J4.2 -> Sleeve -> aircraft,\n  exactly as it would with no board in the way at all.\n- Energized (AeroNode mode): HPOUTP's signal crosses T1's isolation\n  boundary, through R13, through the (now-closed) relay contact, to\n  Tip. T1 still isolates AeroNode's own electronics from the\n  aircraft during this state - the isolation goal survives, just\n  scoped to the leg that actually needs it.\nThis ALSO means J4 (the boom mic connector) is electrically part of\nthe aircraft's circuit now, not AeroNode's: J4 pin 2 is wired to\nAC_GND, not AGND (changed this pass) - the capsule's return has to\ncomplete the SAME aircraft-side loop Sleeve does, or the bias never\nreaches it either. AGND and AC_GND still meet nowhere on this sheet\nexcept through T1's windings (and, as of 2026-09-30, nowhere in the\nnew RX mute circuit either - it lives entirely on the AC_GND side).\nThis CLOSES the \"boom mic gets no bias\" open item from two commits\nago outright, rather than carrying it forward - it was never a gap\nto size a local supply for, it was a routing mistake.\n\nSCAR: rerouting K1.11 to J5 Tip directly first auto-routed through\nthe exact point (185.42, 64.77) where J5's Sleeve/AC_GND stub\nalready landed - shorting Tip to AC_GND. find_shorted_nets caught\nit immediately (a visual check would not have - the two wires only\ntouched at one coordinate, easy to miss by eye); rerouted via a\ndifferent corner to clear it. Same class of bug as the collinear-\nwire shorts earlier in this sheet's history - checking net identity\nafter every reroute, not just after the first pass, is the lesson\nthat keeps needing relearning. SAME BUG HIT AGAIN 2026-09-30 wiring\nJ5 Ring to the new RX mute relay - see that note's SCAR entry.\n\nT1 = Bourns SM-LP-5001, 600:600 1:1, same part H1's board uses, LCSC\nC7503474. Generic Device:Transformer_1P_1S symbol (pins 1-4) - H1's\nown note already flags the REAL part's pinout as 1/3/4/6 with 2/5\nN/C, a mismatch to resolve at footprint time, not assumed here.\n\nDRIVE CONFIGURATION - SINGLE-ENDED, per Peter 2026-09-29, changed\nfrom an earlier differential (HPOUTP+HPOUTN) attempt. Differential\nwould have matched H1's section 11.2 circuit exactly and is what\nthe ADAU186x Hardware Reference Manual (UG-2257) actually documents\nfor this output stage - it describes the headphone/line output as\ndifferential throughout, and unlike the analog INPUTS (which get an\nexplicit single-ended mode and an AINx_INPUT_MODE register bit),\nthere is no equivalent single-ended output mode anywhere in the\nmanual or the HP_CTRL register. Single-ended HPOUTP use is\ntherefore an undocumented configuration - flagged, not resolved.\n\nC38 (2.2uF) is in series with HPOUTP, and it is NOT there for the\nold reason (blocking the aircraft's 8-16V mic bias - T1 already\ndoes that unconditionally for this leg). It blocks a different DC:\nHPOUTP sits at the DAC's ~0.85V common-mode bias, and tying T1's\nother primary leg to AGND (instead of HPOUTN) would otherwise push\nthat 0.85V across the winding continuously - roughly 0.85V/115R\n(winding DCR) = 7.4mA of DC bias current toward core saturation.\nC38 removes that DC path. 2.2uF against the ~1.2k reflected\nsecondary-side load (R13+DCR+the assumed aircraft bias resistor)\ngives a corner around 60 Hz, below the voice band. X7R is fine here\n(not film/C0G like the old C37) - the DC bias across this cap is\nonly ~0.85V, nowhere near the 16V that made X7R derating a real\nproblem on H1's aircraft-facing capacitor.\n\nD2 (BAT54S) KEPT on HPOUTP's own node (before C38), clamping the IC\npin directly between AGND and 1V8 - \"belt-and-braces\" per H1's own\nframing, since T1's isolation is what actually stands between the\ncodec and any aircraft-side fault now, not this clamp.\n\nLEVEL/IMPEDANCE MATCHING - R13 changed from 10k to 470R, 2026-09-29.\n10k was copied from H1's R1 without checking it against what this\nmic actually looks like. The already-fetched reference for this\nexact boom mic (Bose A20, docs/h1-headset-mute-relay.md): bias\n8-16 VDC through 220-2200 ohm, sensitivity 600 mV rms at 114 dB SPL.\nThat 220-2200R IS the mic's own source impedance as seen from the\naircraft's mic input. R13=10k made our path present ~10.1k - 20-40x\nhigher than a real mic, and (at the old level) only 35 mV rms at the\nmic node, 24.7 dB under the mic's rated max.\nR13=470R (matching the \"typical\" 470R already assumed elsewhere in\nthis design, same placeholder H1 used) puts our presented impedance\nat ~585R (470+115 DCR, the relay contact's 100mR max is negligible\nin series) - inside the mic's real 220-2200R range. Level: single-\nended HPOUTP (0.5V rms) x T1's 2dB insertion loss x the\n470/(470+115+470) divider = ~177 mV rms at the mic node, -10.6dB\nunder the 600mV/114dB SPL max - much closer than the old 35mV, and\nconsistent with going single-ended (6dB under the differential\ncase's ~352mV). [assumed] the 470R aircraft bias resistor is a\nplaceholder within the stated 220-2200R range, not measured. This\nmath is unchanged by moving T1/R13 to before the relay instead of\nafter it - the contact it now transits is negligible resistance.\n\nFIRMWARE, not a schematic item but decided alongside this circuit:\nHP_MODE (bit 0 of HP_CTRL, address 0x4000C060) should be set to 1\n(line-out mode) for this path, not left at its 0 (headphone mode)\nreset default. Headphone mode is rated for >=10R loads; line-out\nfor >=10k. T1's primary presents ~7-72k of inductive reactance\nacross the voice band (3.8H) - a line-out load, not a headphone one.\n\nOPEN ITEMS - not resolved by this pass:\n1. J5 Ring: NOW IN USE (changed 2026-09-30, was NO-CONNECT). It\n   carries the aircraft's own earphone/intercom audio into the new\n   RX mute relay (K2) - see the EARPHONE / RX AUDIO MUTE note. The\n   Tip/Sleeve loop is unaffected and still carries the boom mic's\n   bias directly, unrelated to this change.\n2. J4 and J5 are generic placeholders, same convention as J1/J2/J3\n   on the main sheet - real connectors once the mechanical interface\n   is chosen.\n3. T1 (SM-LP-5001) is NOT a flight part - same disclosure as H1's\n   note: -20 to +85C operating range (a cold-soaked GA cockpit can\n   go below that) and UL60950 (IT-equipment), not DO-160. Right for\n   a bench/proof-of-concept board, wrong for a flight article without\n   requalification - a sourcing exercise nobody has started.\n4. Single-ended HPOUTP drive is outside the documented operating\n   mode for this output stage (see DRIVE CONFIGURATION above). C38\n   handles the DC consequence; it does not make this a spec'd mode.\n5. U11's aggregate load on VBAT is trivial (21mA) and doesn't touch\n   the U10/3V3_ACCEL budget flagged in the power note - a genuinely\n   separate rail, deliberately, so the relay coil can never brown\n   out the accelerometer/translator stack or vice versa. As of\n   2026-09-30 U11 also feeds K2's coil - see that note's open items."
-    (at 420 200 0)
-    (effects (font (size 1.27 1.27)))
-    (uuid "e2532307-c1fb-419c-a338-cfbee8e83e53")
+  (label "TX_SW_A"
+    (at 71.12 77.47 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "c59fe443-2653-407d-be9c-27c1e3c78c37")
   )
-  (text "EARPHONE / RX AUDIO MUTE - added 2026-09-30, per Peter's question\n\"should we use another relay to switch between audio coming from\nthe aircraft to the cup and audio coming from the pi via the a2b or\na summing arrangement?\" This is the AIRCRAFT-TO-CUP direction (RX),\nseparate from the TX circuit above (aircraft's mic input).\n\nWHY ON THIS SHEET: J5 (TRS_TO_PJ068_AIRCRAFT) already carries the\naircraft-side connector this signal needs - its Ring conductor was\npreviously NO-CONNECT (standard PJ068 wiring: Tip=mic out to\naircraft, Ring=phone/earphone in from aircraft, Sleeve=common).\nPutting K2 here reuses J5.Ring directly instead of adding a second\naircraft-side connector, and reuses RLY_COIL_SUPPLY (U11, above)\ninstead of a second regulator - same 4.5V rail, same AC_GND domain.\n\nMUTE, NOT SUM - per Peter 2026-09-30, after I fetched\ndocs/audio-board-decision-record.md Decision A: \"ANC runs in the\nearcup, on a per-cup codec - not on the audio board\" (ruled by John,\nRev G). H1's board (docs/h1-headset-mute-relay.md S20-26) ruled\nSUMMING for its earphone path specifically because it injects ANC\ncontinuously and can't afford to mute the aircraft feed to do it.\nThat forcing reason doesn't apply here - ANC is local to the earcup,\nnot this board - so a simple mute relay is sufficient: block the\naircraft feed only while AeroNode/the Pi is actively speaking.\n\nGPIO - INDEPENDENT, per Peter 2026-09-30 (explicitly not shared\nwith GPIO_RLY_TX_SEL_3V3, asked and answered before wiring this).\nGPIO_RLY_RX_MUTE_3V3 is a NEW signal on J1 pin 8 (previously spare,\nalongside pin 4 which TX already claimed) - see the main sheet's\npower/J1 note.\n\nK2 = G6K-2F-Y, same part as K1, same reasoning (bifurcated crossbar\ncontacts, dry-circuit rated). Only pole A used; pole B (21/22/24)\nunused and marked no-connect, matching K1's convention.\n\nTOPOLOGY - series break, not a shunt. J5.Ring (aircraft earphone\naudio in) -> K2.12 (NC) -> K2.11 (COM) -> J6.1 (AUDIO_OUT_TO_CUP).\nK2.14 (NO) is left no-connect - muting simply opens the path rather\nthan routing to an alternate signal. [assumed] the aircraft's\nearphone output carries no DC bias that a series break would\ndisrupt, unlike the boom mic's 8-16V capsule bias on the TX side -\nnot verified against a real PJ068/intercom spec, and worth checking\nbefore fab since it drove the whole TX-side transformer decision.\n\nFAIL-PASSIVE CHOICE (mine, not yet confirmed by Peter, same\nphilosophy as K1): de-energized (NC, pin 12) = aircraft audio flows\nto the cup unmuted - the pilot still hears the aircraft/ATC if\npower or control is lost. Energized (NO path open) = muted, only\nwhile AeroNode is actively driving HPOUTP on the TX side. Nothing\nhere interlocks K1 and K2 electrically - firmware is expected to\nenergize both together, but each fails passive independently if it\ndoesn't.\n\nQ2/D3/R14 = same low-side coil driver pattern as Q1/D1/R10:\nGPIO_RLY_RX_MUTE_3V3 -> 2N7002 gate, R14 100k gate pulldown\n(fail-passive if the GPIO is high-Z during host boot), D3 flyback\ndiode across the coil, coil fed from the SAME RLY_COIL_SUPPLY as K1.\n\nJ6 = AUDIO_OUT_TO_CUP, generic 2-pin placeholder (same convention as\nJ4/J5 on this sheet and J1/J2/J3 on the main sheet) - pin 1 is the\nswitched audio signal, pin 2 is AC_GND. Where this actually lands\n(a connector to the earcup's own wiring) is undesigned, same status\nas J3 (A2B_TO_CUPS) on the main sheet.\n\nSCAR: first attempt routed J5.Ring straight down at the same X as\nJ5's own Sleeve/AC_GND stub, and separately routed K2's COM->J6\nreturn through J6's own AC_GND pin's X - both auto-routes crossed\ntheir neighbor's AC_GND stub at a single coincident point and\nsilently merged the signal onto AC_GND (get_component_nets showed\nK2.11/12 and J6 both reading net \"AC_GND\" instead of an unnamed\nsignal net). find_shorted_nets did NOT catch this (both sides of\nthe merge carry the same single label, so there's no pair of\nDIFFERENT named nets to flag as a short) - only checking each\npin's net name after wiring caught it. Fixed by jogging the Ring\nwire to a clear column before dropping, and by approaching J6.1\nhorizontally at its own row instead of dropping straight down\nthrough J6.2's column. Same lesson as the TX-side SCAR above,\nnow hit on both halves of this sheet.\n\nOPEN ITEMS - not resolved by this pass:\n1. U11 now feeds TWO relay coils (K1 and K2). The 21mA figure in\n   the TX note's open item 5 was for K1 alone - the aggregate\n   against U11's actual current rating has not been computed and\n   should be before layout, though G6K coil draw is small enough\n   that this is very unlikely to be tight.\n2. J6 is a generic placeholder, same status as J4/J5/J3 - no real\n   connector or cup-side interconnect chosen yet.\n3. No level or impedance matching is done on this path - it's a\n   straight relay pass-through of whatever the aircraft's earphone\n   output already is, unlike the TX side's R13/T1 matching to the\n   boom mic. If the aircraft's earphone level or impedance doesn't\n   suit whatever is on the cup side, that mismatch is unaddressed\n   here.\n4. Fail-passive polarity (de-energized = unmuted) is my choice, not\n   yet confirmed by Peter, same status as K1's.\n5. No galvanic isolation on this path (no transformer) - unlike the\n   TX side, this was not asked for and Decision A gives no reason to\n   add one, but it hasn't been explicitly ruled out either."
-    (at 280 350 0)
+  (text "AIRCRAFT AUDIO I/O - rebuilt 2026-10-20, per Peter. Relays K1 (TX select)\nand K2 (RX mute) removed. History of the relay design: git log on this\nfile (commits 6e258c8 .. e763f7c).\n\nJ5 = aircraft TRS (PJ068 adapter): Tip = mic out to aircraft (MIC_TIP),\nRing = earphone audio in (RX_RING), Sleeve = aircraft ground (AC_GND).\n\nTX - MIC TO AIRCRAFT, U12 (Panasonic AQW612S, 1 Form A + 1 Form B)\n- N.C. (7-8): BOOM_MIC (J4.1) <-> MIC_TIP. Closed with no LED current, so\n  with power or control lost the pilot's boom mic reaches the aircraft.\n- N.O. (5-6): TX_INJ <-> MIC_TIP. AeroNode speaks only while driven.\n- The aircraft's 8-16 V mic bias still flows DC-direct Tip -> U12 N.C. ->\n  J4 capsule -> AC_GND; nothing in that loop blocks DC. U12 is rated 60 V\n  (48 V recommended), 1-2.5 ohm on, vs the mic's 220-2200 ohm source.\n- Drive: RLY_COIL_SUPPLY (U11, 4.5 V) -> R15 220R -> LED 1-2 -> LED 3-4\n  (pins 2-3 linked) -> TX_SW_K -> Q1 (2N7002, low side) <- GPIO_RLY_TX_SEL_3V3,\n  R10 100k gate pulldown. ~10 mA typ, >=6 mA worst case (Panasonic\n  recommends 5-30 mA). GPIO low or high-Z = boom mic.\n- Unchanged from the relay design: T1 SM-LP-5001 600:600 isolates only\n  the AeroNode leg (HPOUTP -> C38 -> T1 -> R13 470R -> TX_INJ); C38 blocks\n  HPOUTP's ~0.85 V common mode; D2 BAT54S clamps HPOUTP; single-ended\n  HPOUTP is not a documented mode (UG-2257); firmware sets HP_MODE = 1\n  (line out). T1 is not a flight part (-20 C min, UL60950).\n\nRX - EARPHONE AUDIO TO THE CUPS, T2/T3 (Triad SP-74, one per cup)\n- Primaries in parallel across RX_RING / AC_GND. Secondaries in parallel\n  (3+5 / 4+6) to J6 (left cup) and J7 (right cup) as XF_SEC_A/B_L and _R.\n  Each cup board receives the pair on its J5 (XF_SEC_A/XF_SEC_B).\n- One SP-74 per cup, not one shared: a shorted cable to one cup cannot\n  silence the other, and each part sees the per-cup load (32 ohm speaker\n  -> ~316 ohm; both cups ~158 ohm at the panel, inside its 150 ohm min).\n- Fail-passive switching is in each cup (U4/U5 AQW612S): unpowered, the\n  cup's speaker sits on this secondary. Powered, the cup switches to its\n  own HPOUT and panel audio is mixed or muted in DSP from its ADC2 tap.\n- The SP-74 isolates the cups and their speakers from aircraft ground.\n- GPIO_RLY_RX_MUTE_3V3 removed with K2; J1 pin 8 is now spare (no-connect).\n\nOPEN\n1. RLY_COIL_SUPPLY keeps its name, but it now feeds U12's LEDs, not a coil.\n2. AQW612S: no THD spec; \"not for automotive use\" per its datasheet.\n3. SP-74: 300 Hz lower corner; core level at full panel volume needs a\n   bench measurement (see kicad/cup-board/README.md).\n4. J4/J5/J6/J7 are generic placeholders, as before."
+    (at 470 190 0)
     (effects (font (size 1.27 1.27)))
-    (uuid "38bbae2a-4151-4743-8bde-913d536c7385")
+    (uuid "046b613a-2acc-4f7e-ac37-168751ca48f8")
   )
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x02")
@@ -3655,59 +4309,6 @@
 			(project "audio-board"
 				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
 					(reference "J4")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Relay:Relay_DPDT")
-		(at 101.6 64.77 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "4eb2dd5a-1d58-48b2-832a-5528bdd52ea7")
-		(property "Reference" "K1"
-			(at 118.11 60.96 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "G6K-2F-Y"
-			(at 118.11 63.5 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 101.6 64.77 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 101.6 64.77 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "audio-board"
-				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
-					(reference "K1")
 					(unit 1)
 				)
 			)
@@ -3812,57 +4413,6 @@
 			(project "audio-board"
 				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
 					(reference "Q1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Diode:1N4148")
-		(at 121.92 96.52 90)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "12ff44b8-6805-4b69-996a-4de61ec4e16c")
-		(property "Reference" "D1"
-			(at 119.38 96.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "1N4148"
-			(at 124.46 96.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 121.92 96.52 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 121.92 96.52 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "audio-board"
-				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
-					(reference "D1")
 					(unit 1)
 				)
 			)
@@ -4387,59 +4937,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Relay:Relay_DPDT")
-		(at 101.6 214.63 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "5560199d-2663-4e61-8627-21542f9bcdd6")
-		(property "Reference" "K2"
-			(at 118.11 210.82 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "G6K-2F-Y"
-			(at 118.11 213.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 101.6 214.63 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 101.6 214.63 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "audio-board"
-				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
-					(reference "K2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Connector_Generic:Conn_01x02")
 		(at 190.5 212.09 0)
 		(unit 1)
@@ -4455,7 +4952,7 @@
 				)
 			)
 		)
-		(property "Value" "AUDIO_OUT_TO_CUP"
+		(property "Value" "AUDIO_OUT_TO_CUP_L"
 			(at 190.5 217.17 0)
 			(effects
 				(font
@@ -4491,33 +4988,31 @@
 		)
 	)
 	(symbol
-		(lib_id "Transistor_FET:2N7002")
-		(at 101.6 271.78 0)
+		(lib_id "Panasonic:AQW612S")
+		(at 101.6 81.28 0)
 		(unit 1)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "97b7d0e2-5d63-4f30-b07f-112e9bc11bbd")
-		(property "Reference" "Q2"
-			(at 106.68 269.875 0)
+		(uuid "cc0b07ea-4090-4122-b8d2-a0946cf7c332")
+		(property "Reference" "U12"
+			(at 101.6 72.39 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
 			)
 		)
-		(property "Value" "2N7002"
-			(at 106.68 271.78 0)
+		(property "Value" "AQW612S"
+			(at 101.6 90.17 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
 			)
 		)
 		(property "Footprint" ""
-			(at 101.6 271.78 0)
+			(at 101.6 81.28 0)
 			(hide yes)
 			(effects
 				(font
@@ -4526,7 +5021,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 101.6 271.78 0)
+			(at 101.6 81.28 0)
 			(hide yes)
 			(effects
 				(font
@@ -4535,60 +5030,9 @@
 			)
 		)
 		(instances
-			(project "audio-board"
-				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
-					(reference "Q2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Diode:1N4148")
-		(at 121.92 246.38 90)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "f527132c-2c4d-42a6-99e7-aa93f3cd4d5c")
-		(property "Reference" "D3"
-			(at 119.38 246.38 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "1N4148"
-			(at 124.46 246.38 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 121.92 246.38 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 121.92 246.38 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "audio-board"
-				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
-					(reference "D3")
+			(project "boom-mic-tx-select"
+				(path "a1092e9c-94c2-41e9-8f00-e175d72a790b"
+					(reference "U12")
 					(unit 1)
 				)
 			)
@@ -4596,22 +5040,22 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 78.74 271.78 0)
+		(at 67.31 77.47 90)
 		(unit 1)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "a378392f-24b6-4217-a918-4f50e4a781a1")
-		(property "Reference" "R14"
-			(at 80.772 271.78 90)
+		(uuid "582b6bde-0d0d-4fa5-bbcc-ce88d75bd02e")
+		(property "Reference" "R15"
+			(at 67.31 75.438 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Value" "100k"
-			(at 78.74 271.78 90)
+		(property "Value" "220"
+			(at 67.31 77.47 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4619,7 +5063,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 78.74 271.78 0)
+			(at 67.31 77.47 0)
 			(hide yes)
 			(effects
 				(font
@@ -4628,7 +5072,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 78.74 271.78 0)
+			(at 67.31 77.47 0)
 			(hide yes)
 			(effects
 				(font
@@ -4637,9 +5081,162 @@
 			)
 		)
 		(instances
-			(project "audio-board"
-				(path "/58a3c587-b916-49c7-924f-a7f93d6c8ece/fb20a544-30e3-4d6b-acfd-e420a90726f9"
-					(reference "R14")
+			(project "boom-mic-tx-select"
+				(path "a1092e9c-94c2-41e9-8f00-e175d72a790b"
+					(reference "R15")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:Transformer_1P_2S")
+		(at 101.6 214.63 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "719e2b19-7f61-447b-921e-2d3e994d4add")
+		(property "Reference" "T2"
+			(at 101.6 201.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "SP-74"
+			(at 101.6 227.33 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 101.6 214.63 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 101.6 214.63 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "boom-mic-tx-select"
+				(path "a1092e9c-94c2-41e9-8f00-e175d72a790b"
+					(reference "T2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:Transformer_1P_2S")
+		(at 101.6 248.92 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "6f9d37d6-8525-4daf-9783-e16868855e02")
+		(property "Reference" "T3"
+			(at 101.6 236.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "SP-74"
+			(at 101.6 261.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 101.6 248.92 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 101.6 248.92 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "boom-mic-tx-select"
+				(path "a1092e9c-94c2-41e9-8f00-e175d72a790b"
+					(reference "T3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector_Generic:Conn_01x02")
+		(at 190.5 246.38 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "140251c7-9965-4b66-9031-03eb8d1a9802")
+		(property "Reference" "J7"
+			(at 190.5 243.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "AUDIO_OUT_TO_CUP_R"
+			(at 190.5 251.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 190.5 246.38 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 190.5 246.38 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "boom-mic-tx-select"
+				(path "a1092e9c-94c2-41e9-8f00-e175d72a790b"
+					(reference "J7")
 					(unit 1)
 				)
 			)

@@ -19,8 +19,8 @@ been updated to match — see open items.
 | MK2 | IM73A135V01 | Feedback (error) ANC mic → AINP1/AINN1, differential |
 | MK3 | IM72D128VV01 (PDM) | **Voice pickup, added 2026-10-20, per Peter** — DATA → `DMIC_DATA` → U1 DMIC01/MP1; CLOCK ← `DMIC_CLK` ← U1 DMIC_CLK/MP0; VDD on 1V8; LR → GND. Replaces the analog IM73A135 MK3 removed earlier the same day (ADC2 now carries the aircraft audio, below). See "Voice mic" |
 | C11 | 1 µF | MK3 VDD bypass (IM72D128V datasheet, Table 5 note 3) |
-| J5 | 2-pin | Aircraft audio in: pin 1 `AC_AUDIO` (this cup's earphone line), pin 2 `AC_GND` |
-| T1 | Triad SP-74 | 80 Ω : 32 Ω (series) / 8 Ω (parallel), 3.143:1:1, no centre tap. Primary 1–2 across J5; secondaries 3–4 and 5–6 **in parallel** → `XF_SEC_A`/`XF_SEC_B` (symbol is `Device:Transformer_1P_2S`, numbered as Triad's; swap done 2026-10-20) |
+| J5 | 2-pin | **Panel audio in, already isolated** (since 2026-10-20): pin 1 `XF_SEC_A`, pin 2 `XF_SEC_B`, the secondary pair of this cup's SP-74 on the audio board (T2 left / T3 right, its J6 / J7). Was `AC_AUDIO`/`AC_GND` straight from the aircraft |
+| ~~T1~~ | Triad SP-74 | **Moved to the audio board 2026-10-20, per Peter** (one per cup: T2 left, T3 right, on its AIRCRAFT AUDIO I/O sheet). Below, "T1" means this cup's SP-74 there. Was: | 80 Ω : 32 Ω (series) / 8 Ω (parallel), 3.143:1:1, no centre tap. Primary 1–2 across J5; secondaries 3–4 and 5–6 **in parallel** → `XF_SEC_A`/`XF_SEC_B` (symbol is `Device:Transformer_1P_2S`, numbered as Triad's; swap done 2026-10-20) |
 | U4, U5 | Panasonic AQW612S ×2 | Solid-state speaker switch, one per speaker leg (replaced relay K1, 2026-10-20, per Peter). **Unpowered (N.C., pins 7–8 closed): speaker ← T1 secondary. Driven (N.O., pins 5–6 closed): speaker ← HPOUTN/HPOUTP.** See "Speaker switch" |
 | R7, R8 | 330 Ω ×2 | LED current limit for U4/U5, from `SW_DRV` |
 | C9/C10, R4/R5, R6 | 1 µF ×2, 10 kΩ ×2, 22 kΩ | ADC2 tap off the T1 secondary → `ADC2_P`/`ADC2_N` = AINP2/AINN2 |
@@ -71,9 +71,10 @@ Peter ruled: aircraft audio goes into **ADC2 on each cup** (MK3 dropped), the sp
 SP-74 for the bypass path.
 
 ```
- J5 AC_AUDIO ─┐                 ┌─ XF_SEC_A ──┬── U4/U5 N.C. ─┐
-              T1 SP-74 (pri)    T1 (2 sec ∥) │               ├─ SPKR_1/2 ── J2 speaker 32 Ω
- J5 AC_GND  ──┘   pins 1–2      └─ XF_SEC_B ─┼── U4/U5 N.C. ─┘   U4/U5 N.O. ── HPOUTN / HPOUTP
+   audio board                    cable    cup board
+ Ring ──┐                 ┌─ J6/J7 ─────── J5 XF_SEC_A ──┬── U4/U5 N.C. ─┐
+        SP-74 (pri)   SP-74 (2 sec ∥)                   │               ├─ SPKR_1/2 ── J2 speaker 32 Ω
+ Sleeve ┘  T2 / T3        └─ J6/J7 ─────── J5 XF_SEC_B ──┼── U4/U5 N.C. ─┘   U4/U5 N.O. ── HPOUTN / HPOUTP
                                              └── C9/R4, C10/R5, R6 ── AINP2 / AINN2
 ```
 
@@ -95,8 +96,8 @@ SP-74 for the bypass path.
 
 | Pin | Winding | Dot | Net here |
 |---|---|---|---|
-| 1 | Primary, 80 Ω, 12.5 Ω DCR | ● | `AC_AUDIO` |
-| 2 | Primary | | `AC_GND` |
+| 1 | Primary, 80 Ω, 12.5 Ω DCR | ● | `RX_RING` (audio board; was `AC_AUDIO` here) |
+| 2 | Primary | | `AC_GND` (audio board) |
 | 3 | Secondary 1 | ● | `XF_SEC_A` |
 | 4 | Secondary 1 | | `XF_SEC_B` |
 | 5 | Secondary 2 | ● | `XF_SEC_A` |
@@ -257,6 +258,11 @@ The remaining direct wires (mics → U1, U1 → J2) use grid-exact lane coordina
   `XF_SEC_B` = U5.7; `HPOUTP` = U5.5; U4.4 and U5.4 on GND; R7.2–U4.1, U4.2–U4.3, R8.2–U5.1 and
   U5.2–U5.3 each a two-pin net. ERC 0 errors, same 8 warnings; `find_shorted_nets` 0; overlaps 0.
   Checked visually in a render.
+- After moving T1 to the audio board (2026-10-20) `[measured]`: compared with the netlist before,
+  the only changes are T1 removed, `AC_AUDIO`/`AC_GND` gone, and J5.1 → `XF_SEC_A` (with C9.1,
+  U4.7), J5.2 → `XF_SEC_B` (with C10.1, U5.7). ERC 0 errors, same 8 warnings;
+  `find_shorted_nets` 0; overlaps 0. The audio-board side is described in the note on its
+  AIRCRAFT AUDIO I/O sheet.
 
 ## Power budget (estimate, per cup) — 2026-10-19
 

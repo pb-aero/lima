@@ -5899,48 +5899,6 @@
 	)
 	(wire
 		(pts
-			(xy 88.9 223.52)
-			(xy 86.36 223.52)
-		)
-		(uuid "af7ae6ce-f042-4b7c-befb-3af6a21e554f")
-	)
-	(wire
-		(pts
-			(xy 88.9 233.68)
-			(xy 86.36 233.68)
-		)
-		(uuid "89729732-b129-42c1-b8eb-fb6c54811c47")
-	)
-	(wire
-		(pts
-			(xy 109.22 218.44)
-			(xy 111.76 218.44)
-		)
-		(uuid "e834335d-d461-4c45-bd3e-490e36a576a4")
-	)
-	(wire
-		(pts
-			(xy 109.22 226.06)
-			(xy 111.76 226.06)
-		)
-		(uuid "514e5790-f1a1-4137-a27a-7922f22391aa")
-	)
-	(wire
-		(pts
-			(xy 109.22 231.14)
-			(xy 111.76 231.14)
-		)
-		(uuid "4caa4d2a-4e83-4e2c-96b7-adfa31cd68f8")
-	)
-	(wire
-		(pts
-			(xy 109.22 238.76)
-			(xy 111.76 238.76)
-		)
-		(uuid "96662bfd-ed32-464f-9290-befe60263b48")
-	)
-	(wire
-		(pts
 			(xy 107.95 114.3)
 			(xy 105.41 114.3)
 		)
@@ -6023,6 +5981,28 @@
 			(type default)
 		)
 		(uuid "a95669fa-86fe-4c04-8b8f-6589899cf3a0")
+	)
+	(wire
+		(pts
+			(xy 256.54 184.15)
+			(xy 259.08 184.15)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9f2b7e30-7d58-4b04-a9db-b8ee10237d84")
+	)
+	(wire
+		(pts
+			(xy 259.08 186.69)
+			(xy 259.08 189.23)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9d0833f8-7031-415b-9291-09f3a78c794f")
 	)
 	(label "1V8"
 		(at 160.02 82.55 0)
@@ -6864,26 +6844,6 @@
 		)
 		(uuid "5258e912-a525-43e1-9367-a19a8d302ab7")
 	)
-	(label "AC_AUDIO"
-		(at 91.44 194.31 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "d0c9ac29-fa4c-4afe-a7d1-9c213b77b4e0")
-	)
-	(label "AC_GND"
-		(at 91.44 196.85 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "5f6c1b42-c180-4992-a35f-0091bf092431")
-	)
 	(label "XF_SEC_A"
 		(at 115.57 185.42 180)
 		(effects
@@ -7013,66 +6973,6 @@
 			(justify right bottom)
 		)
 		(uuid "67dba5ae-4f9f-43e5-a031-c7548dc96e33")
-	)
-	(label "AC_AUDIO"
-		(at 86.36 223.52 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "f807f20e-52d9-436c-a56f-dcd761f6a895")
-	)
-	(label "AC_GND"
-		(at 86.36 233.68 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "b1c39d01-4660-4ac2-95c4-d631dc073ab5")
-	)
-	(label "XF_SEC_A"
-		(at 111.76 218.44 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "3c87cbf2-999c-4267-a78e-9f04c477d963")
-	)
-	(label "XF_SEC_B"
-		(at 111.76 226.06 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "b5d4e5b5-31d3-4b05-8c26-b64a5ff671f3")
-	)
-	(label "XF_SEC_A"
-		(at 111.76 231.14 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "502894be-9c05-4610-b4c8-1d16b65be8b6")
-	)
-	(label "XF_SEC_B"
-		(at 111.76 238.76 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "e88227c5-dc97-4f7b-bb55-c79b7940d493")
 	)
 	(label "DMIC_DATA"
 		(at 105.41 114.3 180)
@@ -7234,62 +7134,86 @@
 		)
 		(uuid "f2061ee8-a9e0-4d8a-a638-93eb29c38e87")
 	)
-(wire
-		(pts
-			(xy 256.53999999999996 184.15) (xy 259.08000000000004 184.15)
+	(label "SW_DRV"
+		(at 248.92 184.15 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
 		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "9f2b7e30-7d58-4b04-a9db-b8ee10237d84")
+		(uuid "b184b52b-9e59-42a4-836b-3e9abc199e67")
 	)
-(wire
-		(pts
-			(xy 259.08000000000004 186.69) (xy 259.08000000000004 189.23000000000002)
+	(label "GND"
+		(at 259.08 191.77 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
 		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "9d0833f8-7031-415b-9291-09f3a78c794f")
+		(uuid "5344a486-e53e-4199-aa15-93bdb306f0cd")
 	)
-  (label "SW_DRV"
-    (at 248.92 184.15 180)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid "b184b52b-9e59-42a4-836b-3e9abc199e67")
-  )
-  (label "GND"
-    (at 259.08000000000004 191.77 180)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid "5344a486-e53e-4199-aa15-93bdb306f0cd")
-  )
-  (label "SPKR_2"
-    (at 284.48 184.15 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "ac99d560-18bd-49e4-a6c5-22d6e53c8558")
-  )
-  (label "SPKR_2"
-    (at 284.48 189.23000000000002 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "dfa211d2-04af-431c-8995-b60681117724")
-  )
-  (label "XF_SEC_B"
-    (at 284.48 186.69 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "e876fbbf-91da-4878-9143-be16b55fa459")
-  )
-  (label "HPOUTP"
-    (at 284.48 191.77 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "a7bb4f36-410a-4771-972e-198b77059782")
-  )
+	(label "SPKR_2"
+		(at 284.48 184.15 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ac99d560-18bd-49e4-a6c5-22d6e53c8558")
+	)
+	(label "SPKR_2"
+		(at 284.48 189.23 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "dfa211d2-04af-431c-8995-b60681117724")
+	)
+	(label "XF_SEC_B"
+		(at 284.48 186.69 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e876fbbf-91da-4878-9143-be16b55fa459")
+	)
+	(label "HPOUTP"
+		(at 284.48 191.77 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a7bb4f36-410a-4771-972e-198b77059782")
+	)
+	(label "XF_SEC_A"
+		(at 91.44 194.31 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "5380c1c7-3443-4e55-8e03-0090f65a9067")
+	)
+	(label "XF_SEC_B"
+		(at 91.44 196.85 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "78a60718-6576-411e-b526-e447470123b3")
+	)
 	(symbol
 		(lib_id "AnalogDevices:ADAU1861")
 		(at 190.5 148.59 0)
@@ -8499,7 +8423,7 @@
 				)
 			)
 		)
-		(property "Value" "AIRCRAFT_AUDIO_IN"
+		(property "Value" "XF_SEC_FROM_AUDIO_BOARD"
 			(at 99.06 199.39 0)
 			(effects
 				(font
@@ -8845,57 +8769,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:Transformer_1P_2S")
-		(at 99.06 228.6 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "b08240f1-b84c-456b-ac42-d1cd2a90a4ac")
-		(property "Reference" "T1"
-			(at 99.06 215.9 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "SP-74"
-			(at 99.06 241.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 99.06 228.6 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 99.06 228.6 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "cup-board"
-				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
-					(reference "T1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Infineon:IM72D128V")
 		(at 120.65 115.57 0)
 		(unit 1)
@@ -9052,7 +8925,7 @@
 	)
 	(symbol
 		(lib_id "Panasonic:AQW612S")
-		(at 271.78000000000003 187.96 0)
+		(at 271.78 187.96 0)
 		(unit 1)
 		(in_bom yes)
 		(on_board yes)
