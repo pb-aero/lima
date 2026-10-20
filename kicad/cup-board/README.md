@@ -17,10 +17,16 @@ been updated to match — see open items.
 | U1 | ADAU1861 | Codec, 3 ADC + 1 DAC (ruled 2026-09-22) |
 | MK1 | IM73A135V01 | Feed-forward ANC mic → AINP0/AINN0, differential |
 | MK2 | IM73A135V01 | Feedback (error) ANC mic → AINP1/AINN1, differential |
-| MK3 | IM73A135V01 | Voice mic (replaces the boom mic) → AINP2/AINN2, differential |
+| ~~MK3~~ | — | **Removed 2026-10-20, per Peter** — ADC2 now carries the aircraft audio (below) |
+| J5 | 2-pin | Aircraft audio in: pin 1 `AC_AUDIO` (this cup's earphone line), pin 2 `AC_GND` |
+| T1 | Triad SP-74 | 80 Ω CT : 8 Ω, 3.143:1:1. Full primary across J5, CT no-connect, both secondaries **in parallel** → `XF_SEC_A`/`XF_SEC_B` |
+| K1 | Omron G6K-2F-Y DC5 | DPDT, non-latching. **Unpowered (NC): speaker ← T1 secondary. Energised (NO): speaker ← HPOUTN/HPOUTP** |
+| C9/C10, R4/R5, R6 | 1 µF ×2, 10 kΩ ×2, 22 kΩ | ADC2 tap off the T1 secondary → `ADC2_P`/`ADC2_N` = AINP2/AINN2 |
+| D1 | 1N4148W | K1 coil flyback |
+| J6 | 2-pin | Relay coil in: `RLY_COIL`, GND — driven from upstream (see below) |
 | U2 | LSM6DSV16BX | DVNC reference, TDM slave into U1's SPT1 (`TDM_DATA`/`TDM_BCLK`/`TDM_WCLK`); I²C host mode for config |
 | U3 | MAXM86161 | In-ear optical HR/SpO₂ module (added 2026-10-19, per Peter) — I²C on the shared bus, own LED supply |
-| J2 | 2-pin | Earcup driver: **pin 1 = HPOUTN, pin 2 = HPOUTP** (ordered so the two wires don't cross) |
+| J2 | 2-pin | Earcup driver, 32 Ω: `SPKR_1`/`SPKR_2` from K1's commons (was HPOUTN/HPOUTP direct) |
 | J3 | 3-pin | Power in: 1V8, 3V3_MIC, GND — source TBD |
 | J4 | 2-pin | LED supply in: VLED, GND — voltage and source TBD |
 | R1/R2 | 10 kΩ | I²C pull-ups to 1V8 (LSM6DSV16BX datasheet value) |
@@ -57,6 +63,66 @@ U1 strap pins as on `audio-board`: ADDR0/ADDR1/SELFBOOT/ROM_BOOT_MODE/REG_EN low
 U2: CS high (I²C), SA0 low, Qvar electrodes to GND, INT1/INT2 no-connect.
 SPT0 (`I2S0_*`) is brought out as labels only, reserved for the A2B subnode link.
 
+## Aircraft audio in — 2026-10-20, per Peter
+
+Peter ruled: aircraft audio goes into **ADC2 on each cup** (MK3 dropped), the speaker is
+**32 Ω**, and the cup must **still be heard unpowered** (fail-passive). Peter proposed the
+SP-74 for the bypass path.
+
+```
+ J5 AC_AUDIO ─┐                 ┌─ XF_SEC_A ──┬── K1 NC ─┐
+              T1 SP-74 (pri)    T1 (2 sec ∥) │          ├─ K1 COM ── J2 speaker 32 Ω
+ J5 AC_GND  ──┘   CT n/c        └─ XF_SEC_B ─┼── K1 NC ─┘     K1 NO ── HPOUTN / HPOUTP
+                                             └── C9/R4, C10/R5, R6 ── AINP2 / AINN2
+```
+
+- **Unpowered, or coil dropped:** K1 rests on NC and T1 drives the speaker. `[derived]` With
+  the full primary and the two secondaries in parallel, the turns ratio is 3.143:1, so the
+  impedance ratio is 9.88:1 and a 32 Ω speaker looks like **≈ 316 Ω** to the panel. Two cups
+  on a mono panel come to ≈ 158 Ω, which is inside the ≥ 150 Ω the panel is rated for.
+  `[fetched]` The Garmin GMA 340 is specified at 100 mW per channel into 150 Ω. The centre tap
+  would give 79 Ω (≈ 40 Ω for two cups), which is too low, so it is left unconnected. Against the
+  120 Ω series resistor considered first, the transformer is ≈ 3.6 dB louder at the same panel
+  voltage and halves the panel loading.
+- **Powered, coil energised:** the speaker moves to HPOUTN/HPOUTP and T1's secondary is left
+  driving only the ADC tap. That tap is galvanically isolated from the aircraft, so it breaks the
+  aircraft-ground loop, and the 1861 datasheet gives no CMRR figure to lean on otherwise.
+  `[derived]` The tap loads the secondary with ≈ 34 kΩ, which reflects to ≈ 330 kΩ on the
+  primary, so it bridges the line.
+- **Level.** The secondary is the line voltage ÷ 3.143. `[fetched]` R6 sits in parallel with the
+  1861's 36 kΩ differential line input (Table 1, no PGA), so the divider is 13.65 / 33.65 = 0.41.
+  The aircraft line reaches **0 dBFS (0.98 V rms) at ≈ 7.6 V rms**, and 3.9 V rms (100 mW into
+  150 Ω) lands at about −6 dBFS. If the PGA is enabled, the input resistance changes and so does
+  this gain. C9/C10 give a corner near 10 Hz; T1's 300 Hz is the corner that actually limits.
+- **Relay coil comes in on J6 from upstream.** Power is applied only while the digital path is
+  healthy, so losing power, the cable, or the host drops the cup into bypass. That is the
+  fail-passive property.
+
+### Open — introduced by this change
+
+- **SP-74 pinout and polarity dots, not read.** The symbol is KiCad's generic
+  `Transformer_SP_2S`. If the two secondaries are paralleled out of phase they short each other.
+  Read Triad's drawing before layout.
+- **SP-74 core level.** `[fetched]` DigiKey: 50 mW, 300 Hz–100 kHz ±2 dB, 1000 V isolation,
+  −40 to +85 °C, THT 10.4 × 7.9 mm, $19.48, **24-week lead time**. 50 mW at its 80 Ω rating is
+  ≈ 2 V rms. `[assumed]` 3.9 V rms at 300 Hz is about twice the rated flux, so expect distortion
+  at full panel volume. This needs a bench measurement.
+- **Everything goes through T1, so the digital path is band-limited too:** ≥ 300 Hz in normal
+  use. That's fine for comms and alerts, but music input would lose its bass.
+- **The coil costs 100 mW per cup.** `[fetched, distributor]` G6K-2F-Y DC5: 237 Ω, 21 mA,
+  100 mW. That is more than the rest of the cup in normal use (≈ 34–40 mW), and 200 mW for the
+  headset. A latching relay saves it but is not fail-passive unless a capacitor resets it on
+  power loss.
+- **What drives J6 is undecided.** Likely candidates are the A2B subnode's GPIO through a
+  low-side switch, or the audio board.
+- **The unpowered ADC sees signal.** In bypass, ≈ 1.2 V rms is applied through 10 kΩ into an
+  unpowered U1. `[assumed]` The ESD-diode current is about 0.1 mA, which should be harmless.
+  Not checked against an abs-max input-current figure.
+- **Voice pickup is gone from the cups.** It now depends on the boom mic on the audio board, and
+  the Rev G slot map needs to reflect that.
+- **DSP:** ADC2 → DAC mixing, and the feedback-ANC loop must treat ADC2 content as wanted
+  signal and not cancel it. Firmware, not on this sheet.
+
 ## How it was drawn, and why differently from the earlier two
 
 I²C and TDM are joined by **net labels at each end**, not long wires. On `cup-b-board` the
@@ -85,7 +151,7 @@ output power (signal-dependent) and the A2B subnode, which isn't on this sheet y
 |---|---|---|---|---|
 | U1 ADAU1861, ANC config | 1V8 | 6.4 mA (HP amp idle) – 11.3 mA (HP amp on, no load) | 11.5 – 20.3 mW | Table 7, "High performance, normal voltage": 3 ADCs + DAC + FastDSP @192 kHz, HiFi 3z bypassed. AVDD 3.04 / 7.87 mA + DVDD 3.06 mA + IOVDD 0.32 mA. `[assumed]` DVDD current is drawn from the 1V8 rail by the internal regulator — the datasheet doesn't name the regulator's input |
 | U2 LSM6DSV16BX | 1V8 | 0.60 (accel + TDM) – 0.95 mA (+ gyro) | 1.1 – 1.7 mW | Table 4, LA_IddHPT / IddHPT |
-| MK1–MK3 IM73A135 ×3 | mic rail, 2.75 V | 0.51 mA typ, 0.69 mA max | 1.4 – 1.9 mW | Table 7: 170 µA typ / 230 µA max each, normal mode |
+| MK1–MK3 IM73A135 ×3 | mic rail, 2.75 V | 0.51 mA typ, 0.69 mA max | 1.4 – 1.9 mW | Table 7: 170 µA typ / 230 µA max each, normal mode. **2026-10-20: MK3 removed, now ×2 (≈ 0.34–0.46 mA); K1 coil adds 100 mW — budget below not yet re-run** |
 | U3 MAXM86161 LEDs + readout | VLED, 5 V `[assumed]` | 0.4 – 1.3 mA | 2.0 – 6.5 mW | Table: VLED = 5 V, 117 µs pulses, 100 sps; 0.4–0.6 mA at zero LED drive up to 1.3 mA with 3 LEDs at full scale. SpO₂ (red + IR, 2 LEDs, full scale) ≈ 0.97 mA |
 | R1–R3 pull-ups | 1V8 | ≈ 0 average | ≈ 0 | 0.18 mA each only while a line is held low |
 | **Total, per cup** | | **1V8 ≈ 7–12 mA · mic ≈ 0.5–0.7 mA · VLED ≈ 0.4–1.3 mA** | **≈ 16 – 30 mW** | |
@@ -169,8 +235,8 @@ term by roughly HPVDD_L/1.8, at the cost of output swing.
   I²C (as Rev G implies); a problem if both ever share one bus. Not yet confirmed.
 - **SPT1 must master BCLK/WCLK for the IMU** (it is a TDM slave). Register configuration,
   unverified against the ADAU1861 manual.
-- **MK3 placement/purpose.** Assumed to be a voice-pickup mic replacing the boom. Its acoustic
-  position in the cup (and whether it is useful on both sides) is not established.
+- **Aircraft-audio items** — see "Aircraft audio in" above: SP-74 polarity dots and core
+  saturation, relay coil power and who drives it, and that voice pickup is now off the cups.
 - **VLED voltage is undecided.** The datasheet gives only the 3.0–5.5 V range and says to set it
   for the LEDs' forward voltage plus driver headroom. The green LED is the one most likely to need
   more than 3.3 V; 5 V would be the conservative choice, but nothing here establishes it.
