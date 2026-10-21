@@ -1683,3 +1683,20 @@ secondary. ERC 0 errors, nets checked in the netlist. The full write-up and open
 the secondaries wrong shorts them), core level at full volume, 100 mW coil per cup, and who drives
 J6. Power budget not re-run.
 Housekeeping: this file is ~112 KB against the template's "few KB" — archive to journal.md.
+
+---
+
+## 2026-10-21 — INDIA catch-up check: done, team repo `29865af`
+
+- **Published** (`e6698b0`): cup-board report updated to 21 Oct (+ schematic re-render, parts table), and
+  two 7 Oct analyses that had sat untracked (`72bdb66` here), both NEEDS-REVALIDATION after John's
+  21 Oct ruling: ADXL354 bench-only, ICM-45686 @ 6,424 Hz the production DVNC reference.
+- **Inbox:** 18 closed/answered with reasons in each file. **9 live** (4 mine: `09-24-003`, `09-24-004`,
+  `09-25-004`, `09-25-005` §2; 5 bench/Peter). Reply: `inbox/chris/2026-10-21-002`.
+- **DVDD still over abs max on BOTH boards** `[measured]` netlist: U1.54→1V8, U1.28→GND/AGND. Awaiting
+  Peter's go-ahead to fix.
+- **Divergence raised:** my `audio-board` (1861 + AD2428) vs John's AeroNode flow (1372 + ADAU1467 + AD2433).
+  Needs Peter + John.
+- Tailscale still stopped `[measured]`. Lane pushes print "Bypassed rule violations"; reported to INDIA.
+- `docs/f01-imu-waveforms.html` untracked, provenance unknown (13 Oct). Left alone; asked Peter.
+- Housekeeping still owed: archive this file to journal.md (~115 KB).
