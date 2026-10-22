@@ -1713,3 +1713,5 @@ company `1cf7160`). Hub ruled in by John 21 Oct, so yesterday's divergence (my 1
   K1 mostly in NORMAL on a hung CM5. Proposed a 74LVC1G74 latch; awaiting Peter.
 - **Blocked:** no data sheets for ADAU1467 / AD2433 / IM68A130A (analog.com times out from shell; download needs
   Peter's OK); Konnect disconnected. Nothing redrawn yet; old schematic intact at `72278d1`.
+- **Later 22 Oct — Peter: "leave the watchdog off for now."** K1 LEDs from a CM5 GPIO (off at reset, my default).
+  Hung-CM5 → K1 stuck NORMAL is an accepted residual; TPS3430 + latch parked, footprint room to be left.

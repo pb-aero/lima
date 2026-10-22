@@ -29,7 +29,8 @@ architecture, not an earlier revision of this one; it stays retrievable from git
 |---|---|---|
 | 1 | **Keep A2B** (AD2433), per the spec | Peter floated I²S + power + bypass over an HDMI-type cable with JST ends, then withdrew it |
 | 2 | **K1 = Panasonic AQW612S pair**, same as cup K2 | One package per leg; Form B (LED off) = electret → panel mic = bypass; Form A (LED on) = DAC → panel mic. Both legs broken, so our ground leaves the electret loop. Replaces the spec's "relay" and my earlier G6K-2 suggestion. At mic-level impedances (~1 kΩ) the 2.5 Ω on-resistance is negligible, so K2's open THD question barely applies here `[derived]` |
-| 3 | **K1 LEDs driven from a TPS3430 watchdog kicked by the PureVoice process** | Not by a rail or a plain GPIO: a hung CM5 leaves a GPIO wherever it was. Kicked by PureVoice, not a kernel/systemd watchdog, so the thing being supervised is the thing that makes transmit audio. **See the open item below — the bare TPS3430 does not do this on its own** |
+| 3 | ~~K1 LEDs driven from a TPS3430 watchdog kicked by the PureVoice process~~ | Ruled earlier the same day, then **superseded by 4** once the bare TPS3430 turned out not to latch (below) |
+| 4 | **Watchdog left off for now** | K1 LEDs driven from a CM5 GPIO through a transistor, LEDs **off** at GPIO reset/high-Z (pull-down on the base), so power loss and CM5 boot both sit in bypass. `[default]` — the GPIO drive is my choice, not Peter's words. **Accepted residual:** power present + CM5 hung leaves K1 in NORMAL with a silent DAC on the panel mic — the spec §3 failure mode. Leave footprint room for a TPS3430 + 74LVC1G74 so it can return without a re-spin |
 
 Defaults stated to Peter 2026-10-22 and not overridden — **confirm before layout**:
 
@@ -38,7 +39,9 @@ Defaults stated to Peter 2026-10-22 and not overridden — **confirm before layo
 - The failsafe electret gets its **own connector** on this board, so spec §8's open question (where it
   physically lives) does not force a redraw.
 
-## Open — TPS3430 alone will not hold K1 in bypass `[fetched]`
+## Parked — TPS3430 alone will not hold K1 in bypass `[fetched]`
+
+Kept for when the watchdog comes back (ruling 4 parks it).
 
 From the TPS3430 data sheet (SBVS366A, Oct 2021):
 
@@ -52,7 +55,7 @@ From the TPS3430 data sheet (SBVS366A, Oct 2021):
    disabled until tRST expires. Below VPOR it is *"undefined"*. High = LEDs on = **normal** — the wrong
    state while the CM5 is still booting.
 
-**Proposed fix (not yet ruled):** keep the TPS3430 and add one 74LVC1G74 D flip-flop. `~WDO` (open drain)
+**Proposed fix (parked with the watchdog):** keep the TPS3430 and add one 74LVC1G74 D flip-flop. `~WDO` (open drain)
 and an RC power-on network share the flop's `~CLR` node, so both a watchdog fault and power-up **clear**
 it; the CM5 clocks it set (`ARM`) once PureVoice is producing audio. LEDs on = Q high **and** `~WDO` high.
 A hung box then falls to bypass and stays there until a living CM5 re-arms it. Same signal can later
