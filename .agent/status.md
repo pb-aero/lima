@@ -1731,3 +1731,5 @@ company `1cf7160`). Hub ruled in by John 21 Oct, so yesterday's divergence (my 1
   This removes the AD2433's only stated reason (SPI) → asked Peter whether to go back to AD2428 (unblocks symbol).
 - **Ruled: AD2428 at both ends** (supersedes AD2433). Symbol in lib, DS public. TRM: TDM2–32 per pin, up to 32 ch each
   way — the "2-slot cap" is only PDM-clocked-from-BCLK, n/a. **All symbols available; only blocker to drawing = Konnect.**
+- **Peter: hold the summary to John/JULIETT until the schematic is drawn.** Owed then: rulings 2–9 (K1 PhotoMOS,
+  watchdog parked, AD2428, coefficients via I²S/TDM slot), no SPI on the header, header unconnected in AeroNode file.
