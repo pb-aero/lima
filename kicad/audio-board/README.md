@@ -1,6 +1,8 @@
 # Audio board (AeroNode side) — clean-slate redo
 
-**Status:** rulings recorded, schematic **not yet redrawn**. Started 2026-10-22, per Peter:
+**Status:** **schematic redrawn 2026-10-22** — one A1 sheet, 116 parts, drawn entirely through Konnect.
+Netlist matches `doc/design_nets.py` exactly; ERC 0 errors (4 expected strap warnings). Not reviewed,
+no footprints for the custom parts, no layout. Started 2026-10-22, per Peter:
 *"redo the audio board schematic on a clean slate using the new reference diagram from Juliette."*
 
 **Reference:** JULIETT's interface spec, `Aerosense-Dev-Team-Sync:reports/john/2026-10-21_aeronode_audio_flow.pdf`
@@ -129,9 +131,49 @@ same pins (pin geometry taken from the script as JSON; diff vs the script output
 `kicad-cli sym export svg`: every pre-existing symbol in both libraries still parses (7 → 8 in
 AnalogDevices, 1 → 2 in Infineon) `[measured]`. Pin-to-pad cross-check waits for the footprints.
 
-## Still needed before drawing
+## The drawn schematic (2026-10-22)
 
-- (No parts blocker left — ruling 9.)
-- Konnect (KiCad MCP) reconnected — the schematic is edited through it, not by hand.
-- Spec §8 (electret location / count / isolation) and §4 (clock survival on the hub, not re-demonstrated)
-  remain open; neither blocks the schematic, both block layout.
+`audio-board.kicad_sch`, one A1 sheet in five labelled blocks, connected by net labels. Flat rather than
+hierarchical on purpose: Konnect's bulk labelling makes sheet-local labels only, so a hierarchy would
+have meant several hundred single global-label calls. Old sheets are in git at `72278d1`.
+
+**How it was checked.** `doc/design_nets.py` is the intended connectivity, written before drawing: every
+pin of every part is on a named net or in an explicit no-connect list. `python3 -I doc/design_nets.py
+check <netlist.xml>` diffs it against `kicad-cli sch export netlist --format kicadxml` — the KiCad
+netlist, not Konnect's view of it. Result: **OK** — all nets complete, no extra pins, no stray pins,
+all 42 NC pins unconnected `[measured]`. ERC: **0 errors**; 4 warnings, all `pin_to_pin`
+bidirectional-to-power on straps (U5 WP/HOLD to +3V3, U9 ADR1/ADR2 to GND) — intended.
+
+| Block | Parts | Source of the circuit |
+|---|---|---|
+| Power + host | J1/J2 (AeroNode J3/J4 mirror), U1 TPS62162 3V3, U2 TPS62160 1V2 (R1/R2 49.9k/100k = 1.199 V), U3 ADP7118 3V3A | TPS6216x DS: VFB 0.8 V, 2.2 µH + 22 µF `[fetched]` |
+| Hub | U4 ADAU1467, Y1 12.288 MHz, U5 W25Q32 boot flash, PLL filter C9/C10/R5, R26 VDRIVE→GND, 13 decouplers | ADAU1463/1467 Rev A: Fig. 16, pin 3, self-boot section `[fetched]` |
+| Codec | U6 ADAU1372, U7 IM68A130A, comms tap R7/R8/C27/D1, U8 TLV9062 diff amp | ADAU1372 pin table `[fetched]` |
+| A2B | U9 AD2428 + bus-power switch (D3, Q1 AO3401A, R17–R20, C46–C48, L3/L4) + coupling | EVAL-AD2428WD1BZ sheet 2, B side, read from rendered image `[fetched]` |
+| Aircraft / bypass | J5 panel, J6 electret, T2/T3 SP-74, U10/U11 AQW612S (K1), Q2, R23/R24 390R | rulings 2 and 4; AQW61xS DS (IF 5–30 mA) `[fetched]` |
+
+**Found on the way:** the old board's A2B network never connected the positive bus bias (`A2B_BIAS_P`,
+L3.2, went nowhere) — coupling only, no bus power to the cups. The new one carries ADI's full SWP switch.
+
+### My defaults in it — confirm or overrule
+
+1. **VBAT = 2S LiFePO4, 5.0–7.3 V.** From my own AeroNode charger scar; the AeroNode sheet's `BAT_PWR` pin
+   goes nowhere, so it does not say. Everything (bucks, AD2428 VIN, K1 LED current) is sized on it.
+2. **1V2 buck is 1 A against a 940 mA hub maximum** (330 mA typical). Fine for the typical program; no margin
+   for the worst case.
+3. **Hub/codec reset = U2 power-good** — the header has no reset line.
+4. **Codec I2C address straps all 0; AD2428 ADR1/ADR2 = 0; hub ADDR = 0.** Exact 7-bit addresses not
+   checked against each other `[assumed]` — they are different part families.
+5. **Comms tap grounds the cup-L speaker return (SPK_L_B) through R9 0R.** Depopulate R9 to float it.
+6. **PureVoice gain 0.1** (R10–R13) — the panel mic input level is unknown (spec §9).
+7. **J3 = cup L (A2B + speaker), J4 = cup R (speaker only)**; cup R gets A2B from cup L.
+8. **CTL_SPKR repurposed as A2B_IRQ.**
+
+### Still open
+
+- **Footprints:** ADAU1467 (88-LFCSP 12×12) and IM68A130A (PG-TLGA-4-2) have none; T2/T3, FL1, J1–J6 not chosen.
+- **Bus-power margin** at 5.0 V battery through D3, Q1, two cables and two cup nodes — not analysed.
+- **SP-74 secondary polarity** (paralleling 3/5 and 4/6 wrongly shorts them) — still unverified.
+- **AeroNode header is unconnected in its own file** (see the header section) — owner's fix.
+- Spec §8 (electret location / count / isolation) and §4 (clock survival on the hub) — block layout.
+- Watchdog parked (ruling 4); TPS3430 + 74LVC1G74 footprint room not yet reserved (no layout yet).

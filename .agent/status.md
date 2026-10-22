@@ -1733,3 +1733,11 @@ company `1cf7160`). Hub ruled in by John 21 Oct, so yesterday's divergence (my 1
   way — the "2-slot cap" is only PDM-clocked-from-BCLK, n/a. **All symbols available; only blocker to drawing = Konnect.**
 - **Peter: hold the summary to John/JULIETT until the schematic is drawn.** Owed then: rulings 2–9 (K1 PhotoMOS,
   watchdog parked, AD2428, coefficients via I²S/TDM slot), no SPI on the header, header unconnected in AeroNode file.
+
+## 2026-10-22 (later) — audio board schematic REDRAWN through Konnect
+
+One A1 sheet, 116 parts, `kicad/audio-board/audio-board.kicad_sch`. Netlist == `doc/design_nets.py` (KiCad
+netlist diff, OK); ERC 0 errors, 4 intended strap warnings. Defaults to confirm and open items listed in the
+README ("My defaults in it", "Still open"). ADAU1467/IM68A130A re-created through Konnect (had been
+script-written — breach of the Konnect rule, corrected). Found: old board never wired the A2B positive bus bias.
+**Team summary to John/JULIETT now due** (held by Peter until the schematic was drawn).

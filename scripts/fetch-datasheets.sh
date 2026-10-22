@@ -182,6 +182,13 @@ fetch \
   "$ROOT/docs/datasheets/Infineon-IM68A130A-DataSheet-v01_00-EN.pdf" \
   '5f97bead8354369639cbe1e60654738626344c44d10cd9cf1239c7abc28b3194'
 
+# TPS62160/1/2/3 datasheet SLVSAM2E (May 2017). Audio board U1 (TPS62162, 3V3) and U2 (TPS62160, 1V2):
+# VFB = 0.8 V, 2.2 uH + 22 uF standard filter (Table 2). See kicad/audio-board/README.md.
+fetch \
+  'https://www.ti.com/lit/ds/symlink/tps62160.pdf' \
+  "$ROOT/docs/datasheets/TPS62160.pdf" \
+  'abc824ca04ee985ede3a513172ccdd2a42c8e1fdcfc3af5acdbe2c1af31aaa72'
+
 # NOT auto-fetched — analog.com is unreachable from this machine's shell (2026-09-06 scar, still
 # true 2026-10-22). Both were saved by hand through the desktop app's built-in browser, which
 # can reach it. Restore the same way, then check against these pins:
