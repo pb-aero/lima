@@ -175,4 +175,21 @@ fetch \
   "$ROOT/docs/datasheets/Panasonic_AQW61xS_GU-SOP8-1a1b.pdf" \
   'aa01a1cf6ffafdca709cb9782d3eefc4d04f4a87fed3e0afdfff6ee2b6790b43'
 
+# IM68A130A datasheet Rev 1.10 (2024-05-17). Cabin mic on the audio board; source of the
+# IM68A130A symbol (Table 3) in kicad/lib/Infineon.kicad_sym. See kicad/audio-board/README.md.
+fetch \
+  'https://www.infineon.com/dgdl/Infineon-IM68A130A-DataSheet-v01_00-EN.pdf' \
+  "$ROOT/docs/datasheets/Infineon-IM68A130A-DataSheet-v01_00-EN.pdf" \
+  '5f97bead8354369639cbe1e60654738626344c44d10cd9cf1239c7abc28b3194'
+
+# NOT auto-fetched — analog.com is unreachable from this machine's shell (2026-09-06 scar, still
+# true 2026-10-22). Both were saved by hand through the desktop app's built-in browser, which
+# can reach it. Restore the same way, then check against these pins:
+#   docs/datasheets/ADAU1463_1467.pdf    Rev A, 207 pp — source of the ADAU1467 symbol (Table 18)
+#     https://www.analog.com/media/en/technical-documentation/data-sheets/adau1463-1467.pdf
+#     e1806ed15862545de9b04aec7d59cd6fe8f2288cb760640a3b9baa2cc50ed260
+#   docs/datasheets/AD2431_32_33_35.pdf  Rev SpB, 2 pp summary only — the full AD2433 data sheet is NDA
+#     https://www.analog.com/media/en/technical-documentation/data-sheets/ad2431-32-33-35.pdf
+#     0d177e019beeeb8ebfcbaf30339de38d2857666ba24ef0328332bd32bc06c698
+
 echo "done"
