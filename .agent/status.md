@@ -1700,3 +1700,16 @@ Housekeeping: this file is ~112 KB against the template's "few KB" — archive t
 - Tailscale still stopped `[measured]`. Lane pushes print "Bypassed rule violations"; reported to INDIA.
 - `docs/f01-imu-waveforms.html` untracked, provenance unknown (13 Oct). Left alone; asked Peter.
 - Housekeeping still owed: archive this file to journal.md (~115 KB).
+
+---
+
+## 2026-10-22 — audio board: clean-slate redo started, rulings recorded
+
+Peter: redo the audio board on a clean slate from JULIETT's spec (`reports/john/2026-10-21_aeronode_audio_flow.pdf`,
+company `1cf7160`). Hub ruled in by John 21 Oct, so yesterday's divergence (my 1861+AD2428 vs John's
+1372+1467+AD2433) is settled in John's favour. Rulings + open items in `kicad/audio-board/README.md`.
+- **Ruled:** keep A2B (I²S-over-HDMI floated and withdrawn); K1 = AQW612S pair; K1 LEDs from a TPS3430 kicked by PureVoice.
+- **Found `[fetched]`:** TPS3430 `~WDO` is not latched (pulses tRST) and is HIGH at power-up → bare chip leaves
+  K1 mostly in NORMAL on a hung CM5. Proposed a 74LVC1G74 latch; awaiting Peter.
+- **Blocked:** no data sheets for ADAU1467 / AD2433 / IM68A130A (analog.com times out from shell; download needs
+  Peter's OK); Konnect disconnected. Nothing redrawn yet; old schematic intact at `72278d1`.
