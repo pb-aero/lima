@@ -1108,6 +1108,7 @@
     )
     (embedded_fonts no)
   )
+
   (symbol "ADAU1467"
     (pin_names
       (offset 1.016))
@@ -1116,11 +1117,11 @@
     (on_board yes)
     (in_pos_files yes)
     (duplicate_pin_numbers_are_jumpers no)
-    (property "Reference" "U" (at 0 68.5800 0) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27))))
-    (property "Value" "ADAU1467" (at 0 -68.5800 0) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27))))
-    (property "Footprint" "" (at 0 0.0000 0) (show_name no) (do_not_autoplace no) (hide yes) (effects (font (size 1.27 1.27))))
-    (property "Datasheet" "https://www.analog.com/media/en/technical-documentation/data-sheets/adau1463-1467.pdf" (at 0 0.0000 0) (show_name no) (do_not_autoplace no) (hide yes) (effects (font (size 1.27 1.27))))
-    (property "Description" "SigmaDSP audio processor, 294.912 MHz, 24 kWord program, 88-lead LFCSP 12x12 (EP = pin 89)" (at 0 0.0000 0) (show_name no) (do_not_autoplace no) (hide yes) (effects (font (size 1.27 1.27))))
+    (property "Reference" "U" (at 0 63.5000 0) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27))))
+    (property "Value" "ADAU1467" (at 0 -63.5000 0) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "" (at 0 0 0) (show_name no) (do_not_autoplace no) (hide yes) (effects (font (size 1.27 1.27))))
+    (property "Datasheet" "" (at 0 0 0) (show_name no) (do_not_autoplace no) (hide yes) (effects (font (size 1.27 1.27))))
+    (property "Description" "" (at 0 0 0) (show_name no) (do_not_autoplace no) (hide yes) (effects (font (size 1.27 1.27))))
     (symbol "ADAU1467_0_1"
       (rectangle (start -22.8600 -60.9600) (end 22.8600 60.9600)
         (stroke (width 0.254) (type default))

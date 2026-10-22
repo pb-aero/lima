@@ -49,6 +49,7 @@
     )
     (embedded_fonts no)
   )
+
   (symbol "IM68A130A"
     (pin_names
       (offset 1.016))
@@ -57,13 +58,13 @@
     (on_board yes)
     (in_pos_files yes)
     (duplicate_pin_numbers_are_jumpers no)
-    (property "Reference" "U" (at 0 15.2400 0) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27))))
-    (property "Value" "IM68A130A" (at 0 -15.2400 0) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27))))
-    (property "Footprint" "" (at 0 0.0000 0) (show_name no) (do_not_autoplace no) (hide yes) (effects (font (size 1.27 1.27))))
-    (property "Datasheet" "https://www.infineon.com/dgdl/Infineon-IM68A130A-DataSheet-v01_00-EN.pdf" (at 0 0.0000 0) (show_name no) (do_not_autoplace no) (hide yes) (effects (font (size 1.27 1.27))))
-    (property "Description" "XENSIV analog MEMS microphone, single-ended, 2.4-3.3 V, PG-TLGA-4-2" (at 0 0.0000 0) (show_name no) (do_not_autoplace no) (hide yes) (effects (font (size 1.27 1.27))))
+    (property "Reference" "U" (at 0 10.1600 0) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27))))
+    (property "Value" "IM68A130A" (at 0 -10.1600 0) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "" (at 0 0 0) (show_name no) (do_not_autoplace no) (hide yes) (effects (font (size 1.27 1.27))))
+    (property "Datasheet" "" (at 0 0 0) (show_name no) (do_not_autoplace no) (hide yes) (effects (font (size 1.27 1.27))))
+    (property "Description" "" (at 0 0 0) (show_name no) (do_not_autoplace no) (hide yes) (effects (font (size 1.27 1.27))))
     (symbol "IM68A130A_0_1"
-      (rectangle (start -7.6200 -7.6200) (end 7.6200 7.6200)
+      (rectangle (start -5.0800 -7.6200) (end 7.6200 7.6200)
         (stroke (width 0.254) (type default))
         (fill (type background))
       )
