@@ -1721,3 +1721,5 @@ company `1cf7160`). Hub ruled in by John 21 Oct, so yesterday's divergence (my 1
 - **Peter: use the AD2428, not the AD2433** (both ends). Unblocks symbols — AD2428 already in lib, full DS local.
   Reverses JULIETT 09-25-003 (SPI coefficient path) → coefficients go by A2B remote I²C; needs read-back
   verification (erratum 18000075). **John/JULIETT not yet told.** Only remaining blocker to drawing: Konnect.
+- **Reversed the same day: AD2433 at both ends** (restores SPI coefficient path), **I²S CM5 → audio board**
+  (GPIO 18–21; SPI0 7–11, I²C1 2/3 my defaults). AD2433 NDA data sheet is the blocker again, plus Konnect.
