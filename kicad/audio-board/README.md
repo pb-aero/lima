@@ -33,7 +33,7 @@ architecture, not an earlier revision of this one; it stays retrievable from git
 | 4 | **Watchdog left off for now** | K1 LEDs driven from a CM5 GPIO through a transistor, LEDs **off** at GPIO reset/high-Z (pull-down on the base), so power loss and CM5 boot both sit in bypass. `[default]` — the GPIO drive is my choice, not Peter's words. **Accepted residual:** power present + CM5 hung leaves K1 in NORMAL with a silent DAC on the panel mic — the spec §3 failure mode. Leave footprint room for a TPS3430 + 74LVC1G74 so it can return without a re-spin |
 | 5 | ~~A2B part is the AD2428, not the AD2433~~ — **superseded by 6 the same day** — both ends (AeroNode main node, each cup sub-node) | Peter, 2026-10-22, after the AD2433's full data sheet turned out to be NDA-only. **Reverses the 2026-09-25 choice** (JULIETT `2026-09-25-003`), whose reason was that the AD2428W has **no SPI**, so DVNC/ANC coefficients cannot go *CM5 → SPI → A2B → cup ADAU1861* as spec §2 draws. They go by **A2B remote I²C** instead. `docs/a2b-remote-i2c-throughput.md` (2026-09-25) found that viable: 14 kB/s against a 384 kB/s control-header ceiling `[derived]`. **Condition carried with it:** erratum 18000075 — a failed remote-I²C write may not report an error, so coefficients must be written with **read-back verification**, or the canceller silently stops tracking; erratum 18000052 — remote I²C contends with GPIO-over-distance for the same header fields. **John/JULIETT not yet told** |
 | 6 | **A2B part is the AD2433 at both ends** — AeroNode main node and each cup sub-node | Peter, 2026-10-22, once the SPI point was clear. Restores JULIETT `2026-09-25-003`: coefficients go *CM5 → SPI0 → hub → AD2433 SPI over distance → cup ADAU1861*, landing straight in DSP memory. Ruling 5's remote-I²C errata no longer apply to the coefficient path. **Brings back the NDA blocker** for the AD2433 symbol (below) |
-| 7 | **I²S from the CM5 to the audio board** | Peter, 2026-10-22. CM5 is I²S slave to the hub (spec §4). Pins below |
+| 7 | **I²S from the CM5 to the audio board** | Peter, 2026-10-22. CM5 is I²S slave to the hub (spec §4). Over the AeroNode's existing audio header J3/J4 — below |
 
 Defaults stated to Peter 2026-10-22 and not overridden — **confirm before layout**:
 
@@ -64,20 +64,51 @@ it; the CM5 clocks it set (`ARM`) once PureVoice is producing audio. LEDs on = Q
 A hung box then falls to bypass and stays there until a living CM5 re-arms it. Same signal can later
 drive cup K2 (spec §3, "proposed, not designed").
 
-## CM5 ↔ audio board pins `[fetched]` RP1 peripherals §3.1.1 function-select table
+## CM5 ↔ audio board — the AeroNode's actual audio header `[measured]`
 
-RP1 runs one function per pin, but SPI0 and I²S sit on different pins, so both run at once.
+Read from `~/aerosense/aeronode/aerosense/aerosense.kicad_sch` (file dated 2026-08-31), netlist exported with
+`kicad-cli sch export netlist --format kicadxml`, 2026-10-22. **Not under git there — confirm it is the current
+AeroNode revision.** Supersedes the RP1-table guess that stood here earlier the same day (it assumed SPI0 was free).
 
-| Signal | CM5 GPIO | RP1 function | Status |
-|---|---|---|---|
-| I²S BCLK, LRCLK (from hub) | 18, 19 | I2S SCLK, WS | ruled (7) |
-| I²S data hub → CM5 / CM5 → hub | 20, 21 | I2S SDI[0], SDO[0]; spare lanes SDI/SDO[1–3] on 22–27 | ruled (7) |
-| SPI0 → hub control port (and coefficients) | 8 CS0, 7 CS1, 9 MISO, 10 MOSI, 11 SCLK | SPI0 | `[default]` |
-| I²C1 → ADAU1372, AD2433 control | 2 SDA, 3 SCL | I2C1 | `[default]` |
-| K1 drive, hub ~RESET, A2B IRQ | e.g. 4, 5, 6, 12, 13 | GPIO | `[default]` |
+| J3 pin | Net | | J4 pin | Net |
+|---|---|---|---|---|
+| 1 | GND | | 1 | CTL_MIC |
+| 2 | WS | | 2 | CTL_SPKR |
+| 3 | BCLK | | 3 | I2S1_SDI2 |
+| 4 | I2S1_SDI0 | | 4 | I2S1_SDO2 |
+| 5 | I2S1_SDO0 | | 5 | I2S1_SDI3 |
+| 6 | I2S1_SDI1 | | 6 | I2S1_SDO3 |
+| 7 | I2S1_SDO1 | | | |
+| 8 | I2C_SCL | | | |
+| 9 | I2C_SDA | | | |
+| 10 | BAT_PWR | | | |
 
-**Avoid SPI1** — it lives on GPIO 16–21, on top of I²S. **I²C1 only on 2/3** — it can also be muxed to
-10/11 (SPI0's data pins), and RP1 says a peripheral input should be selected on one pin only.
+On the CM5 sheet: I2S1 = GPIO 18–27 (SCLK 18, WS 19, SDI0–3 = 20/22/24/26, SDO0–3 = 21/23/25/27); I2C1 =
+GPIO 2/3; `GPIO_RLY_SPKR` = GPIO16, `GPIO_RLY_MIC` = GPIO17 (the old relay drives, presumably `CTL_SPKR`/`CTL_MIC`).
+
+**What it means here:**
+
+- **No SPI reaches the audio board** (Peter was right). GPIO 7–11 are labelled `SPI3_SCLK`/`SPI4_*` on the CM5
+  sheet and go to no connector. So "SPI0 → hub" and "SPI0 → AD2433" are both off the table as drawn.
+- **I²S is plentiful:** four data lanes each way. **I²C** is there for hub + ADAU1372 + AD2433 control.
+- **BAT_PWR is the only power** — consistent with "only VBAT crosses". **One GND pin** for 16 signals,
+  including two I²S clocks — thin for return current; worth a second GND when the header is next revised.
+- `CTL_MIC` → K1 drive (ruling 4), `CTL_SPKR` → candidate for the cups' K2 drive.
+
+**⚠ The header is not connected to the CM5 in that file `[measured]`.** Every J3/J4 net except GND has exactly
+one node: the top sheet uses `/WS`, `/BCLK`, `/I2S1_SDI0`, `/I2C_SCL`, `/CTL_MIC`… while the CM5 sheet uses
+`/CM5/I2S1_WS`, `/CM5/I2S1_SDI[0]`, `/CM5/I2C1_SCL`, `/CM5/GPIO_RLY_MIC`… — different names, no hierarchical
+pins joining them. As drawn, the header goes nowhere. Owner of that schematic to fix (not this repo's file).
+
+### Open — how the coefficients reach the AD2433 with no SPI on the header
+
+1. **I²S slot** — CM5 → spare I²S lane → hub → A2B TDM slot → cup serial port; cup DSP unpacks + CRC-checks.
+   Fits the header as-is. Costs cup firmware and a bit-exact hub route.
+2. **I²C to the hub, hub's SPI master → AD2433 SPI** — keeps SPI-over-A2B to the cup. I²C ≤ 1 MHz on the hub
+   (data sheet), ~7× headroom at 1 MHz, ~2.5× at 400 kHz, shared bus. `[assumed]` that the hub's SPI master
+   (also its self-boot EEPROM port) can forward host data on demand — not checked.
+3. **Add SPI to the AeroNode header** — GPIO 7–11 already carry SPI3/SPI4 labels on the CM5 sheet; costs 4–5 pins
+   and an AeroNode change.
 
 ## Symbols
 

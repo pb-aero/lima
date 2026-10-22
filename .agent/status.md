@@ -1723,3 +1723,7 @@ company `1cf7160`). Hub ruled in by John 21 Oct, so yesterday's divergence (my 1
   verification (erratum 18000075). **John/JULIETT not yet told.** Only remaining blocker to drawing: Konnect.
 - **Reversed the same day: AD2433 at both ends** (restores SPI coefficient path), **I²S CM5 → audio board**
   (GPIO 18–21; SPI0 7–11, I²C1 2/3 my defaults). AD2433 NDA data sheet is the blocker again, plus Konnect.
+- **Checked the AeroNode audio header** (`~/aerosense/.../aerosense.kicad_sch`, 31 Aug, not in git): J3 10-pin + J4
+  6-pin = I²S1 ×4 lanes, I²C, CTL_MIC/SPKR, BAT_PWR, 1 GND. **No SPI** (Peter right; my RP1 SPI0 map withdrawn).
+  **Header not connected to the CM5 in that file** — label names differ, every net 1 node. Coefficient path now
+  open: I²S slot / I²C→hub SPI master / add SPI to header.
