@@ -1729,3 +1729,5 @@ company `1cf7160`). Hub ruled in by John 21 Oct, so yesterday's divergence (my 1
   open: I²S slot / I²C→hub SPI master / add SPI to header.
 - **Ruled: coefficients over a spare I²S lane (J3.7 SDO1) → hub bit-exact → A2B TDM slot → cup DSP unpacks + CRC.**
   This removes the AD2433's only stated reason (SPI) → asked Peter whether to go back to AD2428 (unblocks symbol).
+- **Ruled: AD2428 at both ends** (supersedes AD2433). Symbol in lib, DS public. TRM: TDM2–32 per pin, up to 32 ch each
+  way — the "2-slot cap" is only PDM-clocked-from-BCLK, n/a. **All symbols available; only blocker to drawing = Konnect.**
