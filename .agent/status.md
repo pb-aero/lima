@@ -1727,3 +1727,5 @@ company `1cf7160`). Hub ruled in by John 21 Oct, so yesterday's divergence (my 1
   6-pin = I²S1 ×4 lanes, I²C, CTL_MIC/SPKR, BAT_PWR, 1 GND. **No SPI** (Peter right; my RP1 SPI0 map withdrawn).
   **Header not connected to the CM5 in that file** — label names differ, every net 1 node. Coefficient path now
   open: I²S slot / I²C→hub SPI master / add SPI to header.
+- **Ruled: coefficients over a spare I²S lane (J3.7 SDO1) → hub bit-exact → A2B TDM slot → cup DSP unpacks + CRC.**
+  This removes the AD2433's only stated reason (SPI) → asked Peter whether to go back to AD2428 (unblocks symbol).

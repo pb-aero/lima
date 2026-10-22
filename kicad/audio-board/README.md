@@ -34,6 +34,7 @@ architecture, not an earlier revision of this one; it stays retrievable from git
 | 5 | ~~A2B part is the AD2428, not the AD2433~~ — **superseded by 6 the same day** — both ends (AeroNode main node, each cup sub-node) | Peter, 2026-10-22, after the AD2433's full data sheet turned out to be NDA-only. **Reverses the 2026-09-25 choice** (JULIETT `2026-09-25-003`), whose reason was that the AD2428W has **no SPI**, so DVNC/ANC coefficients cannot go *CM5 → SPI → A2B → cup ADAU1861* as spec §2 draws. They go by **A2B remote I²C** instead. `docs/a2b-remote-i2c-throughput.md` (2026-09-25) found that viable: 14 kB/s against a 384 kB/s control-header ceiling `[derived]`. **Condition carried with it:** erratum 18000075 — a failed remote-I²C write may not report an error, so coefficients must be written with **read-back verification**, or the canceller silently stops tracking; erratum 18000052 — remote I²C contends with GPIO-over-distance for the same header fields. **John/JULIETT not yet told** |
 | 6 | **A2B part is the AD2433 at both ends** — AeroNode main node and each cup sub-node | Peter, 2026-10-22, once the SPI point was clear. Restores JULIETT `2026-09-25-003`: coefficients go *CM5 → SPI0 → hub → AD2433 SPI over distance → cup ADAU1861*, landing straight in DSP memory. Ruling 5's remote-I²C errata no longer apply to the coefficient path. **Brings back the NDA blocker** for the AD2433 symbol (below) |
 | 7 | **I²S from the CM5 to the audio board** | Peter, 2026-10-22. CM5 is I²S slave to the hub (spec §4). Over the AeroNode's existing audio header J3/J4 — below |
+| 8 | **DVNC/ANC coefficients travel as audio data, not SPI** — CM5 → spare I²S lane → hub → A2B downstream TDM slot → cup ADAU1861 serial port → unpacked by the cup DSP | Peter, 2026-10-22, because the AeroNode audio header carries no SPI (option 1 of the three below). **Lane:** `I2S1_SDO1` (J3.7) `[default]`. **Requirements this creates:** (a) the hub must route that channel **bit-exact** — no gain, mix, ASRC, dither or limiter on it; (b) the stream carries its own **framing + CRC**, and the cup **keeps its previous coefficients** when a block fails — an audio slot has no ACK; (c) **cup firmware** work on the HiFi 3z, the cost JULIETT's SPI route avoided; (d) **one more downstream slot** in the A2B TDM map (still unfrozen). Bandwidth: 1 slot × 32 bit × 48 kHz = 1.536 Mbit/s vs ~112 kbit/s needed `[derived]`. **Consequence:** the AD2433's only stated advantage over the AD2428 was SPI-over-A2B for exactly this path (JULIETT `2026-09-25-003`), so ruling 6's reason no longer holds — the AD2428 (non-NDA, symbol already in the library) would serve. **Not yet ruled.** John/JULIETT not told |
 
 Defaults stated to Peter 2026-10-22 and not overridden — **confirm before layout**:
 
@@ -100,7 +101,9 @@ one node: the top sheet uses `/WS`, `/BCLK`, `/I2S1_SDI0`, `/I2C_SCL`, `/CTL_MIC
 `/CM5/I2S1_WS`, `/CM5/I2S1_SDI[0]`, `/CM5/I2C1_SCL`, `/CM5/GPIO_RLY_MIC`… — different names, no hierarchical
 pins joining them. As drawn, the header goes nowhere. Owner of that schematic to fix (not this repo's file).
 
-### Open — how the coefficients reach the AD2433 with no SPI on the header
+### Decided (ruling 8) — how the coefficients cross with no SPI on the header
+
+Option 1 chosen. Kept for the record:
 
 1. **I²S slot** — CM5 → spare I²S lane → hub → A2B TDM slot → cup serial port; cup DSP unpacks + CRC-checks.
    Fits the header as-is. Costs cup firmware and a bit-exact hub route.
