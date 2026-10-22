@@ -1718,3 +1718,6 @@ company `1cf7160`). Hub ruled in by John 21 Oct, so yesterday's divergence (my 1
 - **Symbols:** ADAU1467 (AnalogDevices) + IM68A130A (Infineon) authored from data sheets, read back via kicad-cli,
   old symbols intact. **AD2433 blocked — full data sheet is NDA-only** (public one is a 2-page summary); ask John.
   Footprints for both new parts not stock — still to draw. Konnect still disconnected.
+- **Peter: use the AD2428, not the AD2433** (both ends). Unblocks symbols — AD2428 already in lib, full DS local.
+  Reverses JULIETT 09-25-003 (SPI coefficient path) → coefficients go by A2B remote I²C; needs read-back
+  verification (erratum 18000075). **John/JULIETT not yet told.** Only remaining blocker to drawing: Konnect.
