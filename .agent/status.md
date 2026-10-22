@@ -1715,3 +1715,6 @@ company `1cf7160`). Hub ruled in by John 21 Oct, so yesterday's divergence (my 1
   Peter's OK); Konnect disconnected. Nothing redrawn yet; old schematic intact at `72278d1`.
 - **Later 22 Oct — Peter: "leave the watchdog off for now."** K1 LEDs from a CM5 GPIO (off at reset, my default).
   Hung-CM5 → K1 stuck NORMAL is an accepted residual; TPS3430 + latch parked, footprint room to be left.
+- **Symbols:** ADAU1467 (AnalogDevices) + IM68A130A (Infineon) authored from data sheets, read back via kicad-cli,
+  old symbols intact. **AD2433 blocked — full data sheet is NDA-only** (public one is a 2-page summary); ask John.
+  Footprints for both new parts not stock — still to draw. Konnect still disconnected.
