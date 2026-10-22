@@ -92,7 +92,7 @@ GPIO 2/3; `GPIO_RLY_SPKR` = GPIO16, `GPIO_RLY_MIC` = GPIO17 (the old relay drive
 
 - **No SPI reaches the audio board** (Peter was right). GPIO 7–11 are labelled `SPI3_SCLK`/`SPI4_*` on the CM5
   sheet and go to no connector. So "SPI0 → hub" and "SPI0 → AD2433" are both off the table as drawn.
-- **I²S is plentiful:** four data lanes each way. **I²C** is there for hub + ADAU1372 + AD2433 control.
+- **I²S is plentiful:** four data lanes each way. **I²C** is there for hub + ADAU1372 + AD2428 control.
 - **BAT_PWR is the only power** — consistent with "only VBAT crosses". **One GND pin** for 16 signals,
   including two I²S clocks — thin for return current; worth a second GND when the header is next revised.
 - `CTL_MIC` → K1 drive (ruling 4), `CTL_SPKR` → candidate for the cups' K2 drive.
