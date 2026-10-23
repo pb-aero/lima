@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>H1 Cup Power Budget</title>
+<style>
+  :root { --fg:#1c1917; --muted:#57534e; --bg:#ffffff; --line:#e7e5e4; --head:#f5f5f4; --accent:#0f766e; --warn:#b45309; }
+  @media (prefers-color-scheme: dark) { :root { --fg:#e7e5e4; --muted:#a8a29e; --bg:#1c1917; --line:#44403c; --head:#292524; --accent:#5eead4; --warn:#fbbf24; } }
+  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif; }
+  main { max-width:920px; margin:0 auto; padding:24px 16px 64px; }
+  h1 { font-size:26px; margin:8px 0 4px; } h2 { font-size:19px; margin:32px 0 8px; border-bottom:1px solid var(--line); padding-bottom:4px; }
+  .sub { color:var(--muted); margin:0 0 16px; }
+  table { border-collapse:collapse; width:100%; margin:8px 0 12px; font-size:14px; }
+  th, td { border:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top; }
+  th { background:var(--head); } td.n { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .fail { color:#b91c1c; font-weight:600; } .ok { color:#15803d; font-weight:600; }
+  @media (prefers-color-scheme: dark) { .fail { color:#f87171; } .ok { color:#4ade80; } }
+  .key { border-left:4px solid var(--accent); padding:8px 12px; background:var(--head); margin:12px 0; }
+  .tag { font-size:12px; color:var(--muted); } code { font-size:13px; }
+  .wrap { overflow-x:auto; }
+</style>
+</head>
+<body>
+<!-- aerosense-report-status: current -->
+<div style="border:2px solid #15803d;background:#f0fdf4;color:#1c1917;padding:12px 16px;margin:0 0 24px;font:14px/1.5 system-ui,sans-serif;border-radius:6px">
+  <strong style="font-size:15px">STATUS: CURRENT</strong><br>
+  Reviewed 2026-10-23 by LIMA · verified against record <code>1cf7160</code><br>
+  Source: <code>lima@SOURCE_SHA</code> · Supersedes: the power-budget section of <code>reports/peter/LIMA_cup_board.html</code> (19 Oct, pre-A2B)<br>
+  <strong>What changed:</strong> the cups are now bus-powered A2B sub-nodes and the AeroNode audio board feeds the bus from an 8 V boost; the earlier budget assumed separately powered cups.<br>
+  <strong>Next:</strong> measure the ADAU1861 current with the HiFi 3z running and the A2B diode drop on the bench — the two assumptions that move these numbers most.
+</div>
+<main>
+<h1>H1 earcup power budget on the A2B bus</h1>
+<p class="sub">LIMA for Peter · 23 October 2026 · two cups, 32 Ω and 150 Ω driver options · datasheet figures and stated assumptions, nothing measured</p>
+
+<div class="key">
+<strong>In one paragraph.</strong> Each H1 earcup now takes its power from the A2B audio cable, so the question is whether the
+AeroNode's battery can push enough voltage through two cups. Straight from the battery it cannot: at the bottom of the
+battery's charge the second cup falls below the A2B transceiver's 3.7 V minimum. With an 8 V boosted bus — now drawn on the
+audio board — both cups have about 3 V of margin at any battery state. Each cup then draws about <strong>290 mW in normal
+use and up to about 460 mW</strong> at full volume, and the whole headset costs the AeroNode battery roughly
+<strong>0.8 W typical, 1.3 W worst case</strong>. Driver impedance (32 Ω vs 150 Ω) hardly changes the power; it changes how
+loud the cup can get.
+</div>
+<p class="tag">The schematics behind these numbers (the cups' A2B sub-node and the 8 V boost) are drawn in LIMA's repo and are
+under Peter's review; they are not yet reviewed by the team.</p>
+
+<h2>1 · Why the bus needed a boost</h2>
+<p>A bus-powered A2B node takes power from the same twisted pair that carries the audio. Every hop costs voltage: Analog
+Devices' own budget is <strong>2.39 Ω per hop plus 0.242 Ω per metre of cable</strong> (four bias inductors, a protection
+resistor, the transceiver's return switch, connectors), plus a Schottky diode at each node. Cup L carries both cups' current;
+cup R is last in line and sees the least.</p>
+<div class="wrap"><table>
+<tr><th>Bus source</th><th>Cup L input (worst / typical)</th><th>Cup R input (worst / typical)</th><th>vs 3.7 V minimum</th></tr>
+<tr><td>5.0 V — battery straight, empty</td><td class="n">3.68 / 3.94 V</td><td class="n fail">3.44 / 3.80 V</td><td class="fail">fails worst case</td></tr>
+<tr><td>6.4 V — battery straight, nominal</td><td class="n">5.08 / 5.34 V</td><td class="n">4.84 / 5.20 V</td><td class="ok">OK</td></tr>
+<tr><td>7.3 V — battery straight, full</td><td class="n">5.98 / 6.24 V</td><td class="n">5.74 / 6.10 V</td><td class="ok">OK</td></tr>
+<tr><td><strong>8.0 V — boosted bus</strong></td><td class="n">6.83 / 6.99 V</td><td class="n">6.65 / 6.87 V</td><td class="ok">OK, ~3 V margin</td></tr>
+</table></div>
+<p>Fed straight from the 2S LiFePO4 battery, cup R drops below 3.7 V whenever the battery is under <strong>5.26 V</strong> at worst-case
+load. It would fail safe — a browned-out cup falls back to passive aircraft audio — but the digital path would die while the
+AeroNode still looks healthy, and on the way down the speaker switch's LED current falls below its guaranteed operating
+level. The audio board now carries an LM2731 boost that holds the bus at 8.00 V. <span class="tag">(The 8 V rows here use the
+cup currents below; the earlier battery-direct rows used a heavier 94 mA/cup estimate made before the LED resistors were resized.)</span></p>
+
+<h2>2 · Per-cup budget, 32 Ω vs 150 Ω driver</h2>
+<div class="wrap"><table>
+<tr><th>Per cup, 8 V bus</th><th>32 Ω worst</th><th>32 Ω typical</th><th>150 Ω worst</th><th>150 Ω typical</th></tr>
+<tr><td>Audio level</td><td>full scale</td><td>−15 dBFS</td><td>full scale</td><td>−15 dBFS</td></tr>
+<tr><td><strong>Current from the bus</strong></td><td class="n"><strong>69.7 mA</strong></td><td class="n"><strong>42.8 mA</strong></td><td class="n"><strong>62.7 mA</strong></td><td class="n"><strong>41.6 mA</strong></td></tr>
+<tr><td><strong>Power</strong></td><td class="n"><strong>463 mW</strong></td><td class="n"><strong>294 mW</strong></td><td class="n"><strong>420 mW</strong></td><td class="n"><strong>287 mW</strong></td></tr>
+<tr><td>Bus return switch, both cups (limit 300 mA)</td><td class="n">139 mA</td><td class="n">86 mA</td><td class="n">125 mA</td><td class="n">83 mA</td></tr>
+<tr><td>AeroNode battery draw, both cups (boost 85 %)</td><td class="n">~1.31 W</td><td class="n">~0.81 W</td><td class="n">~1.18 W</td><td class="n">~0.78 W</td></tr>
+</table></div>
+
+<h3>Where it goes (worst case, mA)</h3>
+<div class="wrap"><table>
+<tr><th>Rail</th><th>Load</th><th>32 Ω</th><th>150 Ω</th><th>Basis</th></tr>
+<tr><td>1.8 V</td><td>ADAU1861 codec, analog, ANC configuration</td><td class="n">3.0</td><td class="n">3.0</td><td>datasheet Table 7</td></tr>
+<tr><td>1.8 V</td><td>ADAU1861 headphone output, full-scale sine</td><td class="n">28.1</td><td class="n">6.0</td><td>bridged class-AB, I = 2·Vpk/(π·R); matches the datasheet's 4.8 mA at −15 dBFS into 32 Ω</td></tr>
+<tr><td>1.8 V</td><td>ADAU1861 digital core incl. HiFi 3z DSP</td><td class="n">33.1</td><td class="n">33.1</td><td>3.1 mA measured by ADI <em>with the HiFi 3z bypassed</em>; 30 mA added — <strong>assumed</strong></td></tr>
+<tr><td>1.8 V</td><td>IMU, voice mic, PPG module logic, A2B I/O</td><td class="n">4.3</td><td class="n">4.3</td><td>assumed</td></tr>
+<tr><td>bus</td><td>1.8 V buck input (85 % efficient)</td><td class="n">21.9</td><td class="n">14.7</td><td>derived</td></tr>
+<tr><td>bus</td><td>AD2428 A2B transceiver</td><td class="n">29</td><td class="n">29</td><td>datasheet maximum</td></tr>
+<tr><td>bus</td><td>ANC microphones (3.3 V regulator)</td><td class="n">1</td><td class="n">1</td><td>assumed</td></tr>
+<tr><td>bus</td><td>PPG LED supply, average (pulses to 124 mA ride on a capacitor)</td><td class="n">5</td><td class="n">5</td><td>assumed</td></tr>
+<tr><td>bus</td><td>Speaker switch LEDs, two strings, normal mode only</td><td class="n">12.8</td><td class="n">13.0</td><td>PhotoMOS datasheet</td></tr>
+</table></div>
+<p><strong>The speaker is not the big load.</strong> The A2B transceiver (~195 mW — its internal regulators burn the whole bus
+voltage), the DSP core (assumed) and the speaker-switch LEDs (~85 mW, on whenever the cup is in normal mode) dominate. A small
+pre-regulator for the transceiver would roughly halve its share; it is not needed to make the budget close.</p>
+
+<h2>3 · What the driver impedance actually changes</h2>
+<p><strong>Loudness in normal mode.</strong> The codec's output is limited by voltage — 1.0 V rms full scale, which is its 30 mW
+rating into 32 Ω. Into 150 Ω the same voltage delivers only <strong>6.7 mW, 6.7 dB less</strong>. A 150 Ω driver needs about
+6.7 dB more sensitivity (dB SPL per mW) to match a 32 Ω driver at full scale; the drivers' sensitivities are not yet in hand.</p>
+<p><strong>Loudness in bypass.</strong> With the AeroNode off, the panel drives each speaker through an isolation transformer
+(Triad SP-74) wired for 32 Ω. At a Garmin GMA 340's full headphone output (100 mW into 150 Ω, 3.87 V rms) a 32 Ω driver gets
+47 mW and a 150 Ω driver only 10 mW. <strong>For a 150 Ω driver the transformer secondaries should be wired in series</strong>:
+the driver then gets about 40 mW, the panel sees about 185 Ω for the pair, and each transformer stays inside its 50 mW rating.</p>
+
+<h2>4 · What is assumed, and what this does not cover</h2>
+<ul>
+<li><strong>The DSP core current with the HiFi 3z running</strong> — the largest single assumption; ADI's published figure leaves it out.</li>
+<li><strong>The Schottky diode drop</strong> in the bus path at 0.1–0.2 A (taken as 0.38 V; +0.1 V costs 0.2 V at cup R on a battery-direct bus). The 8 V bus makes the conclusion insensitive to both.</li>
+<li>Cable lengths: 2.0 m AeroNode-to-cup, 0.6 m between cups. A metre more costs only 0.05 V.</li>
+<li>No transient analysis (PPG LED pulses, A2B start-up inrush — ADI recommends sizing the bus supply for ≥ 150 mA), and no measured boost efficiency.</li>
+<li>Driver sensitivity for whichever 32 Ω or 150 Ω part is chosen.</li>
+</ul>
+
+<h2>5 · What did not work</h2>
+<p>The first version of the bus fed the cups straight from the battery, following the earlier audio-board design. Working the
+budget is what showed it failing at the bottom of the battery's range — and that the old board's A2B circuit had never
+connected the positive bus bias at all, so the cups would not have been powered over the cable. Both are fixed in the current
+schematics: the full bus-power switch is drawn, and the bus now runs from the 8 V boost.</p>
+
+<p class="tag">Method and inputs: AD242x data sheet Rev C (Fig. 36, Table 16), ADAU1861 data sheet Rev A (Tables 1 and 7), AOS AO3401A,
+Panasonic AQW61xS, TI LM2731 and TPS6216x data sheets, Garmin GMA 340 spec sheet. Every input is tagged fetched / derived / assumed in
+<code>scripts/a2b_bus_budget.py</code> and <code>scripts/cup_power_budget.py</code> in LIMA's repo (pb-aero/lima), which reproduce every number here.</p>
+</main>
+</body>
+</html>
