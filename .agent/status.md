@@ -1753,3 +1753,5 @@ script-written — breach of the Konnect rule, corrected). Found: old board neve
 - **2026-10-23 bus-power budget** (`docs/a2b-bus-power-budget.md`, `scripts/a2b_bus_budget.py`): straight off VBAT, cup R
   < 3.7 V below 5.26 V battery (worst load 94 mA/cup); typical 0.10 V margin at 5.0 V. **Recommend ~8 V boost** for the
   bus + cup R7/R8 -> 680R. VSSN 188/300 mA OK. Asked Peter.
+- **2026-10-23 ruling 12 drawn:** audio U12 LM2731X 8 V A2B bus (VBUS8 -> D2/D3), cup R7/R8 680R. Both boards: netlist ==
+  design file, ERC 0 errors.

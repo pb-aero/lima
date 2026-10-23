@@ -6,6 +6,9 @@ both cups and the cup power budget, and say whether we need a bus boost."*
 
 ## Answer
 
+**Implemented 2026-10-23 (Peter: "yes"):** audio board U12 LM2731X → VBUS8 = 8.00 V, ruling 12 in
+`kicad/audio-board/README.md`; cup R7/R8 → 680R.
+
 **Yes — add a regulated ~8 V bus supply (boost from VBAT) on the audio board.** Fed straight from the battery, the
 last cup (cup R) falls below the AD2428's **3.7 V VIN minimum** whenever the battery is under **5.26 V** at worst-case
 load, and cup L is already below it at 5.0 V. At typical load there is only **0.10 V** of margin at 5.0 V, and a single
@@ -78,7 +81,7 @@ The diode drop and the HiFi 3z current are the two numbers that most need measur
 
 ## Not done here
 
-- Boost part not chosen; nothing drawn. The cup buck input range (TPS62161, 3–17 V) and the ADP7118s (to 20 V) are
+- Boost now drawn (LM2731X, see the audio-board README); no transient or efficiency measurement yet. The cup buck input range (TPS62161, 3–17 V) and the ADP7118s (to 20 V) are
   already fine at 8 V.
 - No transient analysis (MAXM86161 124 mA pulses, A2B discovery inrush).
 - The two biggest assumptions — ZLLS400 forward drop at 0.1–0.2 A and ADAU1861 current with the HiFi 3z running —

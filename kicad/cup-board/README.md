@@ -79,12 +79,12 @@ ERC 0 errors; 6 warnings, all strap pins tied to rails (the 4 old ones plus U6 A
 | Bus power in | L3 (line+ → V_NODE), L4 (line− → GND), D1 ZLLS400 → VIN_CUP, C23/C24 | AD242x DS Fig. 36 (bus-powered sub-node) `[fetched]` |
 | B side (downstream, J8) | Q1 AO3401A switched by SWP (R11–R14, C25/C26), L5/L6, same coupling as the audio board's main node | DS Fig. 36 + eval B side |
 | U6 | I²S master: DTX0 → `I2S0_SDATAI`, DRX0 ← `I2S0_SDATAO`, BCLK/SYNC → `I2S0_BCLK`/`I2S0_FSYNC`; I²C master on SDA/SCL; IOVDD on 1V8; VOUT1/VOUT2 decoupled | AD242x TRM |
-| K2 drive | U6 IO7 → R17 2.2k → Q2 MMBT3904 (R18 100k pull-down) switches U4/U5 LED returns; R7/R8 now 220R from VIN_CUP | audio-board ruling 11 |
+| K2 drive | U6 IO7 → R17 2.2k → Q2 MMBT3904 (R18 100k pull-down) switches U4/U5 LED returns; R7/R8 **680R** from VIN_CUP (220R until the 8 V bus) | audio-board rulings 11, 12 |
 | Power | U7 TPS62161 → 1V8, U8 ADP7118-3.3 → 3V3_MIC, U9 ADP7118-3.3 → VLED (separate, as before, to keep PPG pulses off the mic rail) | TPS6216x DS, ADP7118 |
 
 **Removed:** J3 (1V8/3V3_MIC in), J4 (VLED in), J6 (`SW_DRV` in), and the PWR_FLAGs on 3V3_MIC/VLED (the LDOs drive
-them now). **Why a BJT for K2:** U6's IO is 1.8 V, too low to turn a 2N7002 on reliably. **Why 220R:** keeps the LED
-current ≥ 5 mA nearer the bottom of the bus-voltage range.
+them now). **Why a BJT for K2:** U6's IO is 1.8 V, too low to turn a 2N7002 on reliably. **Why 680R:** with the AeroNode's 8 V bus (ruling 12) VIN_CUP is 6.4–7.2 V, giving 5.1–7.2 mA per string
+(220R would have pushed ~20 mA and wasted ~0.27 W per cup).
 
 **Ground rule `[fetched]` EE-419:** *"the ground of a bus-powered node is not at the same potential as the ground of a
 locally-powered node ... only floating signals ... should be connected."* J5 (SP-74 secondary) is transformer-isolated
@@ -93,9 +93,8 @@ that would have DC-tied the grounds.
 
 ### Open — A2B sub-node
 
-- **VIN_CUP margin at low battery.** 5.0 V battery minus the main node's diode/R18/Q1, cable, inductors, this D1 —
-  and for cup R also cup L's R12/Q1. AD2428 VIN min is 3.7 V and the ADP7118s need ~3.5 V in. **Not analysed**; a
-  boost to ~8 V for the bus on the audio board (ADI's own bias example is 8 V, VIN max 9 V) may be needed.
+- ~~**VIN_CUP margin at low battery.**~~ **Closed 2026-10-23:** `docs/a2b-bus-power-budget.md` → 8 V boost on the audio
+  board (ruling 12); cup R VIN 6.44 V worst case.
 - **Cup power budget not run** (U1's HiFi 3z, three mics, LSM6, MAXM86161 LED pulses) against the main node's 300 mA
   VSSN limit for both cups.
 - **Sub-node IO7 state on data-link loss with bus power still up** — not in the TRM section read.

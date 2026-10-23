@@ -11641,10 +11641,10 @@
 		)
 		(uuid "ef180194-f04b-432e-b8d5-978e843e081a")
 	)
-  (text "A2B SUB-NODE (2026-10-23, per Peter): U6 AD2428, bus-powered (AD242x DS Fig. 36; coupling per EVAL-AD2428WD1BZ sheet 2)\nA side J7 (from AeroNode or previous cup): line+ -> L3 -> V_NODE -> D1 -> VIN_CUP; line- -> L4 -> GND (this cup's ground is the recovered bus bias).\nB side J8 (to next cup, unused on the last cup): V_NODE -> R12 -> Q1 (gate: SWP via R13) -> L5 -> line+; line- -> L6 -> VSSN. SENSE via R14.\nI2S: U6 is master. DTX0 -> I2S0_SDATAI (ADAU1861 in), DRX0 <- I2S0_SDATAO. I2C: U6 masters SDA/SCL at 1V8 (IOVDD = 1V8).\nK2: AudioBoard CTL_SPKR -> main IO7 -> GPIO-over-distance -> U6 IO7 -> K2_CTL -> Q2 -> U4/U5 LEDs (R7/R8 220R from VIN_CUP). Default off.\nPower from VIN_CUP: U7 TPS62161 -> 1V8; U8 ADP7118 -> 3V3_MIC; U9 ADP7118 -> VLED (own LDO: keeps PPG LED pulses off the mic rail).\nEE-419: a bus-powered node's ground is offset from the AeroNode's - connect only floating signals (J5 is transformer-isolated, AC-coupled).\nOPEN: VIN_CUP margin at 5.0 V battery through two cups (AD2428 VIN min 3.7 V) - not analysed."
+  (text "A2B SUB-NODE (2026-10-23, per Peter): U6 AD2428, bus-powered (AD242x DS Fig. 36; coupling per EVAL-AD2428WD1BZ sheet 2)\nA side J7 (from AeroNode or previous cup): line+ -> L3 -> V_NODE -> D1 -> VIN_CUP; line- -> L4 -> GND (this cup's ground is the recovered bus bias).\nB side J8 (to next cup, unused on the last cup): V_NODE -> R12 -> Q1 (gate: SWP via R13) -> L5 -> line+; line- -> L6 -> VSSN. SENSE via R14.\nI2S: U6 is master. DTX0 -> I2S0_SDATAI (ADAU1861 in), DRX0 <- I2S0_SDATAO. I2C: U6 masters SDA/SCL at 1V8 (IOVDD = 1V8).\nK2: AudioBoard CTL_SPKR -> main IO7 -> GPIO-over-distance -> U6 IO7 -> K2_CTL -> Q2 -> U4/U5 LEDs (R7/R8 680R from VIN_CUP). Default off.\nPower from VIN_CUP (6.4-7.2 V with the AeroNode's 8 V bus): U7 TPS62161 -> 1V8; U8 ADP7118 -> 3V3_MIC; U9 ADP7118 -> VLED.\nEE-419: a bus-powered node's ground is offset from the AeroNode's - connect only floating signals (J5 is transformer-isolated, AC-coupled).\nBudget: docs/a2b-bus-power-budget.md - cup R VIN 6.44 V worst case on the 8 V bus (3.7 V min)."
     (at 475 285 0)
     (effects (font (size 1.524 1.524)))
-    (uuid "b036b2ef-8c92-48fb-8c26-c7bd04bca52d")
+    (uuid "a49b8961-2f7a-4426-a4ea-9aace4f9815c")
   )
 	(symbol
 		(lib_id "AnalogDevices:ADAU1861")
@@ -13165,7 +13165,7 @@
 				)
 			)
 		)
-		(property "Value" "220"
+		(property "Value" "680"
 			(at 252.73 161.29 90)
 			(effects
 				(font
@@ -13216,7 +13216,7 @@
 				)
 			)
 		)
-		(property "Value" "220"
+		(property "Value" "680"
 			(at 252.73 184.15 90)
 			(effects
 				(font

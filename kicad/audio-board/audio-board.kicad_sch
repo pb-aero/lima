@@ -9279,6 +9279,201 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Regulator_Switching:LM2731XMF"
+			(property "Reference" "U"
+				(at -5.08 6.35 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "LM2731XMF"
+				(at 0 6.35 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" "Package_TO_SOT_SMD:SOT-23-5"
+				(at 1.27 -6.35 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+						(italic yes)
+					)
+					(justify left)
+				)
+			)
+			(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm2731.pdf"
+				(at 0 2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "LM27313, 1.8A, 22Vout Boost Voltage Regulator, 1.6MHz Frequency, SOT-23-5"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "Miniature Step-Up Boost Voltage Regulator"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "SOT?23*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(embedded_fonts no)
+			(pin_names
+				(offset 0.254)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(symbol "LM2731XMF_0_1"
+				(rectangle
+					(start -5.08 5.08)
+					(end 5.08 -5.08)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol "LM2731XMF_1_1"
+				(pin output line
+					(at 7.62 2.54 180)
+					(length 2.54)
+					(name "SW"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 -7.62 90)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 7.62 -2.54 180)
+					(length 2.54)
+					(name "FB"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -7.62 -2.54 0)
+					(length 2.54)
+					(name "EN"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -7.62 2.54 0)
+					(length 2.54)
+					(name "VIN"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
 	)
 	(no_connect
 		(at 91.44 53.34)
@@ -9457,15 +9652,6 @@
 		)
 		(uuid "21028f1a-8d75-4e5c-a241-6f1988f4e47c")
 	)
-	(text "A2B MAIN NODE: AD2428 (ruling 9), circuit per EVAL-AD2428WD1BZ sheet 2, B side\nVIN from VBAT via D2 (VIN 3.7-9.0 V). Bus power: VBAT -> D3 -> R18 -> Q1 (gate: SWP via R19) -> L3 -> line +.\nLine - -> L4 -> VSSN (internal switch, 300 mA). SENSE reads the switched bias via R20.\nCoupling: FB1/FB2 to BCM, C49, L5/L6, C50, FL1 CMC, R21/R22 + C51, C52/C53 series, C54-C56.\nCups daisy-chain J3 -> cup L -> cup R. OPEN: bus-power margin at 5.0 V through two cups."
-		(at 637.54 320.04 0)
-		(effects
-			(font
-				(size 1.778 1.778)
-			)
-		)
-		(uuid "f6ee3b46-2f59-4afe-b93e-dc9e6353c4f8")
-	)
 	(text "CODEC: ADAU1372\nADC0 = cabin mic U7 IM68A130A, single-ended analogue (John, 2026-10-21), from 3V3A via R6/C35.\nADC1 = comms tap off the T2 secondary: R7/R8 10k/10k, C27, BAT54S D1 clamp (ADC FS 0.90 Vrms).\nDAC0 (HPOUTL +/-, 1.94 Vrms diff FS) drives T4 SM-LP-5001 primary directly (ruling 10).\nT4 secondary (aircraft side) -> R10 10k -> C37 220 nF film -> PV_OUT -> K1 Form A; return PV_RTN -> K1 mic-lo.\nAbout 69 mVrms into a ~470 ohm mic input at 0 dBFS [derived; panel input spec unknown]. No path to our GND."
 		(at 609.6 25.4 0)
 		(effects
@@ -9483,6 +9669,15 @@
 			)
 		)
 		(uuid "29c75c34-0791-4260-8489-8ccef92b6520")
+	)
+	(text "POWER + HOST HEADER\nVBAT = AeroNode BAT_PWR: 2S LiFePO4, 5.0-7.3 V [repo, not confirmed on the AeroNode sheet].\nU1 3V3 buck (I/O) / U2 1V2 buck (hub core 330 mA typ, 940 mA max; TPS62160 is 1 A) / U3 3V3A LDO.\nU2 PG = RESET_N for hub + codec. J1/J2 mirror AeroNode J3/J4 pin-for-pin (2026-08-31 sheet).\nCM5 = I2S consumer (rp1_i2s1), max 8 ch, 32-bit. HOST_SDO1 = coefficient lane (ruling 8).\nCTL_MIC drives K1. CTL_SPKR -> AD2428 IO7 -> GPIO-over-distance -> cup K2 (ruling 11). A2B IRQ unused: CM5 polls."
+		(at 95.25 25.4 0)
+		(effects
+			(font
+				(size 1.778 1.778)
+			)
+		)
+		(uuid "e14e04e5-b96e-4c41-8e8e-44e47aeb38a7")
 	)
 	(label "VBAT"
 		(at 25.4 76.2 180)
@@ -9663,26 +9858,6 @@
 			(justify right bottom)
 		)
 		(uuid "d05d8955-a0c4-4854-ab4d-4ae8ebc7436e")
-	)
-	(label "VBAT"
-		(at 623.57 350.52 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "00d9beea-d2d7-4e8e-8b37-95485d867eb8")
-	)
-	(label "VBAT"
-		(at 648.97 368.3 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "b9bfee71-2f92-4a45-8f96-325a1be88878")
 	)
 	(label "VBAT"
 		(at 134.62 524.51 0)
@@ -13534,22 +13709,168 @@
 		)
 		(uuid "004273ba-94df-463e-9f90-8b7bff765fdb")
 	)
-  (label "CTL_SPKR"
-    (at 25.4 116.83999999999999 180)
+	(label "CTL_SPKR"
+		(at 25.4 116.84 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "591098c9-13b8-4036-9846-e3f1ef1a0ee9")
+	)
+	(label "CTL_SPKR"
+		(at 589.28 453.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "fa32d7b3-a600-45e9-8b61-6afeba10bf19")
+	)
+  (label "VBAT"
+    (at 294.64 55.88 180)
     (fields_autoplaced yes)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid "591098c9-13b8-4036-9846-e3f1ef1a0ee9")
+    (uuid "8f06f650-b0b9-495b-8ff9-aa2525b586bd")
   )
-  (label "CTL_SPKR"
-    (at 589.2800000000001 453.39000000000004 0)
+  (label "VBAT"
+    (at 294.64 60.96 180)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid "ede7044b-bb8a-4379-98ea-04bd28d6420a")
+  )
+  (label "VBAT"
+    (at 274.32 62.230000000000004 0)
     (fields_autoplaced yes)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "fa32d7b3-a600-45e9-8b61-6afeba10bf19")
+    (uuid "7c0ab96c-85bb-4377-9d17-b44dc8256e54")
   )
-  (text "POWER + HOST HEADER\nVBAT = AeroNode BAT_PWR: 2S LiFePO4, 5.0-7.3 V [repo, not confirmed on the AeroNode sheet].\nU1 3V3 buck (I/O) / U2 1V2 buck (hub core 330 mA typ, 940 mA max; TPS62160 is 1 A) / U3 3V3A LDO.\nU2 PG = RESET_N for hub + codec. J1/J2 mirror AeroNode J3/J4 pin-for-pin (2026-08-31 sheet).\nCM5 = I2S consumer (rp1_i2s1), max 8 ch, 32-bit. HOST_SDO1 = coefficient lane (ruling 8).\nCTL_MIC drives K1. CTL_SPKR -> AD2428 IO7 -> GPIO-over-distance -> cup K2 (ruling 11). A2B IRQ unused: CM5 polls."
-    (at 95.25 25.4 0)
+  (label "VBAT"
+    (at 280.67 45.72 180)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid "ad8c5e05-8bea-4c39-a4f9-e3d8638b88ba")
+  )
+  (label "GND"
+    (at 302.26 66.04 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "a944cf84-ccb0-4c63-9944-9c75a3cd3425")
+  )
+  (label "GND"
+    (at 274.32 69.85000000000001 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "ca02b563-7034-46a8-9cbe-a79b13fc40d5")
+  )
+  (label "GND"
+    (at 335.28 64.77 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "e4578b3f-78a0-41db-9e47-620e1cee5941")
+  )
+  (label "GND"
+    (at 347.98 64.77 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "164ce004-a78e-490f-a2f3-4f806ea1323d")
+  )
+  (label "GND"
+    (at 360.68 77.47 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "6f0ed486-1b7a-4703-9c4a-83fb039cef92")
+  )
+  (label "BOOST_SW"
+    (at 288.29 45.72 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "9ddcfadb-c2f8-4263-b36d-7945b0b92aa2")
+  )
+  (label "BOOST_SW"
+    (at 309.88 55.88 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "37baf24b-0b9f-4a5f-8954-846651f9c118")
+  )
+  (label "BOOST_SW"
+    (at 326.39 45.72 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "396a25d9-e936-4e88-ad64-c46355ab18fb")
+  )
+  (label "VBUS8"
+    (at 318.77 45.72 180)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid "f0a1bd00-1464-4aef-a58b-66b356774a70")
+  )
+  (label "VBUS8"
+    (at 335.28 57.15 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "7ec37cf1-3c48-401a-8693-d3d87bc91420")
+  )
+  (label "VBUS8"
+    (at 347.98 57.15 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "d49b4b6a-e700-49f1-bc75-0d62f408bebd")
+  )
+  (label "VBUS8"
+    (at 360.68 52.07 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "7db1a180-074b-41d8-b233-da20d7c34d76")
+  )
+  (label "VBUS8"
+    (at 373.38 52.07 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "b2ca68d5-0266-421d-8d93-fa7f1410b077")
+  )
+  (label "VBUS8"
+    (at 623.5699999999999 350.52 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "b9cd30dc-6198-4d6d-a2f5-f97b42f432a9")
+  )
+  (label "VBUS8"
+    (at 648.9699999999999 368.3 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "81b718bb-1eac-4841-9a7c-b7a67966a5cc")
+  )
+  (label "BOOST_FB"
+    (at 309.88 60.96 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "ac941ff3-0c75-4475-a78d-f28fbffae6f3")
+  )
+  (label "BOOST_FB"
+    (at 360.68 59.690000000000005 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "0aa5e8b1-92c9-4a30-a891-101cd5c43c68")
+  )
+  (label "BOOST_FB"
+    (at 360.68 69.85 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "a65f2a39-8a73-4618-8ebd-1bebc42a33a5")
+  )
+  (label "BOOST_FB"
+    (at 373.38 59.690000000000005 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "dd728cdf-9492-4f1f-8967-e8787a4aac79")
+  )
+  (text "A2B MAIN NODE: AD2428 (ruling 9), circuit per EVAL-AD2428WD1BZ sheet 2, B side\nVBUS8 = U12 LM2731X boost from VBAT, 8.00 V (R27/R28, Cf C60) - ruling 12, docs/a2b-bus-power-budget.md.\nVIN = VBUS8 via D2 (7.6 V, max 9.0). Bus power: VBUS8 -> D3 -> R18 -> Q1 (gate: SWP via R19) -> L3 -> line +.\nLine - -> L4 -> VSSN (internal switch, 300 mA; cups need ~188 mA worst). SENSE via R20. A2B_SWCTL.MODE = 0.\nCoupling: FB1/FB2 to BCM, C49, L5/L6, C50, FL1 CMC, R21/R22 + C51, C52/C53 series, C54-C56. J3 -> cup L -> cup R."
+    (at 637.54 320.04 0)
     (effects (font (size 1.778 1.778)))
-    (uuid "e14e04e5-b96e-4c41-8e8e-44e47aeb38a7")
+    (uuid "f3a52065-fff9-418c-ab72-8d31f69d7d64")
   )
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x10")
@@ -19484,6 +19805,475 @@
 			(project "audio-board"
 				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
 					(reference "T4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Regulator_Switching:LM2731XMF")
+		(at 302.26 58.42 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "069e7afa-6080-4503-8ac6-d6728184a2fc")
+		(property "Reference" "U12"
+			(at 297.18 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "LM2731XMF (8 V A2B bus)"
+			(at 302.26 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 302.26 58.42 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 302.26 58.42 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
+					(reference "U12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:L")
+		(at 284.48 45.72 90)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "fd56d373-dad0-4a13-ba6e-ba6efdb9d152")
+		(property "Reference" "L7"
+			(at 284.48 46.99 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10uH 1.5A"
+			(at 284.48 43.815 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 284.48 45.72 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 284.48 45.72 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
+					(reference "L7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D_Schottky")
+		(at 322.58 45.72 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "dbdef2ef-f0b5-4500-a51c-ed2493779c12")
+		(property "Reference" "D4"
+			(at 322.58 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "MBR0520"
+			(at 322.58 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 322.58 45.72 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 322.58 45.72 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
+					(reference "D4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 274.32 66.04 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "29547552-0153-4084-a4f7-4ca850f398f4")
+		(property "Reference" "C57"
+			(at 274.955 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10uF 16V"
+			(at 274.955 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 274.32 66.04 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 274.32 66.04 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
+					(reference "C57")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 335.28 60.96 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0a927c0c-8547-4dc5-b438-dc1970aa4a0e")
+		(property "Reference" "C58"
+			(at 335.915 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10uF 25V"
+			(at 335.915 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 335.28 60.96 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 335.28 60.96 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
+					(reference "C58")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 347.98 60.96 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7ecefec5-9839-44f5-a70e-a4aaf774ec82")
+		(property "Reference" "C59"
+			(at 348.615 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10uF 25V"
+			(at 348.615 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 347.98 60.96 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 347.98 60.96 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
+					(reference "C59")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 360.68 55.88 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7ea5d962-30b5-4c45-87b1-233fd65f1402")
+		(property "Reference" "R27"
+			(at 362.712 55.88 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "73.2k 1%"
+			(at 360.68 55.88 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 360.68 55.88 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 360.68 55.88 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
+					(reference "R27")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 360.68 73.66 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d16e7be7-a3cb-4fdd-b43b-24cb3c22a98c")
+		(property "Reference" "R28"
+			(at 362.712 73.66 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "13.3k 1%"
+			(at 360.68 73.66 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 360.68 73.66 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 360.68 73.66 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
+					(reference "R28")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 373.38 55.88 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "147a2232-16e5-49cc-9855-f735190eecdf")
+		(property "Reference" "C60"
+			(at 374.015 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "330pF"
+			(at 374.015 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 373.38 55.88 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 373.38 55.88 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
+					(reference "C60")
 					(unit 1)
 				)
 			)
