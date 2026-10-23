@@ -181,6 +181,8 @@ L3.2, went nowhere) — coupling only, no bus power to the cups. The new one car
   driving both cups would carry **94.9 mW (190 %)** — so the second SP-74 stays (Peter asked 2026-10-23). Margin
   is thin even with two; the sheet is a 2000-era spec sheet, not the installation manual (190-00149-01), which
   was not checked. Other panels: re-run with their headphone rating.
+  **Stereo split (T2 on L, T3 on R) considered and declined — Peter, 2026-10-23: both primaries stay on one mono
+  earphone line.**
 - **AeroNode header is unconnected in its own file** (see the header section) — owner's fix.
 - Spec §8 (electret location / count / isolation) and §4 (clock survival on the hub) — block layout.
 - Watchdog parked (ruling 4); TPS3430 + 74LVC1G74 footprint room not yet reserved (no layout yet).
