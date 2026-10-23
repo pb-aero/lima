@@ -38,6 +38,7 @@ architecture, not an earlier revision of this one; it stays retrievable from git
 | 7 | **I²S from the CM5 to the audio board** | Peter, 2026-10-22. CM5 is I²S slave to the hub (spec §4). Over the AeroNode's existing audio header J3/J4 — below |
 | 8 | **DVNC/ANC coefficients travel as audio data, not SPI** — CM5 → spare I²S lane → hub → A2B downstream TDM slot → cup ADAU1861 serial port → unpacked by the cup DSP | Peter, 2026-10-22, because the AeroNode audio header carries no SPI (option 1 of the three below). **Lane:** `I2S1_SDO1` (J3.7) `[default]`. **Requirements this creates:** (a) the hub must route that channel **bit-exact** — no gain, mix, ASRC, dither or limiter on it; (b) the stream carries its own **framing + CRC**, and the cup **keeps its previous coefficients** when a block fails — an audio slot has no ACK; (c) **cup firmware** work on the HiFi 3z, the cost JULIETT's SPI route avoided; (d) **one more downstream slot** in the A2B TDM map (still unfrozen). Bandwidth: 1 slot × 32 bit × 48 kHz = 1.536 Mbit/s vs ~112 kbit/s needed `[derived]`. **Consequence:** the AD2433's only stated advantage over the AD2428 was SPI-over-A2B for exactly this path (JULIETT `2026-09-25-003`), so ruling 6's reason no longer holds — the AD2428 (non-NDA, symbol already in the library) would serve. **Ruled in 9.** John/JULIETT not told |
 | 9 | **A2B part is the AD2428 at both ends** — AeroNode main node and each cup sub-node | Peter, 2026-10-22, once ruling 8 took SPI out of the coefficient path: full data sheet public (`docs/datasheets/AD242x_RevC.pdf`), symbol already in `AnalogDevices`. Remote I²C over A2B is now **control traffic only**, so errata 18000075/18000052 touch configuration, not the canceller. **Slot capacity `[fetched]`** AD242x TRM: *"Up to 32 channels (1 x TDM32 or 2 x TDM16)"*, TDM2–TDM32 per pin — the two-slot cap asked about in JULIETT `2026-09-25-003` §2.3 is the PDM-clocked-from-BCLK case only (TDM2/32 or TDM4/16), which does not apply: the cup voice mic is on the ADAU1861's DMIC, not the AD2428's PDM pins |
+| 10 | **PureVoice output through a Bourns SM-LP-5001 (T4), not the TLV9062 buffer** | Peter, 2026-10-23. Restores his September ruling (*"use the transformer approach for the aircraft side"*, status.md), which the clean-slate redraw had dropped — and the redraw had also bonded our GND to the panel mic return through K1 mic-lo, the exact failure status.md warned about. Both HPOUTL legs drive the 600 ohm primary directly (no primary cap). **Attenuator on the secondary** (R10 10k: primary then sees ~116 ohm, LF corner ~5 Hz; on the primary it would be 419 Hz). **DC block on the aircraft side** (C37 220 nF film, 63 V; 69 Hz with 10.47k) so the console's mic bias never reaches the winding. Secondary return **PV_RTN -> K1 mic-lo (U11.5)**, never our GND. Level `[derived]` from ADAU1372 DS (1.94 Vrms diff FS at AVDD 3.3 V `[fetched]`): 1.54 Vrms after 2 dB insertion loss, ~69 mVrms into a ~470 ohm mic node at 0 dBFS. Removes U8, R11-R16, C36, C38. SP-74 rejected for this job: 80:32/8 ohm speaker matching, 1000 Vrms/1 s hipot vs 2000 Vrms/1 min, 300 Hz low edge. **Open:** SM-LP-5001 environmental rating vs the SP-74's MIL-T-27E — check before flight hardware |
 
 Defaults stated to Peter 2026-10-22 and not overridden — **confirm before layout**:
 
@@ -148,7 +149,7 @@ bidirectional-to-power on straps (U5 WP/HOLD to +3V3, U9 ADR1/ADR2 to GND) — i
 |---|---|---|
 | Power + host | J1/J2 (AeroNode J3/J4 mirror), U1 TPS62162 3V3, U2 TPS62160 1V2 (R1/R2 49.9k/100k = 1.199 V), U3 ADP7118 3V3A | TPS6216x DS: VFB 0.8 V, 2.2 µH + 22 µF `[fetched]` |
 | Hub | U4 ADAU1467, Y1 12.288 MHz, U5 W25Q32 boot flash, PLL filter C9/C10/R5, R26 VDRIVE→GND, 13 decouplers | ADAU1463/1467 Rev A: Fig. 16, pin 3, self-boot section `[fetched]` |
-| Codec | U6 ADAU1372, U7 IM68A130A, comms tap R7/R8/C27/D1, U8 TLV9062 diff amp | ADAU1372 pin table `[fetched]` |
+| Codec | U6 ADAU1372, U7 IM68A130A, comms tap R7/R8/C27/D1, PureVoice out T4 SM-LP-5001 + R10/C37 (ruling 10; was U8 TLV9062) | ADAU1372 pin table `[fetched]` |
 | A2B | U9 AD2428 + bus-power switch (D3, Q1 AO3401A, R17–R20, C46–C48, L3/L4) + coupling | EVAL-AD2428WD1BZ sheet 2, B side, read from rendered image `[fetched]` |
 | Aircraft / bypass | J5 panel, J6 electret, T2/T3 SP-74, U10/U11 AQW612S (K1), Q2, R23/R24 390R | rulings 2 and 4; AQW61xS DS (IF 5–30 mA) `[fetched]` |
 
@@ -165,7 +166,7 @@ L3.2, went nowhere) — coupling only, no bus power to the cups. The new one car
 4. **Codec I2C address straps all 0; AD2428 ADR1/ADR2 = 0; hub ADDR = 0.** Exact 7-bit addresses not
    checked against each other `[assumed]` — they are different part families.
 5. **Comms tap grounds the cup-L speaker return (SPK_L_B) through R9 0R.** Depopulate R9 to float it.
-6. **PureVoice gain 0.1** (R10–R13) — the panel mic input level is unknown (spec §9).
+6. **PureVoice level ~69 mVrms at 0 dBFS** (T4 + R10 10k into an assumed ~470 ohm mic node) — the panel mic input spec is unknown (spec §9); trim in DSP.
 7. **J3 = cup L (A2B + speaker), J4 = cup R (speaker only)**; cup R gets A2B from cup L.
 8. **CTL_SPKR repurposed as A2B_IRQ.**
 
