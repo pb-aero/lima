@@ -1758,3 +1758,7 @@ script-written — breach of the Konnect rule, corrected). Found: old board neve
 - **2026-10-23 cup power budget** (`docs/cup-power-budget.md`, `scripts/cup_power_budget.py`): 8 V bus, worst 463 mW/cup
   (32 ohm) vs 420 mW (150 ohm); typical ~290 mW. VSSN <= 139/300 mA, cup R VIN >= 6.65 V. 150 ohm driver is
   voltage-limited to 6.7 mW (-6.7 dB) and needs SP-74 secondaries in SERIES for bypass level.
+- **2026-10-23 published** `reports/peter/LIMA_cup_power_budget.html` + manifest row, company `9bab694` (verified full SHA);
+  source `lima@92a69f3`, record `1cf7160`. Power budget only (Peter); schematic summary to John/JULIETT still held.
+  Push output listed both files under a remote notice (header line not captured) — same lane-bypass banner as 21 Oct, presumably.
+  Not done: LIMA_cup_board.html still carries its 19 Oct (pre-A2B) power section — candidate for needs-revalidation.
