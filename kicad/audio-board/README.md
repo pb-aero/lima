@@ -1,6 +1,6 @@
 # Audio board (AeroNode side) — clean-slate redo
 
-**Status:** **schematic redrawn 2026-10-22** — one A1 sheet, 116 parts, drawn entirely through Konnect.
+**Status:** **schematic redrawn 2026-10-22** — one A1 sheet, 108 parts (ruling 10 applied 2026-10-23), drawn entirely through Konnect.
 Netlist matches `doc/design_nets.py` exactly; ERC 0 errors (4 expected strap warnings). Not reviewed,
 no footprints for the custom parts, no layout. Started 2026-10-22, per Peter:
 *"redo the audio board schematic on a clean slate using the new reference diagram from Juliette."*

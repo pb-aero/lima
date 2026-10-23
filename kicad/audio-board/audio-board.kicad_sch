@@ -8909,6 +8909,376 @@
 				)
 			)
 		)
+		(symbol "Device:Transformer_1P_1S"
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "T"
+				(at 0 6.35 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "Transformer_1P_1S"
+				(at 0 -7.62 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Transformer, single primary, single secondary"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "transformer coil magnet"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "Transformer_1P_1S_0_1"
+				(arc
+					(start -1.27 3.81)
+					(mid -1.656 2.9336)
+					(end -2.54 2.5654)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -1.27 1.27)
+					(mid -1.656 0.3936)
+					(end -2.54 0.0254)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -1.27 -1.27)
+					(mid -1.656 -2.1464)
+					(end -2.54 -2.5146)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -1.27 -3.81)
+					(mid -1.656 -4.6864)
+					(end -2.54 -5.0546)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -2.54 5.08)
+					(mid -1.642 4.708)
+					(end -1.27 3.81)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -2.54 2.54)
+					(mid -1.642 2.168)
+					(end -1.27 1.27)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -2.54 0)
+					(mid -1.642 -0.372)
+					(end -1.27 -1.27)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -2.54 -2.54)
+					(mid -1.642 -2.912)
+					(end -1.27 -3.81)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.635 5.08)
+						(xy -0.635 -5.08)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.635 -5.08)
+						(xy 0.635 5.08)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.2954 3.81)
+					(mid 1.6457 4.7117)
+					(end 2.54 5.08)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.2954 1.27)
+					(mid 1.6457 2.1717)
+					(end 2.54 2.54)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.2954 -1.27)
+					(mid 1.6457 -0.3683)
+					(end 2.54 0)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 2.54 2.5654)
+					(mid 1.6599 2.9299)
+					(end 1.2954 3.81)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 2.54 0.0254)
+					(mid 1.6599 0.3899)
+					(end 1.2954 1.27)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 2.54 -2.5146)
+					(mid 1.6599 -2.1501)
+					(end 1.2954 -1.27)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.3208 -3.81)
+					(mid 1.6711 -2.9085)
+					(end 2.5654 -2.54)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 2.5654 -5.0546)
+					(mid 1.6851 -4.6902)
+					(end 1.3208 -3.81)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "Transformer_1P_1S_1_1"
+				(pin passive line
+					(at -10.16 5.08 0)
+					(length 7.62)
+					(name "AA"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -10.16 -5.08 0)
+					(length 7.62)
+					(name "AB"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 10.16 -5.08 180)
+					(length 7.62)
+					(name "SA"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 10.16 5.08 180)
+					(length 7.62)
+					(name "SB"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(no_connect
 		(at 91.44 53.34)
@@ -9077,6 +9447,33 @@
 	(no_connect
 		(at 548.64 435.61)
 		(uuid "73ac87f0-c561-43c6-80f0-6b31fbf2520e")
+	)
+	(text "POWER + HOST HEADER\nVBAT = AeroNode BAT_PWR: 2S LiFePO4, 5.0-7.3 V [repo, not confirmed on the AeroNode sheet].\nU1 3V3 buck (I/O) / U2 1V2 buck (hub core 330 mA typ, 940 mA max; TPS62160 is 1 A) / U3 3V3A LDO.\nU2 PG = RESET_N for hub + codec. J1/J2 mirror AeroNode J3/J4 pin-for-pin (2026-08-31 sheet).\nCM5 = I2S consumer (rp1_i2s1), max 8 ch, 32-bit. HOST_SDO1 = coefficient lane (ruling 8).\nCTL_MIC drives K1. CTL_SPKR is re-used as A2B_IRQ."
+		(at 95.25 25.4 0)
+		(effects
+			(font
+				(size 1.778 1.778)
+			)
+		)
+		(uuid "3174e2fd-0b7b-4df2-9170-d0642f25f6ad")
+	)
+	(text "HUB: ADAU1467 (clock master, routing, CM5 I/O)\nOne 12.288 MHz XO into XTALIN/MCLK; hub drives CODEC_MCLK (CLKOUT) and every BCLK/LRCLK.\nSelf-boot from U5 W25Q32 on the SPI master (SPI mode 3, read 0x03). I2C slave, ADDR1/ADDR0 = 0.\nPLL filter per DS Fig. 16 (150 pF || 5.6 nF + 4.3 k, to PVDD). VDRIVE to GND via R26: DVDD is external.\nOUT0/IN0 = CM5, OUT2/IN2 = codec, OUT3/IN3 + SDATAIO4/5 = A2B, SDATAIO0-3 = spare CM5 lanes.\nThe coefficient channel must be routed bit-exact: no ASRC, gain, mix or dither."
+		(at 365.76 93.98 0)
+		(effects
+			(font
+				(size 1.778 1.778)
+			)
+		)
+		(uuid "21028f1a-8d75-4e5c-a241-6f1988f4e47c")
+	)
+	(text "A2B MAIN NODE: AD2428 (ruling 9), circuit per EVAL-AD2428WD1BZ sheet 2, B side\nVIN from VBAT via D2 (VIN 3.7-9.0 V). Bus power: VBAT -> D3 -> R18 -> Q1 (gate: SWP via R19) -> L3 -> line +.\nLine - -> L4 -> VSSN (internal switch, 300 mA). SENSE reads the switched bias via R20.\nCoupling: FB1/FB2 to BCM, C49, L5/L6, C50, FL1 CMC, R21/R22 + C51, C52/C53 series, C54-C56.\nCups daisy-chain J3 -> cup L -> cup R. OPEN: bus-power margin at 5.0 V through two cups."
+		(at 637.54 320.04 0)
+		(effects
+			(font
+				(size 1.778 1.778)
+			)
+		)
+		(uuid "f6ee3b46-2f59-4afe-b93e-dc9e6353c4f8")
 	)
 	(label "VBAT"
 		(at 25.4 76.2 180)
@@ -10019,46 +10416,6 @@
 		(uuid "1e795186-b647-49e4-9702-4f5aa58db40b")
 	)
 	(label "GND"
-		(at 741.68 260.35 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "87ed00a5-5ac8-462f-83b1-a068fcd4e620")
-	)
-	(label "GND"
-		(at 756.92 260.35 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "2b844573-3d5d-43b0-92ce-2337b9f820d1")
-	)
-	(label "GND"
-		(at 701.04 292.1 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "fc29f8b1-0e05-4bc9-8fec-bd20f6faabfd")
-	)
-	(label "GND"
-		(at 756.92 303.53 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "6ee37ba6-8808-4519-a832-2f12ecbfc846")
-	)
-	(label "GND"
 		(at 589.28 433.07 0)
 		(effects
 			(font
@@ -10227,16 +10584,6 @@
 			(justify left bottom)
 		)
 		(uuid "70ef7469-9bda-4289-8bc0-e672b7afcd8d")
-	)
-	(label "GND"
-		(at 200.66 476.25 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "cd6edfca-12ab-49cb-9713-5d7eff71aa13")
 	)
 	(label "GND"
 		(at 187.96 538.48 0)
@@ -10797,36 +11144,6 @@
 			(justify left bottom)
 		)
 		(uuid "3bf82d0a-b353-407a-8762-020032d3cc66")
-	)
-	(label "+3V3A"
-		(at 726.44 252.73 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "fb7d0bdf-c13d-4eb2-a845-861c4aead928")
-	)
-	(label "+3V3A"
-		(at 701.04 276.86 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "cdc7aaf4-b541-4fd0-8178-7d28424bf290")
-	)
-	(label "+3V3A"
-		(at 756.92 295.91 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "eb178249-5410-40bd-a52f-7358b839d0ab")
 	)
 	(label "SW1V2"
 		(at 111.76 93.98 0)
@@ -11938,16 +12255,6 @@
 		)
 		(uuid "7a876726-af15-41a3-8055-6282f832706a")
 	)
-	(label "DAC_N"
-		(at 596.9 280.67 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "550462fc-907a-4062-9303-41ef4cb78238")
-	)
 	(label "DAC_P"
 		(at 623.57 134.62 0)
 		(effects
@@ -11958,136 +12265,6 @@
 		)
 		(uuid "cebcb518-e300-4371-9b57-dc1bfdb911d1")
 	)
-	(label "DAC_P"
-		(at 596.9 252.73 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "3ad0d55f-9559-4ec6-8444-3e9e9ac7c313")
-	)
-	(label "OPA_INP"
-		(at 596.9 260.35 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "e750f5ee-a1cd-42e9-812d-42246d5a5eff")
-	)
-	(label "OPA_INP"
-		(at 612.14 252.73 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "f79b465c-3a7c-4d14-9852-4f82579bdca4")
-	)
-	(label "OPA_INP"
-		(at 652.78 266.7 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "77c24fee-cd7f-47bf-9b83-d75bc5032e2f")
-	)
-	(label "OPA_INN"
-		(at 596.9 288.29 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "c527d528-d9dc-4862-b1c1-3d3819b54ff3")
-	)
-	(label "OPA_INN"
-		(at 612.14 280.67 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "afaf818c-59b1-4a4d-848b-621e67fce6a9")
-	)
-	(label "OPA_INN"
-		(at 652.78 271.78 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "9784f7c4-0665-480f-8947-1da5e59541c6")
-	)
-	(label "PV_BUF"
-		(at 668.02 269.24 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "f566a1f1-7eb3-48b7-a85b-a01375fdd123")
-	)
-	(label "PV_BUF"
-		(at 612.14 288.29 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "30a0c623-debd-4733-8d62-2790a7e2dae6")
-	)
-	(label "PV_BUF"
-		(at 726.44 295.91 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "8946fb4d-0897-445b-bc13-073a487a6c36")
-	)
-	(label "PV_C"
-		(at 726.44 303.53 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "ddb15ba0-af3d-4b66-833e-708b67ed618e")
-	)
-	(label "PV_C"
-		(at 741.68 295.91 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "99fe7099-7dbc-4675-8f48-63aee6469f62")
-	)
-	(label "PV_OUT"
-		(at 741.68 303.53 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "a8497695-3d27-4585-a1b3-3aeaa1133f3a")
-	)
 	(label "PV_OUT"
 		(at 200.66 430.53 0)
 		(effects
@@ -12097,76 +12274,6 @@
 			(justify left bottom)
 		)
 		(uuid "fb955e7e-a146-4fb1-864e-bc532d2f5012")
-	)
-	(label "VREF_MID"
-		(at 612.14 260.35 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "26b685e2-8cc4-4895-8773-6451dd4e1fef")
-	)
-	(label "VREF_MID"
-		(at 726.44 260.35 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "2b8784e1-95d1-404c-b61f-4266f81255b3")
-	)
-	(label "VREF_MID"
-		(at 741.68 252.73 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "9f98e155-67a0-41aa-9ee3-3789bc0568c7")
-	)
-	(label "VREF_MID"
-		(at 756.92 252.73 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "de9447fe-b7ba-4016-aec1-a40c5b2e3d56")
-	)
-	(label "VREF_MID"
-		(at 652.78 297.18 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "69fe161d-37a4-4f56-994f-aad6460565ac")
-	)
-	(label "U8B_FB"
-		(at 652.78 302.26 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "2dbb9ead-2d8e-4cef-bead-107000fc68f6")
-	)
-	(label "U8B_FB"
-		(at 668.02 299.72 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "ead217e0-0a59-4ba2-8b2c-6d6592101c83")
 	)
 	(label "A2B_VIN"
 		(at 576.58 461.01 270)
@@ -13318,48 +13425,99 @@
 		)
 		(uuid "0c483f75-24a0-42e7-a8f2-f283bfd39d3d")
 	)
-  (label "VDRIVE"
-    (at 340.36 175.26 180)
+	(label "VDRIVE"
+		(at 340.36 175.26 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "91a2d77f-fa2e-4805-a6e8-b4099476db33")
+	)
+	(label "VDRIVE"
+		(at 467.36 300.99 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "efc10e5a-0d49-4ddf-a5d6-7475fe6a6923")
+	)
+	(label "GND"
+		(at 467.36 308.61 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "05369fb1-fc9c-4961-a692-ed28323122f3")
+	)
+  (label "DAC_P"
+    (at 650.24 274.32 180)
     (fields_autoplaced yes)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid "91a2d77f-fa2e-4805-a6e8-b4099476db33")
+    (uuid "18603250-1506-4a51-80f7-d09b01cffdb0")
   )
-  (label "VDRIVE"
-    (at 467.36 300.99 0)
+  (label "DAC_N"
+    (at 650.24 284.47999999999996 180)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid "c2b5a9b4-bf2d-44ed-a361-a08207aca2ae")
+  )
+  (label "PV_SEC"
+    (at 670.56 284.47999999999996 0)
     (fields_autoplaced yes)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "efc10e5a-0d49-4ddf-a5d6-7475fe6a6923")
+    (uuid "21af59a7-dd5f-416d-af85-fe593f7b61f8")
   )
-  (label "GND"
-    (at 467.36 308.61 0)
+  (label "PV_SEC"
+    (at 693.42 273.05 0)
     (fields_autoplaced yes)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "05369fb1-fc9c-4961-a692-ed28323122f3")
+    (uuid "7f77cb01-4e8e-4d03-a20d-f17a719b689c")
   )
-  (text "POWER + HOST HEADER\nVBAT = AeroNode BAT_PWR: 2S LiFePO4, 5.0-7.3 V [repo, not confirmed on the AeroNode sheet].\nU1 3V3 buck (I/O) / U2 1V2 buck (hub core 330 mA typ, 940 mA max; TPS62160 is 1 A) / U3 3V3A LDO.\nU2 PG = RESET_N for hub + codec. J1/J2 mirror AeroNode J3/J4 pin-for-pin (2026-08-31 sheet).\nCM5 = I2S consumer (rp1_i2s1), max 8 ch, 32-bit. HOST_SDO1 = coefficient lane (ruling 8).\nCTL_MIC drives K1. CTL_SPKR is re-used as A2B_IRQ."
-    (at 95.25 25.4 0)
-    (effects (font (size 1.778 1.778)))
-    (uuid "3174e2fd-0b7b-4df2-9170-d0642f25f6ad")
+  (label "PV_ATT"
+    (at 693.42 280.67 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "fb35651a-857b-4e77-878d-68a6f06358c7")
   )
-  (text "HUB: ADAU1467 (clock master, routing, CM5 I/O)\nOne 12.288 MHz XO into XTALIN/MCLK; hub drives CODEC_MCLK (CLKOUT) and every BCLK/LRCLK.\nSelf-boot from U5 W25Q32 on the SPI master (SPI mode 3, read 0x03). I2C slave, ADDR1/ADDR0 = 0.\nPLL filter per DS Fig. 16 (150 pF || 5.6 nF + 4.3 k, to PVDD). VDRIVE to GND via R26: DVDD is external.\nOUT0/IN0 = CM5, OUT2/IN2 = codec, OUT3/IN3 + SDATAIO4/5 = A2B, SDATAIO0-3 = spare CM5 lanes.\nThe coefficient channel must be routed bit-exact: no ASRC, gain, mix or dither."
-    (at 365.76 93.98 0)
-    (effects (font (size 1.778 1.778)))
-    (uuid "21028f1a-8d75-4e5c-a241-6f1988f4e47c")
+  (label "PV_ATT"
+    (at 726.44 295.91 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "26606f4e-61e8-46bb-973d-737d73cf20a9")
   )
-  (text "CODEC: ADAU1372\nADC0 = cabin mic U7 IM68A130A, single-ended analogue (John, 2026-10-21), from 3V3A via R6/C35.\nADC1 = comms tap off the T2 secondary: R7/R8 10k/10k, C27, BAT54S D1 clamp to the rails.\nDAC0 (HPOUTL +/-) -> U8A difference amp, gain 0.1 about VREF_MID -> C37 / R16 -> PV_OUT -> K1 Form A.\nPanel mic input level is unspecified (spec section 9): gain set by R10-R13, trim in DSP."
+  (label "PV_OUT"
+    (at 726.44 303.53000000000003 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "1add94e0-c9ec-4956-97f1-02d118de68ae")
+  )
+  (label "PV_RTN"
+    (at 670.56 274.32 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "7e06ea13-c436-489c-80d7-63ab119e5cc9")
+  )
+  (label "PV_RTN"
+    (at 200.66 476.25 0)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid "004273ba-94df-463e-9f90-8b7bff765fdb")
+  )
+  (text "CODEC: ADAU1372\nADC0 = cabin mic U7 IM68A130A, single-ended analogue (John, 2026-10-21), from 3V3A via R6/C35.\nADC1 = comms tap off the T2 secondary: R7/R8 10k/10k, C27, BAT54S D1 clamp (ADC FS 0.90 Vrms).\nDAC0 (HPOUTL +/-, 1.94 Vrms diff FS) drives T4 SM-LP-5001 primary directly (ruling 10).\nT4 secondary (aircraft side) -> R10 10k -> C37 220 nF film -> PV_OUT -> K1 Form A; return PV_RTN -> K1 mic-lo.\nAbout 69 mVrms into a ~470 ohm mic input at 0 dBFS [derived; panel input spec unknown]. No path to our GND."
     (at 609.6 25.4 0)
     (effects (font (size 1.778 1.778)))
-    (uuid "5930420b-54fa-4478-9abe-73d2cd4c66c8")
+    (uuid "926fcc35-ad30-47f4-b07d-7f231289ec6e")
   )
-  (text "A2B MAIN NODE: AD2428 (ruling 9), circuit per EVAL-AD2428WD1BZ sheet 2, B side\nVIN from VBAT via D2 (VIN 3.7-9.0 V). Bus power: VBAT -> D3 -> R18 -> Q1 (gate: SWP via R19) -> L3 -> line +.\nLine - -> L4 -> VSSN (internal switch, 300 mA). SENSE reads the switched bias via R20.\nCoupling: FB1/FB2 to BCM, C49, L5/L6, C50, FL1 CMC, R21/R22 + C51, C52/C53 series, C54-C56.\nCups daisy-chain J3 -> cup L -> cup R. OPEN: bus-power margin at 5.0 V through two cups."
-    (at 637.54 320.04 0)
-    (effects (font (size 1.778 1.778)))
-    (uuid "f6ee3b46-2f59-4afe-b93e-dc9e6353c4f8")
-  )
-  (text "AIRCRAFT / BYPASS: aircraft-powered whenever we are off\nT2/T3 Triad SP-74: primaries in parallel on the panel earphone line, secondaries paralleled (3/5, 4/6).\nK1 = U10 (mic-hi) + U11 (mic-lo), AQW612S each (ruling 2). LEDs OFF = bypass: electret J6 -> panel mic.\nCTL_MIC high -> Q2 on -> LEDs on (VBAT via R23/R24 390R, 5.1-12.8 mA) -> Form A: PV_OUT / GND -> panel.\nWatchdog parked (ruling 4): a hung CM5 holding CTL_MIC high leaves K1 in NORMAL. SP-74 polarity unverified."
+  (text "AIRCRAFT / BYPASS: aircraft-powered whenever we are off\nT2/T3 Triad SP-74: primaries in parallel on the panel earphone line, secondaries paralleled (3/5, 4/6).\nK1 = U10 (mic-hi) + U11 (mic-lo), AQW612S each (ruling 2). LEDs OFF = bypass: electret J6 -> panel mic.\nCTL_MIC high -> Q2 on -> LEDs on (VBAT via R23/R24 390R, 5.1-12.8 mA) -> Form A: PV_OUT / PV_RTN (T4) -> panel.\nBoth mic legs stay isolated from our GND in both states. Watchdog parked (ruling 4). SP-74 polarity unverified."
     (at 132.08 370.84 0)
     (effects (font (size 1.778 1.778)))
-    (uuid "c2a88ac8-5bbd-44ba-a13f-d51cd599c004")
+    (uuid "29c75c34-0791-4260-8489-8ccef92b6520")
   )
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x10")
@@ -16605,182 +16763,23 @@
 		)
 	)
 	(symbol
-		(lib_id "Amplifier_Operational:TLV9062xD")
-		(at 660.4 269.24 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "e5f3bee8-0138-4a53-a86e-461d2a85eb63")
-		(property "Reference" "U8"
-			(at 662.94 262.89 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "TLV9062xD"
-			(at 662.94 265.43 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 660.4 269.24 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 660.4 269.24 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "audio-board"
-				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
-					(reference "U8")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Amplifier_Operational:TLV9062xD")
-		(at 660.4 299.72 0)
-		(unit 2)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "c34621e8-73bf-4190-95ab-03f57a0c62e7")
-		(property "Reference" "U8"
-			(at 662.94 293.37 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "TLV9062xD"
-			(at 662.94 295.91 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 660.4 299.72 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 660.4 299.72 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "audio-board"
-				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
-					(reference "U8")
-					(unit 2)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Amplifier_Operational:TLV9062xD")
-		(at 701.04 284.48 0)
-		(unit 3)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "ffd4c227-37d9-42e9-99c3-148fd42b3746")
-		(property "Reference" "U8"
-			(at 703.58 278.13 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "TLV9062xD"
-			(at 703.58 280.67 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 701.04 284.48 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 701.04 284.48 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "audio-board"
-				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
-					(reference "U8")
-					(unit 3)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:R")
-		(at 596.9 256.54 0)
+		(at 693.42 276.86 0)
 		(unit 1)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(uuid "22855846-46d6-46ab-b6b2-d09428de9eb6")
 		(property "Reference" "R10"
-			(at 598.932 256.54 90)
+			(at 695.452 276.86 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Value" "10k 0.1%"
-			(at 596.9 256.54 90)
+		(property "Value" "10k"
+			(at 693.42 276.86 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -16788,7 +16787,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 596.9 256.54 0)
+			(at 693.42 276.86 0)
 			(hide yes)
 			(effects
 				(font
@@ -16797,7 +16796,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 596.9 256.54 0)
+			(at 693.42 276.86 0)
 			(hide yes)
 			(effects
 				(font
@@ -16809,314 +16808,6 @@
 			(project "audio-board"
 				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
 					(reference "R10")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 612.14 256.54 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "92398480-b762-44ef-9da4-802f5f2297e1")
-		(property "Reference" "R11"
-			(at 614.172 256.54 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "1k 0.1%"
-			(at 612.14 256.54 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 612.14 256.54 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 612.14 256.54 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "audio-board"
-				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
-					(reference "R11")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 596.9 284.48 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "d6520871-df85-42af-9e8f-393dad96152a")
-		(property "Reference" "R12"
-			(at 598.932 284.48 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "10k 0.1%"
-			(at 596.9 284.48 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 596.9 284.48 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 596.9 284.48 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "audio-board"
-				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
-					(reference "R12")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 612.14 284.48 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "b387126e-a805-455d-a63c-fb5657717a5c")
-		(property "Reference" "R13"
-			(at 614.172 284.48 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "1k 0.1%"
-			(at 612.14 284.48 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 612.14 284.48 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 612.14 284.48 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "audio-board"
-				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
-					(reference "R13")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 726.44 256.54 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "dad5e4db-60d2-4967-ad57-b8223be261f0")
-		(property "Reference" "R14"
-			(at 728.472 256.54 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "10k"
-			(at 726.44 256.54 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 726.44 256.54 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 726.44 256.54 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "audio-board"
-				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
-					(reference "R14")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 741.68 256.54 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "77630a9b-9ddc-48ec-956a-66a10ff5a06a")
-		(property "Reference" "R15"
-			(at 743.712 256.54 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "10k"
-			(at 741.68 256.54 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 741.68 256.54 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 741.68 256.54 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "audio-board"
-				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
-					(reference "R15")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:C")
-		(at 756.92 256.54 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "4fcbbc84-9743-464c-bcbb-3ca4b1f38d2d")
-		(property "Reference" "C36"
-			(at 757.555 254 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "10uF"
-			(at 757.555 259.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 756.92 256.54 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 756.92 256.54 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "audio-board"
-				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
-					(reference "C36")
 					(unit 1)
 				)
 			)
@@ -17139,7 +16830,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "10uF 25V"
+		(property "Value" "220nF film"
 			(at 727.075 302.26 0)
 			(effects
 				(font
@@ -17170,110 +16861,6 @@
 			(project "audio-board"
 				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
 					(reference "C37")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 741.68 299.72 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "4c1feae1-0bc5-40bf-9ea3-1c26da2e52fa")
-		(property "Reference" "R16"
-			(at 743.712 299.72 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "47R"
-			(at 741.68 299.72 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 741.68 299.72 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 741.68 299.72 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "audio-board"
-				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
-					(reference "R16")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:C")
-		(at 756.92 299.72 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "5b085b20-8970-49db-81df-af3f2b17dc70")
-		(property "Reference" "C38"
-			(at 757.555 297.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "100nF"
-			(at 757.555 302.26 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 756.92 299.72 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 756.92 299.72 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "audio-board"
-				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
-					(reference "C38")
 					(unit 1)
 				)
 			)
@@ -19814,6 +19401,57 @@
 			(project "audio-board"
 				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
 					(reference "R26")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:Transformer_1P_1S")
+		(at 660.4 279.4 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e4c8b615-e4ae-4b2d-a320-ae9fd64b75dc")
+		(property "Reference" "T4"
+			(at 660.4 273.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Bourns SM-LP-5001 (600:600)"
+			(at 660.4 287.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 660.4 279.4 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 660.4 279.4 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
+					(reference "T4")
 					(unit 1)
 				)
 			)

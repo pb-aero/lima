@@ -1743,4 +1743,4 @@ script-written — breach of the Konnect rule, corrected). Found: old board neve
 **Team summary to John/JULIETT now due** (held by Peter until the schematic was drawn).
 - **2026-10-23 ruling 10: PureVoice out via Bourns SM-LP-5001 (T4)**, attenuator R10 10k on the secondary, C37 220 nF film
   DC block aircraft side, return to K1 mic-lo. Restores Peter's Sept transformer ruling that the redraw dropped (and fixes the
-  GND-to-MIC_LO bond I drew). design_nets.py updated; **schematic edit pending Konnect reconnect.**
+  GND-to-MIC_LO bond I drew). design_nets.py updated; **Schematic edited 2026-10-23: netlist == design file, ERC 0 errors.**
