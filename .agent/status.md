@@ -1755,3 +1755,6 @@ script-written — breach of the Konnect rule, corrected). Found: old board neve
   bus + cup R7/R8 -> 680R. VSSN 188/300 mA OK. Asked Peter.
 - **2026-10-23 ruling 12 drawn:** audio U12 LM2731X 8 V A2B bus (VBUS8 -> D2/D3), cup R7/R8 680R. Both boards: netlist ==
   design file, ERC 0 errors.
+- **2026-10-23 cup power budget** (`docs/cup-power-budget.md`, `scripts/cup_power_budget.py`): 8 V bus, worst 463 mW/cup
+  (32 ohm) vs 420 mW (150 ohm); typical ~290 mW. VSSN <= 139/300 mA, cup R VIN >= 6.65 V. 150 ohm driver is
+  voltage-limited to 6.7 mW (-6.7 dB) and needs SP-74 secondaries in SERIES for bypass level.
