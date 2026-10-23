@@ -9433,10 +9433,6 @@
 		(uuid "f967cb3a-8ee6-4881-a93d-e2a88e3aaf3f")
 	)
 	(no_connect
-		(at 589.28 453.39)
-		(uuid "8a02fa4a-eb03-4487-af32-af15eb5c84f5")
-	)
-	(no_connect
 		(at 548.64 430.53)
 		(uuid "59fcc95a-c44e-4e7f-8e10-f7b001cfc8c2")
 	)
@@ -9448,14 +9444,9 @@
 		(at 548.64 435.61)
 		(uuid "73ac87f0-c561-43c6-80f0-6b31fbf2520e")
 	)
-	(text "POWER + HOST HEADER\nVBAT = AeroNode BAT_PWR: 2S LiFePO4, 5.0-7.3 V [repo, not confirmed on the AeroNode sheet].\nU1 3V3 buck (I/O) / U2 1V2 buck (hub core 330 mA typ, 940 mA max; TPS62160 is 1 A) / U3 3V3A LDO.\nU2 PG = RESET_N for hub + codec. J1/J2 mirror AeroNode J3/J4 pin-for-pin (2026-08-31 sheet).\nCM5 = I2S consumer (rp1_i2s1), max 8 ch, 32-bit. HOST_SDO1 = coefficient lane (ruling 8).\nCTL_MIC drives K1. CTL_SPKR is re-used as A2B_IRQ."
-		(at 95.25 25.4 0)
-		(effects
-			(font
-				(size 1.778 1.778)
-			)
-		)
-		(uuid "3174e2fd-0b7b-4df2-9170-d0642f25f6ad")
+	(no_connect
+		(at 589.28 430.53)
+		(uuid "7db77540-c99d-4363-8bb0-a416bbd34e2e")
 	)
 	(text "HUB: ADAU1467 (clock master, routing, CM5 I/O)\nOne 12.288 MHz XO into XTALIN/MCLK; hub drives CODEC_MCLK (CLKOUT) and every BCLK/LRCLK.\nSelf-boot from U5 W25Q32 on the SPI master (SPI mode 3, read 0x03). I2C slave, ADDR1/ADDR0 = 0.\nPLL filter per DS Fig. 16 (150 pF || 5.6 nF + 4.3 k, to PVDD). VDRIVE to GND via R26: DVDD is external.\nOUT0/IN0 = CM5, OUT2/IN2 = codec, OUT3/IN3 + SDATAIO4/5 = A2B, SDATAIO0-3 = spare CM5 lanes.\nThe coefficient channel must be routed bit-exact: no ASRC, gain, mix or dither."
 		(at 365.76 93.98 0)
@@ -9474,6 +9465,24 @@
 			)
 		)
 		(uuid "f6ee3b46-2f59-4afe-b93e-dc9e6353c4f8")
+	)
+	(text "CODEC: ADAU1372\nADC0 = cabin mic U7 IM68A130A, single-ended analogue (John, 2026-10-21), from 3V3A via R6/C35.\nADC1 = comms tap off the T2 secondary: R7/R8 10k/10k, C27, BAT54S D1 clamp (ADC FS 0.90 Vrms).\nDAC0 (HPOUTL +/-, 1.94 Vrms diff FS) drives T4 SM-LP-5001 primary directly (ruling 10).\nT4 secondary (aircraft side) -> R10 10k -> C37 220 nF film -> PV_OUT -> K1 Form A; return PV_RTN -> K1 mic-lo.\nAbout 69 mVrms into a ~470 ohm mic input at 0 dBFS [derived; panel input spec unknown]. No path to our GND."
+		(at 609.6 25.4 0)
+		(effects
+			(font
+				(size 1.778 1.778)
+			)
+		)
+		(uuid "926fcc35-ad30-47f4-b07d-7f231289ec6e")
+	)
+	(text "AIRCRAFT / BYPASS: aircraft-powered whenever we are off\nT2/T3 Triad SP-74: primaries in parallel on the panel earphone line, secondaries paralleled (3/5, 4/6).\nK1 = U10 (mic-hi) + U11 (mic-lo), AQW612S each (ruling 2). LEDs OFF = bypass: electret J6 -> panel mic.\nCTL_MIC high -> Q2 on -> LEDs on (VBAT via R23/R24 390R, 5.1-12.8 mA) -> Form A: PV_OUT / PV_RTN (T4) -> panel.\nBoth mic legs stay isolated from our GND in both states. Watchdog parked (ruling 4). SP-74 polarity unverified."
+		(at 132.08 370.84 0)
+		(effects
+			(font
+				(size 1.778 1.778)
+			)
+		)
+		(uuid "29c75c34-0791-4260-8489-8ccef92b6520")
 	)
 	(label "VBAT"
 		(at 25.4 76.2 180)
@@ -11485,26 +11494,6 @@
 		)
 		(uuid "b6f785c8-2642-4695-86b3-d9a5cf662fce")
 	)
-	(label "A2B_IRQ"
-		(at 25.4 116.84 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "c8114ea5-096a-4107-bbdc-34d9d2c510a3")
-	)
-	(label "A2B_IRQ"
-		(at 589.28 430.53 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "22b7ee06-09ad-4c93-b9d0-b86617d70dc8")
-	)
 	(label "HOST_SDI2"
 		(at 25.4 119.38 180)
 		(effects
@@ -13455,69 +13444,112 @@
 		)
 		(uuid "05369fb1-fc9c-4961-a692-ed28323122f3")
 	)
-  (label "DAC_P"
-    (at 650.24 274.32 180)
+	(label "DAC_P"
+		(at 650.24 274.32 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "18603250-1506-4a51-80f7-d09b01cffdb0")
+	)
+	(label "DAC_N"
+		(at 650.24 284.48 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "c2b5a9b4-bf2d-44ed-a361-a08207aca2ae")
+	)
+	(label "PV_SEC"
+		(at 670.56 284.48 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "21af59a7-dd5f-416d-af85-fe593f7b61f8")
+	)
+	(label "PV_SEC"
+		(at 693.42 273.05 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "7f77cb01-4e8e-4d03-a20d-f17a719b689c")
+	)
+	(label "PV_ATT"
+		(at 693.42 280.67 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "fb35651a-857b-4e77-878d-68a6f06358c7")
+	)
+	(label "PV_ATT"
+		(at 726.44 295.91 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "26606f4e-61e8-46bb-973d-737d73cf20a9")
+	)
+	(label "PV_OUT"
+		(at 726.44 303.53 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "1add94e0-c9ec-4956-97f1-02d118de68ae")
+	)
+	(label "PV_RTN"
+		(at 670.56 274.32 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "7e06ea13-c436-489c-80d7-63ab119e5cc9")
+	)
+	(label "PV_RTN"
+		(at 200.66 476.25 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "004273ba-94df-463e-9f90-8b7bff765fdb")
+	)
+  (label "CTL_SPKR"
+    (at 25.4 116.83999999999999 180)
     (fields_autoplaced yes)
     (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid "18603250-1506-4a51-80f7-d09b01cffdb0")
+    (uuid "591098c9-13b8-4036-9846-e3f1ef1a0ee9")
   )
-  (label "DAC_N"
-    (at 650.24 284.47999999999996 180)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid "c2b5a9b4-bf2d-44ed-a361-a08207aca2ae")
-  )
-  (label "PV_SEC"
-    (at 670.56 284.47999999999996 0)
+  (label "CTL_SPKR"
+    (at 589.2800000000001 453.39000000000004 0)
     (fields_autoplaced yes)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "21af59a7-dd5f-416d-af85-fe593f7b61f8")
+    (uuid "fa32d7b3-a600-45e9-8b61-6afeba10bf19")
   )
-  (label "PV_SEC"
-    (at 693.42 273.05 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "7f77cb01-4e8e-4d03-a20d-f17a719b689c")
-  )
-  (label "PV_ATT"
-    (at 693.42 280.67 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "fb35651a-857b-4e77-878d-68a6f06358c7")
-  )
-  (label "PV_ATT"
-    (at 726.44 295.91 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "26606f4e-61e8-46bb-973d-737d73cf20a9")
-  )
-  (label "PV_OUT"
-    (at 726.44 303.53000000000003 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "1add94e0-c9ec-4956-97f1-02d118de68ae")
-  )
-  (label "PV_RTN"
-    (at 670.56 274.32 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "7e06ea13-c436-489c-80d7-63ab119e5cc9")
-  )
-  (label "PV_RTN"
-    (at 200.66 476.25 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "004273ba-94df-463e-9f90-8b7bff765fdb")
-  )
-  (text "CODEC: ADAU1372\nADC0 = cabin mic U7 IM68A130A, single-ended analogue (John, 2026-10-21), from 3V3A via R6/C35.\nADC1 = comms tap off the T2 secondary: R7/R8 10k/10k, C27, BAT54S D1 clamp (ADC FS 0.90 Vrms).\nDAC0 (HPOUTL +/-, 1.94 Vrms diff FS) drives T4 SM-LP-5001 primary directly (ruling 10).\nT4 secondary (aircraft side) -> R10 10k -> C37 220 nF film -> PV_OUT -> K1 Form A; return PV_RTN -> K1 mic-lo.\nAbout 69 mVrms into a ~470 ohm mic input at 0 dBFS [derived; panel input spec unknown]. No path to our GND."
-    (at 609.6 25.4 0)
+  (text "POWER + HOST HEADER\nVBAT = AeroNode BAT_PWR: 2S LiFePO4, 5.0-7.3 V [repo, not confirmed on the AeroNode sheet].\nU1 3V3 buck (I/O) / U2 1V2 buck (hub core 330 mA typ, 940 mA max; TPS62160 is 1 A) / U3 3V3A LDO.\nU2 PG = RESET_N for hub + codec. J1/J2 mirror AeroNode J3/J4 pin-for-pin (2026-08-31 sheet).\nCM5 = I2S consumer (rp1_i2s1), max 8 ch, 32-bit. HOST_SDO1 = coefficient lane (ruling 8).\nCTL_MIC drives K1. CTL_SPKR -> AD2428 IO7 -> GPIO-over-distance -> cup K2 (ruling 11). A2B IRQ unused: CM5 polls."
+    (at 95.25 25.4 0)
     (effects (font (size 1.778 1.778)))
-    (uuid "926fcc35-ad30-47f4-b07d-7f231289ec6e")
-  )
-  (text "AIRCRAFT / BYPASS: aircraft-powered whenever we are off\nT2/T3 Triad SP-74: primaries in parallel on the panel earphone line, secondaries paralleled (3/5, 4/6).\nK1 = U10 (mic-hi) + U11 (mic-lo), AQW612S each (ruling 2). LEDs OFF = bypass: electret J6 -> panel mic.\nCTL_MIC high -> Q2 on -> LEDs on (VBAT via R23/R24 390R, 5.1-12.8 mA) -> Form A: PV_OUT / PV_RTN (T4) -> panel.\nBoth mic legs stay isolated from our GND in both states. Watchdog parked (ruling 4). SP-74 polarity unverified."
-    (at 132.08 370.84 0)
-    (effects (font (size 1.778 1.778)))
-    (uuid "29c75c34-0791-4260-8489-8ccef92b6520")
+    (uuid "e14e04e5-b96e-4c41-8e8e-44e47aeb38a7")
   )
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x10")

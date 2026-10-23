@@ -1745,3 +1745,5 @@ script-written — breach of the Konnect rule, corrected). Found: old board neve
   DC block aircraft side, return to K1 mic-lo. Restores Peter's Sept transformer ruling that the redraw dropped (and fixes the
   GND-to-MIC_LO bond I drew). design_nets.py updated; **Schematic edited 2026-10-23: netlist == design file, ERC 0 errors.**
 - **2026-10-23: Peter reviewing the schematic; team summary to John/JULIETT held until he's done.**
+- **2026-10-23 ruling 11:** CTL_SPKR -> AD2428 IO7 -> GPIO-over-distance -> cup K2; A2B IRQ dropped (CM5 polls). Drawn;
+  netlist == design file, ERC 0 errors. Next: A2B sub-node on the cup board (Peter asked).
