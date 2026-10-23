@@ -175,6 +175,12 @@ L3.2, went nowhere) — coupling only, no bus power to the cups. The new one car
 - **Footprints:** ADAU1467 (88-LFCSP 12×12) and IM68A130A (PG-TLGA-4-2) have none; T2/T3, FL1, J1–J6 not chosen.
 - **Bus-power margin** at 5.0 V battery through D3, Q1, two cables and two cup nodes — not analysed.
 - **SP-74 secondary polarity** (paralleling 3/5 and 4/6 wrongly shorts them) — still unverified.
+- **SP-74 power at full panel volume — checked 2026-10-23 against the GMA 340.** Garmin spec sheet M02-10023-00
+  (REV0300) `[fetched]`: *"100 mW per stereo channel, each headset, into 150 ohms"* = 3.87 Vrms. Our load is two
+  SP-74s in parallel = 158 ohm, so `[derived]` **47.5 mW per SP-74 against its 50 mW rating (95 %)**. One SP-74
+  driving both cups would carry **94.9 mW (190 %)** — so the second SP-74 stays (Peter asked 2026-10-23). Margin
+  is thin even with two; the sheet is a 2000-era spec sheet, not the installation manual (190-00149-01), which
+  was not checked. Other panels: re-run with their headphone rating.
 - **AeroNode header is unconnected in its own file** (see the header section) — owner's fix.
 - Spec §8 (electret location / count / isolation) and §4 (clock survival on the hub) — block layout.
 - Watchdog parked (ruling 4); TPS3430 + 74LVC1G74 footprint room not yet reserved (no layout yet).
