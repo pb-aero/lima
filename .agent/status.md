@@ -1781,3 +1781,10 @@ JLCPCB assembly, JST GH for all off-board connectors.** Approved downloads: Open
 - **Defaults to put to Peter:** T4 pad map (PV_SEC on undotted end, i.e. inverted vs DAC_P); FL1 MPN unchosen
   (ACM3216 footprint assumes windings 1-2/3-4 — verify); L1/L2 1008, L3/L4 1210, L7 XAL4030, C37 1812 film are
   package guesses, not parts.
+- **2026-10-23 (later) placement DONE, `232b699`:** 117 parts + H1-H4 (holes now schematic symbols) placed by block;
+  placement DRC-clean on the saved file (only unconnected), netlist == design file, ERC 0 errors. Render at
+  `kicad/audio-board/doc/placement-2026-10-23.png`. **Awaiting Peter's placement review before autoroute.**
+  Rules now: min hole 0.2, Default/Power clearance 0.127 — KiCad had the project open when these were written;
+  **re-check .kicad_pro after KiCad next closes** (it may write its in-memory copy back).
+  Open before fab: custom footprints print literal "REF**" on silk (Konnect writer quirk); 117
+  lib_footprint_mismatch warnings; ~200 silk overlaps. `kicad/audio-board/.history/` is KiCad's backup dir (untracked).
