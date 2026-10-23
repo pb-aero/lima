@@ -128,3 +128,12 @@ J6 electret) along the bottom edge, kept apart from our ground per ruling 10; U7
 **Freerouting jar** sha256 `f6f51bb02245e8e717f9359bd260cc9c5c0b1bc0acc8b7cb2cd5b8ffeb5de3c7`, 64,599,107 bytes
 (matches the GitHub API size). Konnect's `check_freerouting` didn't find it at the default path — pass `jar_path`,
 and Java is keg-only, so the autoroute tool may need PATH set or may fail to find java. Check before relying on it.
+
+## 2026-10-23 (late) · Autoroute — two runs, neither imported
+
+Board on disk = `6310987` (placed + In1 GND / In2 +3V3 planes, unrouted). Nothing imported.
+Route path that works: KiCad's bundled Python (`/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/Current/bin/python3`, pcbnew 10.0.3) has `ExportSpecctraDSN` / `ImportSpecctraSES`; Konnect's own `autoroute` refuses (no DSN in kicad-cli). Its `check_freerouting` passes `--version`, which opens the Freerouting GUI and hangs — don't call it.
+Java: Homebrew `openjdk` (27) symlinked into `~/Library/Java/JavaVirtualMachines/`; openjdk@21 removed (Freerouting 2.5.0 needs Java 25+).
+- Run 1 (In1/In2 planes, 0.6/0.8 vias): 75 unrouted, 0 violations.
+- Run 2 (In2 routable, 0.5/0.25 + 0.6/0.3 vias, scratch DSN edits only): 64 unrouted, 0 violations; stalled after pass 8. Final unrouted list is dominated by **GND (89 connections), +3V3A (15), VBAT (10)** — i.e. power/ground **fanout to the plane** is failing (fanout escaped only 265/454 SMD pins), not signal congestion.
+**Next idea:** pre-place GND/+3V3A stitching vias at the dense parts (hub/codec/A2B decoupling) by hand or loosen the decoupling ring spacing, then rerun; or route power by hand and let Freerouting do signals only. Importing SES must be done with KiCad closed (commit first).
