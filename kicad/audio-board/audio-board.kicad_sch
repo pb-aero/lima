@@ -9474,6 +9474,105 @@
 				)
 			)
 		)
+		(symbol "Mechanical:MountingHole"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom no)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "H"
+				(at 0 5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "MountingHole"
+				(at 0 3.175 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Mounting Hole without connection"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "mounting hole"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "MountingHole*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "MountingHole_0_1"
+				(circle
+					(center 0 0)
+					(radius 1.27)
+					(stroke
+						(width 1.27)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(no_connect
 		(at 91.44 53.34)
@@ -9678,6 +9777,15 @@
 			)
 		)
 		(uuid "e14e04e5-b96e-4c41-8e8e-44e47aeb38a7")
+	)
+	(text "A2B MAIN NODE: AD2428 (ruling 9), circuit per EVAL-AD2428WD1BZ sheet 2, B side\nVBUS8 = U12 LM2731X boost from VBAT, 8.00 V (R27/R28, Cf C60) - ruling 12, docs/a2b-bus-power-budget.md.\nVIN = VBUS8 via D2 (7.6 V, max 9.0). Bus power: VBUS8 -> D3 -> R18 -> Q1 (gate: SWP via R19) -> L3 -> line +.\nLine - -> L4 -> VSSN (internal switch, 300 mA; cups need ~188 mA worst). SENSE via R20. A2B_SWCTL.MODE = 0.\nCoupling: FB1/FB2 to BCM, C49, L5/L6, C50, FL1 CMC, R21/R22 + C51, C52/C53 series, C54-C56. J3 -> cup L -> cup R."
+		(at 637.54 320.04 0)
+		(effects
+			(font
+				(size 1.778 1.778)
+			)
+		)
+		(uuid "f3a52065-fff9-418c-ab72-8d31f69d7d64")
 	)
 	(label "VBAT"
 		(at 25.4 76.2 180)
@@ -13729,149 +13837,236 @@
 		)
 		(uuid "fa32d7b3-a600-45e9-8b61-6afeba10bf19")
 	)
-  (label "VBAT"
-    (at 294.64 55.88 180)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid "8f06f650-b0b9-495b-8ff9-aa2525b586bd")
-  )
-  (label "VBAT"
-    (at 294.64 60.96 180)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid "ede7044b-bb8a-4379-98ea-04bd28d6420a")
-  )
-  (label "VBAT"
-    (at 274.32 62.230000000000004 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "7c0ab96c-85bb-4377-9d17-b44dc8256e54")
-  )
-  (label "VBAT"
-    (at 280.67 45.72 180)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid "ad8c5e05-8bea-4c39-a4f9-e3d8638b88ba")
-  )
-  (label "GND"
-    (at 302.26 66.04 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "a944cf84-ccb0-4c63-9944-9c75a3cd3425")
-  )
-  (label "GND"
-    (at 274.32 69.85000000000001 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "ca02b563-7034-46a8-9cbe-a79b13fc40d5")
-  )
-  (label "GND"
-    (at 335.28 64.77 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "e4578b3f-78a0-41db-9e47-620e1cee5941")
-  )
-  (label "GND"
-    (at 347.98 64.77 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "164ce004-a78e-490f-a2f3-4f806ea1323d")
-  )
-  (label "GND"
-    (at 360.68 77.47 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "6f0ed486-1b7a-4703-9c4a-83fb039cef92")
-  )
-  (label "BOOST_SW"
-    (at 288.29 45.72 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "9ddcfadb-c2f8-4263-b36d-7945b0b92aa2")
-  )
-  (label "BOOST_SW"
-    (at 309.88 55.88 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "37baf24b-0b9f-4a5f-8954-846651f9c118")
-  )
-  (label "BOOST_SW"
-    (at 326.39 45.72 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "396a25d9-e936-4e88-ad64-c46355ab18fb")
-  )
-  (label "VBUS8"
-    (at 318.77 45.72 180)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid "f0a1bd00-1464-4aef-a58b-66b356774a70")
-  )
-  (label "VBUS8"
-    (at 335.28 57.15 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "7ec37cf1-3c48-401a-8693-d3d87bc91420")
-  )
-  (label "VBUS8"
-    (at 347.98 57.15 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "d49b4b6a-e700-49f1-bc75-0d62f408bebd")
-  )
-  (label "VBUS8"
-    (at 360.68 52.07 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "7db1a180-074b-41d8-b233-da20d7c34d76")
-  )
-  (label "VBUS8"
-    (at 373.38 52.07 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "b2ca68d5-0266-421d-8d93-fa7f1410b077")
-  )
-  (label "VBUS8"
-    (at 623.5699999999999 350.52 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "b9cd30dc-6198-4d6d-a2f5-f97b42f432a9")
-  )
-  (label "VBUS8"
-    (at 648.9699999999999 368.3 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "81b718bb-1eac-4841-9a7c-b7a67966a5cc")
-  )
-  (label "BOOST_FB"
-    (at 309.88 60.96 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "ac941ff3-0c75-4475-a78d-f28fbffae6f3")
-  )
-  (label "BOOST_FB"
-    (at 360.68 59.690000000000005 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "0aa5e8b1-92c9-4a30-a891-101cd5c43c68")
-  )
-  (label "BOOST_FB"
-    (at 360.68 69.85 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "a65f2a39-8a73-4618-8ebd-1bebc42a33a5")
-  )
-  (label "BOOST_FB"
-    (at 373.38 59.690000000000005 0)
-    (fields_autoplaced yes)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "dd728cdf-9492-4f1f-8967-e8787a4aac79")
-  )
-  (text "A2B MAIN NODE: AD2428 (ruling 9), circuit per EVAL-AD2428WD1BZ sheet 2, B side\nVBUS8 = U12 LM2731X boost from VBAT, 8.00 V (R27/R28, Cf C60) - ruling 12, docs/a2b-bus-power-budget.md.\nVIN = VBUS8 via D2 (7.6 V, max 9.0). Bus power: VBUS8 -> D3 -> R18 -> Q1 (gate: SWP via R19) -> L3 -> line +.\nLine - -> L4 -> VSSN (internal switch, 300 mA; cups need ~188 mA worst). SENSE via R20. A2B_SWCTL.MODE = 0.\nCoupling: FB1/FB2 to BCM, C49, L5/L6, C50, FL1 CMC, R21/R22 + C51, C52/C53 series, C54-C56. J3 -> cup L -> cup R."
-    (at 637.54 320.04 0)
-    (effects (font (size 1.778 1.778)))
-    (uuid "f3a52065-fff9-418c-ab72-8d31f69d7d64")
-  )
+	(label "VBAT"
+		(at 294.64 55.88 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "8f06f650-b0b9-495b-8ff9-aa2525b586bd")
+	)
+	(label "VBAT"
+		(at 294.64 60.96 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "ede7044b-bb8a-4379-98ea-04bd28d6420a")
+	)
+	(label "VBAT"
+		(at 274.32 62.23 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "7c0ab96c-85bb-4377-9d17-b44dc8256e54")
+	)
+	(label "VBAT"
+		(at 280.67 45.72 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "ad8c5e05-8bea-4c39-a4f9-e3d8638b88ba")
+	)
+	(label "GND"
+		(at 302.26 66.04 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a944cf84-ccb0-4c63-9944-9c75a3cd3425")
+	)
+	(label "GND"
+		(at 274.32 69.85 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ca02b563-7034-46a8-9cbe-a79b13fc40d5")
+	)
+	(label "GND"
+		(at 335.28 64.77 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e4578b3f-78a0-41db-9e47-620e1cee5941")
+	)
+	(label "GND"
+		(at 347.98 64.77 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "164ce004-a78e-490f-a2f3-4f806ea1323d")
+	)
+	(label "GND"
+		(at 360.68 77.47 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "6f0ed486-1b7a-4703-9c4a-83fb039cef92")
+	)
+	(label "BOOST_SW"
+		(at 288.29 45.72 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "9ddcfadb-c2f8-4263-b36d-7945b0b92aa2")
+	)
+	(label "BOOST_SW"
+		(at 309.88 55.88 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "37baf24b-0b9f-4a5f-8954-846651f9c118")
+	)
+	(label "BOOST_SW"
+		(at 326.39 45.72 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "396a25d9-e936-4e88-ad64-c46355ab18fb")
+	)
+	(label "VBUS8"
+		(at 318.77 45.72 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "f0a1bd00-1464-4aef-a58b-66b356774a70")
+	)
+	(label "VBUS8"
+		(at 335.28 57.15 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "7ec37cf1-3c48-401a-8693-d3d87bc91420")
+	)
+	(label "VBUS8"
+		(at 347.98 57.15 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "d49b4b6a-e700-49f1-bc75-0d62f408bebd")
+	)
+	(label "VBUS8"
+		(at 360.68 52.07 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "7db1a180-074b-41d8-b233-da20d7c34d76")
+	)
+	(label "VBUS8"
+		(at 373.38 52.07 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b2ca68d5-0266-421d-8d93-fa7f1410b077")
+	)
+	(label "VBUS8"
+		(at 623.57 350.52 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b9cd30dc-6198-4d6d-a2f5-f97b42f432a9")
+	)
+	(label "VBUS8"
+		(at 648.97 368.3 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "81b718bb-1eac-4841-9a7c-b7a67966a5cc")
+	)
+	(label "BOOST_FB"
+		(at 309.88 60.96 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ac941ff3-0c75-4475-a78d-f28fbffae6f3")
+	)
+	(label "BOOST_FB"
+		(at 360.68 59.69 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "0aa5e8b1-92c9-4a30-a891-101cd5c43c68")
+	)
+	(label "BOOST_FB"
+		(at 360.68 69.85 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a65f2a39-8a73-4618-8ebd-1bebc42a33a5")
+	)
+	(label "BOOST_FB"
+		(at 373.38 59.69 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "dd728cdf-9492-4f1f-8967-e8787a4aac79")
+	)
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x10")
 		(at 30.48 63.5 0)
@@ -20274,6 +20469,210 @@
 			(project "audio-board"
 				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
 					(reference "C60")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Mechanical:MountingHole")
+		(at 40.64 571.5 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f75f4d1e-2310-4d5b-b57c-f75ee347c52b")
+		(property "Reference" "H1"
+			(at 40.64 566.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "M3"
+			(at 40.64 568.325 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "MountingHole:MountingHole_3.2mm_M3"
+			(at 40.64 571.5 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 40.64 571.5 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
+					(reference "H1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Mechanical:MountingHole")
+		(at 55.88 571.5 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "be5d289e-12e0-49eb-b1ff-0d02a69a6458")
+		(property "Reference" "H2"
+			(at 55.88 566.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "M3"
+			(at 55.88 568.325 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "MountingHole:MountingHole_3.2mm_M3"
+			(at 55.88 571.5 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 55.88 571.5 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
+					(reference "H2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Mechanical:MountingHole")
+		(at 71.12 571.5 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "00c74aa6-3161-404e-94eb-e7a2e8c82d72")
+		(property "Reference" "H3"
+			(at 71.12 566.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "M3"
+			(at 71.12 568.325 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "MountingHole:MountingHole_3.2mm_M3"
+			(at 71.12 571.5 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 71.12 571.5 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
+					(reference "H3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Mechanical:MountingHole")
+		(at 86.36 571.5 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "49d68318-b10f-4035-9518-8c649cb6efa2")
+		(property "Reference" "H4"
+			(at 86.36 566.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "M3"
+			(at 86.36 568.325 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "MountingHole:MountingHole_3.2mm_M3"
+			(at 86.36 571.5 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 86.36 571.5 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "audio-board"
+				(path "95b6c2e6-5cb2-4173-9673-0cba23213f90"
+					(reference "H4")
 					(unit 1)
 				)
 			)
