@@ -1762,3 +1762,22 @@ script-written — breach of the Konnect rule, corrected). Found: old board neve
   source `lima@92a69f3`, record `1cf7160`. Power budget only (Peter); schematic summary to John/JULIETT still held.
   Push output listed both files under a remote notice (header line not captured) — same lane-bypass banner as 21 Oct, presumably.
   Not done: LIMA_cup_board.html still carries its 19 Oct (pre-A2B) power section — candidate for needs-revalidation.
+
+## 2026-10-23 (late) — audio board PCB: footprints + board setup DONE; layout BLOCKED on KiCad access
+
+Peter asked for the PCB layout. Rulings (AskUserQuestion): **outline mine to propose, 4-layer, 0603 passives,
+JLCPCB assembly, JST GH for all off-board connectors.** Approved downloads: OpenJDK 21 (brew) + Freerouting.
+- **Done, pushed `f4ccdda`:** all 117 footprints assigned; 6 drawn via Konnect from data sheet drawings (ADAU1467
+  CP-88-10, ADAU1372 CP-40-10, IM68A130A, AQW612S GU-SOP8, Triad SP-74, Bourns SM-LP-5001). Netlist == design file,
+  ERC 0 errors, pin->pad parity 117/117 `[measured]`.
+- **Done, pushed `59a1a09`:** In1/In2 planes, 70x50 R1 outline at (100,80), 4x M3, JLC 4-layer rules, netclasses
+  Default / Power / Aircraft (0.5 mm clearance). **No footprints on the PCB yet.**
+- **Blocked:** KiCad has no Documents access (TCC) — "can't open audio-board.kicad_prl (Operation not permitted)".
+  Peter to grant Files and Folders -> KiCad -> Documents, relaunch KiCad himself, open PCB Editor. Konnect MCP
+  dropped too; Peter restarting the session to bring it back.
+- **Next:** `update_pcb_from_schematic` dry run -> apply; place by block (floorplan in handoffs.md); autoroute with
+  Freerouting (`~/.konnect/tools/freerouting-2.5.0.jar`, java at `/opt/homebrew/opt/openjdk@21/bin/java`, not on
+  PATH); hand-check A2B pair, switcher loops, analog, aircraft isolation; pours; save; DRC from the saved file.
+- **Defaults to put to Peter:** T4 pad map (PV_SEC on undotted end, i.e. inverted vs DAC_P); FL1 MPN unchosen
+  (ACM3216 footprint assumes windings 1-2/3-4 — verify); L1/L2 1008, L3/L4 1210, L7 XAL4030, C37 1812 film are
+  package guesses, not parts.

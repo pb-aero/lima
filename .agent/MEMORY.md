@@ -1147,3 +1147,16 @@ reasoned about "the CT option" for a whole turn and drew a 7-pin centre-tap symb
 of that listing. Before drawing a symbol, or arguing from a winding's topology, read the
 manufacturer's drawing. Distributor text counts as `[fetched]` only for price, stock and lead
 time. And Triad pinouts are drawn, not text: render the page and read it as an image.
+
+## 2026-10-23 · Konnect footprint + KiCad-on-macOS scars (audio board layout)
+- **`create_footprint` reads `body_height` as the body's Y size, not its Z height,** and sizes the courtyard from
+  the pad envelope. Result: fab outlines like a 12x0.85 mm bar under a 12x12 part, and courtyards smaller than
+  the body wherever the body overhangs the pads (transformers, the mic). Fix with `set_footprint_graphics`
+  replace on F.Fab and F.CrtYd, and render with `kicad-cli fp export svg` + `qlmanage -t` to look before trusting.
+- **"Operation not permitted" from KiCad on files in ~/Documents is TCC, not file perms.** The tell `[measured]`:
+  files carrying `com.apple.macl` (ones the user opened by hand) open; siblings without it are refused. Fix is the
+  user's: Privacy & Security -> Files and Folders -> KiCad -> Documents. Never launch KiCad from the agent shell.
+- **`add_board_outline` and other file-mode tools refuse while the project manager runs** (GetOpenDocuments ->
+  AS_UNHANDLED) even with no PCB editor open. Quit KiCad (osascript quit can hang on a dialog; it did exit).
+- **Konnect is a project `.mcp.json` server**, so the agent can't re-dial it (`reconnect_session_connector` only
+  covers claude.ai connectors). When it drops, the user restarts the session.

@@ -105,3 +105,26 @@ Two process notes worth keeping. The Pi's copy of the overlay and the repo's dri
 was `sed`-ing the remote file directly — edit the repo file and copy it over, always. And
 `timing-sweep.py` had a real instrument bug (erasing only the first block of a multi-block range)
 that produced a confident, plausible, completely wrong `128/256`.
+
+## 2026-10-23 (late) · Audio board layout — what I'd tell myself with no memory
+
+**Where it stops:** footprints and board setup are committed (`f4ccdda`, `59a1a09`); the PCB holds only the
+outline and 4 holes. Nothing is placed. Two blockers, both Peter's: KiCad TCC access to ~/Documents, and the
+Konnect MCP reconnect (session restart). Check `open_project` reports IPC available AND the PCB editor is open
+(GetOpenDocuments must not be AS_UNHANDLED) before trying the sync.
+
+**Do NOT launch KiCad from the shell.** I did (`open -a KiCad`), and it is the likely reason it lost Documents
+access. Ask Peter to launch it. osascript keystrokes are refused (no Accessibility grant) — don't try again.
+
+**Do not edit board/project files while the KiCad project manager is open** — quit it first; it may write its
+in-memory .kicad_pro over netclass edits on close. (It didn't this time; I checked. Still don't risk it.)
+
+**Floorplan I intended (board x 100..170, y 80..130):** host J1/J2 + power (U1/U2/U3/U12, L1/L2/L7) along the
+top-left edge; hub U4 centre with Y1, U5 flash and its decouplers; A2B U9 + FL1/L3-L6 + J3 (cup L) and J4 on
+the right edge; codec U6 between hub and the aircraft section; aircraft section (T2/T3/T4, U10/U11, J5 panel,
+J6 electret) along the bottom edge, kept apart from our ground per ruling 10; U7 bottom-port mic needs its
+0.6 mm port clear on the back — no part or pour over it on B.Cu, and somewhere the enclosure exposes.
+
+**Freerouting jar** sha256 `f6f51bb02245e8e717f9359bd260cc9c5c0b1bc0acc8b7cb2cd5b8ffeb5de3c7`, 64,599,107 bytes
+(matches the GitHub API size). Konnect's `check_freerouting` didn't find it at the default path — pass `jar_path`,
+and Java is keg-only, so the autoroute tool may need PATH set or may fail to find java. Check before relying on it.
