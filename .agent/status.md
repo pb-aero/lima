@@ -1747,3 +1747,6 @@ script-written — breach of the Konnect rule, corrected). Found: old board neve
 - **2026-10-23: Peter reviewing the schematic; team summary to John/JULIETT held until he's done.**
 - **2026-10-23 ruling 11:** CTL_SPKR -> AD2428 IO7 -> GPIO-over-distance -> cup K2; A2B IRQ dropped (CM5 polls). Drawn;
   netlist == design file, ERC 0 errors. Next: A2B sub-node on the cup board (Peter asked).
+- **2026-10-23: A2B sub-node added to the cup board** (U6 AD2428 bus-powered, own 1V8/3V3_MIC/VLED regulators, K2 via IO7).
+  Netlist == kicad/cup-board/doc/design_nets.py, ERC 0 errors. Open: VIN_CUP margin at 5 V battery (may need an 8 V bus
+  boost), cup power budget, U1 DVDD fix still awaiting Peter.

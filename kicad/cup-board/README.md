@@ -28,8 +28,8 @@ been updated to match — see open items.
 | U2 | LSM6DSV16BX | DVNC reference, TDM slave into U1's SPT1 (`TDM_DATA`/`TDM_BCLK`/`TDM_WCLK`); I²C host mode for config |
 | U3 | MAXM86161 | In-ear optical HR/SpO₂ module (added 2026-10-19, per Peter) — I²C on the shared bus, own LED supply |
 | J2 | 2-pin | Earcup driver, 32 Ω: `SPKR_1`/`SPKR_2` from the U4/U5 switch commons (was HPOUTN/HPOUTP direct) |
-| J3 | 3-pin | Power in: 1V8, 3V3_MIC, GND — source TBD |
-| J4 | 2-pin | LED supply in: VLED, GND — voltage and source TBD |
+| ~~J3~~ | — | Removed 2026-10-23: power now from the A2B bus (see "A2B sub-node") |
+| ~~J4~~ | — | Removed 2026-10-23: VLED from U9 |
 | R1/R2 | 10 kΩ | I²C pull-ups to 1V8 (LSM6DSV16BX datasheet value) |
 | R3 | 10 kΩ | U3 INTB pull-up to 1V8 (INTB is open-drain) |
 | C1–C3 | 100 nF, 100 nF, 10 µF | U1 1V8 decoupling |
@@ -63,6 +63,44 @@ Because all three mic inputs are now differential, U1's `CM` pin is unused and n
 U1 strap pins as on `audio-board`: ADDR0/ADDR1/SELFBOOT/ROM_BOOT_MODE/REG_EN low, PD high.
 U2: CS high (I²C), SA0 low, Qvar electrodes to GND, INT1/INT2 no-connect.
 SPT0 (`I2S0_*`) is brought out as labels only, reserved for the A2B subnode link.
+
+## A2B sub-node — 2026-10-23, per Peter
+
+Peter: *"lets try io7 and add a2b to the cup board"*. The cup is now a **bus-powered AD2428 sub-node** (U6): no power wires
+in the cup cable, so everything on the board runs from the A2B bias. Intended connectivity is `doc/design_nets.py` —
+the netlist at `b641179` plus these edits — and `python3 -I doc/design_nets.py check <netlist.xml>` diffs it against
+the kicad-cli netlist. **Result: OK** (every pre-existing net unchanged, every new net complete) `[measured]`.
+ERC 0 errors; 6 warnings, all strap pins tied to rails (the 4 old ones plus U6 ADR1/ADR2). The two single-pin
+`I2S0_*` warnings are gone — U6 terminates them.
+
+| Block | Parts | Source |
+|---|---|---|
+| A side (upstream, J7) | FB1/FB2→ACM (+C12 330 nF), C13 12 pF, L1/L2 180 nH, C14/C15 27 pF, FL1 CMC, R9/R10 120R + C16/C17 33 nF, C18/C19 10 nF series, C20/C21 33 nF, C22 470 nF across | EVAL-AD2428WD1BZ sheet 2, A side, read from a rendered image `[fetched]` |
+| Bus power in | L3 (line+ → V_NODE), L4 (line− → GND), D1 ZLLS400 → VIN_CUP, C23/C24 | AD242x DS Fig. 36 (bus-powered sub-node) `[fetched]` |
+| B side (downstream, J8) | Q1 AO3401A switched by SWP (R11–R14, C25/C26), L5/L6, same coupling as the audio board's main node | DS Fig. 36 + eval B side |
+| U6 | I²S master: DTX0 → `I2S0_SDATAI`, DRX0 ← `I2S0_SDATAO`, BCLK/SYNC → `I2S0_BCLK`/`I2S0_FSYNC`; I²C master on SDA/SCL; IOVDD on 1V8; VOUT1/VOUT2 decoupled | AD242x TRM |
+| K2 drive | U6 IO7 → R17 2.2k → Q2 MMBT3904 (R18 100k pull-down) switches U4/U5 LED returns; R7/R8 now 220R from VIN_CUP | audio-board ruling 11 |
+| Power | U7 TPS62161 → 1V8, U8 ADP7118-3.3 → 3V3_MIC, U9 ADP7118-3.3 → VLED (separate, as before, to keep PPG pulses off the mic rail) | TPS6216x DS, ADP7118 |
+
+**Removed:** J3 (1V8/3V3_MIC in), J4 (VLED in), J6 (`SW_DRV` in), and the PWR_FLAGs on 3V3_MIC/VLED (the LDOs drive
+them now). **Why a BJT for K2:** U6's IO is 1.8 V, too low to turn a 2N7002 on reliably. **Why 220R:** keeps the LED
+current ≥ 5 mA nearer the bottom of the bus-voltage range.
+
+**Ground rule `[fetched]` EE-419:** *"the ground of a bus-powered node is not at the same potential as the ground of a
+locally-powered node ... only floating signals ... should be connected."* J5 (SP-74 secondary) is transformer-isolated
+and reaches U1 only through C9/C10; the speaker reaches it only through K2. The IO7 route also avoided a wired K2 drive
+that would have DC-tied the grounds.
+
+### Open — A2B sub-node
+
+- **VIN_CUP margin at low battery.** 5.0 V battery minus the main node's diode/R18/Q1, cable, inductors, this D1 —
+  and for cup R also cup L's R12/Q1. AD2428 VIN min is 3.7 V and the ADP7118s need ~3.5 V in. **Not analysed**; a
+  boost to ~8 V for the bus on the audio board (ADI's own bias example is 8 V, VIN max 9 V) may be needed.
+- **Cup power budget not run** (U1's HiFi 3z, three mics, LSM6, MAXM86161 LED pulses) against the main node's 300 mA
+  VSSN limit for both cups.
+- **Sub-node IO7 state on data-link loss with bus power still up** — not in the TRM section read.
+- **Cup R speaker pair** still arrives on its own J5 from the audio board's J4; A2B comes from cup L's J8.
+- **Still unfixed, needs Peter's go-ahead:** U1 DVDD (pin 54) on 1V8 against a 1.21 V abs max (REG_EN low).
 
 ## Aircraft audio in — 2026-10-20, per Peter
 
