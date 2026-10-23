@@ -1750,3 +1750,6 @@ script-written — breach of the Konnect rule, corrected). Found: old board neve
 - **2026-10-23: A2B sub-node added to the cup board** (U6 AD2428 bus-powered, own 1V8/3V3_MIC/VLED regulators, K2 via IO7).
   Netlist == kicad/cup-board/doc/design_nets.py, ERC 0 errors. Open: VIN_CUP margin at 5 V battery (may need an 8 V bus
   boost), cup power budget, U1 DVDD fix still awaiting Peter.
+- **2026-10-23 bus-power budget** (`docs/a2b-bus-power-budget.md`, `scripts/a2b_bus_budget.py`): straight off VBAT, cup R
+  < 3.7 V below 5.26 V battery (worst load 94 mA/cup); typical 0.10 V margin at 5.0 V. **Recommend ~8 V boost** for the
+  bus + cup R7/R8 -> 680R. VSSN 188/300 mA OK. Asked Peter.
