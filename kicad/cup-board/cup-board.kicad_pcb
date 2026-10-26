@@ -4454,7 +4454,7 @@
 			)
 		)
 		(pad "1" smd roundrect
-			(at -1.400003 0 355.52)
+			(at -1.400004 0 355.52)
 			(size 1.25 2.65)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.2)
@@ -9188,7 +9188,7 @@
 			)
 		)
 		(pad "1" smd roundrect
-			(at -1.400003 0 355.52)
+			(at -1.400004 0 355.52)
 			(size 1.25 2.65)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.2)
@@ -11415,7 +11415,7 @@
 		(path "/d5703880-1cdb-4abc-ab94-1e80587ebe8c")
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
-			(start -0.237258 0.522503)
+			(start -0.237258 0.522505)
 			(end 0.237258 0.5225)
 			(stroke
 				(width 0.12)
@@ -11426,7 +11426,7 @@
 		)
 		(fp_line
 			(start -0.237258 -0.5225)
-			(end 0.237258 -0.522503)
+			(end 0.237258 -0.522505)
 			(stroke
 				(width 0.12)
 				(type default)
@@ -12287,7 +12287,7 @@
 			)
 		)
 		(pad "" smd circle
-			(at -0.692803 -0.28 273.42)
+			(at -0.692805 -0.28 273.42)
 			(size 0.36 0.36)
 			(layers "F.Paste")
 			(uuid "ea60c700-0e0c-4e76-8b6c-5c72cb88ec0c")
@@ -15535,7 +15535,7 @@
 		(path "/629bd080-819d-4ff4-ad83-71053de11cfb")
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
-			(start -0.237258 0.522503)
+			(start -0.237258 0.522505)
 			(end 0.237258 0.5225)
 			(stroke
 				(width 0.12)
@@ -15546,7 +15546,7 @@
 		)
 		(fp_line
 			(start -0.237258 -0.5225)
-			(end 0.237258 -0.522503)
+			(end 0.237258 -0.522505)
 			(stroke
 				(width 0.12)
 				(type default)
@@ -17369,7 +17369,7 @@
 			(uuid "56792ca6-84ad-4f7c-9ccd-850bf95e7300")
 		)
 		(embedded_fonts no)
-		(model "${KICAD10_3DMODEL_DIR}/Package_DFN_QFN.3dshapes/QFN-32-1EP_5x5mm_P0.5mm_EP3.6x3.6mm.step"
+		(model "${KICAD10_3DMODEL_DIR}/Package_DFN_QFN.3dshapes/QFN-32-1EP_5x5mm_P0.5mm_EP3.7x3.7mm.step"
 			(offset
 				(xyz 0 0 0)
 			)
