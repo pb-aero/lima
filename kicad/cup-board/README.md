@@ -434,8 +434,9 @@ term by roughly HPVDD_L/1.8, at the cost of output swing.
 
 ## Footprints — 2026-10-26, per Peter
 
-All parts have footprints except **U3 MAXM86161**. Checked `[measured]`: netlist == `doc/design_nets.py`, ERC 0 errors,
-every symbol pin has a pad in its footprint (read from the .kicad_mod files, not Konnect's read-back).
+**All 99 parts have footprints** (U3 added the same day, below). Checked `[measured]`: netlist == `doc/design_nets.py`,
+ERC 0 errors, every symbol pin has a pad in its footprint (read from the .kicad_mod files, not Konnect's read-back).
+*Correction:* commit `d93b17f` said "116 of 117" — that was the audio board's part count; the cup board has 99.
 
 | Part | Footprint | Source |
 |---|---|---|
@@ -449,6 +450,11 @@ every symbol pin has a pad in its footprint (read from the .kicad_mod files, not
 | L, FB, C, R | 0603 (10/22 µF 0805, R12 1206, 3.3 µH 1210, L9 1008) | packages by value, not chosen parts |
 | J2, J7, J8 | JST GH | see 2026-10-26 above |
 
-**U3 MAXM86161 — blocked on its land pattern.** The datasheet (19-100523 Rev 1, saved by Peter to ~/Downloads,
-sha256 `c512ea35…24da`) gives only the pin order (pins 1–7 down one side, 8–14 up the other; 6/7/8 solder-only) and refers
-to Maxim **land pattern 90-100106** / outline 21-100309, separate documents. Not drawn rather than guessed.
+| U3 MAXM86161 | `AnalogDevices:Maxim_OLGA-14_2.9x4.3mm_P0.6mm_F142A4_MAXM86161` (new) | see below |
+
+**U3 MAXM86161.** The datasheet (19-100523 Rev 1, saved by Peter to ~/Downloads, sha256 `c512ea35…24da`) gives only
+the pin order and points to Maxim drawings, fetched 2026-10-26 from `mds.analog.com/api/public/content/` `[fetched]`:
+**land pattern 90-100106 rev A** (IPC-7351A) — pads 0.660 × 0.400, pitch 0.600, D1 3.600, columns 1.900 apart;
+**outline 21-100309 rev B** — body 2.9 × 4.3 × 1.4, leads L 0.6 × W 0.4, D1 3.6 / E1 1.9 BSC, pin 1 top-left, 1–7 down the
+left, 8–14 up the right (top view). Pins 6/7/8 (LED cathodes) are soldered but left unconnected, as the DS requires.
+**Optical side faces up:** the module needs a window to the skin, and placement on the cup is still open.

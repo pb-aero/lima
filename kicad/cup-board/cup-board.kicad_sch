@@ -12646,7 +12646,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "AnalogDevices:Maxim_OLGA-14_2.9x4.3mm_P0.6mm_F142A4_MAXM86161"
 			(at 300.99 226.06 0)
 			(hide yes)
 			(effects
