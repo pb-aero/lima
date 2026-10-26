@@ -458,3 +458,24 @@ the pin order and points to Maxim drawings, fetched 2026-10-26 from `mds.analog.
 **outline 21-100309 rev B** — body 2.9 × 4.3 × 1.4, leads L 0.6 × W 0.4, D1 3.6 / E1 1.9 BSC, pin 1 top-left, 1–7 down the
 left, 8–14 up the right (top view). Pins 6/7/8 (LED cathodes) are soldered but left unconnected, as the DS requires.
 **Optical side faces up:** the module needs a window to the skin, and placement on the cup is still open.
+
+## PCB — outline, stackup, placement (2026-10-26, per Peter)
+
+- **Outline:** ring, **68 mm OD / 38 mm ID**, centre (150, 100). 62/38 was tried first: 57 % courtyard fill on one side,
+  too tight; Peter chose 68/38 (single-sided, ~43 %). Fits a 40 mm driver with 1 mm clearance — **adjust to the cup CAD.**
+- **Stackup:** 4 layers — F.Cu / In1 (power) / In2 (mixed) / B.Cu. JLC 4-layer rules; Default 0.2/0.127, Power 0.4/0.127.
+- **Holes:** H1–H3 M2 on the 26.5 mm mid-radius, as schematic symbols (no board-only footprints to trip the sync).
+- **Placement:** `doc/ring_placement.py` packs parts round the ring in signal order, each turned to follow the circle,
+  and checks exact courtyard corners against the ring and every pair for overlap (359.9° used — tight). Clockwise from
+  upper right: codec U1 · IMU, FB mic (inner edge) and FF mic · K2 PhotoMOS pair · J2 speaker, J7 in · A2B U6 + both bus
+  filters · J8 out · power (U7/U8/U9), PPG U3, voice mic MK3. Connector openings face outward. Render:
+  `doc/placement-2026-10-26.png`.
+- **How it was applied:** schematic sync through Konnect (one KiCad undo step); then positions **and non-90° angles**
+  set with KiCad's pcbnew API with KiCad closed (`doc/apply_placement.py`) — Konnect's IPC refuses non-90° rotation of
+  footprints with rounded-rect pads. Outline circles likewise (`doc/ring_outline.py`, `doc/ring_resize.py`; Konnect has
+  no circular Edge.Cuts tool). Connectors then pulled inward 0.16–0.29 mm so their MP tabs clear the curved edge by
+  0.5 mm (`doc/pull_in_connectors.py`). Every step on a committed board; read-back error 0.
+- **Checked `[measured]`** with `kicad-cli pcb drc` on the saved file: **0 errors** (250 unconnected = unrouted;
+  schematic parity 0). Warnings only: silkscreen overlaps, `lib_footprint_mismatch`, 2 silk-at-edge.
+- **Open:** mic/PPG positions vs the enclosure (all on top, ports through the board); routing will be tight (little
+  angular slack); "REF\*\*" silk on custom footprints (shared Konnect footprint-writer quirk, fix before fab).
