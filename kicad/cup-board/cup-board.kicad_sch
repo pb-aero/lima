@@ -7690,6 +7690,222 @@
 				)
 			)
 		)
+		(symbol "Connector_Generic:Conn_01x04"
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "J"
+				(at 0 5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "Conn_01x04"
+				(at 0 -7.62 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "connector"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "Connector*:*_1x??_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "Conn_01x04_1_1"
+				(rectangle
+					(start -1.27 3.81)
+					(end 1.27 -6.35)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(rectangle
+					(start -1.27 2.667)
+					(end 0 2.413)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 0.127)
+					(end 0 -0.127)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 -2.413)
+					(end 0 -2.667)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 -4.953)
+					(end 0 -5.207)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at -5.08 2.54 0)
+					(length 3.81)
+					(name "Pin_1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 0 0)
+					(length 3.81)
+					(name "Pin_2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -2.54 0)
+					(length 3.81)
+					(name "Pin_3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -5.08 0)
+					(length 3.81)
+					(name "Pin_4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(no_connect
 		(at 165.1 118.11)
@@ -7826,10 +8042,6 @@
 	(no_connect
 		(at 165.1 140.97)
 		(uuid "b8c3ee01-c923-4556-9f75-6137e9d935f2")
-	)
-	(no_connect
-		(at 431.8 111.76)
-		(uuid "a7832a13-1b1e-4e2e-a2c9-7d29d85fc0d1")
 	)
 	(no_connect
 		(at 431.8 127)
@@ -8465,20 +8677,6 @@
 			(xy 130.81 205.74)
 		)
 		(uuid "7336833d-6c8f-4f9e-a0e3-6a8b31b35165")
-	)
-	(wire
-		(pts
-			(xy 93.98 194.31)
-			(xy 91.44 194.31)
-		)
-		(uuid "e1c2e4f8-dae1-47d2-857e-69338a72af67")
-	)
-	(wire
-		(pts
-			(xy 93.98 196.85)
-			(xy 91.44 196.85)
-		)
-		(uuid "a199ca8f-92dc-4d55-9e1b-867ad92cfe89")
 	)
 	(wire
 		(pts
@@ -9719,26 +9917,6 @@
 			(justify left bottom)
 		)
 		(uuid "a7bb4f36-410a-4771-972e-198b77059782")
-	)
-	(label "XF_SEC_A"
-		(at 91.44 194.31 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "5380c1c7-3443-4e55-8e03-0090f65a9067")
-	)
-	(label "XF_SEC_B"
-		(at 91.44 196.85 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "78a60718-6576-411e-b526-e447470123b3")
 	)
 	(label "1V8"
 		(at 142.24 309.88 0)
@@ -11690,11 +11868,33 @@
 		)
 		(uuid "eae0289a-6f73-48b2-a19d-8538c2801499")
 	)
-  (label "U1_DVDD"
-    (at 226.06 87.63 0)
+	(label "U1_DVDD"
+		(at 226.06 87.63 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4f0c38eb-07e8-455f-8012-1c152834ae5b")
+	)
+  (label "XF_SEC_A"
+    (at 490.22 226.06 180)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid "45dbe975-9849-496b-9587-35319b2a54d8")
+  )
+  (label "XF_SEC_B"
+    (at 490.22 228.60000000000002 180)
+    (fields_autoplaced yes)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid "8e07d630-87ba-4d99-9342-f700dc956776")
+  )
+  (label "PPG_INT"
+    (at 431.8 111.76 0)
     (fields_autoplaced yes)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid "4f0c38eb-07e8-455f-8012-1c152834ae5b")
+    (uuid "f94c506d-f819-48a0-9002-c6e9a6d80e23")
   )
 	(symbol
 		(lib_id "AnalogDevices:ADAU1861")
@@ -11924,7 +12124,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_JST:JST_GH_SM02B-GHS-TB_1x02-1MP_P1.25mm_Horizontal"
 			(at 254 146.05 0)
 			(hide yes)
 			(effects
@@ -12678,57 +12878,6 @@
 			(project "cup-board"
 				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
 					(reference "R3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector_Generic:Conn_01x02")
-		(at 99.06 194.31 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "13ba8565-a495-47f9-b17f-b41e3fdd3b97")
-		(property "Reference" "J5"
-			(at 99.06 191.77 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "XF_SEC_FROM_AUDIO_BOARD"
-			(at 99.06 199.39 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 99.06 194.31 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 99.06 194.31 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "cup-board"
-				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
-					(reference "J5")
 					(unit 1)
 				)
 			)
@@ -14614,7 +14763,7 @@
 				)
 			)
 		)
-		(property "Value" "A2B_B (to next cup)"
+		(property "Value" "CUP_OUT (A2B to next cup)"
 			(at 525.78 152.4 0)
 			(effects
 				(font
@@ -14622,7 +14771,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_JST:JST_GH_SM02B-GHS-TB_1x02-1MP_P1.25mm_Horizontal"
 			(at 525.78 147.32 0)
 			(hide yes)
 			(effects
@@ -15686,57 +15835,6 @@
 			(project "cup-board"
 				(path "790ac8fa-b8c8-432b-bc66-3eedd04170ff"
 					(reference "L4")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector_Generic:Conn_01x02")
-		(at 495.3 220.98 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "b5f37476-0f44-48fc-8b24-c164d26cb804")
-		(property "Reference" "J7"
-			(at 495.3 218.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "A2B_A (from AeroNode / previous cup)"
-			(at 495.3 226.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 495.3 220.98 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 495.3 220.98 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "cup-board"
-				(path "790ac8fa-b8c8-432b-bc66-3eedd04170ff"
-					(reference "J7")
 					(unit 1)
 				)
 			)
@@ -17101,6 +17199,57 @@
 			(project "cup-board"
 				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
 					(reference "#FLG10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector_Generic:Conn_01x04")
+		(at 495.3 223.52 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "9f4aef64-5205-48b4-8772-dd33e802be3b")
+		(property "Reference" "J7"
+			(at 495.3 218.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "CUP_IN (A2B + panel audio, mates audio J3)"
+			(at 495.3 231.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_JST:JST_GH_SM04B-GHS-TB_1x04-1MP_P1.25mm_Horizontal"
+			(at 495.3 223.52 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 495.3 223.52 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "cup-board"
+				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
+					(reference "J7")
 					(unit 1)
 				)
 			)

@@ -64,6 +64,27 @@ U1 strap pins as on `audio-board`: ADDR0/ADDR1/SELFBOOT/ROM_BOOT_MODE/REG_EN low
 U2: CS high (I²C), SA0 low, Qvar electrodes to GND, INT1/INT2 no-connect.
 SPT0 (`I2S0_*`) is brought out as labels only, reserved for the A2B subnode link.
 
+## 2026-10-26 — brought in line with the redone audio board, per Peter
+
+Three changes, each checked: netlist == `doc/design_nets.py`, ERC 0 errors (6 strap warnings, unchanged) `[measured]`.
+
+1. **U1 DVDD overvoltage fixed.** Pin 54 (DVDD) had been on 1V8 against a **1.21 V absolute maximum**, with pin 28
+   REG_EN grounded `[fetched]` ADAU1861 DS (DVDD 0.85–1.21 V; abs max −0.3 to +1.21 V). Now, per the DS pin table:
+   **REG_EN → AVDD (1V8)** so the internal regulator makes DVDD; DVDD on its own net `U1_DVDD` with **C47 1 µF + C48
+   100 nF** to ground (*"decouple DVDD to DGND with a 1 uF and 0.1 μF capacitor"*); `#FLG10` PWR_FLAG marks the rail
+   as internally driven. Commit `f502399`.
+2. **Connectors match the audio board, JST GH 1.25 mm.** J5 is gone. **J7 (4-pin, SM04B):** 1 `A_LINE_P`,
+   2 `A_LINE_N`, 3 `XF_SEC_A`, 4 `XF_SEC_B` — the same order as the audio board's J3 (A2B+, A2B−, speaker pair), so a
+   straight 1:1 GH cable joins audio J3 → cup L J7. **J8 (2-pin, SM02B):** A2B out to the next cup. **J2 (2-pin, SM02B):**
+   speaker driver. **Cup R needs a split harness into its J7:** pins 1–2 from cup L's J8, pins 3–4 from the audio
+   board's J4 — the cost of one board for both cups. (Alternative if that harness is unwelcome: a 6-pin chain that
+   carries cup R's speaker pair through cup L — changes the audio board's J3/J4 too. Not done.)
+3. **`PPG_INT` → U6 IRQ/IO0 (pin 6).** `[fetched]` AD242x DS Table 15: in slave mode, when not used for mailbox
+   interrupts, IRQ/IO0 *"serves as a general-purpose I/O pin with interrupt request input capability"*. MAXM86161 INTB
+   is open-drain, pulled up to 1V8 by R3; U6 IOVDD is 1V8, so levels match. Software: configure IO0 as an input with
+   falling-edge interrupt; the CM5 already polls `A2B_INTSTAT` (audio-board ruling 11). Not yet checked against the TRM
+   register list.
+
 ## A2B sub-node — 2026-10-23, per Peter
 
 Peter: *"lets try io7 and add a2b to the cup board"*. The cup is now a **bus-powered AD2428 sub-node** (U6): no power wires
@@ -99,7 +120,8 @@ that would have DC-tied the grounds.
   VSSN limit for both cups.
 - **Sub-node IO7 state on data-link loss with bus power still up** — not in the TRM section read.
 - **Cup R speaker pair** still arrives on its own J5 from the audio board's J4; A2B comes from cup L's J8.
-- **Still unfixed, needs Peter's go-ahead:** U1 DVDD (pin 54) on 1V8 against a 1.21 V abs max (REG_EN low).
+- ~~**Still unfixed, needs Peter's go-ahead:** U1 DVDD (pin 54) on 1V8 against a 1.21 V abs max (REG_EN low).~~
+  **Fixed 2026-10-26** (internal regulator, see above).
 
 ## Aircraft audio in — 2026-10-20, per Peter
 
@@ -401,8 +423,7 @@ term by roughly HPVDD_L/1.8, at the cost of output swing.
 - **VLED voltage is undecided.** The datasheet gives only the 3.0–5.5 V range and says to set it
   for the LEDs' forward voltage plus driver headroom. The green LED is the one most likely to need
   more than 3.3 V; 5 V would be the conservative choice, but nothing here establishes it.
-- **`PPG_INT` goes nowhere yet.** It needs a GPIO on whatever reads the sensor — most likely the
-  A2B subnode's GPIO, which doesn't exist on this sheet yet.
+- ~~**`PPG_INT` goes nowhere yet.**~~ **Closed 2026-10-26:** → U6 IRQ/IO0, see above.
 - **MAXM86161 power-up sequencing** (VLED vs 1V8 / LDO_EN) wasn't in the extracted datasheet
   text — not checked.
 - **Optical placement.** The module has to sit against skin in the ear canal / concha through a
