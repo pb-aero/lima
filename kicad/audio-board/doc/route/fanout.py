@@ -2,7 +2,8 @@
 Large pads (EPs) get a grid of vias inside the pad. Run with KiCad closed."""
 import sys, math, pcbnew
 MM = 1e6
-PLANES = {"/GND", "/+3V3"}
+import os
+PLANES = set(os.environ.get("FANOUT_NETS", "/GND,/+3V3").split(","))
 AIRCRAFT = set("/EAR_HI /EAR_RTN /ELEC_HI /ELEC_LO /K1A_MID /K1B_MID /MIC_HI /MIC_LO /PV_ATT /PV_OUT /PV_RTN /PV_SEC /SPK_L_A /SPK_L_B /SPK_R_A /SPK_R_B".split())
 VIA_D, VIA_DRILL = int(0.5*MM), int(0.25*MM)
 CL, HOLE_CL, EDGE_CL = int(0.15*MM), int(0.28*MM), int(0.55*MM)   # a hair over the rules
