@@ -1788,3 +1788,8 @@ JLCPCB assembly, JST GH for all off-board connectors.** Approved downloads: Open
   **re-check .kicad_pro after KiCad next closes** (it may write its in-memory copy back).
   Open before fab: custom footprints print literal "REF**" on silk (Konnect writer quirk); 117
   lib_footprint_mismatch warnings; ~200 silk overlaps. `kicad/audio-board/.history/` is KiCad's backup dir (untracked).
+- **2026-10-26 J1+J2 -> one 24-pin FFC (Peter):** J1 = Cvilux CF31241D0R0-05-NH, mates AeroNode J9 (HW 0.0.2 rev 1
+  sheet 6); flat cable, connectors facing, Type A -> our pin n = J9 pin 25-n. Schematic `21e82a7` (netlist == design
+  file, J9 cross-check 0 mismatches, ERC 0 errors); PCB synced + placed top-centre (138, 85.7, rot 180), DRC = unconnected
+  only. **For the AeroNode owner:** J9 power is one contact behind a 100 mA-hold polyfuse; board needs ~0.35-0.5 A.
+  Routing still not done (see handoffs: power/GND fanout blocker).
