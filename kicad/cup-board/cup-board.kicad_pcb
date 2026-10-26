@@ -96,14 +96,14 @@
 	)
 	(gr_circle
 		(center 150 100)
-		(end 181 100)
+		(end 184 100)
 		(stroke
 			(width 0.05)
 			(type default)
 		)
 		(fill no)
 		(layer "Edge.Cuts")
-		(uuid "ac78eefa-2b8d-4572-9011-7cb2169d495c")
+		(uuid "40e8ba52-47ec-430b-b508-9da3fb392aa0")
 	)
 	(embedded_fonts no)
 )
