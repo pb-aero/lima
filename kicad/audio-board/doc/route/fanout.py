@@ -22,6 +22,13 @@ for f in b.GetFootprints():
         obst.append((p.GetNetname(), 'poly', poly, p))
         pads.append((f, p, poly))
 
+PLANE_OUTLINE = {z.GetNetname(): z.Outline() for z in b.Zones() if z.GetNetname() in PLANES}
+for tr in b.GetTracks():
+    if tr.GetClass() == "PCB_VIA":
+        obst.append((tr.GetNetname(), 'circle', (tr.GetPosition(), tr.GetWidth(pcbnew.F_Cu)//2), tr)); holes.append((tr.GetPosition(), tr.GetDrillValue()//2))
+    else:
+        obst.append((tr.GetNetname(), 'bseg' if tr.GetLayer() != pcbnew.F_Cu else 'seg', (pcbnew.SEG(tr.GetStart(), tr.GetEnd()), tr.GetWidth()//2), tr))
+
 def dist_pt_seg(c, s):
     ax, ay, bx, by = s.A.x, s.A.y, s.B.x, s.B.y
     dx, dy = bx-ax, by-ay; L = dx*dx+dy*dy
@@ -39,8 +46,12 @@ def via_ok(c, net, skip):
         cl = max(clr(net), clr(onet)) if onet != net else int(0.2*MM)
         if kind == 'poly' and g.Collide(c, r+cl): return False
         if kind == 'circle' and math.hypot(c.x-g[0].x, c.y-g[0].y) < g[1]+r+cl: return False
-        if kind == 'seg' and dist_pt_seg(c, g[0]) < g[1]+r+cl: return False
-    return True
+        if kind in ('seg', 'bseg') and dist_pt_seg(c, g[0]) < g[1]+r+cl: return False
+    o = PLANE_OUTLINE[net]
+    return _inside(o, c)
+
+def _inside(o, c):
+    return all(o.Contains(pcbnew.VECTOR2I(c.x+dx, c.y+dy)) for dx, dy in ((500000,0),(-500000,0),(0,500000),(0,-500000)))
 
 def seg_ok(s, hw, net, skip):
     for onet, kind, g, owner in obst:
