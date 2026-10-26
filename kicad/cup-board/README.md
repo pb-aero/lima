@@ -431,3 +431,24 @@ term by roughly HPVDD_L/1.8, at the cost of output swing.
 - **The MAXM86161 symbol is hand-entered** from the datasheet's pin table into
   `kicad/lib/AnalogDevices.kicad_sym`; worth a second check against a hand-downloaded PDF.
 - **No AD2428W A2B subnode, no power-delivery path, no footprints** — unchanged from before.
+
+## Footprints — 2026-10-26, per Peter
+
+All parts have footprints except **U3 MAXM86161**. Checked `[measured]`: netlist == `doc/design_nets.py`, ERC 0 errors,
+every symbol pin has a pad in its footprint (read from the .kicad_mod files, not Konnect's read-back).
+
+| Part | Footprint | Source |
+|---|---|---|
+| U1 ADAU1861 | `AnalogDevices:AD_LFCSP-SS-64-1EP_9x9mm_P0.5mm_EP6.3x6.3mm_CS-64-2` (new) | DS Rev A p.28 recommended pad layout: 9.50/8.00 SQ, 0.75×0.25 pads, EP 6.30 SQ = pin 65; 3×3 paste, 16 thermal vias |
+| MK1/MK2 IM73A135V01, MK3 IM72D128VV01 | `Infineon:Infineon_PG-LLGA-5_4x3mm_IM73A135_IM72D128` (new, shared) | IM73A135 DS v1.20 Fig. 12/13, IM72D128 DS 1.2 Fig. 13/14 — same land pattern and numbering. GND ring = plated 0.8 mm port (Infineon's recommended port) in a 2.08 mm annulus; paste dots stand in for the C-ring stencil. **Port must open to the acoustic path** — enclosure work |
+| U2 LSM6DSV16BX | stock `Package_LGA:LGA-14_3x2.5mm_P0.5mm_LayoutBorder3x4y` | matches DS13771 Rev 4 Fig. 31 (LGA-14L 2.5×3.0); DS defers land pattern to ST TN0018 (not read) |
+| U4/U5 AQW612S | `Panasonic:Panasonic_GU-SOP8_…` (from the audio board) | Panasonic ASCTB137E |
+| U6 AD2428 | stock QFN-32 5×5 EP3.6 | AD242x Rev C CP-32-12 |
+| U7 / U8, U9 / Q1, Q2 / D1 | stock WSON-8 2×2 / TSOT-23-5 / SOT-23 / SOD-323 | |
+| FL1, FL2 | stock ACM3216 | **same caveat as the audio board: MPN unchosen, winding 1–2/3–4 assumed** |
+| L, FB, C, R | 0603 (10/22 µF 0805, R12 1206, 3.3 µH 1210, L9 1008) | packages by value, not chosen parts |
+| J2, J7, J8 | JST GH | see 2026-10-26 above |
+
+**U3 MAXM86161 — blocked on its land pattern.** The datasheet (19-100523 Rev 1, saved by Peter to ~/Downloads,
+sha256 `c512ea35…24da`) gives only the pin order (pins 1–7 down one side, 8–14 up the other; 6/7/8 solder-only) and refers
+to Maxim **land pattern 90-100106** / outline 21-100309, separate documents. Not drawn rather than guessed.
