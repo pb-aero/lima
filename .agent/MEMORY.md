@@ -1169,3 +1169,6 @@ time. And Triad pinouts are drawn, not text: render the page and read it as an i
 - **Stock KiCad 10 footprints can reference 3D files KiCad 10 doesn't ship** `[measured]` 2026-10-26: QFN-32 5x5 EP3.6
   and Oscillator SiT PQFN 3.2x2.5 -> bare pads in renders. Check every `(model` path resolves, not just that one exists.
   pcbnew gotcha: `f.Models()` iteration yields copies; edit = clone fields into new FP_3DMODEL, clear, push_back.
+- **Freerouting needs plane fanout done first, and plane layers kept as planes** `[measured]` 2026-10-26: fanout script
+  took audio unconnected 64 -> 19. A routable plane layer gets split by tracks; a net whose class width exceeds its
+  fine-pitch pin widths gets zero routes (silently). Autorouted spaghetti still fails switch-loop / analog hand-checks.

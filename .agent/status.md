@@ -1799,3 +1799,6 @@ JLCPCB assembly, JST GH for all off-board connectors.** Approved downloads: Open
 - **2026-10-26 cup PCB + 3D:** ring 68/38 mm, 4-layer, 102 footprints placed, DRC 0 (`349259f`). 3D models on both boards
   (`eb79418` audio, `f64da10` cup: generated VRML for ADAU1861 CS-64-2, IM73A135, MAXM86161; `3ab5285` repointed stock
   models KiCad 10 doesn't ship). Every part now renders a body. Both boards unrouted. Next: Peter's call (routing, mic side).
+- **2026-10-26 audio routing:** fanout + Freerouting -> 19 unconnected, 0 clearance errors (`c929354`, WIP). Critical
+  nets fail hand-check due to placement (boost loop 16 mm, EAR lines 75 mm, U9 I2S facing away). Awaiting Peter on a
+  placement revision. Details in handoffs.md.

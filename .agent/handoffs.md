@@ -137,3 +137,20 @@ Java: Homebrew `openjdk` (27) symlinked into `~/Library/Java/JavaVirtualMachines
 - Run 1 (In1/In2 planes, 0.6/0.8 vias): 75 unrouted, 0 violations.
 - Run 2 (In2 routable, 0.5/0.25 + 0.6/0.3 vias, scratch DSN edits only): 64 unrouted, 0 violations; stalled after pass 8. Final unrouted list is dominated by **GND (89 connections), +3V3A (15), VBAT (10)** — i.e. power/ground **fanout to the plane** is failing (fanout escaped only 265/454 SMD pins), not signal congestion.
 **Next idea:** pre-place GND/+3V3A stitching vias at the dense parts (hub/codec/A2B decoupling) by hand or loosen the decoupling ring spacing, then rerun; or route power by hand and let Freerouting do signals only. Importing SES must be done with KiCad closed (commit first).
+
+## 2026-10-26 · Audio routing — autoroute plateaus at 19; the placement is the blocker
+
+Board on disk = `c929354`: scripted plane fanout (`doc/route/fanout.py`) + Freerouting run 6, imported. 19 pads
+unconnected, 0 clearance/edge/hole errors, 5 neckdowns < 0.127 mm, 10 dangling vias (route stubs).
+What worked: fanout before routing (334 -> 205 unconnected, DRC 0); keep In2 a solid plane (making it routable split
++3V3 and orphaned the fanout vias); VBAT/+3V3A at 0.2 mm (at 0.3 mm Freerouting routed ZERO VBAT links: J1/U1/U2/U12
+pins are 0.5 mm pitch). DSN edits are scratch-only via `doc/route/dsn_tweak.py`. A continuation pass from the routed
+board got WORSE (33) — always route from the fanout commit.
+Hand-check `[measured]` says the autoroute is not acceptable for the critical nets, and the cause is placement:
+- BOOST_SW (U12.1 -> L7.2/D4.2) is 16 mm: U12 sits ~8 mm from L7/D4. Switch loop must be mm-scale.
+- EAR_HI/EAR_RTN 75 mm each on B.Cu, T2/T3 (bottom right) -> J5 (left edge), mostly over our planes.
+- A2B I2S U4 pins 59-63 <-> U9 pins 12-14 unroutable: U9's I2S side faces away from the hub.
+- DAC_P/N 33 mm split across layers; A2B_LINE_P 15.6 mm/2 vias vs LINE_N 18.1 mm/0 vias.
+Isolation itself is designed into the planes: both cut out x<116.8,y>96 and x<129.6,y>117.5 (aircraft corner).
+Proposed to Peter: placement revision (T2/T3 near J5, U12 against L7/D4, rotate U9), then hand-route critical nets
+first and Freerouting the rest.
