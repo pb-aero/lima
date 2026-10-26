@@ -5,4 +5,5 @@
   (lib (name "Infineon") (type "KiCad") (uri "${KIPRJMOD}/../lib/Infineon.pretty") (options "") (descr ""))
   (lib (name "Panasonic") (type "KiCad") (uri "${KIPRJMOD}/../lib/Panasonic.pretty") (options "") (descr ""))
   (lib (name "Triad") (type "KiCad") (uri "${KIPRJMOD}/../lib/Triad.pretty") (options "") (descr ""))
-  (lib (name "Bourns") (type "KiCad") (uri "${KIPRJMOD}/../lib/Bourns.pretty") (options "") (descr "")))
+  (lib (name "Bourns") (type "KiCad") (uri "${KIPRJMOD}/../lib/Bourns.pretty") (options "") (descr ""))
+  (lib (name "Cvilux") (type "KiCad") (uri "${KIPRJMOD}/../lib/Cvilux.pretty") (options "") (descr "")))

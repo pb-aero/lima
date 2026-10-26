@@ -71,7 +71,47 @@ it; the CM5 clocks it set (`ARM`) once PureVoice is producing audio. LEDs on = Q
 A hung box then falls to bypass and stays there until a living CM5 re-arms it. Same signal can later
 drive cup K2 (spec §3, "proposed, not designed").
 
-## CM5 ↔ audio board — the AeroNode's actual audio header `[measured]`
+## CM5 ↔ audio board — one FFC, mating AeroNode J9 (2026-10-26, supersedes the J3/J4 section below)
+
+Peter, 2026-10-26: *"for j1 and j2 can we please use one connector for a flex ribbon"*. Source: AeroNode
+schematic **HW ver 0.0.2 rev 1** (Altium PDF, 2026-10-01, ~/Downloads), sheet 6, **J9 "audio breakout"** —
+Cvilux **CF31241D0R0-05-NH**, 24 circuits, 0.5 mm pitch, downside (bottom) contact, "FLEX contact side to face PCB".
+
+**Ours:** J1 = the same Cvilux part (footprint `Cvilux:Cvilux_CF31241D0R0-05-NH_…`, from drawing CF3101SF sheet 2).
+**Cable:** flat, connectors facing each other (Peter) → standard **Type A** (same-side contacts) 0.5 mm, 24-way FFC,
+so **our pin n = J9 pin 25−n**. If the cable is ever folded, this rule changes — re-check before ordering.
+
+| J9 | AeroNode net | ours | | J9 | AeroNode net | ours |
+|---|---|---|---|---|---|---|
+| 1 | Gnd | J1.24 GND | | 13 | Audio_I2S_WS | J1.12 I2S_WS |
+| 2 | Vcm3.3 | J1.23 **NC** | | 14 | Audio_I2S_SDI0 | J1.11 HOST_SDI0 |
+| 3 | Audio_IN_Dat0_I2S_SDI3 | J1.22 HOST_SDI3 | | 15 | Audio_I2S_SDO0 | J1.10 HOST_SDO0 |
+| 4 | Audio_IN_Dat1_I2S_SDO3 | J1.21 HOST_SDO3 | | 16 | reserved | J1.9 **NC** |
+| 5 | Audio_IN_Clk_I2S_SDO2 | J1.20 HOST_SDO2 | | 17 | GPIO_RLY_SPKR | J1.8 CTL_SPKR |
+| 6 | Gnd | J1.19 GND | | 18 | GPIO_RLY_MIC | J1.7 CTL_MIC |
+| 7 | Audio_I2S_SDI2 | J1.18 HOST_SDI2 | | 19 | Gnd | J1.6 GND |
+| 8 | Audio_I2S_SDI1 | J1.17 HOST_SDI1 | | 20 | sensor_I2C_SCL | J1.5 I2C_SCL |
+| 9 | Audio_I2S_SDO1 | J1.16 HOST_SDO1 | | 21 | sensor_I2C_SDA | J1.4 I2C_SDA |
+| 10 | Gnd | J1.15 GND | | 22 | Gnd | J1.3 GND |
+| 11 | Audio_I2S_SCLK | J1.14 I2S_BCLK | | 23 | Vsys via Q1/D1/F1 | J1.2 VBAT |
+| 12 | Gnd | J1.13 GND | | 24 | Gnd (TVS Z4 return) | J1.1 GND |
+| M | Gnd | J1.MP GND | | | | |
+
+Checked `[measured]`: netlist == `doc/design_nets.py`; independent J9 cross-check (J9 typed from the PDF, mapped
+25−n, compared with the exported netlist) 0 mismatches; ERC 0 errors.
+
+**Open — AeroNode side, for its owner (not this repo's file):**
+- **Power is one contact (J9.23) behind F1, 0ZCJ0010FF2E: 100 mA hold / 250 mA trip.** This board needs roughly
+  0.35 A typical, 0.5 A worst case from a 5 V battery `[derived]` (cup power budget + hub + codec + 8 V A2B boost).
+  F1 will trip, and one 0.5 A CF31 contact `[fetched, sibling-part listing]` has no margin even with a bigger fuse.
+  Their own sheet asks whether the TVS and polyfuse belong on the breakout board. Needs 2–3 power contacts (e.g.
+  J9.2 and J9.16 re-assigned) and a fuse sized for the load.
+- **Vsys voltage** is not stated on that sheet; this board still assumes VBAT = 5.0–7.3 V (my default 1).
+- J9.2 Vcm3.3 is left open here on purpose — tying it to our +3V3 would put two regulators on one rail.
+- Footprint tab-pad x (±7.00 mm) is derived from C and F, not dimensioned directly — check against the
+  drawing / a sample before fab.
+
+## CM5 ↔ audio board — the AeroNode's actual audio header `[measured]` (superseded 2026-10-26, kept for the record)
 
 Read from `~/aerosense/aeronode/aerosense/aerosense.kicad_sch` (file dated 2026-08-31), netlist exported with
 `kicad-cli sch export netlist --format kicadxml`, 2026-10-22. **Not under git there — confirm it is the current

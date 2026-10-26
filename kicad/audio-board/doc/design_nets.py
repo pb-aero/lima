@@ -6,9 +6,11 @@ import sys
 
 NETS = {
     # ---- power ----
-    "VBAT": ["J1.10", "U1.2", "U1.3", "C1.1", "U2.2", "C3.1", "U3.1", "U3.3", "C5.1",
+    # J1 = Cvilux CF31241D0R0-05-NH FFC to AeroNode J9 (same part), 2026-10-26. Flat cable, connectors
+    # facing, Type A FFC: our pin n = J9 pin 25-n. J9 pinout: AeroNode HW 0.0.2 rev 1, sheet 6.
+    "VBAT": ["J1.2", "U1.2", "U1.3", "C1.1", "U2.2", "C3.1", "U3.1", "U3.3", "C5.1",
              "R23.1", "R24.1", "U12.5", "U12.4", "C57.1", "L7.1"],
-    "GND": ["J1.1", "U1.1", "U1.4", "U1.9", "U1.5", "C1.2", "C2.2", "U2.1", "U2.4", "U2.9", "C3.2", "C4.2",
+    "GND": ["J1.1", "J1.3", "J1.6", "J1.13", "J1.15", "J1.19", "J1.24", "J1.MP", "U1.1", "U1.4", "U1.9", "U1.5", "C1.2", "C2.2", "U2.1", "U2.4", "U2.9", "C3.2", "C4.2",
             "R2.2", "U3.2", "C5.2", "C6.2",
             # hub
             "U4.1", "U4.21", "U4.23", "U4.29", "U4.36", "U4.44", "U4.45", "U4.66", "U4.67", "U4.88", "U4.8",
@@ -39,20 +41,20 @@ NETS = {
     "+3V3A": ["U3.4", "U3.5", "C6.1", "U4.9", "U4.19", "C16.1", "C17.1", "C9.1", "C10.1",
               "U6.10", "U6.19", "U6.24", "C31.1", "C32.1", "C33.1", "R6.1", "D1.2"],
     # ---- host header (mirrors AeroNode J3/J4) ----
-    "I2S_WS": ["J1.2", "U4.47", "U4.74"],
-    "I2S_BCLK": ["J1.3", "U4.48", "U4.73"],
-    "HOST_SDI0": ["J1.4", "U4.49"],
-    "HOST_SDO0": ["J1.5", "U4.75"],
-    "HOST_SDI1": ["J1.6", "U4.52"],
-    "HOST_SDO1": ["J1.7", "U4.78"],          # coefficient lane (ruling 8)
-    "I2C_SCL": ["J1.8", "U4.39", "U6.2", "U9.4"],
-    "I2C_SDA": ["J1.9", "U4.38", "U6.1", "U9.5"],
-    "CTL_MIC": ["J2.1", "Q2.1", "R25.1"],
-    "CTL_SPKR": ["J2.2", "U9.16"],          # ruling 11: cup K2 control via AD2428 IO7, GPIO-over-distance to the cups
-    "HOST_SDI2": ["J2.3", "U4.72"],
-    "HOST_SDO2": ["J2.4", "U4.71"],
-    "HOST_SDI3": ["J2.5", "U4.70"],
-    "HOST_SDO3": ["J2.6", "U4.69"],
+    "I2S_WS": ["J1.12", "U4.47", "U4.74"],
+    "I2S_BCLK": ["J1.14", "U4.48", "U4.73"],
+    "HOST_SDI0": ["J1.11", "U4.49"],
+    "HOST_SDO0": ["J1.10", "U4.75"],
+    "HOST_SDI1": ["J1.17", "U4.52"],
+    "HOST_SDO1": ["J1.16", "U4.78"],         # coefficient lane (ruling 8)
+    "I2C_SCL": ["J1.5", "U4.39", "U6.2", "U9.4"],
+    "I2C_SDA": ["J1.4", "U4.38", "U6.1", "U9.5"],
+    "CTL_MIC": ["J1.7", "Q2.1", "R25.1"],
+    "CTL_SPKR": ["J1.8", "U9.16"],          # ruling 11: cup K2 control via AD2428 IO7, GPIO-over-distance to the cups
+    "HOST_SDI2": ["J1.18", "U4.72"],
+    "HOST_SDO2": ["J1.20", "U4.71"],
+    "HOST_SDI3": ["J1.22", "U4.70"],
+    "HOST_SDO3": ["J1.21", "U4.69"],
     # ---- hub ----
     "MCLK_IN": ["Y1.3", "U4.25"],
     "BOOT_CS": ["U4.32", "U5.1"],
@@ -135,7 +137,9 @@ NETS = {
     "K1_DRV": ["U10.4", "U11.4", "Q2.3"],
 }
 
-NC = ["U1.8",
+NC = ["J1.9",                            # J9.16 "reserved"
+      "J1.23",                           # J9.2 Vcm3.3: left open, never back-feed our +3V3 into the CM5
+      "U1.8",
       "U4.26", "U4.51", "U4.50", "U4.76", "U4.77", "U4.62", "U4.61", "U4.10", "U4.11", "U4.12", "U4.13",
       "U4.14", "U4.15", "U4.16", "U4.17", "U4.80", "U4.79", "U4.30", "U4.31", "U4.53", "U4.54", "U4.6",
       "U4.7", "U4.4", "U4.5",
