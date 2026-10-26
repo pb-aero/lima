@@ -11,7 +11,6 @@ import pcbnew
 
 MM = 1_000_000
 RES = 0.05                                   # grid pitch, mm
-LAYERS = (pcbnew.F_Cu, pcbnew.B_Cu)
 CL, CL_AIR, HOLE_CL, EDGE_CL, SLACK = 0.13, 0.52, 0.26, 0.52, RES * 0.75
 VIA_D, VIA_DRILL, VIA_COST = 0.5, 0.25, 40   # via cost in grid steps (2 mm)
 import os
@@ -22,6 +21,10 @@ WIDTH = {k: float(v) for k, v in WIDTH.items()}                         # everyt
 def width(net): return float(os.environ["MAZE_W"]) if "MAZE_W" in os.environ else WIDTH.get(net, 0.2)
 
 b = pcbnew.LoadBoard(sys.argv[1])
+# MAZE_LAYERS: routing layers, outer first; inner ones cost LAYER_COST x per step (plane slots only when needed)
+LAYERS = tuple(b.GetLayerID(n) for n in os.environ.get("MAZE_LAYERS", "F.Cu,B.Cu").split(","))
+NL = len(LAYERS)
+STEP_COST = [1.0 if L in (pcbnew.F_Cu, pcbnew.B_Cu) else float(os.environ.get("LAYER_COST", "3")) for L in LAYERS]
 _bb = b.GetBoardEdgesBoundingBox()
 X0, Y0 = math.floor(_bb.GetX() / MM), math.floor(_bb.GetY() / MM)
 X1, Y1 = math.ceil(_bb.GetRight() / MM), math.ceil(_bb.GetBottom() / MM)
@@ -114,7 +117,7 @@ def infl_for(it, w, net):
 
 def build_grid(w, net):
     """block count per cell for a track of width w on `net` (own-net copper excluded)"""
-    grid = array("H", bytes(2 * 2 * N))
+    grid = array("H", bytes(2 * NL * N))
     for it in items:
         if it[0] == net and it[2] != "hole": continue
         stamp(grid, it, infl_for(it, w, net), 1)
@@ -138,7 +141,7 @@ def build_grid(w, net):
             for ix in range(ix0, ix1 + 1): inside[ix] = True
         for ix in range(NX):
             if not inside[ix]:
-                grid[iy * NX + ix] += 1; grid[N + iy * NX + ix] += 1
+                for li in range(NL): grid[li * N + iy * NX + ix] += 1
     return grid
 
 # ---------- clusters of a net ----------
@@ -226,7 +229,7 @@ def seed_cells(cl):
 def astar(grid, src, dst):
     free = lambda n: grid[n] == 0
     def via_ok(idx):   # both layers free for a via (bigger than the track) -> checked on a via grid
-        return vgrid[idx] == 0 and vgrid[N + idx] == 0
+        return all(vgrid[li * N + idx] == 0 for li in range(NL))
     tx = [((n % N) % NX, (n % N) // NX) for n in list(dst)[:400]]
     def h(n):
         ix, iy = (n % N) % NX, (n % N) // NX
@@ -245,15 +248,19 @@ def astar(grid, src, dst):
         seen += 1
         if seen > 3_000_000: return None
         li, idx = divmod(n, N); iy, ix = divmod(idx, NX); gn = g[n]
-        for dx, dy, c in steps:
+        for dx, dy, c0 in steps:
+            c = c0 * STEP_COST[li]
             jx, jy = ix + dx, iy + dy
             if 0 <= jx < NX and 0 <= jy < NY:
                 m = li * N + jy * NX + jx
                 if free(m) and gn + c < g.get(m, 1e18):
                     g[m] = gn + c; came[m] = n; heapq.heappush(openh, (gn + c + h(m), m))
-        m = (1 - li) * N + idx
-        if free(m) and via_ok(idx) and gn + VIA_COST < g.get(m, 1e18):
-            g[m] = gn + VIA_COST; came[m] = n; heapq.heappush(openh, (gn + VIA_COST + h(m), m))
+        if via_ok(idx):
+            for lj in range(NL):
+                if lj == li: continue
+                m = lj * N + idx
+                if free(m) and gn + VIA_COST < g.get(m, 1e18):
+                    g[m] = gn + VIA_COST; came[m] = n; heapq.heappush(openh, (gn + VIA_COST + h(m), m))
     return None
 
 def clear_line(grid, li, a, c):
@@ -293,8 +300,10 @@ def emit(grid, path, net, w):
 rep = open(sys.argv[2]).read()
 pairs = []
 for blk in re.findall(r"\[unconnected_items\].*?\n(.*?)\n(?=\[|\s*\n|\Z)", rep, re.S):
-    locs = re.findall(r"@\(([\d.]+) mm, ([\d.]+) mm\): .*?\[(/[^\]]+)\]", blk)
+    locs = re.findall(r"@\(([\d.]+) mm, ([\d.]+) mm\): .*?\[([^\]]+)\]", blk)
     if len(locs) >= 2: pairs.append((locs[0][2], (float(locs[0][0]), float(locs[0][1])), (float(locs[1][0]), float(locs[1][1]))))
+first = os.environ.get("MAZE_FIRST", "").split()      # route these nets first, in this order
+pairs.sort(key=lambda pr: first.index(pr[0]) if pr[0] in first else len(first))
 print("connections to route:", len(pairs), flush=True)
 
 done = 0
