@@ -1172,3 +1172,6 @@ time. And Triad pinouts are drawn, not text: render the page and read it as an i
 - **Freerouting needs plane fanout done first, and plane layers kept as planes** `[measured]` 2026-10-26: fanout script
   took audio unconnected 64 -> 19. A routable plane layer gets split by tracks; a net whose class width exceeds its
   fine-pitch pin widths gets zero routes (silently). Autorouted spaghetti still fails switch-loop / analog hand-checks.
+- **Freerouting plateaus (~18 left) on dense boards and is deterministic — re-runs don't help** `[measured]` 2026-10-26.
+  Finish with the A* finisher `kicad/audio-board/doc/route/maze.py` (DRC report in, routes out). When a pin is boxed in,
+  move the blocking decap rather than fighting the router. SES import re-adds protected wiring: always de-dupe (2 µm tol).

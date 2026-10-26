@@ -1802,3 +1802,5 @@ JLCPCB assembly, JST GH for all off-board connectors.** Approved downloads: Open
 - **2026-10-26 audio routing:** fanout + Freerouting -> 19 unconnected, 0 clearance errors (`c929354`, WIP). Critical
   nets fail hand-check due to placement (boost loop 16 mm, EAR lines 75 mm, U9 I2S facing away). Awaiting Peter on a
   placement revision. Details in handoffs.md.
+- **2026-10-26 audio board ROUTED** (`0bebb9f`): 0 unconnected, 0 DRC errors. EAR pair on a plane-free bottom corridor,
+  boost switch node 5.8 mm, U10/U11/T4 turned so aircraft sides face J5/J6. Remaining: silk tidy, pair-length polish.

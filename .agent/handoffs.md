@@ -154,3 +154,15 @@ Hand-check `[measured]` says the autoroute is not acceptable for the critical ne
 Isolation itself is designed into the planes: both cut out x<116.8,y>96 and x<129.6,y>117.5 (aircraft corner).
 Proposed to Peter: placement revision (T2/T3 near J5, U12 against L7/D4, rotate U9), then hand-route critical nets
 first and Freerouting the rest.
+
+## 2026-10-26 (late) · Audio board fully routed — how it was done and what's left
+
+Board = `0bebb9f`: 0 unconnected, 0 DRC errors. Pipeline is scripted in `kicad/audio-board/doc/route/`:
+`build.sh` (rev2 placement 4d9bbee -> U10/U11/T4 r180 + U9 cap column -> planecut -> hand-routes.json -> fanout -> DSN),
+Freerouting (variant A: In2 solid plane, 0.13 clearance, 0.5/0.25 vias -> 17-18 left), `ses.py` + `dedupe.py`,
+then `maze.py <board> <drc.rpt>` (A* finisher; MAZE_W=0.15 for fine-pitch leftovers), `rip.py`/`rmvia.py` for rework.
+After build.sh the final state also needed: C33 -> (143.8,116.6) and a DAC/C33 re-rip (not in build.sh yet).
+pcbnew 10.0.3 segfault traps: sorted() over SWIG items; Remove() then b.Zones() in the same process; removing items
+while re-listing GetTracks(). Collect victims first, remove, save, os._exit(0).
+Open for Peter: DAC_P 25.8 vs DAC_N 17.2 mm and A2B_BP 23.8 vs BN 13.4 mm (unmatched; harmless at audio / A2B rates
+but not pretty); silkscreen tidy; datasheet fields; lib_footprint_mismatch cause; U7 bottom port still needs an enclosure hole.
