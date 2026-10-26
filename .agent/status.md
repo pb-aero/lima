@@ -1796,3 +1796,6 @@ JLCPCB assembly, JST GH for all off-board connectors.** Approved downloads: Open
 - **2026-10-26 cup board (Peter: build on the existing sheet):** U1 DVDD overvoltage fixed (REG_EN->AVDD, own net + C47/C48,
   `f502399`); J5 merged into 4-pin JST GH J7 matching audio J3, J8/J2 JST GH; PPG_INT -> U6 IRQ/IO0 (`258a765`). Netlist ==
   design file, ERC 0 errors. Cup R needs a split harness into J7. Audio board parked as placed/unrouted. Next: cup footprints.
+- **2026-10-26 cup PCB + 3D:** ring 68/38 mm, 4-layer, 102 footprints placed, DRC 0 (`349259f`). 3D models on both boards
+  (`eb79418` audio, `f64da10` cup: generated VRML for ADAU1861 CS-64-2, IM73A135, MAXM86161; `3ab5285` repointed stock
+  models KiCad 10 doesn't ship). Every part now renders a body. Both boards unrouted. Next: Peter's call (routing, mic side).

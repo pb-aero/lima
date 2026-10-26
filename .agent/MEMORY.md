@@ -1166,3 +1166,6 @@ time. And Triad pinouts are drawn, not text: render the page and read it as an i
   The `lib_footprint_mismatch` warnings are NOT caused by this (they stayed at 116 after the restore) — cause unknown.
 - **Konnect IPC refuses non-90° rotation** of footprints with rounded-rect pads. For angled placement (ring boards),
   quit KiCad and set orientation with pcbnew (`kicad/cup-board/doc/apply_placement.py`).
+- **Stock KiCad 10 footprints can reference 3D files KiCad 10 doesn't ship** `[measured]` 2026-10-26: QFN-32 5x5 EP3.6
+  and Oscillator SiT PQFN 3.2x2.5 -> bare pads in renders. Check every `(model` path resolves, not just that one exists.
+  pcbnew gotcha: `f.Models()` iteration yields copies; edit = clone fields into new FP_3DMODEL, clear, push_back.
