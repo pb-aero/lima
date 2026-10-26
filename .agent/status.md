@@ -1793,3 +1793,6 @@ JLCPCB assembly, JST GH for all off-board connectors.** Approved downloads: Open
   file, J9 cross-check 0 mismatches, ERC 0 errors); PCB synced + placed top-centre (138, 85.7, rot 180), DRC = unconnected
   only. **For the AeroNode owner:** J9 power is one contact behind a 100 mA-hold polyfuse; board needs ~0.35-0.5 A.
   Routing still not done (see handoffs: power/GND fanout blocker).
+- **2026-10-26 cup board (Peter: build on the existing sheet):** U1 DVDD overvoltage fixed (REG_EN->AVDD, own net + C47/C48,
+  `f502399`); J5 merged into 4-pin JST GH J7 matching audio J3, J8/J2 JST GH; PPG_INT -> U6 IRQ/IO0 (`258a765`). Netlist ==
+  design file, ERC 0 errors. Cup R needs a split harness into J7. Audio board parked as placed/unrouted. Next: cup footprints.
