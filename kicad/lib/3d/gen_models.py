@@ -61,3 +61,24 @@ for i in range(24):
 for x in (-7.0, 7.0):
     s.append(box(x - .9, 2.0, 0, x + .9, 3.5, .3, LEAD))
 write("Cvilux_CF31241D0R0-05-NH", s)
+
+# ---- cup board (2026-10-26) ----
+# ADAU1861 CS-64-2: 9 x 9 x 0.75, 16 side-solderable leads/side, 0.25 wide x 0.40 at the edge, pitch 0.5
+s = [box(-4.5, -4.5, 0.05, 4.5, 4.5, 0.75, BODY), box(-4.1, -4.1, 0.749, -3.6, -3.6, 0.76, MARK)]
+for i in range(16):
+    t = -3.75 + 0.5 * i
+    s += [box(-4.5, t - .125, 0, -4.1, t + .125, .2, LEAD), box(4.1, t - .125, 0, 4.5, t + .125, .2, LEAD),
+          box(t - .125, -4.5, 0, t + .125, -4.1, .2, LEAD), box(t - .125, 4.1, 0, t + .125, 4.5, .2, LEAD)]
+write("AD_LFCSP-SS-64-1EP_9x9mm_P0.5mm_CS-64-2", s)
+
+# Infineon 4 x 3 mm LLGA-5 (IM73A135V01 1.28 max, IM72D128VV01 1.2): metal lid on a laminate base, origin = package centre
+s = [box(-1.5, -2.0, 0.0, 1.5, 2.0, 0.25, (0.25, 0.32, 0.22)), box(-1.4, -1.9, 0.25, 1.4, 1.9, 1.25, (0.78, 0.78, 0.80)),
+     box(-1.2, 1.35, 1.249, -0.85, 1.7, 1.26, (0.2, 0.2, 0.2))]
+write("Infineon_PG-LLGA-5_4x3mm_IM73A135_IM72D128", s)
+
+# MAXM86161 OLGA 2.9 x 4.3 x 1.4 (21-100309 rev B): dark body, two optical windows on top (LEDs / photodiode)
+s = [box(-1.45, -2.15, 0.0, 1.45, 2.15, 1.4, BODY),
+     box(-1.0, -1.85, 1.399, 1.0, -0.15, 1.41, (0.35, 0.45, 0.40)),   # upper window (2.03 x 1.74 ref)
+     box(-1.0, 0.9, 1.399, 1.0, 1.7, 1.41, (0.35, 0.45, 0.40)),       # lower window (2.01 x 0.8 ref)
+     box(-1.35, -2.05, 1.409, -1.1, -1.8, 1.42, MARK)]
+write("Maxim_OLGA-14_2.9x4.3mm_MAXM86161", s)

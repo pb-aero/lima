@@ -21,4 +21,8 @@
   (fp_circle (center -0.8500 2.2750) (end -0.7000 2.2750) (stroke (width 0.1) (type solid)) (fill solid) (layer "F.SilkS"))
   (fp_text reference "REF**" (at 0.0000 -2.8700 0) (layer "F.SilkS") (effects (font (size 1 1) (thickness 0.15))))
   (fp_text value "Infineon_PG-LLGA-5_4x3mm_IM73A135_IM72D128" (at 0.0000 2.8750 0) (layer "F.Fab") (effects (font (size 1 1) (thickness 0.15))))
+  (model "${KIPRJMOD}/../lib/3d/Infineon_PG-LLGA-5_4x3mm_IM73A135_IM72D128.wrl"
+    (offset (xyz 0 0 0))
+    (scale (xyz 1 1 1))
+    (rotate (xyz 0 0 0)))
 )
