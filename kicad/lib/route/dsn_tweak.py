@@ -8,6 +8,9 @@ What it does, all relative to what KiCad exported:
 - FINE_NETS (space-separated) moved to their own 200 um class
 - PROTECT=1: existing wiring becomes (type protect) so Freerouting leaves hand routes and fanout alone
 - ROUTE_LAYERS: power layers listed here (e.g. "In2.Cu") become routable, and their plane is dropped
+- PLANE_LAYERS: signal layers listed here become power (plane-only) layers
+- EDGE_INSET (mm): boundary pulled toward its centroid, and polygon keepouts (board holes) pushed out from theirs,
+  so Freerouting's class clearance to the outline ends up >= the 0.5 mm edge rule (exact for circles/rings)
 """
 import sys, os, re
 t = open(sys.argv[1]).read()
@@ -32,6 +35,23 @@ for lay in os.environ.get("ROUTE_LAYERS", "").split():
             depth += t[e] == "("; depth -= t[e] == ")"
             if depth == 0: break
         t = t[:k] + t[e + 1:]
+
+for lay in os.environ.get("PLANE_LAYERS", "").split():
+    i = t.index(f"(layer {lay}"); j = t.index("(type signal)", i); t = t[:j] + "(type power)" + t[j + 13:]
+
+inset = float(os.environ.get("EDGE_INSET", "0")) * 1000   # DSN units are um
+def move_poly(m, sign):
+    head, nums, tail = m.group(1), m.group(2), m.group(3)
+    v = [float(x) for x in nums.split()]
+    pts = list(zip(v[0::2], v[1::2])); cx = sum(p[0] for p in pts) / len(pts); cy = sum(p[1] for p in pts) / len(pts)
+    out = []
+    for x, y in pts:
+        d = ((x - cx) ** 2 + (y - cy) ** 2) ** 0.5 or 1
+        out += [round(x + sign * inset * (x - cx) / d, 1), round(y + sign * inset * (y - cy) / d, 1)]
+    return head + "  ".join(f"{out[k]:g} {out[k+1]:g}" for k in range(0, len(out), 2)) + tail
+if inset:
+    t = re.sub(r"(\(boundary\s*\(path pcb 0\s+)([-\d.\s]+?)(\))", lambda m: move_poly(m, -1), t, count=1)
+    t = re.sub(r'(\(keepout "" \(polygon signal 0\s+)([-\d.\s]+?)(\))', lambda m: move_poly(m, +1), t)
 
 if os.environ.get("PROTECT") == "1":
     t = t.replace("(type route)", "(type protect)").replace("(type fix)", "(type protect)")
