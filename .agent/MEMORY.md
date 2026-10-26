@@ -1160,3 +1160,9 @@ time. And Triad pinouts are drawn, not text: render the page and read it as an i
   AS_UNHANDLED) even with no PCB editor open. Quit KiCad (osascript quit can hang on a dialog; it did exit).
 - **Konnect is a project `.mcp.json` server**, so the agent can't re-dial it (`reconnect_session_connector` only
   covers claude.ai connectors). When it drops, the user restarts the session.
+- **Konnect's `update_pcb_from_schematic` drops every footprint `(model …)` block** `[measured]` 2026-10-26: 0 of 120
+  audio-board and 0 of 102 cup-board footprints had 3D models after sync, though the stock libraries carry them.
+  Restore with `kicad/lib/3d/restore_models.py` (KiCad closed, KiCad's bundled Python) after every sync.
+  The `lib_footprint_mismatch` warnings are NOT caused by this (they stayed at 116 after the restore) — cause unknown.
+- **Konnect IPC refuses non-90° rotation** of footprints with rounded-rect pads. For angled placement (ring boards),
+  quit KiCad and set orientation with pcbnew (`kicad/cup-board/doc/apply_placement.py`).
