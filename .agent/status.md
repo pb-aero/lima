@@ -1804,3 +1804,5 @@ JLCPCB assembly, JST GH for all off-board connectors.** Approved downloads: Open
   placement revision. Details in handoffs.md.
 - **2026-10-26 audio board ROUTED** (`0bebb9f`): 0 unconnected, 0 DRC errors. EAR pair on a plane-free bottom corridor,
   boost switch node 5.8 mm, U10/U11/T4 turned so aircraft sides face J5/J6. Remaining: silk tidy, pair-length polish.
+- **2026-10-27 cup board routing** (`52d722c`): 7 unconnected, 0 DRC errors. Mics/PPG on top (Peter). In1 GND, In2 1V8.
+  U6 decaps re-placed (C35 VIN cap to pin 30). Left: U6 B-side (B_BN, B_SWP, B_SENSE), 1 SCL, 1 TDM_DATA. Awaiting Peter.

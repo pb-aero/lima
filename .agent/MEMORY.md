@@ -1175,3 +1175,8 @@ time. And Triad pinouts are drawn, not text: render the page and read it as an i
 - **Freerouting plateaus (~18 left) on dense boards and is deterministic — re-runs don't help** `[measured]` 2026-10-26.
   Finish with the A* finisher `kicad/audio-board/doc/route/maze.py` (DRC report in, routes out). When a pin is boxed in,
   move the blocking decap rather than fighting the router. SES import re-adds protected wiring: always de-dupe (2 µm tol).
+- **Rip-up router traps** `[measured]` 2026-10-27 (cup board): (1) one rip-up per pass that exits before re-routing the
+  victims ping-pongs forever (VIN_CUP <-> A2B_VOUT2, 40 passes, 11 -> 39 unconnected) — route everything first, then rip
+  once, and weight repeat victims (RIP_HIST); (2) line-of-sight smoothing must check soft copper too, or straightened
+  segments short unripped nets; (3) cascading dangling-stub strip eats whole branches — remove only the flagged vias.
+  Cause of the thrash was placement (decaps parked on U6's pin face, VIN cap 32 mm away) — check that before tuning.
