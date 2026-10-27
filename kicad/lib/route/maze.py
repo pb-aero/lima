@@ -126,7 +126,7 @@ def build_grid(w, net, soft=None):
     for it in items:
         if it[0] == net and it[2] != "hole": continue
         if soft is not None and id(it) in SOFT and SOFT[id(it)] != net:
-            stamp(soft, it, infl_for(it, w, net), 1); continue
+            stamp(soft, it, infl_for(it, w, net), 1 + 2 * HIST.get(SOFT[id(it)], 0)); continue
         stamp(grid, it, infl_for(it, w, net), 1)
     # board edge: block every cell outside the outline deflated by edge clearance (scanline, handles holes)
     safe = pcbnew.SHAPE_POLY_SET(OUTLINE); safe.Deflate(int((EDGE_CL + w / 2 + SLACK) * MM), pcbnew.CORNER_STRATEGY_ROUND_ALL_CORNERS, 5000)
@@ -234,9 +234,13 @@ def seed_cells(cl):
 
 # ---------- A* ----------
 SOFT_COST = float(os.environ.get("SOFT_COST", "25"))
+import json
+HIST_FILE = os.environ.get("RIP_HIST", "")      # net -> times ripped; makes repeat victims dearer
+try: HIST = json.load(open(HIST_FILE)) if HIST_FILE else {}
+except Exception: HIST = {}
 def astar(grid, src, dst, sgrid=None, svgrid=None):
     free = lambda n: grid[n] == 0
-    pen = (lambda m: SOFT_COST if sgrid[m] else 0) if sgrid is not None else (lambda m: 0)
+    pen = (lambda m: SOFT_COST * sgrid[m]) if sgrid is not None else (lambda m: 0)
     vpen = (lambda idx: SOFT_COST * 4 if any(svgrid[li * N + idx] for li in range(NL)) else 0) if svgrid is not None else (lambda idx: 0)
     def via_ok(idx):   # both layers free for a via (bigger than the track) -> checked on a via grid
         return all(vgrid[li * N + idx] == 0 for li in range(NL))
@@ -319,7 +323,7 @@ first = os.environ.get("MAZE_FIRST", "").split()      # route these nets first, 
 pairs.sort(key=lambda pr: first.index(pr[0]) if pr[0] in first else len(first))
 print("connections to route:", len(pairs), flush=True)
 
-done = 0
+done = 0; failed = []
 for net, A, B_ in pairs:
     add_items()
     cls = clusters(net); ka, kb = item_at(cls, *A), item_at(cls, *B_)
@@ -332,35 +336,45 @@ for net, A, B_ in pairs:
     src = {n for n in src if grid[n] == 0}; dst = {n for n in dst if grid[n] == 0}
     if not src or not dst: print(f"  {net}: no free seed cells ({len(src)}/{len(dst)})", flush=True); continue
     path = astar(grid, src, dst)
-    if not path and os.environ.get("RIPUP") == "1":
-        sg = array("H", bytes(2 * NL * N)); svg = array("H", bytes(2 * NL * N))
-        grid = build_grid(w, net, sg); vgrid = build_grid(VIA_D, net, svg)
-        src = {n for n in seed_cells(cls[ka]) if grid[n] == 0}; dst = {n for n in seed_cells(cls[kb]) if grid[n] == 0}
-        path = astar(grid, src, dst, sg, svg) if src and dst else None
-        if path:
-            hit = set()
-            pts = [n for i, n in enumerate(path) if sg[n] or (i and path[i - 1] // N != n // N and any(svg[l * N + n % N] for l in range(NL)))]
-            for it in items:
-                if id(it) not in SOFT or SOFT[id(it)] in hit: continue
-                infl = infl_for(it, VIA_D, net) + RES
-                k, g_ = it[2], it[3]
-                for n in pts:
-                    x, y = cxy((n % N) % NX, (n % N) // NX)
-                    if k in ("circle", "hole") and math.hypot(x - g_[0], y - g_[1]) <= g_[2] + infl: hit.add(SOFT[id(it)]); break
-                    if k == "seg":
-                        ax, ay, bx, by, R = g_; dx, dy = bx - ax, by - ay; L2 = dx * dx + dy * dy
-                        u = 0 if L2 == 0 else max(0, min(1, ((x - ax) * dx + (y - ay) * dy) / L2))
-                        if math.hypot(x - ax - u * dx, y - ay - u * dy) <= R + infl: hit.add(SOFT[id(it)]); break
-            victims = [t for t in b.GetTracks() if not t.IsLocked() and t.GetNetname() in hit]
-            nt, nv = emit(grid, path, net, w)
-            for t in victims: b.Remove(t)
-            pcbnew.SaveBoard(sys.argv[1], b)
-            print(f"  {net}: routed by rip-up ({nt} segments, {nv} vias), ripped {len(victims)} items of {sorted(hit)}", flush=True)
-            os._exit(3)        # pcbnew: no further board walking after Remove() -> caller re-runs DRC + maze
-    if not path: print(f"  {net}: no path", flush=True); continue
+    if not path: print(f"  {net}: no path", flush=True); failed.append((net, A, B_)); continue
     nt, nv = emit(grid, path, net, w); done += 1
     print(f"  {net}: routed, {nt} segments, {nv} vias", flush=True)
     pcbnew.SaveBoard(sys.argv[1], b)
+pcbnew.SaveBoard(sys.argv[1], b)
+if os.environ.get("RIPUP") == "1":
+    for net, A, B_ in failed:
+        add_items()
+        cls = clusters(net); ka, kb = item_at(cls, *A), item_at(cls, *B_)
+        if ka is None or kb is None or ka == kb: continue
+        w = width(net); path = None
+        if True:
+            sg = array("H", bytes(2 * NL * N)); svg = array("H", bytes(2 * NL * N))
+            grid = build_grid(w, net, sg); vgrid = build_grid(VIA_D, net, svg)
+            src = {n for n in seed_cells(cls[ka]) if grid[n] == 0}; dst = {n for n in seed_cells(cls[kb]) if grid[n] == 0}
+            path = astar(grid, src, dst, sg, svg) if src and dst else None
+            if path:
+                hit = set()
+                pts = [n for i, n in enumerate(path) if sg[n] or (i and path[i - 1] // N != n // N and any(svg[l * N + n % N] for l in range(NL)))]
+                for it in items:
+                    if id(it) not in SOFT or SOFT[id(it)] in hit: continue
+                    infl = infl_for(it, VIA_D, net) + RES
+                    k, g_ = it[2], it[3]
+                    for n in pts:
+                        x, y = cxy((n % N) % NX, (n % N) // NX)
+                        if k in ("circle", "hole") and math.hypot(x - g_[0], y - g_[1]) <= g_[2] + infl: hit.add(SOFT[id(it)]); break
+                        if k == "seg":
+                            ax, ay, bx, by, R = g_; dx, dy = bx - ax, by - ay; L2 = dx * dx + dy * dy
+                            u = 0 if L2 == 0 else max(0, min(1, ((x - ax) * dx + (y - ay) * dy) / L2))
+                            if math.hypot(x - ax - u * dx, y - ay - u * dy) <= R + infl: hit.add(SOFT[id(it)]); break
+                victims = [t for t in b.GetTracks() if not t.IsLocked() and t.GetNetname() in hit]
+                nt, nv = emit(grid, path, net, w)
+                for t in victims: b.Remove(t)
+                pcbnew.SaveBoard(sys.argv[1], b)
+                print(f"  {net}: routed by rip-up ({nt} segments, {nv} vias), ripped {len(victims)} items of {sorted(hit)}", flush=True)
+                for n_ in hit: HIST[n_] = HIST.get(n_, 0) + 1
+                if HIST_FILE: json.dump(HIST, open(HIST_FILE, "w"))
+                os._exit(3)        # pcbnew: no further board walking after Remove() -> caller re-runs DRC + maze
+
 pcbnew.ZONE_FILLER(b).Fill(b.Zones()); pcbnew.SaveBoard(sys.argv[1], b)
 print("routed", done, "of", len(pairs), flush=True)
 import os; os._exit(0)
