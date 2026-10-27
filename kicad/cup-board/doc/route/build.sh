@@ -6,6 +6,7 @@ PY=/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/C
 B=${BOARD:-$PWD/kicad/cup-board/cup-board.kicad_pcb}; G=$PWD/kicad/lib/route; T=$1; U6_ANGLE=${U6_ANGLE:-45.3}
 q() { "$PY" -u "$@" 2>&1 | grep -v "image handler\|wxApp\|memory leak" || true; }
 git show 3ab5285:kicad/cup-board/cup-board.kicad_pcb > "$B"
+q $G/rmfp.py "$B" H3          # H3 dropped 2026-10-27 (Peter: two mounting holes is fine) - it blocked the top corridor
 # U6 turned +90 deg so its B-bus pins (22-24) and SENSE/SWP/VSSN (26-28) face the B filter/bias chain up the ring
 # (B-side ratsnest 115 -> 92 mm, A side unchanged). Its decaps are parked, then re-seated end-on at their pins
 # (decaps.py) so no cap lies along a pin face; C35 is VIN's 100 nF, brought over from the U7 corner.
