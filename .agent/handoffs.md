@@ -166,3 +166,13 @@ pcbnew 10.0.3 segfault traps: sorted() over SWIG items; Remove() then b.Zones() 
 while re-listing GetTracks(). Collect victims first, remove, save, os._exit(0).
 Open for Peter: DAC_P 25.8 vs DAC_N 17.2 mm and A2B_BP 23.8 vs BN 13.4 mm (unmatched; harmless at audio / A2B rates
 but not pretty); silkscreen tidy; datasheet fields; lib_footprint_mismatch cause; U7 bottom port still needs an enclosure hole.
+
+## 2026-10-27 · Cup board 72/38 + flex-mic ZIFs ROUTED
+
+Board: 0 unconnected, 0 DRC errors, schematic parity 0 (`kicad-cli pcb drc --refill-zones --schematic-parity`).
+Path: Freerouting 23 left -> `doc/route/finish.sh` 7 -> `finish2.sh` 6 -> `finish3.sh` (rip all nets near U1 + ZIFs, mic
+pairs first) 2 -> by hand: ripnets --local / fanout FANOUT_PADS for 1V8 pads, re-route TDM/U1_DVDD off In2 (they had
+fenced a 1V8 pocket), I2S0_BCLK by rip-up with MAZE_BUDGET=15e6, finish loop -> 0.
+Hand-check table in `kicad/cup-board/README.md` (PCB — 72/38 section). Weak spots: MK1 pair split F/B; I2S lines 68-90 mm
+with up to 10 vias; SW1V8 7.4 mm. Placement idea NOT done (needs Peter): U1 +90 deg so mic inputs face J9/J10.
+Before fab: ZIF pinout vs a real flex kit (placeholder), FH12 LCSC part, silk tidy / REF**, enclosure fit.

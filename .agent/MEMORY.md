@@ -1180,3 +1180,11 @@ time. And Triad pinouts are drawn, not text: render the page and read it as an i
   once, and weight repeat victims (RIP_HIST); (2) line-of-sight smoothing must check soft copper too, or straightened
   segments short unripped nets; (3) cascading dangling-stub strip eats whole branches — remove only the flagged vias.
   Cause of the thrash was placement (decaps parked on U6's pin face, VIN cap 32 mm away) — check that before tuning.
+- **Maze finisher "no path" can be a lie, and plane-net tracks become walls** `[measured]` 2026-10-27 (cup 72/38):
+  (1) A* had a fixed 3 M-cell search budget that silently returned "no path" — a 60 mm run round a ring on 3 layers
+  needs ~15 M (`MAZE_BUDGET=15e6`, ~2 min, 0.7 GB); it now prints when the budget is hit. (2) When a plane pad's fanout is
+  ripped, maze routes that pad to the plane as an ordinary track (one went 50 mm round the edge on B.Cu) — plane copper
+  is hard to rip-up, so it walls off the corridor. Re-seat plane pads with `fanout.py FANOUT_PADS=REF.PAD` and feed maze a
+  report filtered to the signal nets. (3) Signal tracks on the plane layer enclose pockets the zone filler drops as
+  islands (DRC shows Zone<->Zone unconnected) — keep inner-layer cost high (LAYER_COST=3).
+  (4) When one area won't close, rip every net near the stuck pins and route the critical nets FIRST (MAZE_FIRST).

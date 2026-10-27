@@ -479,3 +479,37 @@ left, 8–14 up the right (top view). Pins 6/7/8 (LED cathodes) are soldered but
   schematic parity 0). Warnings only: silkscreen overlaps, `lib_footprint_mismatch`, 2 silk-at-edge.
 - **Open:** mic/PPG positions vs the enclosure (all on top, ports through the board); routing will be tight (little
   angular slack); "REF\*\*" silk on custom footprints (shared Konnect footprint-writer quirk, fix before fab).
+
+## PCB — 72/38 ring, flex mics, ROUTED (2026-10-27, per Peter)
+
+- **Ring widened to 72 mm OD / 38 mm ID** (Peter, after 68/38 proved over-constrained round U6). **H3 removed** — two
+  M2 holes (H1, H2) are enough (Peter); H3 was blocking the top routing corridor.
+- **Mics moved off-board onto Infineon's flex evaluation boards** (Peter): KIT_IM73A135V01_FLEX for MK1 (FF) and MK2 (FB),
+  KIT_IM72D128V01_FLEX for MK3 (PDM voice). On the cup board each is a 6-pin 0.5 mm ZIF: **J9 (MK1), J10 (MK2), J11 (MK3)**,
+  footprint Hirose FH12-6S-0.5SH. **Pinout is a PLACEHOLDER** (Peter: "verify later") — Infineon does not publish the
+  flex-tail contact order and its adapter tables differ between 2020 and 2022. Current assignment: J9/J10 1 = 3V3_MIC,
+  2 = OUT+, 3 = OUT−, 4 = NC, 5/6/MP = GND; J11 1 = 1V8, 2 = DATA, 3 = CLK, 4/5/6/MP = GND. **Check against a real kit
+  (continuity) before fab**; the JLC/LCSC part for the FH12 is not chosen yet.
+- **Routed `[measured]`:** `kicad-cli pcb drc --refill-zones --schematic-parity` on the saved file: **0 unconnected,
+  0 errors, schematic parity 0**. Warnings only: 96 lib_footprint_mismatch, 135 silk-over-copper, 71 silk overlaps,
+  3 silk at edge. In1 = GND plane, In2 = 1V8 plane (a few short signal slots, no islands). Renders:
+  `doc/route/routed-2026-10-27.png` (F+B copper), `doc/route/in2-plane-2026-10-27.png`, `doc/route/render-top-2026-10-27.png`.
+- **How:** `doc/route/build.sh` (placement + planes + fanout + DSN) → Freerouting → `finish.sh` (A2B B trio first, locked;
+  DRC repair; rip-up loop) → `finish2.sh` → `finish3.sh` (rip every net near U1 and the ZIFs, re-route mic pairs first;
+  In2 at 3× cost so the 1V8 plane stops being carved up) → last two links by hand-driven `ripnets.py --local`, `fanout.py`
+  with `FANOUT_PADS`, and `maze.py` with `MAZE_BUDGET=15e6` (the 60 mm I2S0_BCLK run round the ring exceeded the old
+  fixed 3 M-cell A* budget, which had been reporting "no path" silently).
+- **Hand-check `[measured]`** (track length, vias):
+
+  | Net(s) | Length | Note |
+  |---|---|---|
+  | A_AP / A_AN | 9.7 / 14.9 mm, 2 / 3 vias | 5 mm skew — ~30 ps, harmless at A2B rates |
+  | B_BP / B_BN / B_BCM | 8.1 / 6.3 / 3.1 mm | the one forced crossing taken by BCM's vias |
+  | SW1V8 (buck switch node) | 7.4 mm, F.Cu, 0 vias | longer than ideal (aim < 5 mm); acceptable, tighten if EMI shows |
+  | MK2_OUTP / N | 20.2 / 21.8 mm, both mainly B.Cu | pair stays together |
+  | MK1_OUTP / N | 22.2 mm F.Cu / 19.9 mm mostly B.Cu | **pair split across layers** — B.Cu references the 1V8 plane, F.Cu the GND plane; works, but worth re-pairing |
+  | DMIC_CLK / DATA | 22.0 / 21.7 mm | fine for 3 MHz PDM |
+  | I2S0 BCLK / FSYNC / SDATAI / SDATAO | 86 / 68 / 68 / 90 mm, 8 / 10 / 8 / 3 vias | long way round U6 → U1; fine at I2S rates, but the via counts are ugly |
+  | HPOUTP / N | 58 / 48 mm | to the U4/U5 speaker switch |
+- **Open (before fab):** ZIF pinout check against a kit; FH12 LCSC part; MK1 pair onto one layer; silkscreen tidy and
+  "REF\*\*" on custom footprints; enclosure fit of the 72/38 ring and the flex tails.

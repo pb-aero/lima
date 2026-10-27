@@ -1806,3 +1806,6 @@ JLCPCB assembly, JST GH for all off-board connectors.** Approved downloads: Open
   boost switch node 5.8 mm, U10/U11/T4 turned so aircraft sides face J5/J6. Remaining: silk tidy, pair-length polish.
 - **2026-10-27 cup board routing** (`52d722c`): 7 unconnected, 0 DRC errors. Mics/PPG on top (Peter). In1 GND, In2 1V8.
   U6 decaps re-placed (C35 VIN cap to pin 30). Left: U6 B-side (B_BN, B_SWP, B_SENSE), 1 SCL, 1 TDM_DATA. Awaiting Peter.
+- **2026-10-27 cup board ROUTED on 72/38 ring** (Peter: widen ring, all three mics on Infineon flex kits via ZIFs
+  J9/J10/J11, pinout placeholder; H3 removed): 0 unconnected, 0 errors, parity 0. Open: ZIF pinout vs kit, FH12 LCSC,
+  MK1 pair onto one layer, silk tidy. Details: handoffs.md, cup README.

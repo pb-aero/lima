@@ -234,6 +234,7 @@ def seed_cells(cl):
 
 # ---------- A* ----------
 SOFT_COST = float(os.environ.get("SOFT_COST", "25"))
+BUDGET = int(float(os.environ.get("MAZE_BUDGET", "3e6")))   # A* cells expanded before giving up on one connection
 import json
 HIST_FILE = os.environ.get("RIP_HIST", "")      # net -> times ripped; makes repeat victims dearer
 try: HIST = json.load(open(HIST_FILE)) if HIST_FILE else {}
@@ -260,7 +261,7 @@ def astar(grid, src, dst, sgrid=None, svgrid=None):
             while path[-1] in came: path.append(came[path[-1]])
             return path[::-1]
         seen += 1
-        if seen > 3_000_000: return None
+        if seen > BUDGET: print(f"    search budget hit ({BUDGET} cells; raise MAZE_BUDGET)", flush=True); return None
         li, idx = divmod(n, N); iy, ix = divmod(idx, NX); gn = g[n]
         for dx, dy, c0 in steps:
             c = c0 * STEP_COST[li]
@@ -352,6 +353,7 @@ if os.environ.get("RIPUP") == "1":
             grid = build_grid(w, net, sg); vgrid = build_grid(VIA_D, net, svg)
             src = {n for n in seed_cells(cls[ka]) if grid[n] == 0}; dst = {n for n in seed_cells(cls[kb]) if grid[n] == 0}
             path = astar(grid, src, dst, sg, svg) if src and dst else None
+            if not path: print(f"  {net}: rip-up found no path (free seed cells: src {len(src)}, dst {len(dst)})", flush=True)
             if path:
                 hit = set()
                 pts = [n for i, n in enumerate(path) if sg[n] or (i and path[i - 1] // N != n // N and any(svg[l * N + n % N] for l in range(NL)))]
