@@ -40,7 +40,10 @@ for ref, (val, fpid) in comps.items():
     f.SetReference(ref); f.SetValue(val or ""); f.SetPosition(pcbnew.VECTOR2I(cx, cy))
     for k, v in fields.get(ref, {}).items():
         if k not in ("Footprint", "Datasheet", "Description"):
-            try: f.SetField(k, v)
+            try:
+                f.SetField(k, v)
+                fld = f.GetField(k) if f.HasField(k) else None
+                if fld: fld.SetVisible(False)      # keep MPN/Note off the silkscreen
             except Exception as e: print("field", k, "not set:", e, flush=True)
     b.Add(f); added.append(ref)
 
