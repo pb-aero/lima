@@ -25,5 +25,6 @@ for i in $(seq 1 "$MAX"); do
 done
 "$CLI" pcb drc --refill-zones -o "$T/finish.rpt" "$B" >/dev/null 2>&1
 n=$(grep -c '^\[unconnected_items\]' "$T/finish.rpt")
-if [ -f "$T/best.kicad_pcb" ] && [ "$best" -lt "$n" ]; then cp "$T/best.kicad_pcb" "$B"; n=$best; echo "restored best board"; fi
+e=$(grep -B3 '; error' "$T/finish.rpt" | grep '^\[' | grep -vc '^\[unconnected_items\]')
+if [ -f "$T/best.kicad_pcb" ] && { [ "$e" -gt 0 ] || [ "$best" -lt "$n" ]; }; then cp "$T/best.kicad_pcb" "$B"; n=$best; echo "restored best error-free board"; fi
 echo "final: unconnected $n"

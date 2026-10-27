@@ -367,7 +367,10 @@ if os.environ.get("RIPUP") == "1":
                             u = 0 if L2 == 0 else max(0, min(1, ((x - ax) * dx + (y - ay) * dy) / L2))
                             if math.hypot(x - ax - u * dx, y - ay - u * dy) <= R + infl: hit.add(SOFT[id(it)]); break
                 victims = [t for t in b.GetTracks() if not t.IsLocked() and t.GetNetname() in hit]
-                nt, nv = emit(grid, path, net, w)
+                # smooth against hard AND soft copper: a straightened segment must not cut through copper
+                # that wasn't on the path (it would never be ripped -> short)
+                comb = array("H", (min(65535, grid[k] + sg[k]) for k in range(len(grid))))
+                nt, nv = emit(comb, path, net, w)
                 for t in victims: b.Remove(t)
                 pcbnew.SaveBoard(sys.argv[1], b)
                 print(f"  {net}: routed by rip-up ({nt} segments, {nv} vias), ripped {len(victims)} items of {sorted(hit)}", flush=True)
