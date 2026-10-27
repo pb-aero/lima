@@ -6,10 +6,11 @@ PY=/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/C
 B=$PWD/kicad/cup-board/cup-board.kicad_pcb; G=kicad/lib/route; T=$1
 q() { "$PY" -u "$@" 2>&1 | grep -v "image handler\|wxApp\|memory leak" || true; }
 git show 3ab5285:kicad/cup-board/cup-board.kicad_pcb > "$B"
-# U6 decoupling: VIN's 100 nF (C35) brought from the U7 corner to pin 30; C38 and C35 slid 1.4 mm off U6's
-# pin 25-32 face so VIN / VOUT2 / SENSE / SWP / VSSN can escape (the rip-up loop thrashed there without it)
-q $G/autoplace.py "$B" C38 135.19 115.01 --r 0.6 --angles -45,135 --pad 1 --toward 132.91,116.93
-q $G/autoplace.py "$B" C35 133.93 112.96 --r 0.8 --angles -45,135 --pad 1 --toward 132.56,116.58
+# U6 turned +90 deg so its B-bus pins (22-24) and SENSE/SWP/VSSN (26-28) face the B filter/bias chain up the ring
+# (B-side ratsnest 115 -> 92 mm, A side unchanged). Its decaps are parked, then re-seated end-on at their pins
+# (decaps.py) so no cap lies along a pin face; C35 is VIN's 100 nF, brought over from the U7 corner.
+q kicad/lib/route/moves.py "$B" kicad/cup-board/doc/route/u6-rotate.json
+q $G/decaps.py "$B" U6 C35:30 C39:20 C37:1 C38:21 C36:2 --r 4
 q $G/planes.py "$B" /GND=In1.Cu /1V8=In2.Cu
 FANOUT_NETS=/GND,/1V8 q $G/fanout.py "$B"
 q $G/dsn.py "$B" "$T/cup_raw.dsn"
