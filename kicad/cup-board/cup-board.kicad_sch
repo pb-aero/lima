@@ -8005,6 +8005,320 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Connector_Generic_MountingPin:Conn_01x06_MountingPin"
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "J"
+				(at 0 7.62 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "Conn_01x06_MountingPin"
+				(at 1.27 -10.16 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Generic connectable mounting pin connector, single row, 01x06, script generated (kicad-library-utils/schlib/autogen/connector/)"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "connector"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "Connector*:*_1x??-1MP*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "Conn_01x06_MountingPin_1_1"
+				(rectangle
+					(start -1.27 6.35)
+					(end 1.27 -8.89)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(rectangle
+					(start -1.27 5.207)
+					(end 0 4.953)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 2.667)
+					(end 0 2.413)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 0.127)
+					(end 0 -0.127)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 -2.413)
+					(end 0 -2.667)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 -4.953)
+					(end 0 -5.207)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 -7.493)
+					(end 0 -7.747)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.016 -9.652)
+						(xy 1.016 -9.652)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(text "Mounting"
+					(at 0 -9.271 0)
+					(effects
+						(font
+							(size 0.381 0.381)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 5.08 0)
+					(length 3.81)
+					(name "Pin_1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 2.54 0)
+					(length 3.81)
+					(name "Pin_2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 0 0)
+					(length 3.81)
+					(name "Pin_3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -2.54 0)
+					(length 3.81)
+					(name "Pin_4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -5.08 0)
+					(length 3.81)
+					(name "Pin_5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -7.62 0)
+					(length 3.81)
+					(name "Pin_6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -12.7 90)
+					(length 3.048)
+					(name "MountPin"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "MP"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(no_connect
 		(at 165.1 118.11)
@@ -8153,6 +8467,14 @@
 	(no_connect
 		(at 121.92 317.5)
 		(uuid "f9282883-2815-45ff-ba8c-62ca12720757")
+	)
+	(no_connect
+		(at 90.17 153.67)
+		(uuid "e0ddabfd-7a25-45e2-aa69-5321b5f935be")
+	)
+	(no_connect
+		(at 90.17 177.8)
+		(uuid "f4f509f8-4087-4556-bb9a-d5fb249d0d1e")
 	)
 	(wire
 		(pts
@@ -8405,34 +8727,6 @@
 			(xy 198.12 96.52)
 		)
 		(uuid "dcd25b9e-46ba-4383-a14d-25ca0a6c1455")
-	)
-	(wire
-		(pts
-			(xy 114.3 143.51)
-			(xy 114.3 140.97)
-		)
-		(uuid "85cf9df4-6ead-4bf8-90bf-ab169e08931d")
-	)
-	(wire
-		(pts
-			(xy 114.3 158.75)
-			(xy 114.3 161.29)
-		)
-		(uuid "7f873de1-b66d-459a-ba1f-e4d94492f975")
-	)
-	(wire
-		(pts
-			(xy 114.3 167.64)
-			(xy 114.3 165.1)
-		)
-		(uuid "34cd1ad8-6d12-4435-8b9b-383206057aa8")
-	)
-	(wire
-		(pts
-			(xy 114.3 182.88)
-			(xy 114.3 185.42)
-		)
-		(uuid "06905235-04d5-43ac-bab6-3865fcf5d055")
 	)
 	(wire
 		(pts
@@ -8870,31 +9164,10 @@
 	)
 	(wire
 		(pts
-			(xy 120.65 128.27)
-			(xy 120.65 130.81)
-		)
-		(uuid "4bf021f2-e72a-49f0-9e92-9fe17d0eebc7")
-	)
-	(wire
-		(pts
 			(xy 133.35 114.3)
 			(xy 135.89 114.3)
 		)
 		(uuid "29333b25-6a53-4687-b5d1-3502e871589c")
-	)
-	(wire
-		(pts
-			(xy 133.35 116.84)
-			(xy 135.89 116.84)
-		)
-		(uuid "6a4fca1b-d652-4534-8d02-0d19d37a45c0")
-	)
-	(wire
-		(pts
-			(xy 120.65 102.87)
-			(xy 120.65 100.33)
-		)
-		(uuid "806131f0-2a3b-4313-9710-f7354684b5ea")
 	)
 	(wire
 		(pts
@@ -9216,46 +9489,6 @@
 			(justify left bottom)
 		)
 		(uuid "147cd58b-27ad-42a2-bb96-4fcb7f139163")
-	)
-	(label "3V3_MIC"
-		(at 114.3 140.97 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "b046f6c8-fc60-4ed5-895f-1ecd499de363")
-	)
-	(label "GND"
-		(at 114.3 161.29 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "7d2d82c1-f082-41a0-b72c-047b95c401df")
-	)
-	(label "3V3_MIC"
-		(at 114.3 165.1 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "2b9fa1db-642c-4fa9-8b9c-a81e3a61e0ec")
-	)
-	(label "GND"
-		(at 114.3 185.42 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "92c3e9c4-3492-4fbe-a737-10fedde1fe90")
 	)
 	(label "GND"
 		(at 210.82 222.25 0)
@@ -9857,16 +10090,6 @@
 		)
 		(uuid "b54a5d40-b58a-411e-a00d-7f8fc7b1523c")
 	)
-	(label "1V8"
-		(at 120.65 130.81 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "4fd5e9fb-fbd9-4095-bdc5-ae3ad0b5fef6")
-	)
 	(label "DMIC_CLK"
 		(at 135.89 114.3 0)
 		(effects
@@ -9876,26 +10099,6 @@
 			(justify left bottom)
 		)
 		(uuid "ed6df7f9-72cb-4a0a-bbcd-8d68a59f8488")
-	)
-	(label "GND"
-		(at 135.89 116.84 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "5f860500-2d65-4e88-907e-eb5bce02631b")
-	)
-	(label "GND"
-		(at 120.65 100.33 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "3498db15-c28f-48f2-81d0-99ebe6c96dd0")
 	)
 	(label "DMIC_DATA"
 		(at 162.56 138.43 180)
@@ -12007,6 +12210,256 @@
 		)
 		(uuid "f94c506d-f819-48a0-9002-c6e9a6d80e23")
 	)
+	(label "MK1_OUTP"
+		(at 124.46 148.59 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "8c3ee5b5-f02c-4035-9efe-c7f00e78c690")
+	)
+	(label "MK1_OUTN"
+		(at 124.46 151.13 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "faea5fab-5594-41d4-b174-b8381a61b708")
+	)
+	(label "MK2_OUTP"
+		(at 124.46 172.72 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e8ca50d1-b386-4be5-850f-e950b527711a")
+	)
+	(label "MK2_OUTN"
+		(at 124.46 175.26 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "9c221374-b8d6-4f59-8946-c9de14305d19")
+	)
+	(label "DMIC_DATA"
+		(at 107.95 114.3 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "07ac0d1b-e711-45a1-ae8e-806b00dee8e8")
+	)
+	(label "DMIC_CLK"
+		(at 133.35 114.3 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "81f24dec-7563-45c7-a2eb-e9f505c4b326")
+	)
+	(label "3V3_MIC"
+		(at 90.17 146.05 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "0cb6a384-85f7-4b24-bc65-b7256a6b7c7a")
+	)
+	(label "3V3_MIC"
+		(at 90.17 170.18 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "d07b5b94-301d-4d33-b83a-21e14d363c22")
+	)
+	(label "1V8"
+		(at 83.82 110.49 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "962efee7-905d-40aa-b93c-e5b35ece8b93")
+	)
+	(label "MK1_OUTP"
+		(at 90.17 148.59 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "d9e43845-4be5-42f8-89d6-fa3b502897fe")
+	)
+	(label "MK1_OUTN"
+		(at 90.17 151.13 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "e6b9f3d9-f1e9-4b68-85ff-9abd6a5178cd")
+	)
+	(label "MK2_OUTP"
+		(at 90.17 172.72 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "3add0c5c-c0ab-4282-b03e-57a514df006d")
+	)
+	(label "MK2_OUTN"
+		(at 90.17 175.26 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "f5ab9071-a603-4de5-a2c1-1d8bd6eaede5")
+	)
+	(label "DMIC_DATA"
+		(at 83.82 113.03 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "ab012ae4-3c1c-45a3-8a01-1710d5b76a61")
+	)
+	(label "DMIC_CLK"
+		(at 83.82 115.57 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "63f23a40-04fe-49e6-939e-9b145f076fc3")
+	)
+	(label "GND"
+		(at 90.17 156.21 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "5e4a8b27-e51b-4eba-814f-73c1a55f6200")
+	)
+	(label "GND"
+		(at 90.17 158.75 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "163be7b3-d0d9-4da2-b89a-f36b32441b10")
+	)
+	(label "GND"
+		(at 95.25 163.83 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "d7160806-f900-4f11-8462-4f08998325f6")
+	)
+	(label "GND"
+		(at 90.17 180.34 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "92b0cae9-02f3-46d0-9eb6-f2854a52e35d")
+	)
+	(label "GND"
+		(at 90.17 182.88 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "8e002dee-d846-4010-ad32-69d32b43654e")
+	)
+	(label "GND"
+		(at 95.25 187.96 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "12b55ee8-5fe3-468a-9c4d-66e94de8f8c8")
+	)
+	(label "GND"
+		(at 83.82 118.11 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "68fbd780-62a5-4777-a96b-9133390638e8")
+	)
+	(label "GND"
+		(at 83.82 120.65 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "4cebf202-8d51-47e9-8b2c-e64150c41bab")
+	)
+	(label "GND"
+		(at 83.82 123.19 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "12a931c4-10ed-4220-bf46-9f401e8dbd13")
+	)
+	(label "GND"
+		(at 88.9 128.27 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "63c59b68-de09-4e5a-9abc-87d1f872bf14")
+	)
 	(symbol
 		(lib_id "AnalogDevices:ADAU1861")
 		(at 190.5 148.59 0)
@@ -12053,108 +12506,6 @@
 			(project "cup-board"
 				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
 					(reference "U1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Sensor_Audio:IM73A135V01")
-		(at 114.3 151.13 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "0dc1333c-e28c-44c6-9c67-beaf143f59d3")
-		(property "Reference" "MK1"
-			(at 119.38 144.78 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "IM73A135V01"
-			(at 125.73 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Infineon:Infineon_PG-LLGA-5_4x3mm_IM73A135_IM72D128"
-			(at 114.3 151.13 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 114.3 151.13 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "cup-board"
-				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
-					(reference "MK1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Sensor_Audio:IM73A135V01")
-		(at 114.3 175.26 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "600e3135-55dc-4d49-965d-21d5f00c6779")
-		(property "Reference" "MK2"
-			(at 119.38 168.91 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "IM73A135V01"
-			(at 125.73 181.61 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Infineon:Infineon_PG-LLGA-5_4x3mm_IM73A135_IM72D128"
-			(at 114.3 175.26 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 114.3 175.26 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "cup-board"
-				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
-					(reference "MK2")
 					(unit 1)
 				)
 			)
@@ -13248,57 +13599,6 @@
 			(project "cup-board"
 				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
 					(reference "R6")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Infineon:IM72D128V")
-		(at 120.65 115.57 0)
-		(unit 1)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "8e9da08e-89ac-4665-89b5-3de7141d52d2")
-		(property "Reference" "MK3"
-			(at 120.65 102.87 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "IM72D128VV01"
-			(at 120.65 128.27 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Infineon:Infineon_PG-LLGA-5_4x3mm_IM73A135_IM72D128"
-			(at 120.65 115.57 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 120.65 115.57 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(instances
-			(project "cup-board"
-				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
-					(reference "MK3")
 					(unit 1)
 				)
 			)
@@ -17468,4 +17768,214 @@
 			)
 		)
 	)
+	(symbol
+		(lib_id "Connector_Generic_MountingPin:Conn_01x06_MountingPin")
+		(at 95.25 151.13 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5d2ec378-e830-4985-9928-c30cfb3a18fc")
+		(property "Reference" "J9"
+			(at 95.25 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "MK1 flex (IM73A135 FF/FB)"
+			(at 96.52 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Connector_FFC-FPC:Hirose_FH12-6S-0.5SH_1x06-1MP_P0.50mm_Horizontal"
+			(at 95.25 151.13 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 95.25 151.13 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "cup-board"
+				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
+					(reference "J9")
+					(unit 1)
+				)
+			)
+		)
+	
+		(property "MPN" "Hirose FH12-6S-0.5SH(55)"
+			(at 95.25 151.13 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Note" "PINOUT PLACEHOLDER (Infineon 2020 adapter order 1 VDD, 2 OUT+, 3 OUT-, 4 n/c, 5-6 GND) - verify against KIT_IM73A135V01_FLEX flex tail before fab"
+			(at 95.25 151.13 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		))
+	(symbol
+		(lib_id "Connector_Generic_MountingPin:Conn_01x06_MountingPin")
+		(at 95.25 175.26 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "bfbf9848-2cf6-4412-a645-f20d2328dfdc")
+		(property "Reference" "J10"
+			(at 95.25 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "MK2 flex (IM73A135)"
+			(at 96.52 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Connector_FFC-FPC:Hirose_FH12-6S-0.5SH_1x06-1MP_P0.50mm_Horizontal"
+			(at 95.25 175.26 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 95.25 175.26 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "cup-board"
+				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
+					(reference "J10")
+					(unit 1)
+				)
+			)
+		)
+	
+		(property "MPN" "Hirose FH12-6S-0.5SH(55)"
+			(at 95.25 175.26 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Note" "PINOUT PLACEHOLDER (Infineon 2020 adapter order 1 VDD, 2 OUT+, 3 OUT-, 4 n/c, 5-6 GND) - verify against KIT_IM73A135V01_FLEX flex tail before fab"
+			(at 95.25 175.26 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		))
+	(symbol
+		(lib_id "Connector_Generic_MountingPin:Conn_01x06_MountingPin")
+		(at 88.9 115.57 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0820cae0-0809-409f-bee9-dd982ba810b0")
+		(property "Reference" "J11"
+			(at 88.9 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "MK3 flex (IM72D128 PDM)"
+			(at 90.17 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Connector_FFC-FPC:Hirose_FH12-6S-0.5SH_1x06-1MP_P0.50mm_Horizontal"
+			(at 88.9 115.57 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 88.9 115.57 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "cup-board"
+				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
+					(reference "J11")
+					(unit 1)
+				)
+			)
+		)
+	
+		(property "MPN" "Hirose FH12-6S-0.5SH(55)"
+			(at 88.9 115.57 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Note" "PINOUT PLACEHOLDER (Infineon 2020 adapter order 1 VDD, 2 DATA, 3 CLK, 4 SELECT=GND, 5-6 GND) - verify against KIT_IM72D128V01_FLEX flex tail before fab"
+			(at 88.9 115.57 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		))
 )
