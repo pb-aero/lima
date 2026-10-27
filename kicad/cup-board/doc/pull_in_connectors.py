@@ -1,5 +1,6 @@
 import sys, math, json, pcbnew
-board, table, cx, cy, ro, margin = sys.argv[1], sys.argv[2], 150.0, 100.0, 34.0, 0.55
+board, table, cx, cy, margin = sys.argv[1], sys.argv[2], 150.0, 100.0, 0.55
+ro = float(sys.argv[3]) if len(sys.argv) > 3 else 34.0   # outer radius (36 since the 72/38 ring)
 b = pcbnew.LoadBoard(board); P = json.load(open(table))
 for f in b.GetFootprints():
     r = f.GetReference()
