@@ -1,11 +1,12 @@
 """Plane fanout: a via + stub for every F.Cu SMD pad on a plane net (FANOUT_NETS, default /GND,/+3V3).
 AIRCRAFT_NETS (space-separated) get 0.5 mm clearance. Board edge = real outline (works for rings).
-Large pads (EPs) get a grid of vias inside the pad. Run with KiCad closed."""
+Large pads (EPs) get a grid of vias inside the pad. FANOUT_PADS=REF.PAD,... limits it to those pads. Run with KiCad closed."""
 import sys, math, pcbnew
 MM = 1e6
 import os
 PLANES = set(os.environ.get("FANOUT_NETS", "/GND,/+3V3").split(","))
 AIRCRAFT = set(os.environ.get("AIRCRAFT_NETS", "").split())
+ONLY = set(os.environ.get("FANOUT_PADS", "").split(",")) - {""}   # REF.PAD,... = fan out just these (repairs)
 VIA_D, VIA_DRILL = int(0.5*MM), int(0.25*MM)
 CL, HOLE_CL, EDGE_CL = int(0.15*MM), int(0.28*MM), int(0.55*MM)   # a hair over the rules
 def clr(net): return int(0.5*MM) if net in AIRCRAFT else CL
@@ -82,6 +83,7 @@ done = fail = ep = 0; failed = []
 for f, p, poly in pads:
     net = p.GetNetname()
     if net not in PLANES or p.GetAttribute() != pcbnew.PAD_ATTRIB_SMD: continue
+    if ONLY and f"{f.GetReference()}.{p.GetNumber()}" not in ONLY: continue
     sz = p.GetSize(pcbnew.F_Cu); bb = poly.BBox()
     if min(sz.x, sz.y) >= 1.5*MM:   # exposed pad: via grid inside
         pitch = int(1.0*MM); m = int(0.45*MM)
