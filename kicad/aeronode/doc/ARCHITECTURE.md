@@ -1246,6 +1246,18 @@ in the courtyard — only Z was off.
   corner" above. Either the model needs a 90° rotation or the chamfer is not a pin-1 indicator.
   Needs the datasheet's top-view drawing; unresolved.
 
+**Re-origined copy for MCAD (Fusion), 2026-10-29, `[measured]`.**
+`kicad/lib/ublox.3dshapes/u-blox_DAN-F10N_centred.step` (SHA-256 `e821f4f0...7b349c7f`, gitignored
+like all STEPs) has its origin at the footprint centre with the module's bottom face on z = 0, so it
+drops onto a board with no offset. Made with `kicad-cli pcb export step --no-board-body
+--include-pads --no-extra-pad-thickness --user-origin <fp centre>` from a throwaway board carrying
+the corrected footprint. Two traps: `--no-board-body` alone fails ("No valid PCB assembly") unless
+some other geometry is exported, so the scratch footprint kept one 0.05 mm pad at its centre
+(a speck hidden under the module); and the export puts the board's *bottom* at z = 0, which lifted
+the module by the board thickness (measured +1.56 mm) until the scratch board was thinned to
+0.01 mm. Verified by attaching it with offset (0,0,0): gap 0.10 mm (same as the library baseline),
+top view identical to the library render bar 20 of 1.38 M pixels. Same pin-1 caveat as above.
+
 ### Still missing, and why each was NOT substituted
 
 | Ref | Part | Why no substitute |
