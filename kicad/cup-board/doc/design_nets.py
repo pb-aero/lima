@@ -127,6 +127,9 @@ NETS = {'1V8': ['C1.1',
  # J5 merged into J7 (2026-10-26): J7 = 1 A_LINE_P, 2 A_LINE_N, 3/4 SP-74 secondary, same order as audio J3
  'XF_SEC_A': ['C9.1', 'J7.3', 'U4.7'],
  'XF_SEC_B': ['C10.1', 'J7.4', 'U5.7'],
+ # boom electret pass-through (2026-10-29, Peter): J12 in -> J7.5/6 -> audio J3.5/6 or J4.3/4 -> K1. Aircraft side, never GND
+ 'ELEC_HI': ['J12.1', 'J7.5'],
+ 'ELEC_LO': ['J12.2', 'J7.6'],
  'Net-(C9-Pad2)': ['C9.2', 'R4.1'],
  'Net-(C10-Pad2)': ['C10.2', 'R5.1'],
  'MK1_OUTP': ['J9.2', 'U1.20'],

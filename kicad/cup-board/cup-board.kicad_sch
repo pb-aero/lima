@@ -8319,6 +8319,280 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Connector_Generic:Conn_01x06"
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "J"
+				(at 0 7.62 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "Conn_01x06"
+				(at 0 -10.16 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Generic connector, single row, 01x06, script generated (kicad-library-utils/schlib/autogen/connector/)"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "connector"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "Connector*:*_1x??_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "Conn_01x06_1_1"
+				(rectangle
+					(start -1.27 6.35)
+					(end 1.27 -8.89)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(rectangle
+					(start -1.27 5.207)
+					(end 0 4.953)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 2.667)
+					(end 0 2.413)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 0.127)
+					(end 0 -0.127)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 -2.413)
+					(end 0 -2.667)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 -4.953)
+					(end 0 -5.207)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 -7.493)
+					(end 0 -7.747)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at -5.08 5.08 0)
+					(length 3.81)
+					(name "Pin_1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 2.54 0)
+					(length 3.81)
+					(name "Pin_2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 0 0)
+					(length 3.81)
+					(name "Pin_3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -2.54 0)
+					(length 3.81)
+					(name "Pin_4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -5.08 0)
+					(length 3.81)
+					(name "Pin_5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -7.62 0)
+					(length 3.81)
+					(name "Pin_6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(no_connect
 		(at 165.1 118.11)
@@ -9240,6 +9514,34 @@
 			(type default)
 		)
 		(uuid "9d0833f8-7031-415b-9291-09f3a78c794f")
+	)
+	(wire
+		(pts
+			(xy 490.22 231.14)
+			(xy 487.68 231.14)
+		)
+		(uuid "55202fd2-f1c2-4ebf-9ed2-f84adb8f9001")
+	)
+	(wire
+		(pts
+			(xy 490.22 233.68)
+			(xy 487.68 233.68)
+		)
+		(uuid "4b284d6e-1bd8-478a-a617-3547017698c4")
+	)
+	(wire
+		(pts
+			(xy 490.22 246.38)
+			(xy 487.68 246.38)
+		)
+		(uuid "2b01d28d-12ad-412c-b7b6-c9b0efcba074")
+	)
+	(wire
+		(pts
+			(xy 490.22 248.92)
+			(xy 487.68 248.92)
+		)
+		(uuid "28ff4a6c-3c55-4497-aac0-f863c85a6765")
 	)
 	(text "A2B SUB-NODE (2026-10-23, per Peter): U6 AD2428, bus-powered (AD242x DS Fig. 36; coupling per EVAL-AD2428WD1BZ sheet 2)\nA side J7 (from AeroNode or previous cup): line+ -> L3 -> V_NODE -> D1 -> VIN_CUP; line- -> L4 -> GND (this cup's ground is the recovered bus bias).\nB side J8 (to next cup, unused on the last cup): V_NODE -> R12 -> Q1 (gate: SWP via R13) -> L5 -> line+; line- -> L6 -> VSSN. SENSE via R14.\nI2S: U6 is master. DTX0 -> I2S0_SDATAI (ADAU1861 in), DRX0 <- I2S0_SDATAO. I2C: U6 masters SDA/SCL at 1V8 (IOVDD = 1V8).\nK2: AudioBoard CTL_SPKR -> main IO7 -> GPIO-over-distance -> U6 IO7 -> K2_CTL -> Q2 -> U4/U5 LEDs (R7/R8 680R from VIN_CUP). Default off.\nPower from VIN_CUP (6.4-7.2 V with the AeroNode's 8 V bus): U7 TPS62161 -> 1V8; U8 ADP7118 -> 3V3_MIC; U9 ADP7118 -> VLED.\nEE-419: a bus-powered node's ground is offset from the AeroNode's - connect only floating signals (J5 is transformer-isolated, AC-coupled).\nBudget: docs/a2b-bus-power-budget.md - cup R VIN 6.44 V worst case on the 8 V bus (3.7 V min)."
 		(at 475 285 0)
@@ -12459,6 +12761,46 @@
 			(justify left bottom)
 		)
 		(uuid "63c59b68-de09-4e5a-9abc-87d1f872bf14")
+	)
+	(label "ELEC_HI"
+		(at 487.68 231.14 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "7011371c-d7cf-4b55-85fe-35608f010466")
+	)
+	(label "ELEC_LO"
+		(at 487.68 233.68 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "ce2b1aeb-fb62-425e-839e-b60132af83f6")
+	)
+	(label "ELEC_HI"
+		(at 487.68 246.38 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "ea312238-fb6e-4b09-9372-9469e7846116")
+	)
+	(label "ELEC_LO"
+		(at 487.68 248.92 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "ef09b381-37c9-4458-a858-43406e576df7")
 	)
 	(symbol
 		(lib_id "AnalogDevices:ADAU1861")
@@ -17616,31 +17958,31 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector_Generic:Conn_01x04")
-		(at 495.3 223.52 0)
+		(lib_id "Connector_Generic:Conn_01x06")
+		(at 495.3 226.06 0)
 		(unit 1)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(uuid "9f4aef64-5205-48b4-8772-dd33e802be3b")
 		(property "Reference" "J7"
-			(at 495.3 218.44 0)
+			(at 495.3 220.98 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Value" "CUP_IN (A2B + panel audio, mates audio J3)"
-			(at 495.3 231.14 0)
+		(property "Value" "CUP_IN (A2B + panel audio + boom electret, mates audio J3 / J4)"
+			(at 495.3 233.68 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Footprint" "Connector_JST:JST_GH_SM04B-GHS-TB_1x04-1MP_P1.25mm_Horizontal"
-			(at 495.3 223.52 0)
+		(property "Footprint" "Connector_JST:JST_GH_SM06B-GHS-TB_1x06-1MP_P1.25mm_Horizontal"
+			(at 495.3 226.06 0)
 			(hide yes)
 			(effects
 				(font
@@ -17649,7 +17991,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 495.3 223.52 0)
+			(at 495.3 226.06 0)
 			(hide yes)
 			(effects
 				(font
@@ -17811,15 +18153,6 @@
 				)
 			)
 		)
-		(instances
-			(project "cup-board"
-				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
-					(reference "J9")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "MPN" "Hirose FH12-6S-0.5SH(55)"
 			(at 95.25 151.13 0)
 			(hide yes)
@@ -17837,7 +18170,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "cup-board"
+				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
+					(reference "J9")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Connector_Generic_MountingPin:Conn_01x06_MountingPin")
 		(at 95.25 175.26 0)
@@ -17881,15 +18223,6 @@
 				)
 			)
 		)
-		(instances
-			(project "cup-board"
-				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
-					(reference "J10")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "MPN" "Hirose FH12-6S-0.5SH(55)"
 			(at 95.25 175.26 0)
 			(hide yes)
@@ -17907,7 +18240,16 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "cup-board"
+				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
+					(reference "J10")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Connector_Generic_MountingPin:Conn_01x06_MountingPin")
 		(at 88.9 115.57 0)
@@ -17951,15 +18293,6 @@
 				)
 			)
 		)
-		(instances
-			(project "cup-board"
-				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
-					(reference "J11")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "MPN" "Hirose FH12-6S-0.5SH(55)"
 			(at 88.9 115.57 0)
 			(hide yes)
@@ -17971,6 +18304,75 @@
 		)
 		(property "Note" "PINOUT PLACEHOLDER (Infineon 2020 adapter order 1 VDD, 2 DATA, 3 CLK, 4 SELECT=GND, 5-6 GND) - verify against KIT_IM72D128V01_FLEX flex tail before fab"
 			(at 88.9 115.57 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "cup-board"
+				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
+					(reference "J11")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector_Generic:Conn_01x02")
+		(at 495.3 246.38 0)
+		(unit 1)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "15c4d210-71f2-4b95-afdb-1177cb1cf3a5")
+		(property "Reference" "J12"
+			(at 495.3 243.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "BOOM_ELECTRET (pass-through to audio K1)"
+			(at 495.3 251.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_JST:JST_GH_SM02B-GHS-TB_1x02-1MP_P1.25mm_Horizontal"
+			(at 495.3 246.38 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 495.3 246.38 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "cup-board"
+				(path "/790ac8fa-b8c8-432b-bc66-3eedd04170ff"
+					(reference "J12")
+					(unit 1)
+				)
+			)
+		)
+	
+		(property "Note" "Boom electret in. Aircraft-side circuit: console-biased, isolated from GND - no connection to anything on this board except J7.5/J7.6. Aircraft clearance class."
+			(at 495.3 246.38 0)
 			(hide yes)
 			(effects
 				(font

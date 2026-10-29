@@ -128,8 +128,9 @@ NETS = {
     "SPK_R_B": ["T3.4", "T3.6", "J4.2"],
     "MIC_HI": ["J5.3", "U10.6", "U10.8"],
     "MIC_LO": ["J5.4", "U11.6", "U11.8"],
-    "ELEC_HI": ["J6.1", "U10.7"],
-    "ELEC_LO": ["J6.2", "U11.7"],
+    # boom electret also arrives through either cup (2026-10-29, Peter): cup L J7.5/6 -> J3.5/6, cup R J7.5/6 -> J4.3/4
+    "ELEC_HI": ["J6.1", "U10.7", "J3.5", "J4.3"],
+    "ELEC_LO": ["J6.2", "U11.7", "J3.6", "J4.4"],
     "K1A_LED": ["R23.2", "U10.1"],
     "K1A_MID": ["U10.2", "U10.3"],
     "K1B_LED": ["R24.2", "U11.1"],

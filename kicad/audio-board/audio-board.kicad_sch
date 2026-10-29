@@ -10586,6 +10586,34 @@
 		(at 25.4 114.3)
 		(uuid "8cf6690f-a708-4e24-9c5b-630b09cb7a11")
 	)
+	(wire
+		(pts
+			(xy 779.78 485.14)
+			(xy 777.24 485.14)
+		)
+		(uuid "c901e77c-c4b0-4846-b061-3d1d0b925be1")
+	)
+	(wire
+		(pts
+			(xy 779.78 487.68)
+			(xy 777.24 487.68)
+		)
+		(uuid "b7c3461c-1fc7-4feb-8130-86f80b12e880")
+	)
+	(wire
+		(pts
+			(xy 248.92 477.52)
+			(xy 246.38 477.52)
+		)
+		(uuid "a36d2d76-4495-4cb3-aabd-6c0f1b9341e5")
+	)
+	(wire
+		(pts
+			(xy 248.92 480.06)
+			(xy 246.38 480.06)
+		)
+		(uuid "e081675a-af44-4fa8-9b79-65a3b59973e0")
+	)
 	(text "HUB: ADAU1467 (clock master, routing, CM5 I/O)\nOne 12.288 MHz XO into XTALIN/MCLK; hub drives CODEC_MCLK (CLKOUT) and every BCLK/LRCLK.\nSelf-boot from U5 W25Q32 on the SPI master (SPI mode 3, read 0x03). I2C slave, ADDR1/ADDR0 = 0.\nPLL filter per DS Fig. 16 (150 pF || 5.6 nF + 4.3 k, to PVDD). VDRIVE to GND via R26: DVDD is external.\nOUT0/IN0 = CM5, OUT2/IN2 = codec, OUT3/IN3 + SDATAIO4/5 = A2B, SDATAIO0-3 = spare CM5 lanes.\nThe coefficient channel must be routed bit-exact: no ASRC, gain, mix or dither."
 		(at 365.76 93.98 0)
 		(effects
@@ -14980,6 +15008,46 @@
 			(justify right bottom)
 		)
 		(uuid "03c4bcb2-55a8-4b55-9149-d58978f5162d")
+	)
+	(label "ELEC_HI"
+		(at 777.24 485.14 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "95502fd9-c673-42f6-9101-5c40a595a67b")
+	)
+	(label "ELEC_LO"
+		(at 777.24 487.68 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "8ea29d5c-473a-4d89-a99a-cd31f73f57d0")
+	)
+	(label "ELEC_HI"
+		(at 246.38 477.52 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "3d2f91c7-8e75-4626-834e-4d075230aff3")
+	)
+	(label "ELEC_LO"
+		(at 246.38 480.06 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "61f419d3-70cd-4a46-90db-385b38b7ed30")
 	)
 	(symbol
 		(lib_id "Regulator_Switching:TPS62162DSG")
@@ -20050,31 +20118,31 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector_Generic:Conn_01x04")
-		(at 784.86 477.52 0)
+		(lib_id "Connector_Generic:Conn_01x06")
+		(at 784.86 480.06 0)
 		(unit 1)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(uuid "02223ef1-3b28-440a-a783-4cf2cd1f17b5")
 		(property "Reference" "J3"
-			(at 784.86 472.44 0)
+			(at 784.86 474.98 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Value" "CUP_L (A2B + speaker)"
-			(at 784.86 485.14 0)
+		(property "Value" "CUP_L (A2B + speaker + boom electret)"
+			(at 784.86 487.68 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Footprint" "Connector_JST:JST_GH_SM04B-GHS-TB_1x04-1MP_P1.25mm_Horizontal"
-			(at 784.86 477.52 0)
+		(property "Footprint" "Connector_JST:JST_GH_SM06B-GHS-TB_1x06-1MP_P1.25mm_Horizontal"
+			(at 784.86 480.06 0)
 			(hide yes)
 			(effects
 				(font
@@ -20083,7 +20151,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 784.86 477.52 0)
+			(at 784.86 480.06 0)
 			(hide yes)
 			(effects
 				(font
@@ -20613,31 +20681,31 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector_Generic:Conn_01x02")
-		(at 254 472.44 0)
+		(lib_id "Connector_Generic:Conn_01x04")
+		(at 254 474.98 0)
 		(unit 1)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(uuid "6cf979d5-fba7-4179-8d4e-3f719ad491e4")
 		(property "Reference" "J4"
-			(at 254 469.9 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "CUP_R (speaker)"
-			(at 254 477.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Connector_JST:JST_GH_SM02B-GHS-TB_1x02-1MP_P1.25mm_Horizontal"
 			(at 254 472.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "CUP_R (speaker + boom electret)"
+			(at 254 480.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_JST:JST_GH_SM04B-GHS-TB_1x04-1MP_P1.25mm_Horizontal"
+			(at 254 474.98 0)
 			(hide yes)
 			(effects
 				(font
@@ -20646,7 +20714,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 254 472.44 0)
+			(at 254 474.98 0)
 			(hide yes)
 			(effects
 				(font
@@ -21533,15 +21601,6 @@
 				)
 			)
 		)
-		(instances
-			(project "audio-board"
-				(path "/95b6c2e6-5cb2-4173-9673-0cba23213f90"
-					(reference "J1")
-					(unit 1)
-				)
-			)
-		)
-	
 		(property "Cable" "0.5 mm FFC, 24 cond, Type A (same-side contacts); pin n = AeroNode J9 pin 25-n"
 			(at 30.48 86.36 0)
 			(hide yes)
@@ -21559,5 +21618,14 @@
 					(size 1.27 1.27)
 				)
 			)
-		))
+		)
+		(instances
+			(project "audio-board"
+				(path "/95b6c2e6-5cb2-4173-9673-0cba23213f90"
+					(reference "J1")
+					(unit 1)
+				)
+			)
+		)
+	)
 )
