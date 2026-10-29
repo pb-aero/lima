@@ -18336,7 +18336,7 @@
 				)
 			)
 		)
-		(property "Value" "BOOM_ELECTRET (pass-through to audio K1)"
+		(property "Value" "BOOM_ELECTRET (solder pads, pass-through to audio K1)"
 			(at 495.3 251.46 0)
 			(effects
 				(font
@@ -18344,7 +18344,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_JST:JST_GH_SM02B-GHS-TB_1x02-1MP_P1.25mm_Horizontal"
+		(property "Footprint" "Connector_Wire:SolderWire-0.15sqmm_1x02_P4mm_D0.5mm_OD1.5mm"
 			(at 495.3 246.38 0)
 			(hide yes)
 			(effects
