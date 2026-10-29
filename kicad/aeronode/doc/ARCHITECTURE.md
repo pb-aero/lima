@@ -1226,6 +1226,26 @@ from both the library footprint and U7's board instance — **board footprints a
 references to the library**, so the library file alone was not enough; the board's own U7 instance
 needed the same `(model ...)` block added separately.
 
+#### CORRECTION 2026-10-29 — the model floated 10.87 mm above the board, `[measured]`
+
+The "sitting flush" claim above was **wrong**. A `kicad-cli pcb render --side front --quality basic`
+of a throwaway 30 x 30 mm board carrying only the library footprint, measured by pixel scan
+(scale calibrated from the 30 mm board edge; the module then measured 20.02 mm wide, so the
+instrument checks out), put the module's bottom face **10.87 mm above the board top**. The real
+aeronode board shows the same float on U7. X/Y were right — from the top the body sits square
+in the courtyard — only Z was off.
+
+- **Fix:** `offset z = -10.87` → gap measured **0.10 mm** (~2 px, anti-aliasing), module height
+  11.44 mm vs 11.6 mm listed by retailers (`[fetched]`, secondary sources; u-blox datasheet not
+  checked). Applied to the library footprint via Konnect `set_footprint_models`.
+- **U7 on `aeronode.kicad_pcb` still carries `z = 0`.** Konnect has no tool to edit a placed
+  footprint's model, and board files are not text-edited. Fix in pcbnew: U7 → Footprint
+  Properties → 3D Models → Z offset `-10.87`, or Update Footprint from Library.
+- **Pin-1 orientation is OPEN.** In a top render the antenna's chamfered corner is bottom-left,
+  while the footprint's pin-1 marker is top-left — this contradicts "chamfer lands on the pin-1
+  corner" above. Either the model needs a 90° rotation or the chamfer is not a pin-1 indicator.
+  Needs the datasheet's top-view drawing; unresolved.
+
 ### Still missing, and why each was NOT substituted
 
 | Ref | Part | Why no substitute |
