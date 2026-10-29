@@ -513,3 +513,20 @@ left, 8–14 up the right (top view). Pins 6/7/8 (LED cathodes) are soldered but
   | HPOUTP / N | 58 / 48 mm | to the U4/U5 speaker switch |
 - **Open (before fab):** ZIF pinout check against a kit; FH12 LCSC part; MK1 pair onto one layer; silkscreen tidy and
   "REF\*\*" on custom footprints; enclosure fit of the 72/38 ring and the flex tails.
+
+## Boom electret pass-through — 2026-10-29, per Peter
+
+Peter chose to bring the headset's boom electret in through a cup rather than straight to the audio board's J6.
+- **J12 = two solder pads** (`Connector_Wire:SolderWire-0.15sqmm_1x02_P4mm_D0.5mm_OD1.5mm`): 1 `ELEC_HI`, 2 `ELEC_LO`.
+  Peter chose pads over a connector: the outer band of the ring had no room for a 2-pin JST GH next to the wider J7.
+  Placed at 311° on the outer edge, just past J2. The boom wires are soldered on (strain-relieve them in the cup).
+- **J7 is now 6-pin (SM06B):** 1 `A_LINE_P`, 2 `A_LINE_N`, 3 `XF_SEC_A`, 4 `XF_SEC_B`, **5 `ELEC_HI`, 6 `ELEC_LO`**.
+  The new pins mate audio J3.5/J3.6 (cup L) or J4.3/J4.4 (cup R). **Cup R's split harness becomes:** J7 pins 1–2 from
+  cup L's J8; pins 3–6 from the audio board's J4 pins 1–4.
+- `ELEC_HI`/`ELEC_LO` are an **aircraft circuit** (console-biased, isolated from our GND). On this board they touch only
+  J12 and J7, in a new **Aircraft netclass (0.5 mm clearance)**. They run on B.Cu over the In2 1V8 plane, so the
+  isolation is the 0.5 mm clearance; there is no galvanic contact. Both cups carry the pads; only the cup on the boom's
+  side gets wires.
+- **Checked `[measured]`:** cup DRC 0 unconnected, 0 errors (`916fef4`). One parity *warning*: J12's footprint is
+  exclude-from-BOM and the symbol is not (Konnect can't set the symbol flag). Untick "In BOM" on J12 in eeschema,
+  or drop J12 from the JLC BOM by hand.
