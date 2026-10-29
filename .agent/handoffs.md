@@ -176,3 +176,14 @@ fenced a 1V8 pocket), I2S0_BCLK by rip-up with MAZE_BUDGET=15e6, finish loop -> 
 Hand-check table in `kicad/cup-board/README.md` (PCB — 72/38 section). Weak spots: MK1 pair split F/B; I2S lines 68-90 mm
 with up to 10 vias; SW1V8 7.4 mm. Placement idea NOT done (needs Peter): U1 +90 deg so mic inputs face J9/J10.
 Before fab: ZIF pinout vs a real flex kit (placeholder), FH12 LCSC part, silk tidy / REF**, enclosure fit.
+
+## 2026-10-29 · Boom electret pass-through through the cups (Peter)
+
+Schematics `adc610e`: cup J7 6-pin (5/6 ELEC_HI/LO) + J12; audio J3 6-pin (5/6), J4 4-pin (3/4), joined to J6/K1.
+Cup PCB `916fef4`: J12 = solder pads at 311 deg (Peter, no room for a GH on the outer band), Aircraft netclass added,
+0 unconnected / 0 errors; parity warning J12 exclude-from-BOM (symbol flag needs eeschema — Konnect can't set it).
+Audio PCB `cbe49e5`: J3/J4 swapped in place (old pins unchanged), ELEC J3<->J4 links hand-routed on the right edge
+(`doc/route/elec-links.json`, locked), ELEC to J6 by maze along the top edge (~110-118 mm, over the planes, 0.5 mm
+clearance only — NOT in a plane-free corridor like EAR). 0 unconnected / 0 errors.
+Open: tick J12 "In BOM" off in eeschema; ELEC could get a plane-free corridor if Peter wants EAR-style treatment;
+harness drawings for cup R (J7 3-6 from audio J4 1-4).

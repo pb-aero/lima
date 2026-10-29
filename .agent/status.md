@@ -1809,3 +1809,5 @@ JLCPCB assembly, JST GH for all off-board connectors.** Approved downloads: Open
 - **2026-10-27 cup board ROUTED on 72/38 ring** (Peter: widen ring, all three mics on Infineon flex kits via ZIFs
   J9/J10/J11, pinout placeholder; H3 removed): 0 unconnected, 0 errors, parity 0. Open: ZIF pinout vs kit, FH12 LCSC,
   MK1 pair onto one layer, silk tidy. Details: handoffs.md, cup README.
+- **2026-10-29 boom electret pass-through** (Peter): cup J7 6-pin + J12 solder pads, audio J3 6-pin / J4 4-pin.
+  Both boards re-routed, 0 unconnected, 0 DRC errors (`916fef4`, `cbe49e5`). Open: J12 BOM flag, harness drawing.

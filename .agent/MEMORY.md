@@ -1188,3 +1188,9 @@ time. And Triad pinouts are drawn, not text: render the page and read it as an i
   report filtered to the signal nets. (3) Signal tracks on the plane layer enclose pockets the zone filler drops as
   islands (DRC shows Zone<->Zone unconnected) — keep inner-layer cost high (LAYER_COST=3).
   (4) When one area won't close, rip every net near the stuck pins and route the critical nets FIRST (MAZE_FIRST).
+- **Maze needs the board's FULL aircraft net list, and rip-up can wreck routes you wanted kept** `[measured]` 2026-10-29
+  (audio J3/J4 change): passing a partial AIRCRAFT_NETS routed SPK_L_B at 0.13 mm next to Aircraft-class copper -> 14
+  clearance errors. Read the list from `.kicad_pro` (netclass_patterns, class Aircraft) every time. When a rip-up
+  displaces a good route, restore it with `kicad/lib/route/copynet.py <old.kicad_pcb> <board> NET` instead of letting
+  maze re-invent it (maze stair-stepped ELEC_LO 118 mm through the T2/T3 area). For interleaved pin pairs on stacked
+  connectors (LO above HI at both ends) one crossing is forced — hand-route it on two layers, then lock it.
