@@ -209,7 +209,7 @@ L3.2, went nowhere) — coupling only, no bus power to the cups. The new one car
    checked against each other `[assumed]` — they are different part families.
 5. **Comms tap grounds the cup-L speaker return (SPK_L_B) through R9 0R.** Depopulate R9 to float it.
 6. **PureVoice level ~69 mVrms at 0 dBFS** (T4 + R10 10k into an assumed ~470 ohm mic node) — the panel mic input spec is unknown (spec §9); trim in DSP.
-7. **J3 = cup L (A2B + speaker), J4 = cup R (speaker only)**; cup R gets A2B from cup L. **2026-10-29 (Peter): boom electret also arrives through either cup** — J3 is now 6-pin (5 `ELEC_HI`, 6 `ELEC_LO`), J4 4-pin (3 `ELEC_HI`, 4 `ELEC_LO`), both on the J6 / K1 electret nets; J6 stays as an alternative entry.
+7. **J3 = cup L (A2B + speaker), J4 = cup R (speaker only)**; cup R gets A2B from cup L. **2026-10-29 (Peter): boom electret also arrives through either cup** — J3 is now 6-pin (5 `ELEC_HI`, 6 `ELEC_LO`), J4 4-pin (3 `ELEC_HI`, 4 `ELEC_LO`), both on the J6 / K1 electret nets; J6 stays as an alternative entry. Routed over the planes at 0.5 mm Aircraft clearance — **Peter, 2026-10-29: leave it so** (no EAR-style plane-free corridor).
 8. ~~CTL_SPKR repurposed as A2B_IRQ~~ — superseded by ruling 11 (CTL_SPKR -> AD2428 IO7 -> cup K2).
 
 ### Still open
