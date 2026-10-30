@@ -77,6 +77,7 @@ tr.hot td{background:color-mix(in srgb,var(--focus) 12%,transparent)}
 <script>
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const V = (x,y,z) => new THREE.Vector3(x,y,z);
+const mean = a => a.reduce((s,p) => s.add(p), V(0,0,0)).multiplyScalar(1/a.length);
 const stage = document.getElementById('stage'), canvas = document.getElementById('c'), tagsEl = document.getElementById('tags'), tip = document.getElementById('tip');
 const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.outputEncoding = THREE.sRGBEncoding;
@@ -100,8 +101,13 @@ const PADS = {
   J7:[[4.942,30.208],[6.148,29.882],[7.355,29.555],[8.561,29.228],[9.768,28.902],[10.974,28.575]],
   J8:[[-30.187,-6.126],[-30.411,-4.896]],
   J2:[[16.019,26.309],[17.073,25.638]],
-  J12:[[22.55,25.713],[25.557,23.076]] }
+  J12:[[22.55,25.713],[25.557,23.076]],
+  J9:[[26.657,-12.136],[26.431,-12.582],[26.205,-13.028],[25.978,-13.473],[25.752,-13.919],[25.526,-14.365]],
+  J10:[[22.706,-12.932],[22.932,-12.486],[23.158,-12.04],[23.385,-11.595],[23.611,-11.149],[23.837,-10.703]],
+  J11:[[-4.658,-28.918],[-5.147,-28.818],[-5.637,-28.717],[-6.127,-28.617],[-6.617,-28.516],[-7.106,-28.415]] }
 };
+// ZIF body centres: the flex leaves from the contacts towards the opening (J9/J11 face out, J10 faces the ring hole)
+const ZIF_AT = {J9:[27.741,-14.088], J10:[21.622,-10.98], J11:[-6.254,-30.479]};
 const AUDIO_AT = V(0,0,0), CUPL_AT = V(175,0,-80), CUPR_AT = V(175,0,80);
 const AERO = {at:V(-165,22,-10), size:[105,44,132]};
 const H = 2.0;
@@ -115,6 +121,21 @@ const boomBase = P(CUPL_AT, PADS.cup.J12[0]).addScaledVector(radial(CUPL_AT,'J12
 const boomEnd = P(CUPL_AT, PADS.cup.J12[0]).addScaledVector(radial(CUPL_AT,'J12'), 78).add(V(0,22,0));
 const PHONE = V(-78,4,125), MICPLUG = V(-50,4,125);
 const drvTerm = at => [at.clone().add(V(11,-3,14)), at.clone().add(V(14,-3,11))];
+
+// flex mic boards (Infineon KIT_IM73A135V01_FLEX / KIT_IM72D128V01_FLEX): 6-contact 0.5 mm tail into the ZIF, module at the far end
+function zifDir(ref){ const a = PADS.cup[ref], m = a.reduce((s,p)=>[s[0]+p[0]/6, s[1]+p[1]/6],[0,0]), z = ZIF_AT[ref], d = Math.hypot(z[0]-m[0], z[1]-m[1]); return V((z[0]-m[0])/d, 0, (z[1]-m[1])/d); }
+const MICS = {
+  J9:{label:'FF mic', where:'outside the cup shell, facing out', end:at => at.clone().add(V(27.7,0,-14.1)).addScaledVector(zifDir('J9'), 24).add(V(0,16,0)), up:true},
+  J10:{label:'FB mic', where:'inside the cup, in front of the driver', end:at => at.clone().add(V(4,-0.4,-3)), up:false},
+  J11:{label:'Voice mic', where:'cup front, towards the mouth', end:at => at.clone().add(V(-6.3,0,-30.5)).addScaledVector(zifDir('J11'), 24).add(V(0,-9,0)), up:true},
+};
+function flexInst(origin, ref){
+  const from = pins('cup', origin, ref).map(p => p.add(V(0,0.4,0))), d = zifDir(ref), e = MICS[ref].end(origin);
+  const perp = V(-d.z, 0, d.x), to = [0,1,2,3,4,5].map(k => e.clone().addScaledVector(perp, (k-2.5)*0.5));
+  const mids = ref === 'J10' ? [from[0].clone().addScaledVector(d, 6).add(V(0,1,0)), origin.clone().add(V(10,1,-6))]
+                             : [mean(from).addScaledVector(d, 10).add(V(0, ref === 'J9' ? 4 : -2, 0))];
+  return {from, to, fromDir:d, toDir:V(0, MICS[ref].up ? -1 : 1, 0), mids, end:e};
+}
 
 // ---- wire colours (to tell conductors apart; not a harness colour code)
 const C = {a2bP:'#7a5ad6', a2bN:'#c9bbf3', spkA:'#0f8a72', spkB:'#86d6c3', elecH:'#d68a12', elecL:'#f0cf8c',
@@ -170,23 +191,53 @@ const CABLES = [
   from:[boomEnd.clone().add(V(0,-1,0.8)), boomEnd.clone().add(V(0,-1,-0.8))], fromDir:V(0,-1,0), to:pins('cup',CUPL_AT,'J12'), toDir:V(0,1,0),
   mids:[boomBase.clone().lerp(boomEnd, 0.5).add(V(0,-3,0)), boomBase.clone().add(V(0,-3,0))], r:0.36, sp:1.0,
   wires:[['capsule +','J12.1','ELEC_HI','Electret capsule +, solder pad; on to J7.5',C.elecH],['capsule −','J12.2','ELEC_LO','Electret capsule −, solder pad; on to J7.6',C.elecL]], ends:['Boom', CL]},
+ {id:'ff', title:'Feed-forward mic flex (J9)', sub:'6-contact flex tail, both cups. IM73A135 analog, differential into U1 AINP0/AINN0. Contact order is a placeholder until checked on a kit', flex:true,
+  inst:[flexInst(CUPL_AT,'J9'), flexInst(CUPR_AT,'J9')], r:0.13, sp:0.5,
+  wires:[['J9.1','flex 1','3V3_MIC','Mic supply, 2.75 V class rail (U8)',C.red],['J9.2','flex 2','MK1_OUTP','Feed-forward mic output +, to U1 AINP0','#3d6fd6'],
+         ['J9.3','flex 3','MK1_OUTN','Feed-forward mic output −, to U1 AINN0','#9db8ef'],['J9.4','flex 4','NC','Not used (placeholder order)',C.ffc],
+         ['J9.5','flex 5','GND','Ground',C.gnd],['J9.6','flex 6','GND','Ground',C.gnd]], ends:['Cup', 'FF mic']},
+ {id:'fb', title:'Feedback mic flex (J10)', sub:'6-contact flex tail, both cups. IM73A135 analog error mic, differential into U1 AINP1/AINN1. Contact order is a placeholder until checked on a kit', flex:true,
+  inst:[flexInst(CUPL_AT,'J10'), flexInst(CUPR_AT,'J10')], r:0.13, sp:0.5,
+  wires:[['J10.1','flex 1','3V3_MIC','Mic supply (U8)',C.red],['J10.2','flex 2','MK2_OUTP','Feedback (error) mic output +, to U1 AINP1','#3d6fd6'],
+         ['J10.3','flex 3','MK2_OUTN','Feedback mic output −, to U1 AINN1','#9db8ef'],['J10.4','flex 4','NC','Not used (placeholder order)',C.ffc],
+         ['J10.5','flex 5','GND','Ground',C.gnd],['J10.6','flex 6','GND','Ground',C.gnd]], ends:['Cup', 'FB mic']},
+ {id:'voice', title:'Voice mic flex (J11)', sub:'6-contact flex tail, both cups. IM72D128 PDM into U1 DMIC. Contact order is a placeholder until checked on a kit', flex:true,
+  inst:[flexInst(CUPL_AT,'J11'), flexInst(CUPR_AT,'J11')], r:0.13, sp:0.5,
+  wires:[['J11.1','flex 1','1V8','Mic supply, 1.8 V',C.micH],['J11.2','flex 2','DMIC_DATA','PDM data, to U1 DMIC01','#2f9e4f'],
+         ['J11.3','flex 3','DMIC_CLK','PDM clock from U1 DMIC_CLK','#d9c22e'],['J11.4','flex 4','GND','SELECT tied low (left channel)',C.gnd],
+         ['J11.5','flex 5','GND','Ground',C.gnd],['J11.6','flex 6','GND','Ground',C.gnd]], ends:['Cup', 'Voice mic']},
 ];
 
 // ---- build wires: start at the real pin, fan into a flat bundle along a centreline, fan out to the mating pin
 const UP = V(0,1,0), wireMeshes = [];
-const mean = a => a.reduce((s,p) => s.add(p), V(0,0,0)).multiplyScalar(1/a.length);
 const smooth = (a,b,x) => { const t = Math.min(1, Math.max(0, (x-a)/(b-a))); return t*t*(3-2*t); };
-for (const c of CABLES){
-  const s0 = mean(c.from), e0 = mean(c.to), lift = c.short ? 0 : 1;
-  const ctrl = [s0, s0.clone().addScaledVector(c.fromDir, 7).add(V(0,lift,0)), ...c.mids, e0.clone().addScaledVector(c.toDir, 7).add(V(0,lift*2,0)), e0];
+const flexMat = new THREE.MeshStandardMaterial({color:0xc98a2b, roughness:.45, transparent:true, opacity:.55, side:THREE.DoubleSide, depthWrite:false});
+for (const c of CABLES){ c.meshes = []; c.curves = []; for (const inst of (c.inst || [c])) buildWires(c, inst, inst === (c.inst || [c])[0]); }
+function buildWires(c, inst, first){
+  const s0 = mean(inst.from), e0 = mean(inst.to), lift = c.short || c.flex ? 0 : 1, stub = c.flex ? 3 : 7;
+  const ctrl = [s0, s0.clone().addScaledVector(inst.fromDir, stub).add(V(0,lift,0)), ...inst.mids, e0.clone().addScaledVector(inst.toDir, stub).add(V(0,lift*2,0)), e0];
   const centre = new THREE.CatmullRomCurve3(ctrl, false, 'catmullrom', 0.3);
-  const n = c.wires.length, N = c.short ? 24 : 90;
+  const n = c.wires.length, N = c.short ? 24 : c.flex ? 60 : 90;
   const t0 = centre.getTangentAt(0.2), perp0 = new THREE.Vector3().crossVectors(t0, UP).normalize();
-  const order = c.from.map((p,i) => [p.clone().sub(s0).dot(perp0), i]).sort((a,b) => a[0]-b[0]).map(x => x[1]);
+  const order = inst.from.map((p,i) => [p.clone().sub(s0).dot(perp0), i]).sort((a,b) => a[0]-b[0]).map(x => x[1]);
   const rank = []; order.forEach((wi, k) => rank[wi] = k);
-  c.meshes = []; c.curves = [];
-  c.wires.forEach((w, i) => {
-    const sOff = c.from[i].clone().sub(s0), eOff = c.to[i].clone().sub(e0), pts = [];
+  if (c.flex){   // polyimide tail behind the six traces, 4.5 mm wide
+    const pos = [];
+    for (let k = 0; k <= N; k++){
+      const t = k/N, p = centre.getPointAt(t), tan = centre.getTangentAt(t);
+      let perp = new THREE.Vector3().crossVectors(tan, UP); if (perp.lengthSq() < 1e-6) perp.set(1,0,0); perp.normalize().multiplyScalar(2.25);
+      pos.push(...p.clone().add(perp).toArray(), ...p.clone().sub(perp).toArray());
+    }
+    const idx = []; for (let k = 0; k < N; k++){ const a = 2*k; idx.push(a, a+1, a+2, a+1, a+3, a+2); }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
+    const strip = new THREE.Mesh(g, flexMat.clone()); scene.add(strip); c.meshes.push(strip);
+    const mod = new THREE.Group(); mod.position.copy(inst.end);
+    mod.add(new THREE.Mesh(new THREE.BoxGeometry(6, 0.8, 6), new THREE.MeshStandardMaterial({color:0x1f5e43, roughness:.6, transparent:true})));
+    const can = new THREE.Mesh(new THREE.BoxGeometry(4, 1.1, 3), new THREE.MeshStandardMaterial({color:0xb9bdbb, metalness:.6, roughness:.35, transparent:true})); can.position.y = 0.9; mod.add(can);
+    scene.add(mod); mod.children.forEach(m => c.meshes.push(m));
+  }
+  inst.from.forEach((_, i) => {
+    const w = c.wires[i], sOff = inst.from[i].clone().sub(s0), eOff = inst.to[i].clone().sub(e0), pts = [];
     for (let k = 0; k <= N; k++){
       const t = k / N, p = centre.getPointAt(t), tan = centre.getTangentAt(t);
       let perp = new THREE.Vector3().crossVectors(tan, UP); if (perp.lengthSq() < 1e-6) perp.set(1,0,0); perp.normalize();
@@ -197,7 +248,7 @@ for (const c of CABLES){
     const curve = new THREE.CatmullRomCurve3(pts);
     const mat = new THREE.MeshStandardMaterial({color:w[4], roughness:.5, transparent:true});
     const mesh = new THREE.Mesh(new THREE.TubeGeometry(curve, N*2, c.r, 8, false), mat);
-    mesh.userData = {cable:c, wire:w, i}; scene.add(mesh); wireMeshes.push(mesh); c.meshes.push(mesh); c.curves.push(curve);
+    mesh.userData = {cable:c, wire:w, i}; scene.add(mesh); wireMeshes.push(mesh); c.meshes.push(mesh); if (first) c.curves.push(curve);
   });
 }
 
@@ -242,6 +293,7 @@ ptag('J7','cup',CUPL_AT,'J7',V(0,4,-5)); ptag('J8','cup',CUPL_AT,'J8',V(5,4,0));
 ptag('J7','cup',CUPR_AT,'J7',V(0,4,-5)); ptag('J2','cup',CUPR_AT,'J2',V(-5,4,-3)); tag('J8 unused', mean(pins('cup',CUPR_AT,'J8')).add(V(5,4,0)), 'ghost');
 tag('J9 (approx.)', V(AERO.at.x + AERO.size[0]/2, 20, -30), 'ghost'); tag('Boom mic', boomEnd.clone().add(V(0,8,0)));
 tag('Headphone plug', PHONE.clone().add(V(0,8,24))); tag('Mic plug', MICPLUG.clone().add(V(0,8,24)));
+for (const c of CABLES.filter(x => x.flex)) for (const inst of c.inst) tag(c.ends[1], inst.end.clone().add(V(0,5,0)));
 let wireTags = [];
 
 // ---- legend, wire table, highlight
@@ -255,7 +307,7 @@ for (const c of CABLES){
 function setActive(id){
   active = id;
   for (const t of wireTags) t.el.remove(); TAGS.splice(TAGS.length - wireTags.length, wireTags.length); wireTags = [];
-  for (const c of CABLES){ const on = !id || c.id === id; for (const m of c.meshes) m.material.opacity = on ? 1 : 0.08; c.btn.setAttribute('aria-pressed', String(c.id === id)); }
+  for (const c of CABLES){ const on = !id || c.id === id; for (const m of c.meshes) m.material.opacity = on ? (m.material.side === THREE.DoubleSide ? .55 : 1) : 0.08; c.btn.setAttribute('aria-pressed', String(c.id === id)); }
   const c = CABLES.find(x => x.id === id);
   if (!c){ wtTitle.textContent = 'Wires'; wiresEl.innerHTML = '<p class="note">Pick a cable to list its wires.</p>'; return; }
   wtTitle.textContent = c.title;
