@@ -17294,7 +17294,7 @@
 				)
 			)
 		)
-		(property "Value" "ADP7118AUJZ-3.3-R7 (3V3_MIC)"
+		(property "Value" "ADP7118AUJZ-2.5-R7 (mic rail 2.5 V)"
 			(at 233.68 330.2 0)
 			(effects
 				(font

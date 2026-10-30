@@ -101,7 +101,7 @@ ERC 0 errors; 6 warnings, all strap pins tied to rails (the 4 old ones plus U6 A
 | B side (downstream, J8) | Q1 AO3401A switched by SWP (R11–R14, C25/C26), L5/L6, same coupling as the audio board's main node | DS Fig. 36 + eval B side |
 | U6 | I²S master: DTX0 → `I2S0_SDATAI`, DRX0 ← `I2S0_SDATAO`, BCLK/SYNC → `I2S0_BCLK`/`I2S0_FSYNC`; I²C master on SDA/SCL; IOVDD on 1V8; VOUT1/VOUT2 decoupled | AD242x TRM |
 | K2 drive | U6 IO7 → R17 2.2k → Q2 MMBT3904 (R18 100k pull-down) switches U4/U5 LED returns; R7/R8 **680R** from VIN_CUP (220R until the 8 V bus) | audio-board rulings 11, 12 |
-| Power | U7 TPS62161 → 1V8, U8 ADP7118-3.3 → 3V3_MIC (**over the IM73A135's 3.0 V abs max — open, see "Found while budgeting"**), U9 ADP7118-3.3 → VLED (separate, as before, to keep PPG pulses off the mic rail) | TPS6216x DS, ADP7118 |
+| Power | U7 TPS62161 → 1V8, U8 ADP7118-**2.5** → 3V3_MIC (**2.5 V since 2026-10-30**; the 3.3 V part exceeded the IM73A135's 3.0 V abs max; net name kept to spare the routing), U9 ADP7118-3.3 → VLED (separate, as before, to keep PPG pulses off the mic rail) | TPS6216x DS, ADP7118 |
 
 **Removed:** J3 (1V8/3V3_MIC in), J4 (VLED in), J6 (`SW_DRV` in), and the PWR_FLAGs on 3V3_MIC/VLED (the LDOs drive
 them now). **Why a BJT for K2:** U6's IO is 1.8 V, too low to turn a 2N7002 on reliably. **Why 680R:** with the AeroNode's 8 V bus (ruling 12) VIN_CUP is 6.4–7.2 V, giving 5.1–7.2 mA per string
@@ -342,7 +342,7 @@ it to within ~5 %**. Datasheet figures `[fetched]` from the pinned PDFs in `docs
 | K2 PhotoMOS LEDs (U4/U5, two strings, R7/R8 680 Ω) | 90 mW | 90 mW | `[derived]` 2 × (6.8 − 2 × 1.14 V) / 680 Ω = 13.3 mA from VIN; VF `[fetched]` AQW61xS |
 | 1V8 rail via U7 TPS62161 (18.3 mA at 1.8 V, η 75.5 %) | 44 mW | 44 mW | U1 11.25 mA `[fetched]` T7 HP amp on + speaker 5.0 mA `[derived]` + LSM6 0.6 + PDM mic 0.43 `[fetched]` + U6 IOVDD 0.5 `[assumed]` + Q2 base 0.5; η `[fetched]` TPS62160 Fig. 15 |
 | VLED via U9 ADP7118 (PPG running, SpO₂) | 7 mW | 7 mW | `[fetched]` MAXM86161 0.97 mA at 100 sps + LDO IGND 50 µA |
-| 3V3_MIC via U8 ADP7118 (two IM73A135) | 3 mW | 3 mW | `[fetched]` 2 × 170 µA + IGND |
+| 3V3_MIC (2.5 V) via U8 ADP7118-2.5 (two IM73A135) | 3 mW | 3 mW | `[fetched]` 2 × 170 µA + IGND; LDO draws from VIN, so unchanged by the 2.5 V swap |
 | D1 bus diode | 16 mW | 17 mW | 0.38 V `[assumed]` × VIN current |
 | **Total per cup** | **≈ 295 mW (41 mA)** | **≈ 325 mW (45 mA)** | |
 
@@ -471,9 +471,14 @@ term by roughly HPVDD_L/1.8, at the cost of output swing.
     normal-mode range — and rename the net.
   - **Attempted and rolled back 2026-10-30.** U8 → ADP7118AUJZ-2.5-R7 with the net renamed to `2V5_MIC` passed
     `design_nets.py check` and ERC in the schematic, but Update PCB from Schematic upset the routed board (Peter), so
-    the schematic was restored to the committed version and the PCB was never saved. **The overvoltage is still
-    open.** A lower-impact retry: change only U8's value and keep the net name `3V3_MIC` (so the PCB's nets, net-class
-    pattern and routing don't change), and fix the misleading name later.
+    the schematic was restored to the committed version and the PCB was never saved.
+  - **Fixed 2026-10-30, value only (Peter: "use the 2.5v regulator without changing the net so we dont upset the
+    routing"):** U8 value → **`ADP7118AUJZ-2.5-R7 (mic rail 2.5 V)`**. Same symbol, same TSOT-23-5 footprint, same
+    nets, so the routing is untouched. **The net keeps the name `3V3_MIC` but now carries 2.5 V** — read it as "mic
+    rail". `[measured]` `design_nets.py check`: **OK**; ERC: **0 errors**; PCB DRC with schematic parity: **0 errors,
+    0 unconnected**. The one new item is a parity *warning* that the PCB's U8 still shows the old value text: set it
+    in pcbnew (double-click U8 → Value), no Update-from-Schematic needed. The sheet's A2B text note still says
+    "U8 ADP7118 -> 3V3_MIC", which is now right about the net name.
 
 ## Open items — real gaps, not decisions
 
