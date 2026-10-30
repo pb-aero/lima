@@ -230,3 +230,11 @@ L3.2, went nowhere) — coupling only, no bus power to the cups. The new one car
 - **AeroNode header is unconnected in its own file** (see the header section) — owner's fix.
 - Spec §8 (electret location / count / isolation) and §4 (clock survival on the hub) — block layout.
 - Watchdog parked (ruling 4); TPS3430 + 74LVC1G74 footprint room not yet reserved (no layout yet).
+
+## Cup harness topology — daisy chain kept (Peter, 2026-10-30)
+
+Considered: merge J3 + J4 into one 12-way GH with a Y-split to both cups' J7, dropping cup L's J8. A2B cannot
+branch (each link is one node's B port to the next node's A port), so that needs a second AD2428 main node on this
+board (~20 bus-network parts, a second hub TDM port, a second I²C address, re-layout of the routed right edge).
+Gains would be one connector, a symmetric harness and cup R independent of cup L. **Peter: keep the daisy chain**
+(audio J3 → cup L J7, cup L J8 → cup R J7.1–2, audio J4 → cup R J7.3–6). Headband conductors are 6 either way.
