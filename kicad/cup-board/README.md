@@ -358,6 +358,8 @@ it to within ~5 %**. Datasheet figures `[fetched]` from the pinned PDFs in `docs
 At the battery, add the bus cable and inductor losses (≈ 26 mW in normal use, `[derived]` from the Table 16 resistances in
 `scripts/a2b_bus_budget.py`), the main node's D3 drop (≈ 33 mW), and the 8 V boost's efficiency: **≈ 0.75–0.8 W in
 normal use** `[assumed]` ~88 % boost. The worst-case 149 mA is inside the main node's 300 mA VSSN limit.
+**Whole headset including the audio board: `docs/h1-power-budget.md` — ≈ 1.7 W / 271 mA from a 6.4 V battery in
+normal use** (the cups are 45 % of it).
 
 **What changed since 2026-10-19 (≈ 34–40 mW per cup then):** the codec, sensors, mics and speaker are still only
 ≈ 55 mW per cup at VIN. **The A2B sub-node (≈ 50 %) and the K2 LED drive (≈ 30 %) — both added since — are most of the

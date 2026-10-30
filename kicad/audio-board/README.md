@@ -103,6 +103,8 @@ Checked `[measured]`: netlist == `doc/design_nets.py`; independent J9 cross-chec
 **Open — AeroNode side, for its owner (not this repo's file):**
 - **Power is one contact (J9.23) behind F1, 0ZCJ0010FF2E: 100 mA hold / 250 mA trip.** This board needs roughly
   0.35 A typical, 0.5 A worst case from a 5 V battery `[derived]` (cup power budget + hub + codec + 8 V A2B boost).
+  **Re-run 2026-10-30 (`docs/h1-power-budget.md`): 327 mA normal, 606 mA worst case at 5.0 V; 201 mA even in bypass** —
+  above F1's hold current in every mode.
   F1 will trip, and one 0.5 A CF31 contact `[fetched, sibling-part listing]` has no margin even with a bigger fuse.
   Their own sheet asks whether the TVS and polyfuse belong on the breakout board. Needs 2–3 power contacts (e.g.
   J9.2 and J9.16 re-assigned) and a fuse sized for the load.
