@@ -101,7 +101,7 @@ ERC 0 errors; 6 warnings, all strap pins tied to rails (the 4 old ones plus U6 A
 | B side (downstream, J8) | Q1 AO3401A switched by SWP (R11–R14, C25/C26), L5/L6, same coupling as the audio board's main node | DS Fig. 36 + eval B side |
 | U6 | I²S master: DTX0 → `I2S0_SDATAI`, DRX0 ← `I2S0_SDATAO`, BCLK/SYNC → `I2S0_BCLK`/`I2S0_FSYNC`; I²C master on SDA/SCL; IOVDD on 1V8; VOUT1/VOUT2 decoupled | AD242x TRM |
 | K2 drive | U6 IO7 → R17 2.2k → Q2 MMBT3904 (R18 100k pull-down) switches U4/U5 LED returns; R7/R8 **680R** from VIN_CUP (220R until the 8 V bus) | audio-board rulings 11, 12 |
-| Power | U7 TPS62161 → 1V8, U8 ADP7118-3.3 → 3V3_MIC, U9 ADP7118-3.3 → VLED (separate, as before, to keep PPG pulses off the mic rail) | TPS6216x DS, ADP7118 |
+| Power | U7 TPS62161 → 1V8, U8 ADP7118-3.3 → 3V3_MIC (**over the IM73A135's 3.0 V abs max — open, see "Found while budgeting"**), U9 ADP7118-3.3 → VLED (separate, as before, to keep PPG pulses off the mic rail) | TPS6216x DS, ADP7118 |
 
 **Removed:** J3 (1V8/3V3_MIC in), J4 (VLED in), J6 (`SW_DRV` in), and the PWR_FLAGs on 3V3_MIC/VLED (the LDOs drive
 them now). **Why a BJT for K2:** U6's IO is 1.8 V, too low to turn a 2N7002 on reliably. **Why 680R:** with the AeroNode's 8 V bus (ruling 12) VIN_CUP is 6.4–7.2 V, giving 5.1–7.2 mA per string
@@ -116,7 +116,8 @@ that would have DC-tied the grounds.
 
 - ~~**VIN_CUP margin at low battery.**~~ **Closed 2026-10-23:** `docs/a2b-bus-power-budget.md` → 8 V boost on the audio
   board (ruling 12); cup R VIN 6.44 V worst case.
-- **Cup power budget not run** (U1's HiFi 3z, three mics, LSM6, MAXM86161 LED pulses) against the main node's 300 mA
+- ~~**Cup power budget not run**~~ **Run 2026-10-30** — see "Power budget — 2026-10-30": ≈ 41–45 mA per cup normal,
+  149 mA for both cups worst case, inside the 300 mA VSSN limit. (Original item:) (U1's HiFi 3z, three mics, LSM6, MAXM86161 LED pulses) against the main node's 300 mA
   VSSN limit for both cups.
 - **Sub-node IO7 state on data-link loss with bus power still up** — not in the TRM section read.
 - **Cup R speaker pair** still arrives on its own J5 from the audio board's J4; A2B comes from cup L's J8.
@@ -323,7 +324,64 @@ The remaining direct wires (mics → U1, U1 → J2) use grid-exact lane coordina
   `find_shorted_nets` 0; overlaps 0. The audio-board side is described in the note on its
   AIRCRAFT AUDIO I/O sheet.
 
-## Power budget (estimate, per cup) — 2026-10-19
+## Power budget — 2026-10-30, the board as built (supersedes the 2026-10-19 budget below)
+
+Model and every input: `scripts/cup_power_budget_by_mode.py` (`python3 -I scripts/cup_power_budget_by_mode.py`). It
+complements **`docs/cup-power-budget.md` (2026-10-23, `scripts/cup_power_budget.py`)**, which compared 32 Ω and 150 Ω
+drivers on the 8 V bus model and found **≈ 294 mW / 42.8 mA per cup** typical with 32 Ω. This re-run builds the AD2428
+current from its datasheet components, splits cup L from cup R, adds a bypass mode and the D1 loss, and **agrees with
+it to within ~5 %**. Datasheet figures `[fetched]` from the pinned PDFs in `docs/datasheets/`; nothing measured. Everything is drawn from `VIN_CUP`
+(A2B bus bias after D1), **6.8 V nominal** on the 8 V bus (6.44 V worst case at cup R, ~7.2 V light load
+`[repo]` `docs/a2b-bus-power-budget.md`).
+
+**Normal use — K2 on, ANC running, speech at 1 mW into a 32 Ω speaker, HiFi 3z off:**
+
+| Block | Cup R | Cup L | Basis |
+|---|---|---|---|
+| U6 AD2428 sub-node (internal linear regs from VIN) | 135 mW | 165 mW | `[fetched]` IVIN = IVOUT1 + IVOUT2 + IVINQ; IDVDD 10.5 + IPLL 1.1 mA typ; transceivers TX 12 / RX 2.8 mA at 100 % duty, **6 mA average each `[assumed]`**; cup L runs both A and B sides, cup R only A |
+| K2 PhotoMOS LEDs (U4/U5, two strings, R7/R8 680 Ω) | 90 mW | 90 mW | `[derived]` 2 × (6.8 − 2 × 1.14 V) / 680 Ω = 13.3 mA from VIN; VF `[fetched]` AQW61xS |
+| 1V8 rail via U7 TPS62161 (18.3 mA at 1.8 V, η 75.5 %) | 44 mW | 44 mW | U1 11.25 mA `[fetched]` T7 HP amp on + speaker 5.0 mA `[derived]` + LSM6 0.6 + PDM mic 0.43 `[fetched]` + U6 IOVDD 0.5 `[assumed]` + Q2 base 0.5; η `[fetched]` TPS62160 Fig. 15 |
+| VLED via U9 ADP7118 (PPG running, SpO₂) | 7 mW | 7 mW | `[fetched]` MAXM86161 0.97 mA at 100 sps + LDO IGND 50 µA |
+| 3V3_MIC via U8 ADP7118 (two IM73A135) | 3 mW | 3 mW | `[fetched]` 2 × 170 µA + IGND |
+| D1 bus diode | 16 mW | 17 mW | 0.38 V `[assumed]` × VIN current |
+| **Total per cup** | **≈ 295 mW (41 mA)** | **≈ 325 mW (45 mA)** | |
+
+**Whole H1 (both cups) ≈ 620 mW, 86 mA at VIN_CUP** in normal use. Other modes, same script:
+
+| Mode | Cup R | Cup L | H1 |
+|---|---|---|---|
+| Bypass — K2 off, aircraft audio passes through, HP amp off | 173 mW | 204 mW | **≈ 380 mW** (53 mA) |
+| Normal use (above) | 295 mW | 325 mW | **≈ 620 mW** (86 mA) |
+| Normal use + HiFi 3z running (+5 mA DVDD `[assumed]`) | 307 mW | 338 mW | ≈ 645 mW (90 mA) |
+| Worst — 30 mW speaker, HiFi 3z +30 mA, every max, VIN 7.2 V | 526 mW | 606 mW | **≈ 1.13 W** (149 mA) |
+
+At the battery, add the bus cable and inductor losses (≈ 26 mW in normal use, `[derived]` from the Table 16 resistances in
+`scripts/a2b_bus_budget.py`), the main node's D3 drop (≈ 33 mW), and the 8 V boost's efficiency: **≈ 0.75–0.8 W in
+normal use** `[assumed]` ~88 % boost. The worst-case 149 mA is inside the main node's 300 mA VSSN limit.
+
+**What changed since 2026-10-19 (≈ 34–40 mW per cup then):** the codec, sensors, mics and speaker are still only
+≈ 55 mW per cup at VIN. **The A2B sub-node (≈ 50 %) and the K2 LED drive (≈ 30 %) — both added since — are most of the
+budget**, and both are linear losses off a 6.8 V rail.
+
+### Levers, largest first — design changes, none made
+
+1. **AD2428 VIN from a pre-regulator.** Its internal regulators drop 6.8 V to 1.9 V / 3.3 V linearly. VIN accepts
+   3.7–9.0 V `[fetched]`; a ~4 V buck feeding VIN (and the two ADP7118s) would cut ≈ 135–165 mW to ≈ 95–115 mW per cup
+   `[derived]` at an assumed 85 %. Costs a second buck per cup.
+2. **K2 drive: one 4-LED series string on a constant-current sink instead of two 680 Ω strings.** The LEDs themselves
+   use ≈ 30 mW of the 90 mW; the rest is resistor heat. One string at 5 mA ≈ 34 mW per cup, saving ≈ 55 mW. Headroom
+   is tight: 4 × 1.5 V VF max = 6.0 V against 6.44 V worst-case VIN, so check before committing to it.
+3. **Lower bus voltage.** AD2428 and K2 power both scale with VIN, but the 8 V bus was chosen for brownout margin
+   (`docs/a2b-bus-power-budget.md`); trading that back is Peter's call.
+
+### Assumptions that move the answer most
+
+- **AD2428 transceiver duty** (6 mA average per side): the range is 1.7–13 mA per side, worth ±50 mW per cup. Depends on
+  the slot map, which is still unfrozen. Measure on the bench.
+- **HiFi 3z current** — unknown; ADI's Table 7 was measured with it bypassed.
+- **Speaker sensitivity** — sets which speaker row applies (1 mW assumed for speech + ANC).
+
+## Power budget (estimate, per cup) — 2026-10-19 — SUPERSEDED, predates the A2B sub-node, regulators and PhotoMOS switch
 
 Datasheet typicals only, `[fetched]` unless marked. Nothing measured. Excludes the speaker's
 output power (signal-dependent) and the A2B subnode, which isn't on this sheet yet.
@@ -405,6 +463,17 @@ term by roughly HPVDD_L/1.8, at the cost of output swing.
   mode 2.3 / 2.75 / 3.0 V). `[repo]` The audio-board decision record already says the mic supply is
   2.75 V, so the name is misleading rather than the design. It should be renamed (e.g. `2V75_MIC`)
   so nobody feeds 3.3 V into J3.
+  - **2026-10-30 — this is now a real overvoltage, not a naming problem.** Since the A2B change, U8 is an
+    **ADP7118AUJZ-3.3**, so `3V3_MIC` really is 3.3 V, into MK1/MK2 via J9/J10 pin 1. `[fetched]` IM73A135 DS v1.20
+    **Table 5, absolute maximum supply voltage 3.0 V**. Unless the KIT_IM73A135V01_FLEX boards regulate (not
+    established — the flex pinout is still a placeholder), this exceeds the mic's absolute maximum. **Fix: U8 →
+    ADP7118AUJZ-2.5-R7** — `[fetched]` an orderable fixed option in the same TSOT-23-5 package, 2.5 V inside the 2.3–3.0 V
+    normal-mode range — and rename the net.
+  - **Attempted and rolled back 2026-10-30.** U8 → ADP7118AUJZ-2.5-R7 with the net renamed to `2V5_MIC` passed
+    `design_nets.py check` and ERC in the schematic, but Update PCB from Schematic upset the routed board (Peter), so
+    the schematic was restored to the committed version and the PCB was never saved. **The overvoltage is still
+    open.** A lower-impact retry: change only U8's value and keep the net name `3V3_MIC` (so the PCB's nets, net-class
+    pattern and routing don't change), and fix the misleading name later.
 
 ## Open items — real gaps, not decisions
 
