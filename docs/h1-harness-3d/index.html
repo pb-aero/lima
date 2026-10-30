@@ -201,8 +201,8 @@ const CABLES = [
   wires:[['J10.1','flex 1','3V3_MIC','Mic supply (U8)',C.red],['J10.2','flex 2','MK2_OUTP','Feedback (error) mic output +, to U1 AINP1','#3d6fd6'],
          ['J10.3','flex 3','MK2_OUTN','Feedback mic output −, to U1 AINN1','#9db8ef'],['J10.4','flex 4','NC','Not used (placeholder order)',C.ffc],
          ['J10.5','flex 5','GND','Ground',C.gnd],['J10.6','flex 6','GND','Ground',C.gnd]], ends:['Cup', 'FB mic']},
- {id:'voice', title:'Voice mic flex (J11)', sub:'6-contact flex tail, both cups. IM72D128 PDM into U1 DMIC. Contact order is a placeholder until checked on a kit', flex:true,
-  inst:[flexInst(CUPL_AT,'J11'), flexInst(CUPR_AT,'J11')], r:0.13, sp:0.5,
+ {id:'voice', title:'Voice mic flex (J11), cup L only', sub:'6-contact flex tail, cup L only (cup R: J11 not fitted). IM72D128 PDM into U1 DMIC. Contact order is a placeholder until checked on a kit', flex:true,
+  inst:[flexInst(CUPL_AT,'J11')], r:0.13, sp:0.5,
   wires:[['J11.1','flex 1','1V8','Mic supply, 1.8 V',C.micH],['J11.2','flex 2','DMIC_DATA','PDM data, to U1 DMIC01','#2f9e4f'],
          ['J11.3','flex 3','DMIC_CLK','PDM clock from U1 DMIC_CLK','#d9c22e'],['J11.4','flex 4','GND','SELECT tied low (left channel)',C.gnd],
          ['J11.5','flex 5','GND','Ground',C.gnd],['J11.6','flex 6','GND','Ground',C.gnd]], ends:['Cup', 'Voice mic']},
@@ -290,7 +290,7 @@ const ptag = (t, b, o, r, d=V(0,4,0)) => tag(t, mean(pins(b,o,r)).add(d));
 ptag('J1','audio',AUDIO_AT,'J1'); ptag('J3','audio',AUDIO_AT,'J3',V(-4,4,0)); ptag('J4','audio',AUDIO_AT,'J4',V(-4,4,0)); ptag('J5','audio',AUDIO_AT,'J5',V(4,4,0));
 tag('J6 spare', mean(pins('audio',AUDIO_AT,'J6')).add(V(4,4,0)), 'ghost');
 ptag('J7','cup',CUPL_AT,'J7',V(0,4,-5)); ptag('J8','cup',CUPL_AT,'J8',V(5,4,0)); ptag('J12','cup',CUPL_AT,'J12',V(-4,4,-4)); ptag('J2','cup',CUPL_AT,'J2',V(-5,4,-3));
-ptag('J7','cup',CUPR_AT,'J7',V(0,4,-5)); ptag('J2','cup',CUPR_AT,'J2',V(-5,4,-3)); tag('J8 unused', mean(pins('cup',CUPR_AT,'J8')).add(V(5,4,0)), 'ghost');
+ptag('J7','cup',CUPR_AT,'J7',V(0,4,-5)); ptag('J2','cup',CUPR_AT,'J2',V(-5,4,-3)); tag('J8 unused', mean(pins('cup',CUPR_AT,'J8')).add(V(5,4,0)), 'ghost'); tag('J11 not fitted', P(CUPR_AT, ZIF_AT.J11).add(V(0,4,0)), 'ghost');
 tag('J9 (approx.)', V(AERO.at.x + AERO.size[0]/2, 20, -30), 'ghost'); tag('Boom mic', boomEnd.clone().add(V(0,8,0)));
 tag('Headphone plug', PHONE.clone().add(V(0,8,24))); tag('Mic plug', MICPLUG.clone().add(V(0,8,24)));
 for (const c of CABLES.filter(x => x.flex)) for (const inst of c.inst) tag(c.ends[1], inst.end.clone().add(V(0,5,0)));

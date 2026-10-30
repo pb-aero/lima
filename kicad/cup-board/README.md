@@ -606,3 +606,13 @@ Peter chose to bring the headset's boom electret in through a cup rather than st
 - **Checked `[measured]`:** cup DRC 0 unconnected, 0 errors (`916fef4`). One parity *warning*: J12's footprint is
   exclude-from-BOM and the symbol is not (Konnect can't set the symbol flag). Untick "In BOM" on J12 in eeschema,
   or drop J12 from the JLC BOM by hand.
+
+## Voice mic on cup L only — 2026-10-30, per Peter
+
+Only cup L needs the voice mic (J11, IM72D128 PDM flex). The two cups stay **one PCB design**; cup R is an
+**assembly variant with J11 not fitted** (no flex kit either). C11 (1 µF on 1V8) stays fitted on both. It is now
+just extra 1V8 decoupling on cup R.
+- **To do before fab outputs:** define the variant in eeschema (KiCad 10 design variants: `CUP_R`, J11 = DNP) and
+  export the BOM/CPL per variant (`kicad-cli … --variant CUP_R`). Konnect has no variant tool, so this is an eeschema step.
+- **Firmware:** cup R's U1 DMIC input is unused (leave DMIC_CLK off). Only cup L sends a voice slot upstream, which
+  frees one slot in the A2B TDM map.

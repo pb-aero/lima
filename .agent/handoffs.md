@@ -185,5 +185,5 @@ Cup PCB `916fef4`: J12 = solder pads at 311 deg (Peter, no room for a GH on the 
 Audio PCB `cbe49e5`: J3/J4 swapped in place (old pins unchanged), ELEC J3<->J4 links hand-routed on the right edge
 (`doc/route/elec-links.json`, locked), ELEC to J6 by maze along the top edge (~110-118 mm, over the planes, 0.5 mm
 clearance only — NOT in a plane-free corridor like EAR). 0 unconnected / 0 errors.
-Open: tick J12 "In BOM" off in eeschema; ELEC over the planes is RULED fine (Peter 2026-10-29, no corridor);
+Open: tick J12 "In BOM" off in eeschema; CUP_R variant with J11 DNP (voice mic cup L only, Peter 2026-10-30); ELEC over the planes is RULED fine (Peter 2026-10-29, no corridor);
 harness drawings for cup R (J7 3-6 from audio J4 1-4). Daisy chain KEPT (Peter 2026-10-30; 12-way + second AD2428 rejected).
