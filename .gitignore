@@ -23,3 +23,7 @@ fp-info-cache
 # KiCad editor lock files
 ~*.lck
 *.pdf
+
+# 3D harness page models (regenerate with docs/h1-harness-3d/build.sh)
+docs/h1-harness-3d/*.glb
+docs/h1-harness-3d/*.glb.txt
