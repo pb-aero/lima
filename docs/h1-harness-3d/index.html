@@ -67,7 +67,7 @@ tr.hot td{background:color-mix(in srgb,var(--focus) 12%,transparent)}
     <div class="row"><button id="all" type="button">Show all</button><button id="reset" type="button">Reset view</button></div>
     <h2 id="wt-title">Wires</h2>
     <div id="wires"><p class="note">Pick a cable to list its wires.</p></div>
-    <p class="note">Pin positions are the real pads from the KiCad layouts. Wire colours are for telling conductors apart here; the harness colour code isn't chosen yet. The AeroNode is a stand-in at Stefan's documented 105 × 132 × 44 mm envelope, and its J9 position is approximate. Cable routes and lengths are schematic.</p>
+    <p class="note">Pin positions are the real pads from the KiCad layouts. Wire colours are for telling conductors apart here; the harness colour code isn't chosen yet. The AeroNode is the Rev 0.0.2 board model (updated GPS), with the flat cable landing on its 24-way Cvilux J9; which end of J9 is contact 1 is assumed. Cable routes and lengths are schematic.</p>
   </aside>
 </div>
 
@@ -109,14 +109,16 @@ const PADS = {
 // ZIF body centres: the flex leaves from the contacts towards the opening (J9/J11 face out, J10 faces the ring hole)
 const ZIF_AT = {J9:[27.741,-14.088], J10:[21.622,-10.98], J11:[-6.254,-30.479]};
 const AUDIO_AT = V(0,0,0), CUPL_AT = V(175,0,-80), CUPR_AT = V(175,0,80);
-const AERO = {at:V(-165,22,-10), size:[105,44,132]};
+// AeroNode Rev 0.0.2 board model (mm, its own origin); J9 = the 24-way Cvilux CF31 FFC at its right edge, measured
+// from the model: body x 80.4..86.2, z -79.3..-62.6, opening assumed towards the board edge (+x)
+const AERO_AT = V(-217, 0, 48), J9_OPEN_X = 86.2, J9_ZC = -70.95, J9_Y = 2.6;
 const H = 2.0;
 const P = (origin, xy, y=H) => V(origin.x + xy[0], origin.y + y, origin.z + xy[1]);
 function pins(board, origin, ref){ return PADS[board][ref].map(xy => P(origin, xy)); }
 function radial(origin, ref){ const a = PADS.cup[ref], c = a.reduce((s,p)=>[s[0]+p[0]/a.length, s[1]+p[1]/a.length],[0,0]), r = Math.hypot(c[0],c[1]); return V(c[0]/r,0,c[1]/r); }
 
 // far ends that are not board pads: AeroNode J9 (24 contacts, our pin n = J9 pin 25-n), driver terminals, boom capsule, panel plugs
-const J9 = Array.from({length:24}, (_, i) => V(AERO.at.x + AERO.size[0]/2 + 0.6, 12, -30 - 5.75 + i*0.5));   // index i = J9 pin i+1
+const J9 = Array.from({length:24}, (_, i) => V(AERO_AT.x + J9_OPEN_X + 0.4, J9_Y, AERO_AT.z + J9_ZC - 5.75 + i*0.5));   // index i = J9 pin i+1
 const boomBase = P(CUPL_AT, PADS.cup.J12[0]).addScaledVector(radial(CUPL_AT,'J12'), 14).add(V(0,5,0));
 const boomEnd = P(CUPL_AT, PADS.cup.J12[0]).addScaledVector(radial(CUPL_AT,'J12'), 78).add(V(0,22,0));
 const PHONE = V(-78,4,125), MICPLUG = V(-50,4,125);
@@ -252,11 +254,8 @@ function buildWires(c, inst, first){
   });
 }
 
-// ---- fixtures: AeroNode stand-in, drivers, boom arm, plugs
+// ---- fixtures: speaker drivers, boom arm, plugs
 function solid(geo, color, at, op){ const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({color, roughness:.6, transparent:!!op, opacity:op||1})); m.position.copy(at); scene.add(m); return m; }
-const aero = solid(new THREE.BoxGeometry(...AERO.size), 0x2f8f86, AERO.at, .8);
-const ae = new THREE.LineSegments(new THREE.EdgesGeometry(aero.geometry), new THREE.LineBasicMaterial({color:0x123c38})); ae.position.copy(AERO.at); scene.add(ae);
-solid(new THREE.BoxGeometry(2,4,14), 0xd9d9d9, V(AERO.at.x + AERO.size[0]/2, 12, -30));
 for (const at of [CUPL_AT, CUPR_AT]){
   solid(new THREE.CylinderGeometry(19.5, 17, 7, 48), 0x2a2d2c, at.clone().add(V(0,-6,0)));
   solid(new THREE.CylinderGeometry(15, 6, 2, 48), 0x4a4f4d, at.clone().add(V(0,-2.2,0)));
@@ -276,7 +275,7 @@ function loadBoard(url, sizeMM){
     const m = g.scene, s = new THREE.Box3().setFromObject(m).getSize(V(0,0,0));
     if (s.z < s.y && s.z < s.x) m.rotation.x = -Math.PI/2;
     m.updateMatrixWorld(true);
-    const s2 = new THREE.Box3().setFromObject(m).getSize(V(0,0,0)); m.scale.multiplyScalar(sizeMM / Math.max(s2.x, s2.z));
+    if (sizeMM){ const s2 = new THREE.Box3().setFromObject(m).getSize(V(0,0,0)); m.scale.multiplyScalar(sizeMM / Math.max(s2.x, s2.z)); }
     const grp = new THREE.Group(); grp.add(m); res(grp);
   }, rej)));
 }
@@ -285,13 +284,13 @@ function loadBoard(url, sizeMM){
 const TAGS = [];
 function tag(text, pos, cls=''){ const el = document.createElement('div'); el.className = 'tag ' + cls; el.textContent = text; tagsEl.appendChild(el); const t = {el, pos}; TAGS.push(t); return t; }
 tag('Audio board', V(0,14,-32), 'board'); tag('Cup L', CUPL_AT.clone().add(V(0,14,-42)), 'board'); tag('Cup R', CUPR_AT.clone().add(V(0,14,48)), 'board');
-tag('AeroNode (stand-in)', AERO.at.clone().add(V(0,30,-50)), 'board ghost');
+tag('AeroNode Rev 0.0.2', AERO_AT.clone().add(V(52,22,-112)), 'board');
 const ptag = (t, b, o, r, d=V(0,4,0)) => tag(t, mean(pins(b,o,r)).add(d));
 ptag('J1','audio',AUDIO_AT,'J1'); ptag('J3','audio',AUDIO_AT,'J3',V(-4,4,0)); ptag('J4','audio',AUDIO_AT,'J4',V(-4,4,0)); ptag('J5','audio',AUDIO_AT,'J5',V(4,4,0));
 tag('J6 spare', mean(pins('audio',AUDIO_AT,'J6')).add(V(4,4,0)), 'ghost');
 ptag('J7','cup',CUPL_AT,'J7',V(0,4,-5)); ptag('J8','cup',CUPL_AT,'J8',V(5,4,0)); ptag('J12','cup',CUPL_AT,'J12',V(-4,4,-4)); ptag('J2','cup',CUPL_AT,'J2',V(-5,4,-3));
 ptag('J7','cup',CUPR_AT,'J7',V(0,4,-5)); ptag('J2','cup',CUPR_AT,'J2',V(-5,4,-3)); tag('J8 unused', mean(pins('cup',CUPR_AT,'J8')).add(V(5,4,0)), 'ghost'); tag('J11 not fitted', P(CUPR_AT, ZIF_AT.J11).add(V(0,4,0)), 'ghost');
-tag('J9 (approx.)', V(AERO.at.x + AERO.size[0]/2, 20, -30), 'ghost'); tag('Boom mic', boomEnd.clone().add(V(0,8,0)));
+tag('J9', V(AERO_AT.x + 83.3, 7, AERO_AT.z + J9_ZC)); tag('Boom mic', boomEnd.clone().add(V(0,8,0)));
 tag('Headphone plug', PHONE.clone().add(V(0,8,24))); tag('Mic plug', MICPLUG.clone().add(V(0,8,24)));
 for (const c of CABLES.filter(x => x.flex)) for (const inst of c.inst) tag(c.ends[1], inst.end.clone().add(V(0,5,0)));
 let wireTags = [];
@@ -321,7 +320,7 @@ function setActive(id){
   const box = new THREE.Box3(); c.curves.forEach(cv => cv.getPoints(40).forEach(p => box.expandByPoint(p)));
   const centre = box.getCenter(V(0,0,0)), size = Math.max(box.getSize(V(0,0,0)).length(), 40);
   const dir = camera.position.clone().sub(controls.target).normalize();
-  controls.target.copy(centre); camera.position.copy(centre).addScaledVector(dir, size * 1.25);
+  controls.target.copy(centre); camera.position.copy(centre).addScaledVector(dir, size * 1.9);
 }
 document.getElementById('all').onclick = () => setActive(null);
 document.getElementById('reset').onclick = () => { camera.position.copy(HOME.pos); controls.target.copy(HOME.tgt); };
@@ -360,7 +359,7 @@ const v = V(0,0,0);
   requestAnimationFrame(frame);
 })();
 const status = document.getElementById('status');
-Promise.all([loadBoard('audio.glb.txt', 70), loadBoard('cup.glb.txt', 72), loadBoard('cup.glb.txt', 72)]).then(([a, l, r]) => {
-  a.position.copy(AUDIO_AT); l.position.copy(CUPL_AT); r.position.copy(CUPR_AT); scene.add(a, l, r); status.textContent = '';
+Promise.all([loadBoard('audio.glb.txt', 70), loadBoard('cup.glb.txt', 72), loadBoard('cup.glb.txt', 72), loadBoard('aeronode.glb.txt', null)]).then(([a, l, r, n]) => {
+  a.position.copy(AUDIO_AT); l.position.copy(CUPL_AT); r.position.copy(CUPR_AT); n.position.copy(AERO_AT); scene.add(a, l, r, n); status.textContent = '';
 }).catch(e => { status.textContent = 'Board models did not load: ' + (e && e.message || e); });
 </script>
