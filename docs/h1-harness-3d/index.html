@@ -183,13 +183,13 @@ const CABLES = [
   from:Array.from({length:24}, (_, n) => J9[24 - (n+1)]), fromDir:V(1,0,0), to:pins('audio',AUDIO_AT,'J1'), toDir:V(0,0,-1),
   mids:[V(-70,8,-52), V(-15,8,-46)], r:0.17, sp:0.5,
   wires:J1NET.map((net, i) => [`J9.${24 - i}`, `J1.${i+1}`, net, J1WHAT[net], i === 0 ? C.red : net === 'GND' ? C.gnd : C.ffc]), ends:['AeroNode', AUD]},
- {id:'panel', title:'Audio J5 → aircraft jacks', sub:'4 wires, aircraft side',
+ {id:'panel', title:'Audio J5 → PJ-055 / PJ-068 plugs', sub:'4 wires, aircraft side, to the GA headset plugs: PJ-055 (¼ in) headphone, PJ-068 (0.206 in) mic. Contact use follows common GA practice (headphone: tip audio, sleeve return; mic: ring mic audio, sleeve return, tip PTT not carried by H1); not from a datasheet, so confirm against the aircraft jack wiring',
   from:pins('audio',AUDIO_AT,'J5'), fromDir:V(-1,0,0), to:[PHONE.clone().add(V(-0.6,0,-6)), PHONE.clone().add(V(0.6,0,-6)), MICPLUG.clone().add(V(-0.6,0,-6)), MICPLUG.clone().add(V(0.6,0,-6))], toDir:V(0,0,-1),
   mids:[V(-52,6,30), V(-62,5,90)], r:0.36, sp:1.0,
-  wires:[['J5.1','phone plug','EAR_HI','Aircraft earphone audio in, to both SP-74 primaries',C.earH],
-         ['J5.2','phone plug','EAR_RTN','Earphone return',C.earR],
-         ['J5.3','mic plug','MIC_HI','Panel mic line: K1 selects DAC (via T4) or the failsafe electret',C.micH],
-         ['J5.4','mic plug','MIC_LO','Panel mic return',C.micL]], ends:[AUD, 'Panel']},
+  wires:[['J5.1','PJ-055 tip','EAR_HI','Aircraft earphone audio in, to both SP-74 primaries',C.earH],
+         ['J5.2','PJ-055 sleeve','EAR_RTN','Earphone return (PJ-055 ring unused: mono)',C.earR],
+         ['J5.3','PJ-068 ring','MIC_HI','Panel mic line: K1 selects DAC (via T4) or the failsafe electret',C.micH],
+         ['J5.4','PJ-068 sleeve','MIC_LO','Panel mic return (PJ-068 tip = PTT, not carried)',C.micL]], ends:[AUD, 'Plugs']},
  {id:'spkL', title:'Cup L J2 → speaker driver', sub:'2 wires',
   from:pins('cup',CUPL_AT,'J2'), fromDir:radial(CUPL_AT,'J2'), to:drvTerm(CUPL_AT), toDir:V(0,1,0), mids:[], r:0.36, sp:1.0, short:true,
   wires:[['J2.1','driver +','SPKR_1','Speaker drive from K2 (U4): DAC or aircraft audio',C.red],['J2.2','driver −','SPKR_2','Speaker drive, other leg (U5)',C.blk]], ends:[CL, 'Driver']},
@@ -287,7 +287,24 @@ for (const at of [CUPL_AT, CUPR_AT]){
 }
 scene.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([boomBase, boomBase.clone().lerp(boomEnd,.5).add(V(0,2,0)), boomEnd]), 40, 1.6, 10), new THREE.MeshStandardMaterial({color:0x3b403e, roughness:.5, transparent:true, opacity:.55})));
 solid(new THREE.SphereGeometry(4.5, 24, 16), 0x202322, boomEnd);
-for (const at of [PHONE, MICPLUG]){ const m = solid(new THREE.CylinderGeometry(3.2, 3.2, 26, 20), 0x9aa09d, at.clone().add(V(0,0,8))); m.rotation.x = Math.PI/2; }
+// GA headset plugs along +z from the cable entry: handle, then sleeve / insulator / ring / insulator / tip.
+// Diameters are the standard ones (PJ-055 0.250 in, PJ-068 0.206 in); segment lengths and handles are approximate.
+function gaPlug(at, d, handleR, handleL, seg){
+  const r = d/2, axis = g => { g.rotateX(Math.PI/2); return g; };
+  const metal = 0xc9ccca, ins = 0x1d1f1e; let z = at.z - 6;
+  const part = (geo, color, len) => { solid(axis(geo), color, V(at.x, at.y, z + len/2)); z += len; };
+  part(new THREE.CylinderGeometry(handleR*0.6, handleR*0.6, 4, 24), 0x2c2f2e, 4);            // strain relief
+  part(new THREE.CylinderGeometry(handleR, handleR, handleL, 32), 0x3a3e3c, handleL);         // handle
+  part(new THREE.CylinderGeometry(r*1.25, r*1.25, 1.5, 24), metal, 1.5);                      // shoulder
+  part(new THREE.CylinderGeometry(r, r, seg[0], 24), metal, seg[0]);                          // sleeve
+  part(new THREE.CylinderGeometry(r, r, seg[1], 24), ins, seg[1]);
+  part(new THREE.CylinderGeometry(r, r, seg[2], 24), metal, seg[2]);                          // ring
+  part(new THREE.CylinderGeometry(r*0.8, r*0.8, seg[3], 24), ins, seg[3]);
+  part(new THREE.CylinderGeometry(r*0.55, r, seg[4], 24), metal, seg[4]);                     // tip
+  solid(new THREE.SphereGeometry(r*0.55, 16, 12), metal, V(at.x, at.y, z));
+}
+gaPlug(PHONE, 6.35, 6.2, 36, [17, 2.5, 5, 2.5, 5.5]);      // PJ-055 headphone
+gaPlug(MICPLUG, 5.23, 5.4, 32, [14, 2, 4.5, 2, 4.5]);      // PJ-068 mic
 // stand-ins: IMU thermal-island board (size not defined yet) and the AeroVault fireproof section around its flash board
 solid(new THREE.BoxGeometry(30, 1.6, 34), 0x1f5e43, IMU_AT.clone().add(V(0, 0.8, 0)), .9);
 solid(new THREE.BoxGeometry(12.3, 2, 5.8), 0xe9e4d4, IMU_AT.clone().add(V(0, 2.6, 13.6)));
@@ -326,7 +343,7 @@ ptag('J7','cup',CUPL_AT,'J7',V(0,4,-5)); ptag('J8','cup',CUPL_AT,'J8',V(5,4,0));
 ptag('J7','cup',CUPR_AT,'J7',V(0,4,-5)); ptag('J2','cup',CUPR_AT,'J2',V(-5,4,-3)); tag('J8 unused', mean(pins('cup',CUPR_AT,'J8')).add(V(5,4,0)), 'ghost'); tag('J11 not fitted', P(CUPR_AT, ZIF_AT.J11).add(V(0,4,0)), 'ghost');
 tag('J9', V(AERO_AT.x + 83.3, 7, AERO_AT.z + J9_ZC)); tag('J11', J11[8].clone().add(V(0,5,4))); tag('J12', J12[5].clone().add(V(0,5,4)));
 tag('IMU board (stand-in)', IMU_AT.clone().add(V(0,10,-16)), 'board ghost'); tag('AeroVault (stand-in)', VAULT_AT.clone().add(V(0,30,-20)), 'board ghost'); tag('Boom mic', boomEnd.clone().add(V(0,8,0)));
-tag('Headphone plug', PHONE.clone().add(V(0,8,24))); tag('Mic plug', MICPLUG.clone().add(V(0,8,24)));
+tag('PJ-055 headphone', PHONE.clone().add(V(0,10,40))); tag('PJ-068 mic', MICPLUG.clone().add(V(0,9,34)));
 for (const c of CABLES.filter(x => x.flex && x.inst)) for (const inst of c.inst) tag(c.ends[1], inst.end.clone().add(V(0,5,0)));
 let wireTags = [];
 
