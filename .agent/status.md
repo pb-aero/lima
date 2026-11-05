@@ -1811,3 +1811,23 @@ JLCPCB assembly, JST GH for all off-board connectors.** Approved downloads: Open
   MK1 pair onto one layer, silk tidy. Details: handoffs.md, cup README.
 - **2026-10-29 boom electret pass-through** (Peter): cup J7 6-pin + J12 solder pads, audio J3 6-pin / J4 4-pin.
   Both boards re-routed, 0 unconnected, 0 DRC errors (`916fef4`, `cbe49e5`). Open: J12 BOM flag, harness drawing.
+- **2026-11-05 AeroNode rev 0.0.2 ArduPilot-native image definition, `7668306`:** Peter asked for an
+  image for the rev 0.0.2 board running ArduPilot **natively on its CM5**, sending **EKF data to the
+  AeroSync app**. Delivered `linux/aeronode-cm5-image/` — hwdef board target, the two mandatory
+  upstream patches, boot config, systemd unit, bus-discovery scripts, and a MAVLink→EKF JSON bridge
+  with 16/16 passing guard tests (positive + negative controls, no hardware needed).
+  **Driver question settled `[measured]`: everything EKF3 needs is already in ArduPilot master** —
+  ICM-45686, MMC5983MA, BMP581, and BMP390 via the BMP388 driver. So: a weekend, not a month.
+  **Two real findings:** the island's **LSM6DSV320X (0x73) is NOT supported** (driver takes 0x70 and
+  0x75; LSM6DSK320X is a *different* ST part, not a typo) — no blind patch shipped, 3 options in
+  README §5; and **both my September patches are still unlanded upstream**, so they stay mandatory.
+  **No `.img` yet** — no container runtime/Linux builder on this Mac and the bench answered on none
+  of its four known addresses `[measured]`. `scripts/bake-image.sh` is the recipe.
+- **Next, in order:** (1) **Peter: the bench address** — `scopenode.local`, `aeronode.local`,
+  `192.168.10.34`, `192.168.0.99` are all dead; nothing hardware-side can close without it.
+  (2) **Peter: how does AeroSync actually ingest telemetry?** Transport is a `[gap]` — the bridge
+  ships pointed at UDP and must be re-aimed. (3) On the board: `discover-buses.sh` first — the
+  hwdef's `LINUX_SPIDEV` numbers are Pi-5 placeholders and are the one thing blocking a first boot.
+  (4) Fix the `ROTATION_NONE` placeholders against the rev 0.0.2 mechanical drawing.
+  (5) Island heater is unwired → runs unheated; the thermal island's purpose is unrealised.
+  (6) Still owed upstream: file patches 0001/0002.

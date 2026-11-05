@@ -753,8 +753,18 @@ upstream. Proposed as AeroNode's second IMU — see
   constraint, not a preference. All six hwdefs using it declare `SPI:`. (Contrast the ICM-45686,
   where I2C compiles and silently degrades to 1 kHz / 16-bit / no oversampling.)
 - **The hwdef keyword is `LSM6DSV`; the silicon must be a variant.** `check_whoami()` accepts
-  WHO_AM_I **0x70** — LSM6DSV16X and LSM6DSV**32X**, split by CTRL8 bit 2 after reset — or the
-  LSM6DSK320X id. **A plain LSM6DSV returns false.** Order 16X or 32X.
+  WHO_AM_I **0x70** — LSM6DSV16X and LSM6DSV**32X**, split by CTRL8 bit 2 after reset — or
+  **0x75**, LSM6DSK320X. **A plain LSM6DSV returns false.** Order 16X or 32X.
+- **AMENDED 2026-11-05 — the island's part is the one variant that is NOT covered.** AeroImu 0.0.2
+  carries an **LSM6DSV320X**, which reads WHO_AM_I **0x73** `[fetched: ST AN6119, 0Fh = 0b01110011]`
+  — so `check_whoami()` returns false and ArduPilot never uses it. And **`LSM6DSK320X` is not a
+  typo for it**: they are two different, both-active ST parts `[fetched: separate ST product pages
+  + Mouser listings]`, and the driver's DSK320X `CTRL6` must-be-1 bit at `0x08` is real register
+  knowledge about the other one. So "order 16X or 32X" above was advice given *before* the board
+  existed; the board now has the 320X. **Do not patch `0x73` in blind** — the FS_XL/FS_G encodings
+  and must-be bits would be asserted for untested silicon. Options and the one-command bench test
+  (`whoami-spi.py <spidev> 0x0F`, expect 0x73) are in
+  `linux/aeronode-cm5-image/README.md` §5. EKF3 does not need it: ICM-45686 alone, `EK3_IMU_MASK` 1.
 - Rates: base 1000 Hz, fast sampling ×1..8 capped at **8000 Hz** via HAODR mode-1 — same ceiling as
   the ICM-45686, same `bus_type() == BUS_TYPE_SPI` gate. **16-bit only; no 20-bit HiRes path.**
 - Driver defaults **2000 dps / 16 g** (4000 dps is in the register map but unused; 32 g is 32X-only)
@@ -1194,3 +1204,60 @@ time. And Triad pinouts are drawn, not text: render the page and read it as an i
   displaces a good route, restore it with `kicad/lib/route/copynet.py <old.kicad_pcb> <board> NET` instead of letting
   maze re-invent it (maze stair-stepped ELEC_LO 118 mm through the T2/T3 area). For interleaved pin pairs on stacked
   connectors (LO above HI at both ends) one crossing is forced — hand-route it on two layers, then lock it.
+
+## Fact — AeroNode rev 0.0.2 driver coverage, and my two patches still unlanded (2026-11-05)
+
+`[measured]` against `ArduPilot/ardupilot` **master on 2026-11-05**, read from the driver source.
+Full matrix + run order: `linux/aeronode-cm5-image/README.md`.
+
+**Everything EKF3 needs is already supported** — this was the question that decided whether the
+native-CM5 image was a weekend or a month. It is a weekend.
+
+| Part | Driver | Note |
+|---|---|---|
+| ICM-45686 | `AP_InertialSensor_Invensensev3` | 0xE9, 20-bit HiRes, SPI-gated |
+| MMC5983MA | `AP_Compass_MMC5xx3` | ID 0x30; `AP_Compass.cpp:1248`'s own comment names MMC5983MA |
+| BMP581 | `AP_Baro_BMP581` | I2C 0x46/0x47 |
+| **BMP390** | **`AP_Baro_BMP388`** | the 388 driver knows `BMP390_ID 0x60` beside `BMP388_ID 0x50` (`AP_Baro_BMP388.cpp:28-29`). Do not go looking for an `AP_Baro_BMP390` — there isn't one |
+| DAN-F10N | `AP_GPS_UBLOX` | generic UBX fine. Driver has an **F9** branch, **no F10** one, so F10-specific config isn't applied |
+| LSM6DSV320X | — | **not covered**, see the amended LSM6DSV section above |
+| BME690 | — | absent entirely; read it from Linux |
+
+**Both September patches are STILL REQUIRED** `[measured 2026-11-05]`: master still has
+`strncmp(entry->d_name, "soc", 4)` at `Util_RPI.cpp:62`, and `hwdef/` still has **no `pi5` board**
+(26 dirs, listed). So the soc-node fix remains a *prerequisite*, not a nicety — a BCM2712 kernel
+names the node `soc@107c000000`, detection falls to `UNKNOWN_BOARD`, and `GPIO_RPI::init()` panics.
+Carried as `linux/aeronode-cm5-image/patches/000{1,2}`. **Still unfiled upstream** — filing them is
+owed work, and the longer it waits the more re-rolling it needs.
+
+**`[correction]` to our own record:** `docs/aeronode-cm5-software-rev1.md` (2026-09-10) says the CM5
+AeroNode is **RM3100 + BMP581**, read from the unversioned `~/aerosense/aeronode/aerosense/` tree.
+The rev 0.0.2 **vendor schematic** is **MMC5983MA + BMP390 + BMP581**. Follow the schematic. This is
+the second time that unversioned tree has given a stale answer — it is still the standing risk.
+
+**Carry only patches, never whole bundles.** `upstream-pr/pi5-board-with-sensors.patch` is TWO
+commits, and the second declares the dev rig's MPU-9250/AK8963/LPS22HB. Copying that bundle into a
+new board's image would re-import the exact scar the hwdef is written to avoid. I carried the
+standalone `0002` and grepped it for sensor lines before committing.
+
+## Fact — what "EKF data out of ArduPilot" actually means (2026-11-05)
+
+`[repo]` There is **no dump-the-EKF MAVLink message.** EKF3 state leaves as `ATTITUDE`,
+`GLOBAL_POSITION_INT`, `LOCAL_POSITION_NED`, `EKF_STATUS_REPORT` (health flags + variances) and
+`VFR_HUD`. Bridge + tests: `linux/aeronode-cm5-image/aerosync/`.
+
+- **The EKF fusion horizon is NOT attitude lag** — the counter-intuitive one. `calcOutputStates()`
+  runs **outside** the `runUpdates` block (`AP_NavEKF3_core.cpp:714-717`) and winds the delayed
+  solution forward to now **every main loop**. Real attitude age is one loop period, and
+  `SCHEDULER_DEFAULT_LOOP_RATE` is **50 Hz for plane** → **~20 ms**, before any link latency.
+- `EKF_STATUS_REPORT.flags` bit **10 = `uninitialized`**. An uninitialised EKF still publishes
+  plausible attitude numbers, so that bit must invalidate the frame — not be averaged into it. This
+  is the same failure class as F01's DSMA EKF being only 1.0% valid; **EKF3 is a different
+  estimator and that 1.0% figure does not transfer to it.**
+- **ArduPilot has no MAVLink IMU *input*.** A companion computer can only consume a finished
+  attitude, never feed samples in. Kills any "let the Pi do the fusion and tell ArduPilot" design.
+
+**`[gap]` AeroSync's transport is recorded NOWHERE in this repo** — grepped every tracked file for
+`aerosync` beside BLE/GATT/UDP/WebSocket: zero hits. Memory says App V1 does BLE 5.2, which MAVLink
+does not speak. The bridge therefore emits JSON to stdout or UDP and is meant to be re-pointed.
+**Ask Peter before building a BLE writer against a guessed GATT profile.**
