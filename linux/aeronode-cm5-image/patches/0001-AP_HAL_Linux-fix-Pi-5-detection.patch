@@ -1,0 +1,60 @@
+From 2b804ed7a358fa5a1cde72af415497be6e0afd1c Mon Sep 17 00:00:00 2001
+From: Peter Bruce <peter@aerosenseaviation.com>
+Date: Fri, 4 Sep 2026 17:31:14 +0200
+Subject: [PATCH] AP_HAL_Linux: fix Pi 5 detection when the soc node is named
+ soc@<addr>
+
+The directory-scan fallback in _get_board_type_using_peripheral_base() was
+added so boards whose device-tree names the SoC node something other than
+plain "soc" could still be identified. It compares with
+
+    strncmp(entry->d_name, "soc", 4)
+
+but a length of 4 includes the NUL terminator, so this is an exact match for
+"soc" rather than the intended prefix match. On a Raspberry Pi 5 running
+Raspberry Pi OS trixie (kernel 6.12.47+rpt-rpi-2712) the node is named
+soc@107c000000, so the scan never matches, ranges_path stays empty, and the
+function reports "ranges" file not found and returns UNKNOWN_BOARD.
+
+The consequence is not cosmetic: with HAL_LINUX_GPIO_RPI_ENABLED set,
+GPIO_RPI::init() reaches its default case and calls
+
+    AP_HAL::panic("Unknown rpi_version, cannot locate peripheral base address")
+
+so any board using the RPi GPIO backend (navio2, pilotpi, navigator64,
+bhat, canzero, dark, erlebrain2, obal, pxfmini) aborts at startup on such a
+kernel. Boards built with --board=linux are unaffected, since GPIO_RPI is
+not compiled in there.
+
+Comparing three characters makes it the prefix match the surrounding code
+already assumes, and still matches a plain "soc" node.
+
+Verified on a Raspberry Pi 5 Model B Rev 1.1 by extracting the scan into a
+standalone program and running it against the live /proc/device-tree:
+
+    strncmp(d_name, "soc", 4):  "ranges" file not found
+                                base = 0x0  -> UNKNOWN_BOARD
+    strncmp(d_name, "soc", 3):  matched /proc/device-tree/soc@107c000000/ranges
+                                base = 0x10 -> RPI_5
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+---
+ libraries/AP_HAL_Linux/Util_RPI.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libraries/AP_HAL_Linux/Util_RPI.cpp b/libraries/AP_HAL_Linux/Util_RPI.cpp
+index 99dcfdac30..541a5aba37 100644
+--- a/libraries/AP_HAL_Linux/Util_RPI.cpp
++++ b/libraries/AP_HAL_Linux/Util_RPI.cpp
+@@ -59,7 +59,7 @@ void UtilRPI::_get_board_type_using_peripheral_base()
+         char ranges_path[256] {};
+ 
+         while ((entry = readdir(dir)) != nullptr) {
+-            if (strncmp(entry->d_name, "soc", 4) == 0) {
++            if (strncmp(entry->d_name, "soc", 3) == 0) {
+                 snprintf(ranges_path, sizeof(ranges_path), "%s/%s/ranges", base_path, entry->d_name);
+                 break;
+             }
+-- 
+2.47.3
+

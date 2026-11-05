@@ -1,0 +1,47 @@
+# AeroNode rev 0.0.2 (CM5) -- append to /boot/firmware/config.txt
+#
+# APPEND, do not replace the file.  And do NOT pipe it in with
+#   echo ... | sudo -S tee -a /boot/firmware/config.txt
+# [scar 2026-09] sudo -S consumes its FIRST stdin line as the password, so a
+# piped heredoc appends the PASSWORD text into config.txt and silently breaks
+# boot config.  Stage a file, then: sudo cp.
+
+[all]
+
+# --- sensor buses -------------------------------------------------------
+# I2C1: MMC5983MA 0x30, BMP581 0x46/0x47, BMP390 0x76/0x77, ADS1115 0x48.
+# 400 kHz: at 100 kHz a 3-baro + mag + IMU poll set does not fit the budget.
+dtparam=i2c_arm=on
+dtparam=i2c_arm_baudrate=400000
+
+# SPI for the AeroImu island (ICM-45686).  SPI is mandatory for fast_sampling
+# and 20-bit highres_sampling -- on I2C ArduPilot silently drops to 1 kHz/16-bit.
+dtparam=spi=on
+
+# Extra chip selects: the island exposes two devices (ICM-45686 + LSM6DSV320X).
+# spi0-2cs gives /dev/spidev0.0 and /dev/spidev0.1.
+dtoverlay=spi0-2cs
+
+# [gap] The vendor schematic routes sensors on SPI3/SPI4.  Those are SoC block
+# numbers, NOT spidev numbers, and the CM5 carrier's actual routing has not
+# been read off hardware.  If the island is on SPI3/SPI4 rather than SPI0 you
+# need the matching overlay (dtoverlay=spi3-1cs / spi4-1cs) and the spidev
+# numbers change.  Run scripts/discover-buses.sh on the board and fix both
+# this file and the hwdef's LINUX_SPIDEV line together.
+
+# --- UART0: GPS (u-blox DAN-F10N) ---------------------------------------
+# Free the primary UART from the console so ArduPilot can own it.
+enable_uart=1
+dtoverlay=disable-bt
+
+# --- heater on the thermal island ---------------------------------------
+# PWM0[0] drives the DMN2053U heater FET on the AeroImu island.
+# [gap] Not wired to ArduPilot here.  ArduPilot's IMU heater (HAL_HAVE_IMU_HEATER)
+# expects a board-specific hook; leaving PWM free means the island runs
+# UNHEATED, so gyro bias will drift with ambient.  See README section 6.
+dtoverlay=pwm,pin=12,func=4
+
+# --- real-time behaviour ------------------------------------------------
+# ArduPilot's Linux HAL runs the IMU poller and main loop at RT prio 12.
+# Keep the CPU out of dynamic clocking so loop jitter does not chase it.
+force_turbo=1

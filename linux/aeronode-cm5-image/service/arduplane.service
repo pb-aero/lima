@@ -1,0 +1,38 @@
+[Unit]
+Description=ArduPilot ArduPlane (AeroNode rev 0.0.2 / CM5, native)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+
+# -A  primary MAVLink endpoint. udp:<app-host>:14550 is the DEFAULT GUESS and
+#     is almost certainly the thing you need to change: see README section 7,
+#     "the one open question".  The AeroSync transport is not recorded anywhere
+#     in this repo, so this ships as plain MAVLink over UDP and the bridge in
+#     aerosync/ adapts it.
+# -B  GPS serial port (u-blox DAN-F10N on UART0).
+# -l  log/storage directory.
+ExecStart=/usr/local/bin/arduplane \
+    -A udp:127.0.0.1:14550 \
+    -B /dev/ttyAMA0 \
+    -l /var/lib/ardupilot \
+    --module-directory /usr/local/share/ardupilot/modules
+
+Restart=on-failure
+RestartSec=3
+
+# Real-time: the Linux HAL sets its own thread priorities (timer 15, UART 14,
+# RCIN 13, IMU poller 12, main loop 12) but needs the capability to do so.
+LimitRTPRIO=99
+LimitMEMLOCK=infinity
+
+# Do NOT add Restart=always without reading README section 8: a board that
+# reboot-loops on "Config Error: Baro: unable to initialise driver" looks
+# exactly like a board that is running.
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
