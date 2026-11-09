@@ -552,7 +552,9 @@ left, 8–14 up the right (top view). Pins 6/7/8 (LED cathodes) are soldered but
 ## PCB — outline, stackup, placement (2026-10-26, per Peter)
 
 - **Outline:** ring, **68 mm OD / 38 mm ID**, centre (150, 100). 62/38 was tried first: 57 % courtyard fill on one side,
-  too tight; Peter chose 68/38 (single-sided, ~43 %). Fits a 40 mm driver with 1 mm clearance — **adjust to the cup CAD.**
+  too tight; Peter chose 68/38 (single-sided, ~43 %). ~~Fits a 40 mm driver with 1 mm clearance~~ **Correction 2026-11-09: that note
+  had no source and cannot be right as written, since a 38 mm opening is smaller than a 40 mm driver. The driver size and how the
+  ring mounts relative to it are not established. Check the opening against the real driver and the cup CAD.**
 - **Stackup:** 4 layers — F.Cu / In1 (power) / In2 (mixed) / B.Cu. JLC 4-layer rules; Default 0.2/0.127, Power 0.4/0.127.
 - **Holes:** H1–H3 M2 on the 26.5 mm mid-radius, as schematic symbols (no board-only footprints to trip the sync).
 - **Placement:** `doc/ring_placement.py` packs parts round the ring in signal order, each turned to follow the circle,
