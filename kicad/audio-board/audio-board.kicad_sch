@@ -10632,33 +10632,6 @@
 		)
 		(uuid "926fcc35-ad30-47f4-b07d-7f231289ec6e")
 	)
-	(text "AIRCRAFT / BYPASS: aircraft-powered whenever we are off\nT2/T3 Triad SP-74: primaries in parallel on the panel earphone line, secondaries paralleled (3/5, 4/6).\nK1 = U10 (mic-hi) + U11 (mic-lo), AQW612S each (ruling 2). LEDs OFF = bypass: electret J6 -> panel mic.\nCTL_MIC high -> Q2 on -> LEDs on (VBAT via R23/R24 390R, 5.1-12.8 mA) -> Form A: PV_OUT / PV_RTN (T4) -> panel.\nBoth mic legs stay isolated from our GND in both states. Watchdog parked (ruling 4). SP-74 polarity unverified."
-		(at 132.08 370.84 0)
-		(effects
-			(font
-				(size 1.778 1.778)
-			)
-		)
-		(uuid "29c75c34-0791-4260-8489-8ccef92b6520")
-	)
-	(text "POWER + HOST HEADER\nVBAT = AeroNode BAT_PWR: 2S LiFePO4, 5.0-7.3 V [repo, not confirmed on the AeroNode sheet].\nU1 3V3 buck (I/O) / U2 1V2 buck (hub core 330 mA typ, 940 mA max; TPS62160 is 1 A) / U3 3V3A LDO.\nU2 PG = RESET_N for hub + codec. J1/J2 mirror AeroNode J3/J4 pin-for-pin (2026-08-31 sheet).\nCM5 = I2S consumer (rp1_i2s1), max 8 ch, 32-bit. HOST_SDO1 = coefficient lane (ruling 8).\nCTL_MIC drives K1. CTL_SPKR -> AD2428 IO7 -> GPIO-over-distance -> cup K2 (ruling 11). A2B IRQ unused: CM5 polls."
-		(at 95.25 25.4 0)
-		(effects
-			(font
-				(size 1.778 1.778)
-			)
-		)
-		(uuid "e14e04e5-b96e-4c41-8e8e-44e47aeb38a7")
-	)
-	(text "A2B MAIN NODE: AD2428 (ruling 9), circuit per EVAL-AD2428WD1BZ sheet 2, B side\nVBUS8 = U12 LM2731X boost from VBAT, 8.00 V (R27/R28, Cf C60) - ruling 12, docs/a2b-bus-power-budget.md.\nVIN = VBUS8 via D2 (7.6 V, max 9.0). Bus power: VBUS8 -> D3 -> R18 -> Q1 (gate: SWP via R19) -> L3 -> line +.\nLine - -> L4 -> VSSN (internal switch, 300 mA; cups need ~188 mA worst). SENSE via R20. A2B_SWCTL.MODE = 0.\nCoupling: FB1/FB2 to BCM, C49, L5/L6, C50, FL1 CMC, R21/R22 + C51, C52/C53 series, C54-C56. J3 -> cup L -> cup R."
-		(at 637.54 320.04 0)
-		(effects
-			(font
-				(size 1.778 1.778)
-			)
-		)
-		(uuid "f3a52065-fff9-418c-ab72-8d31f69d7d64")
-	)
 	(label "VBAT"
 		(at 91.44 43.18 180)
 		(effects
@@ -15049,6 +15022,26 @@
 		)
 		(uuid "61f419d3-70cd-4a46-90db-385b38b7ed30")
 	)
+  (text "AIRCRAFT / BYPASS: aircraft-powered whenever we are off\nT2/T3 Triad SP-74: primaries in parallel on the panel earphone line, secondaries paralleled (3/5, 4/6).\nK1 = U10 (mic-hi) + U11 (mic-lo), AQW612S each (ruling 2). LEDs OFF = bypass: electret -> panel mic.\nElectret arrives on J6 or through either cup (J3.5-6, J4.3-4), all on the same nets.\nCTL_MIC high -> Q2 on -> LEDs on (VBAT via R23/R24 390R, 5.1-12.8 mA) -> Form A: PV_OUT / PV_RTN (T4) -> panel.\nBoth mic legs stay isolated from our GND in both states. Watchdog parked (ruling 4). SP-74 polarity unverified."
+    (at 132.08 370.84 0)
+    (effects (font (size 1.778 1.778)))
+    (uuid "2d1f4001-61f8-44e3-9ebd-7c5a9263207c")
+  )
+  (text "A2B MAIN NODE: AD2428 (ruling 9), circuit per EVAL-AD2428WD1BZ sheet 2, B side\nVBUS8 = U12 LM2731X boost from VBAT, 8.00 V (R27/R28, Cf C60) - ruling 12, docs/a2b-bus-power-budget.md.\nVIN = VBUS8 via D2 (7.6 V, max 9.0). Bus power: VBUS8 -> D3 -> R18 -> Q1 (gate: SWP via R19) -> L3 -> line +.\nLine - -> L4 -> VSSN (internal switch, 300 mA; cups need ~149 mA worst). SENSE via R20. A2B_SWCTL.MODE = 0.\nCoupling: FB1/FB2 to BCM, C49, L5/L6, C50, FL1 CMC, R21/R22 + C51, C52/C53 series, C54-C56. J3 -> cup L -> cup R."
+    (at 637.54 320.04 0)
+    (effects (font (size 1.778 1.778)))
+    (uuid "4fb00765-c092-4705-8336-cc02efabae26")
+  )
+  (text "POWER + HOST CONNECTOR\nVBAT = AeroNode Vsys (J9.23 via its Q1/D1/F1) on J1.2: 2S LiFePO4, 5.0-7.3 V [assumed, sheet does not say].\nU1 3V3 buck (I/O) / U2 1V2 buck (hub core 330 mA typ, 940 mA max; TPS62160 is 1 A) / U3 3V3A LDO.\nU2 PG = RESET_N for hub + codec. J1 = 24-way FFC mating AeroNode J9: Type A cable, our pin n = J9 pin 25-n.\nCM5 = I2S consumer (rp1_i2s1), max 8 ch, 32-bit. HOST_SDO1 = coefficient lane (ruling 8).\nCTL_MIC drives K1. CTL_SPKR -> AD2428 IO7 -> GPIO-over-distance -> cup K2 (ruling 11). A2B IRQ unused: CM5 polls."
+    (at 101.6 25.4 0)
+    (effects (font (size 1.778 1.778)))
+    (uuid "5358f409-4b73-4982-8fb1-26efa4e9c5d5")
+  )
+  (text "AeroNode audio board. Preliminary, not reviewed. Notes corrected 2026-11-09.\nRevision = git commit in pb-aero/lima: kicad/audio-board/audio-board.kicad_sch"
+    (at 762 541 0)
+    (effects (font (size 1.778 1.778)))
+    (uuid "a77fbd7c-5e76-4b0b-9306-3fe5aa22f3be")
+  )
 	(symbol
 		(lib_id "Regulator_Switching:TPS62162DSG")
 		(at 101.6 50.8 0)
