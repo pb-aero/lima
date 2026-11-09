@@ -1,8 +1,20 @@
 # Cup board — one schematic for both earcups
 
-**Status:** preliminary, not reviewed. Replaces the separate `cup-a-board` / `cup-b-board`
-first passes (commits `891d746`, `7ffb480`): per Peter, 2026-10-16, both cups are now
-**identical**, so there is one board, fitted twice.
+**Status (measured 2026-11-09):** preliminary. One A2 sheet, 102 parts, 112 nets. Netlist matches `doc/design_nets.py`;
+ERC 0 errors (6 intended strap warnings). All 102 parts have footprints. The PCB is routed: 0 unconnected pads, 2 parity
+warnings (U8 value, J12 BOM flag). **Schematic and layout are not reviewed, and no board is recorded as built.** Published to
+the shelf as `reports/peter/LIMA_cup_board.html`. Sheet notes corrected 2026-11-09, text only: netlist identical before and
+after. The title block is still empty because Konnect has no tool for it; a text note above it identifies the sheet. Set it in
+Eeschema's Page Settings.
+
+**⚠ Before any fab or assembly files:** the PCB's U8 value still says `ADP7118AUJZ-3.3-R7`. Set it to the 2.5 V part in pcbnew
+(double-click U8 → Value), not with Update PCB from Schematic. The J9–J11 pinouts are placeholders. See "PCB — 72/38 ring".
+
+**How to read this file:** the status, "What's on it" and "Open items" are current. The dated sections below are the record of
+how the design got here, and earlier ones are overtaken by later ones; they carry a note where that matters.
+
+Replaces the separate `cup-a-board` / `cup-b-board` first passes (commits `891d746`, `7ffb480`): per Peter, 2026-10-16, both
+cups are now **identical**, so there is one board, fitted twice. Cup R is an assembly variant with J11 not fitted (2026-10-30).
 
 This departs from John's Rev G per-cup map (`docs/two-adau1860-channel-allocation.md` §2),
 where cup A carried the boom-mic uplink on ADC2 and cup B carried the DVNC accelerometer there.
@@ -14,28 +26,26 @@ been updated to match — see open items.
 
 | Ref | Part | Connection |
 |---|---|---|
-| U1 | ADAU1861 | Codec, 3 ADC + 1 DAC (ruled 2026-09-22) |
-| MK1 | IM73A135V01 | Feed-forward ANC mic → AINP0/AINN0, differential |
-| MK2 | IM73A135V01 | Feedback (error) ANC mic → AINP1/AINN1, differential |
-| MK3 | IM72D128VV01 (PDM) | **Voice pickup, added 2026-10-20, per Peter** — DATA → `DMIC_DATA` → U1 DMIC01/MP1; CLOCK ← `DMIC_CLK` ← U1 DMIC_CLK/MP0; VDD on 1V8; LR → GND. Replaces the analog IM73A135 MK3 removed earlier the same day (ADC2 now carries the aircraft audio, below). See "Voice mic" |
-| C11 | 1 µF | MK3 VDD bypass (IM72D128V datasheet, Table 5 note 3) |
-| J5 | 2-pin | **Panel audio in, already isolated** (since 2026-10-20): pin 1 `XF_SEC_A`, pin 2 `XF_SEC_B`, the secondary pair of this cup's SP-74 on the audio board (T2 left / T3 right, its J6 / J7). Was `AC_AUDIO`/`AC_GND` straight from the aircraft |
-| ~~T1~~ | Triad SP-74 | **Moved to the audio board 2026-10-20, per Peter** (one per cup: T2 left, T3 right, on its AIRCRAFT AUDIO I/O sheet). Below, "T1" means this cup's SP-74 there. Was: | 80 Ω : 32 Ω (series) / 8 Ω (parallel), 3.143:1:1, no centre tap. Primary 1–2 across J5; secondaries 3–4 and 5–6 **in parallel** → `XF_SEC_A`/`XF_SEC_B` (symbol is `Device:Transformer_1P_2S`, numbered as Triad's; swap done 2026-10-20) |
-| U4, U5 | Panasonic AQW612S ×2 | Solid-state speaker switch, one per speaker leg (replaced relay K1, 2026-10-20, per Peter). **Unpowered (N.C., pins 7–8 closed): speaker ← T1 secondary. Driven (N.O., pins 5–6 closed): speaker ← HPOUTN/HPOUTP.** See "Speaker switch" |
-| R7, R8 | 330 Ω ×2 | LED current limit for U4/U5, from `SW_DRV` |
-| C9/C10, R4/R5, R6 | 1 µF ×2, 10 kΩ ×2, 22 kΩ | ADC2 tap off the T1 secondary → `ADC2_P`/`ADC2_N` = AINP2/AINN2 |
-| J6 | 2-pin | Speaker-switch drive in: `SW_DRV` (5 V `[assumed]`), GND — driven from upstream (see below). Was `RLY_COIL`; D1 (coil flyback) removed with K1 |
-| U2 | LSM6DSV16BX | DVNC reference, TDM slave into U1's SPT1 (`TDM_DATA`/`TDM_BCLK`/`TDM_WCLK`); I²C host mode for config |
-| U3 | MAXM86161 | In-ear optical HR/SpO₂ module (added 2026-10-19, per Peter) — I²C on the shared bus, own LED supply |
-| J2 | 2-pin | Earcup driver, 32 Ω: `SPKR_1`/`SPKR_2` from the U4/U5 switch commons (was HPOUTN/HPOUTP direct) |
-| ~~J3~~ | — | Removed 2026-10-23: power now from the A2B bus (see "A2B sub-node") |
-| ~~J4~~ | — | Removed 2026-10-23: VLED from U9 |
-| R1/R2 | 10 kΩ | I²C pull-ups to 1V8 (LSM6DSV16BX datasheet value) |
-| R3 | 10 kΩ | U3 INTB pull-up to 1V8 (INTB is open-drain) |
-| C1–C3 | 100 nF, 100 nF, 10 µF | U1 1V8 decoupling |
-| C4/C5 | 100 nF ×2 | U2 VDD_IO / VDD decoupling (datasheet §7) |
-| C6 | 10 µF | U3 VLED bypass (datasheet pin table) |
-| C7/C8 | 1 µF ×2 | U3 VLDO and VREF bypass (datasheet pin table) |
+| U1 | ADAU1861 | Codec, 3 ADC + 1 DAC (ruled 2026-09-22). REG_EN (pin 28) on 1V8, so the internal regulator makes DVDD (pin 54, net `U1_DVDD`, C47 1 µF + C48 100 nF) |
+| J9, J10 | 6-pin 0.5 mm ZIF | MK1 feed-forward and MK2 feedback IM73A135 on Infineon flex: 1 `3V3_MIC` (carries 2.5 V), 2–3 output → AINP0/AINN0 and AINP1/AINN1, 4 NC, 5–6/MP GND. **Pinout is a placeholder** |
+| J11 | 6-pin 0.5 mm ZIF | MK3 IM72D128 PDM voice mic on flex, cup L only: 1 `1V8`, 2 `DMIC_DATA` → U1 DMIC01, 3 `DMIC_CLK` ← U1, 4–6/MP GND. **Pinout is a placeholder** |
+| C11 | 1 µF | 1V8 decoupling, kept on both cups |
+| J7 | 6-pin JST GH | In: 1–2 `A_LINE_P/N` (A2B), 3–4 `XF_SEC_A/B` (this cup's SP-74 secondary, from the audio board), 5–6 `ELEC_HI/LO` (boom electret) |
+| J8 | 2-pin JST GH | A2B out to the next cup, unused on the last cup |
+| J2 | 2-pin JST GH | Earcup driver, 32 Ω: `SPKR_1/2` from the U4/U5 switch commons |
+| J12 | 2 solder pads | Boom electret, to J7.5–6 only |
+| U4, U5 | Panasonic AQW612S ×2 | Speaker switch K2, one per leg. **Unpowered (N.C., 7–8 closed): speaker ← SP-74 secondary. Driven (N.O., 5–6 closed): speaker ← HPOUTN/HPOUTP** |
+| R7, R8, Q2, R17, R18 | 680 Ω ×2, MMBT3904, 2.2 kΩ, 100 kΩ | K2 drive: U6 IO7 → `K2_CTL` → R17 → Q2 (R18 pull-down) switches the LED returns; LEDs fed from `VIN_CUP` |
+| C9/C10, R4/R5, R6 | 1 µF ×2, 10 kΩ ×2, 22 kΩ | ADC2 tap off the SP-74 secondary → AINP2/AINN2 |
+| U2 | LSM6DSV16BX | DVNC reference, TDM slave into U1's SPT1 (`TDM_DATA/BCLK/WCLK`); I²C for config |
+| U3 | MAXM86161 | In-ear optical HR/SpO₂ module. I²C on the local bus, `PPG_INT` → U6 IO0, LED supply from U9 |
+| U6 | AD2428 | Bus-powered A2B sub-node. I²S master to U1's SPT0, I²C master on SDA/SCL. See "A2B sub-node" |
+| U7, U8, U9 | TPS62161, ADP7118-2.5, ADP7118-3.3 | From `VIN_CUP`: `1V8`; `3V3_MIC` (**net carries 2.5 V**); `VLED` |
+| R1/R2, R3 | 10 kΩ | I²C pull-ups to 1V8; U3 INTB pull-up to 1V8 |
+| H1, H2 | M2 | Mounting holes |
+
+Everything else is decoupling and the A2B bus networks in "A2B sub-node". **Removed:** MK1–MK3 (now on flex, 2026-10-27),
+J3, J4, J6 (2026-10-23), J5 (2026-10-26), T1 (moved to the audio board, 2026-10-20), H3 (2026-10-27).
 
 ### MAXM86161 (U3) — how it's wired and why
 
@@ -44,6 +54,8 @@ VLDO (internal 1.8 V LDO output) and VREF (1.21 V) are outputs needing only a 1 
 LED drive full-scale up to 124 mA; I²C address fixed at 0x62; INTB open-drain; GPIO open-drain
 or sync input; pins 6/7/8 are internally tied to the LED cathodes and must be left unconnected
 (solder only).
+
+*Note 2026-11-09: VLED now comes from U9 on this board, J4 is gone, and `PPG_INT` goes to U6 IO0. The reasoning below stands.*
 
 - **VLED has its own rail and connector (J4), deliberately not the 3V3_MIC rail.** 3.3 V would
   just meet the 3.0 V minimum, but the LED driver pulses up to 124 mA, and putting that on the
@@ -62,7 +74,7 @@ Because all three mic inputs are now differential, U1's `CM` pin is unused and n
 
 U1 strap pins as on `audio-board`: ADDR0/ADDR1/SELFBOOT/ROM_BOOT_MODE/REG_EN low, PD high.
 U2: CS high (I²C), SA0 low, Qvar electrodes to GND, INT1/INT2 no-connect.
-SPT0 (`I2S0_*`) is brought out as labels only, reserved for the A2B subnode link.
+SPT0 (`I2S0_*`) connects to U6, the A2B sub-node (2026-10-23).
 
 ## 2026-10-26 — brought in line with the redone audio board, per Peter
 
@@ -73,7 +85,7 @@ Three changes, each checked: netlist == `doc/design_nets.py`, ERC 0 errors (6 st
    **REG_EN → AVDD (1V8)** so the internal regulator makes DVDD; DVDD on its own net `U1_DVDD` with **C47 1 µF + C48
    100 nF** to ground (*"decouple DVDD to DGND with a 1 uF and 0.1 μF capacitor"*); `#FLG10` PWR_FLAG marks the rail
    as internally driven. Commit `f502399`.
-2. **Connectors match the audio board, JST GH 1.25 mm.** J5 is gone. **J7 (4-pin, SM04B):** 1 `A_LINE_P`,
+2. **Connectors match the audio board, JST GH 1.25 mm** (J7 became 6-pin on 2026-10-29, see "Boom electret pass-through"). J5 is gone. **J7 (4-pin, SM04B):** 1 `A_LINE_P`,
    2 `A_LINE_N`, 3 `XF_SEC_A`, 4 `XF_SEC_B` — the same order as the audio board's J3 (A2B+, A2B−, speaker pair), so a
    straight 1:1 GH cable joins audio J3 → cup L J7. **J8 (2-pin, SM02B):** A2B out to the next cup. **J2 (2-pin, SM02B):**
    speaker driver. **Cup R needs a split harness into its J7:** pins 1–2 from cup L's J8, pins 3–4 from the audio
@@ -120,11 +132,14 @@ that would have DC-tied the grounds.
   149 mA for both cups worst case, inside the 300 mA VSSN limit. (Original item:) (U1's HiFi 3z, three mics, LSM6, MAXM86161 LED pulses) against the main node's 300 mA
   VSSN limit for both cups.
 - **Sub-node IO7 state on data-link loss with bus power still up** — not in the TRM section read.
-- **Cup R speaker pair** still arrives on its own J5 from the audio board's J4; A2B comes from cup L's J8.
+- **Cup R's speaker pair** arrives on its J7.3–4 from the audio board's J4; A2B comes from cup L's J8 on J7.1–2.
 - ~~**Still unfixed, needs Peter's go-ahead:** U1 DVDD (pin 54) on 1V8 against a 1.21 V abs max (REG_EN low).~~
   **Fixed 2026-10-26** (internal regulator, see above).
 
 ## Aircraft audio in — 2026-10-20, per Peter
+
+*Note 2026-11-09: this section's J5 is now J7.3–4, its `SW_DRV`/J6 is now the K2 drive from U6 IO7, and its "T1" is this cup's
+SP-74 on the audio board. Its 330 Ω and 5 V drive figures are replaced by 680 Ω from `VIN_CUP`, 5.1–7.2 mA per string.*
 
 Peter ruled: aircraft audio goes into **ADC2 on each cup** (MK3 dropped), the speaker is
 **32 Ω**, and the cup must **still be heard unpowered** (fail-passive). Peter proposed the
@@ -233,7 +248,7 @@ was drawn from the datasheet's p. 6 schematic: LED 1–2 (anode 1) drives N.C. 7
   margin.) The gains are no contacts, no click, no wear and a smaller footprint, not power.
 - **"Not for automotive use"** per the datasheet. The ADAU1861 is AEC-Q100; this part is not.
   Relevant to any qualification effort.
-- **No footprint assigned.** This matches the rest of the sheet. The package is SOP8 at 2.54 mm
+- ~~**No footprint assigned.**~~ **Done 2026-10-26** (`Panasonic:Panasonic_GU-SOP8_…`). The package is SOP8 at 2.54 mm
   pitch (4.4 × 9.37 mm), not a standard SOIC.
 
 ### Open — introduced by this change
@@ -253,8 +268,7 @@ was drawn from the datasheet's p. 6 schematic: LED 1–2 (anode 1) drives N.C. 7
   use. That's fine for comms and alerts, but music input would lose its bass.
 - ~~**The coil costs 100 mW per cup.**~~ K1 replaced by U4/U5 (see "Speaker switch"). Their LED
   drive is ≈ 82 mW per cup, still more than the rest of the cup in normal use.
-- **What drives J6 (`SW_DRV`) is undecided.** Likely candidates are the A2B subnode's GPIO through a
-  low-side switch, or the audio board.
+- ~~**What drives J6 (`SW_DRV`) is undecided.**~~ **Closed 2026-10-23:** U6 IO7 through Q2, by A2B GPIO-over-distance.
 - **The unpowered ADC sees signal.** In bypass, ≈ 1.2 V rms is applied through 10 kΩ into an
   unpowered U1. `[assumed]` The ESD-diode current is about 0.1 mA, which should be harmless.
   Not checked against an abs-max input-current figure.
@@ -298,6 +312,8 @@ bend heights snapped to the same 1.27 mm grid line. Labels remove that whole fai
 The remaining direct wires (mics → U1, U1 → J2) use grid-exact lane coordinates.
 
 ## Verification
+
+*Note 2026-11-09: the record of checks at each step up to 2026-10-20. Current results are in the status at the top.*
 
 - ERC: **0 errors**, 8 warnings — the same benign set as before (strap pins tied to a power
   net; single-pin `I2S0_*` labels held open for A2B).
@@ -454,7 +470,7 @@ term by roughly HPVDD_L/1.8, at the cost of output swing.
 
 ## Found while budgeting — two supply errors on this sheet
 
-- **DVDD is tied to 1V8 with REG_EN low. That exceeds the absolute maximum.** `[fetched]` ADAU1861
+- ~~**DVDD is tied to 1V8 with REG_EN low.**~~ **Fixed 2026-10-26** (`f502399`), and the redrawn audio board has no ADAU1861. Original finding: **That exceeds the absolute maximum.** `[fetched]` ADAU1861
   Table 10: DVDD abs max is **1.21 V** (operating 0.85–1.21 V, 0.9 V typ). Pin 28: *"Tie to AVDD
   to enable the internal regulator, and tie to ground to disable."* Pin 54: DVDD is either the
   regulator output or an external supply, *"decouple DVDD to DGND with a 1 uF and 0.1 μF
@@ -484,21 +500,18 @@ term by roughly HPVDD_L/1.8, at the cost of output swing.
 
 ## Open items — real gaps, not decisions
 
-- **Rev G slot map needs updating.** With both cups identical, each sends FF, FB and a voice
-  mic upstream (6 analog channels across two cups) *plus* IMU data arriving on SPT1. Where the
-  accel data goes on A2B, and whether two voice mics are wanted upstream or one is dropped, is
-  undecided. The audio board decision record already notes the host sees only 4 of A2B's
-  channels.
-- **Identical cups share an I²C address.** Fine if each cup sits behind its own A2B subnode's
-  I²C (as Rev G implies); a problem if both ever share one bus. Not yet confirmed.
+- **Rev G slot map needs updating, and the A2B TDM map is unfrozen.** Each cup sends FF and FB mics plus IMU data arriving on
+  SPT1, and cup L a voice mic (2026-10-30). Where the IMU data goes on A2B is undecided, and the coefficient channel needs a
+  downstream slot (audio-board ruling 8).
+- ~~**Identical cups share an I²C address.**~~ **Closed by design:** each cup's I²C is local to its U6, and neither J7 nor J8
+  carries I²C `[measured]` netlist, 2026-11-09.
 - **SPT1 must master BCLK/WCLK for the IMU** (it is a TDM slave). Register configuration,
   unverified against the ADAU1861 manual.
 - **Aircraft-audio items** — see "Aircraft audio in" above: SP-74 polarity dots and core
-  saturation, and speaker-switch drive power and who drives `SW_DRV`. (Voice pickup is back on
-  the cups via MK3.)
-- **VLED voltage is undecided.** The datasheet gives only the 3.0–5.5 V range and says to set it
+  saturation.
+- **VLED is 3.3 V from U9, not proven sufficient.** The datasheet gives only the 3.0–5.5 V range and says to set it
   for the LEDs' forward voltage plus driver headroom. The green LED is the one most likely to need
-  more than 3.3 V; 5 V would be the conservative choice, but nothing here establishes it.
+  more than 3.3 V, and nothing here establishes that it doesn't.
 - ~~**`PPG_INT` goes nowhere yet.**~~ **Closed 2026-10-26:** → U6 IRQ/IO0, see above.
 - **MAXM86161 power-up sequencing** (VLED vs 1V8 / LDO_EN) wasn't in the extracted datasheet
   text — not checked.
@@ -506,7 +519,8 @@ term by roughly HPVDD_L/1.8, at the cost of output swing.
   window; where that is on the cup, and whether both cups need one, isn't established.
 - **The MAXM86161 symbol is hand-entered** from the datasheet's pin table into
   `kicad/lib/AnalogDevices.kicad_sym`; worth a second check against a hand-downloaded PDF.
-- **No AD2428W A2B subnode, no power-delivery path, no footprints** — unchanged from before.
+- **Before fab:** see the status at the top, "PCB — 72/38 ring" (ZIF pinouts, FH12 part, MK1 pair, silkscreen, enclosure fit),
+  "Boom electret pass-through" (J12 BOM flag) and "Voice mic on cup L only" (the `CUP_R` variant). FL1/FL2 parts are unchosen.
 
 ## Footprints — 2026-10-26, per Peter
 

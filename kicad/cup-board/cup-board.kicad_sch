@@ -9543,15 +9543,6 @@
 		)
 		(uuid "28ff4a6c-3c55-4497-aac0-f863c85a6765")
 	)
-	(text "A2B SUB-NODE (2026-10-23, per Peter): U6 AD2428, bus-powered (AD242x DS Fig. 36; coupling per EVAL-AD2428WD1BZ sheet 2)\nA side J7 (from AeroNode or previous cup): line+ -> L3 -> V_NODE -> D1 -> VIN_CUP; line- -> L4 -> GND (this cup's ground is the recovered bus bias).\nB side J8 (to next cup, unused on the last cup): V_NODE -> R12 -> Q1 (gate: SWP via R13) -> L5 -> line+; line- -> L6 -> VSSN. SENSE via R14.\nI2S: U6 is master. DTX0 -> I2S0_SDATAI (ADAU1861 in), DRX0 <- I2S0_SDATAO. I2C: U6 masters SDA/SCL at 1V8 (IOVDD = 1V8).\nK2: AudioBoard CTL_SPKR -> main IO7 -> GPIO-over-distance -> U6 IO7 -> K2_CTL -> Q2 -> U4/U5 LEDs (R7/R8 680R from VIN_CUP). Default off.\nPower from VIN_CUP (6.4-7.2 V with the AeroNode's 8 V bus): U7 TPS62161 -> 1V8; U8 ADP7118 -> 3V3_MIC; U9 ADP7118 -> VLED.\nEE-419: a bus-powered node's ground is offset from the AeroNode's - connect only floating signals (J5 is transformer-isolated, AC-coupled).\nBudget: docs/a2b-bus-power-budget.md - cup R VIN 6.44 V worst case on the 8 V bus (3.7 V min)."
-		(at 475 285 0)
-		(effects
-			(font
-				(size 1.524 1.524)
-			)
-		)
-		(uuid "a49b8961-2f7a-4426-a4ea-9aace4f9815c")
-	)
 	(label "1V8"
 		(at 160.02 82.55 0)
 		(effects
@@ -12802,6 +12793,16 @@
 		)
 		(uuid "ef09b381-37c9-4458-a858-43406e576df7")
 	)
+  (text "A2B SUB-NODE (2026-10-23, per Peter): U6 AD2428, bus-powered (AD242x DS Fig. 36; coupling per EVAL-AD2428WD1BZ sheet 2)\nA side J7 (from AeroNode or previous cup): line+ -> L3 -> V_NODE -> D1 -> VIN_CUP; line- -> L4 -> GND (this cup's ground is the recovered bus bias).\nB side J8 (to next cup, unused on the last cup): V_NODE -> R12 -> Q1 (gate: SWP via R13) -> L5 -> line+; line- -> L6 -> VSSN. SENSE via R14.\nI2S: U6 is master. DTX0 -> I2S0_SDATAI (ADAU1861 in), DRX0 <- I2S0_SDATAO. I2C: U6 masters SDA/SCL at 1V8 (IOVDD = 1V8).\nK2: AudioBoard CTL_SPKR -> main IO7 -> GPIO-over-distance -> U6 IO7 -> K2_CTL -> Q2 -> U4/U5 LEDs (R7/R8 680R from VIN_CUP). Default off.\nPower from VIN_CUP (6.4-7.2 V with the AeroNode's 8 V bus): U7 TPS62161 -> 1V8; U8 ADP7118-2.5 -> 3V3_MIC (net carries 2.5 V); U9 ADP7118-3.3 -> VLED.\nEE-419: a bus-powered node's ground is offset from the AeroNode's - connect only floating signals (J7.3-4 is transformer-isolated, AC-coupled).\nBudget: docs/a2b-bus-power-budget.md - cup R VIN 6.44 V worst case on the 8 V bus (3.7 V min)."
+    (at 475 285 0)
+    (effects (font (size 1.524 1.524)))
+    (uuid "cf6a64f8-0721-4414-9222-2a3615a6bb3c")
+  )
+  (text "H1 earcup board, one design for both cups. Preliminary, not reviewed. Notes corrected 2026-11-09.\nRevision = git commit in pb-aero/lima: kicad/cup-board/cup-board.kicad_sch"
+    (at 518 368 0)
+    (effects (font (size 1.524 1.524)))
+    (uuid "da563979-d503-4aaf-b565-b1da62316da9")
+  )
 	(symbol
 		(lib_id "AnalogDevices:ADAU1861")
 		(at 190.5 148.59 0)
