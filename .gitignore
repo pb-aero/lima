@@ -27,3 +27,4 @@ fp-info-cache
 # 3D harness page models (regenerate with docs/h1-harness-3d/build.sh)
 docs/h1-harness-3d/*.glb
 docs/h1-harness-3d/*.glb.txt
+docs/h1-harness-3d/*.raw.glb

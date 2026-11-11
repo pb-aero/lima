@@ -67,7 +67,7 @@ tr.hot td{background:color-mix(in srgb,var(--focus) 12%,transparent)}
     <div class="row"><button id="all" type="button">Show all</button><button id="reset" type="button">Reset view</button></div>
     <h2 id="wt-title">Wires</h2>
     <div id="wires"><p class="note">Pick a cable to list its wires.</p></div>
-    <p class="note">Pin positions are the real pads from the KiCad layouts. Wire colours are for telling conductors apart here; the harness colour code isn't chosen yet. The AeroNode is the Rev 0.0.2 board model (updated GPS), with the flat cable landing on its 24-way Cvilux J9; which end of J9 is contact 1 is assumed. The IMU thermal-island board, the AeroVault and the battery pack are stand-ins with no model yet; their J11/J12/J2 signals come from the AeroNode schematic. Cable routes and lengths are schematic.</p>
+    <p class="note">Pin positions are the real pads from the KiCad layouts. Wire colours are for telling conductors apart here; the harness colour code isn't chosen yet. The AeroNode is the Rev 0.0.2 board model (updated GPS), with the flat cable landing on its 24-way Cvilux J9; which end of J9 is contact 1 is assumed. The AeroIMU Rev 0 and AeroVault Rev 0.0.2 are their board models; the battery pack is still a stand-in. J11/J12/J2 signals come from the AeroNode schematic. Cable routes and lengths are schematic.</p>
   </aside>
 </div>
 
@@ -123,9 +123,11 @@ const J9 = Array.from({length:24}, (_, i) => V(AERO_AT.x + J9_OPEN_X + 0.4, J9_Y
 // measured from the model (J11 x 35.5..47.8, J12 x 56.4..65.7, both z -106..-100.2), openings towards the edge
 const fpcRow = (cx, n, z, y=2.6) => Array.from({length:n}, (_, i) => V(cx + (i - (n-1)/2) * 0.5, y, z));
 const J11 = fpcRow(AERO_AT.x + 41.65, 16, AERO_AT.z - 106.4), J12 = fpcRow(AERO_AT.x + 61.05, 10, AERO_AT.z - 106.4);
-// stand-ins (no models yet): IMU thermal-island board and the AeroVault fireproof section, each with its mating FPC
-const IMU_AT = V(-176, 0, -102), VAULT_AT = V(-138, 0, -112);
-const IMU_IN = fpcRow(IMU_AT.x, 16, IMU_AT.z + 15.6, 2.4), VAULT_IN = fpcRow(VAULT_AT.x, 10, VAULT_AT.z + 17.6, 4.4);
+// AeroIMU Rev 0 (16.5 x 20.2 mm) and AeroVault Rev 0.0.2 (13.7 x 18.4 mm) board models; each has its own Cvilux CF31
+// J1 on the edge facing the AeroNode (measured: IMU J1 x 1.01..13.31, Vault J1 x 2.01..11.31, both z -5.9..0)
+const IMU_ORG = V(-183.2, 0, -85.8), VAULT_ORG = V(-144.7, 0, -93.8);
+const IMU_AT = IMU_ORG.clone().add(V(8.25, 0, -10.1)), VAULT_AT = VAULT_ORG.clone().add(V(6.85, 0, -9.2));   // board centres
+const IMU_IN = fpcRow(IMU_ORG.x + 7.16, 16, IMU_ORG.z - 0.6, 2.4), VAULT_IN = fpcRow(VAULT_ORG.x + 6.66, 10, VAULT_ORG.z - 0.6, 2.4);
 // AeroNode J2 battery connector: Molex picoSPOX 87438-0543, 5-way 1.5 mm, measured from the model (x 42.7..51.5,
 // z -20.1..-12.4, opening towards the near edge). Pack is a stand-in: 2S, 7.2 V / 5 Ah (~36 Wh) per the schematic BOM note
 const J2B = Array.from({length:5}, (_, i) => V(AERO_AT.x + 47.1 + (i - 2) * 1.5, 3.6, AERO_AT.z - 12.0));
@@ -205,7 +207,7 @@ const CABLES = [
   from:[boomEnd.clone().add(V(0,-1,0.8)), boomEnd.clone().add(V(0,-1,-0.8))], fromDir:V(0,-1,0), to:pins('cup',CUPL_AT,'J12'), toDir:V(0,1,0),
   mids:[boomBase.clone().lerp(boomEnd, 0.5).add(V(0,-3,0)), boomBase.clone().add(V(0,-3,0))], r:0.36, sp:1.0,
   wires:[['capsule +','J12.1','ELEC_HI','Electret capsule +, solder pad; on to J7.5',C.elecH],['capsule −','J12.2','ELEC_LO','Electret capsule −, solder pad; on to J7.6',C.elecL]], ends:['Boom', CL]},
- {id:'imu', title:'AeroNode J11 → IMU board', sub:'16-way 0.5 mm FPC to the thermal-island IMU board (stand-in). Signals per AeroNode schematic sheet 8; far-end contact order assumed 1:1', flex:true, noModule:true,
+ {id:'imu', title:'AeroNode J11 → AeroIMU J1', sub:'16-way 0.5 mm FPC to the AeroIMU Rev 0 board (its J1, also a Cvilux CF31). Signals per AeroNode schematic sheet 8; far-end contact order assumed 1:1', flex:true, noModule:true,
   from:J11, fromDir:V(0,0,-1), to:IMU_IN, toDir:V(0,0,1), mids:[V(IMU_AT.x, 3, -74)], r:0.13, sp:0.5,
   wires:[['J11.1','IMU 1','Vcm5','5 V, private route to keep noise off the sensors',C.red],['J11.2','IMU 2','Vcm5','5 V',C.red],
          ['J11.3','IMU 3','GND','Ground, private route',C.gnd],['J11.4','IMU 4','GND','Ground',C.gnd],
@@ -214,7 +216,7 @@ const CABLES = [
          ['J11.10','IMU 10','IMU_SPI_nCS','IMU SPI chip select (CM5)','#7a5ad6'],['J11.11','IMU 11','IMU_SPI_SCK','IMU SPI clock','#d9c22e'],
          ['J11.12','IMU 12','IMU_SPI_SDI','IMU SPI data (SDI)','#3d6fd6'],['J11.13','IMU 13','IMU_SPI_SDO','IMU SPI data (SDO)','#2f9e4f'],
          ['J11.14','IMU 14','Vcm5','5 V',C.red],['J11.15','IMU 15','GND','Ground',C.gnd],['J11.16','IMU 16','Vcm3.3','3.3 V, reserved for a future power-control signal',C.earR]], ends:['AeroNode', 'IMU board']},
- {id:'vault', title:'AeroNode J12 → AeroVault', sub:'10-way 0.5 mm FPC to the AeroVault fireproof section (stand-in): SPI NAND flash (W25N01GV on our bench). Signals per AeroNode schematic sheet 8; far-end contact order assumed 1:1', flex:true, noModule:true,
+ {id:'vault', title:'AeroNode J12 → AeroVault J1', sub:'10-way 0.5 mm FPC to the AeroVault Rev 0.0.2 board (its J1, also a Cvilux CF31): SPI NAND flash for the fireproof section. Signals per AeroNode schematic sheet 8; far-end contact order assumed 1:1', flex:true, noModule:true,
   from:J12, fromDir:V(0,0,-1), to:VAULT_IN, toDir:V(0,0,1), mids:[V((J12[0].x + VAULT_AT.x)/2, 4, -78)], r:0.13, sp:0.5,
   wires:[['J12.1','Vault 1','GND','Ground',C.gnd],['J12.2','Vault 2','reserved','Reserved for a future power-enable signal',C.ffc],
          ['J12.3','Vault 3','AeroVault_SPI_nCS','Flash chip select','#7a5ad6'],['J12.4','Vault 4','AeroVault_SPI_SIO1','SIO1 = MISO, flash → CM5','#2f9e4f'],
@@ -315,15 +317,6 @@ function gaPlug(at, d, handleR, handleL, seg){
 }
 gaPlug(PHONE, 6.35, 6.2, 36, [17, 2.5, 5, 2.5, 5.5]);      // PJ-055 headphone
 gaPlug(MICPLUG, 5.23, 5.4, 32, [14, 2, 4.5, 2, 4.5]);      // PJ-068 mic
-// stand-ins: IMU thermal-island board (size not defined yet) and the AeroVault fireproof section around its flash board
-solid(new THREE.BoxGeometry(30, 1.6, 34), 0x1f5e43, IMU_AT.clone().add(V(0, 0.8, 0)), .9);
-solid(new THREE.BoxGeometry(12.3, 2, 5.8), 0xe9e4d4, IMU_AT.clone().add(V(0, 2.6, 13.6)));
-solid(new THREE.BoxGeometry(5, 1, 5), 0x222222, IMU_AT.clone().add(V(-5, 2.1, -4))); solid(new THREE.BoxGeometry(4.5, 1, 3), 0x222222, IMU_AT.clone().add(V(6, 2.1, -4)));
-const vault = solid(new THREE.BoxGeometry(46, 26, 40), 0x8c3b2e, VAULT_AT.clone().add(V(0, 13, 0)), .28);
-const ve = new THREE.LineSegments(new THREE.EdgesGeometry(vault.geometry), new THREE.LineBasicMaterial({color:0x5a2219})); ve.position.copy(vault.position); scene.add(ve);
-solid(new THREE.BoxGeometry(30, 1.6, 28), 0x1f5e43, VAULT_AT.clone().add(V(0, 2.8, 0)));
-solid(new THREE.BoxGeometry(9.3, 2, 5.8), 0xe9e4d4, VAULT_AT.clone().add(V(0, 4.6, 15.6)));
-solid(new THREE.BoxGeometry(8, 1, 6), 0x222222, VAULT_AT.clone().add(V(0, 4.1, -2)));
 // battery pack stand-in: two cells side by side under shrink, gauge board and lead exit at the AeroNode end
 for (const dx of [-11, 11]){ const cell = solid(new THREE.CylinderGeometry(10.5, 10.5, PACK.l - 4, 32), 0xb9c2c7, V(PACK.at.x + dx, 10.8, PACK.at.z)); cell.rotation.x = Math.PI/2; }
 solid(new THREE.BoxGeometry(PACK.w, PACK.h, PACK.l), 0x2f6fb3, V(PACK.at.x, PACK.h/2, PACK.at.z), .55);
@@ -358,8 +351,8 @@ tag('J6 spare', mean(pins('audio',AUDIO_AT,'J6')).add(V(4,4,0)), 'ghost');
 ptag('J7','cup',CUPL_AT,'J7',V(0,4,-5)); ptag('J8','cup',CUPL_AT,'J8',V(5,4,0)); ptag('J12','cup',CUPL_AT,'J12',V(-4,4,-4)); ptag('J2','cup',CUPL_AT,'J2',V(-5,4,-3));
 ptag('J7','cup',CUPR_AT,'J7',V(0,4,-5)); ptag('J2','cup',CUPR_AT,'J2',V(-5,4,-3)); tag('J8 unused', mean(pins('cup',CUPR_AT,'J8')).add(V(5,4,0)), 'ghost'); tag('J11 not fitted', P(CUPR_AT, ZIF_AT.J11).add(V(0,4,0)), 'ghost');
 tag('J9', V(AERO_AT.x + 83.3, 7, AERO_AT.z + J9_ZC)); tag('J11', J11[8].clone().add(V(0,5,4))); tag('J12', J12[5].clone().add(V(0,5,4)));
-tag('IMU board (stand-in)', IMU_AT.clone().add(V(0,10,-16)), 'board ghost');
-tag('Battery pack 2S (stand-in)', PACK.at.clone().add(V(0, PACK.h + 8, 10)), 'board ghost'); tag('J2', J2B[2].clone().add(V(0,7,-3))); tag('AeroVault (stand-in)', VAULT_AT.clone().add(V(0,30,-20)), 'board ghost'); tag('Boom mic', boomEnd.clone().add(V(0,8,0)));
+tag('AeroIMU Rev 0', IMU_AT.clone().add(V(0,9,-12)), 'board');
+tag('Battery pack 2S (stand-in)', PACK.at.clone().add(V(0, PACK.h + 8, 10)), 'board ghost'); tag('J2', J2B[2].clone().add(V(0,7,-3))); tag('AeroVault Rev 0.0.2', VAULT_AT.clone().add(V(0,9,-11)), 'board'); tag('Boom mic', boomEnd.clone().add(V(0,8,0)));
 tag('PJ-055 headphone', PHONE.clone().add(V(0,10,40))); tag('PJ-068 mic', MICPLUG.clone().add(V(0,9,34)));
 for (const c of CABLES.filter(x => x.flex && x.inst)) for (const inst of c.inst) tag(c.ends[1], inst.end.clone().add(V(0,5,0)));
 let wireTags = [];
@@ -428,7 +421,9 @@ const v = V(0,0,0);
   requestAnimationFrame(frame);
 })();
 const status = document.getElementById('status');
-Promise.all([loadBoard('audio.glb.txt', 70), loadBoard('cup.glb.txt', 72), loadBoard('cup.glb.txt', 72), loadBoard('aeronode.glb.txt', null)]).then(([a, l, r, n]) => {
-  a.position.copy(AUDIO_AT); l.position.copy(CUPL_AT); r.position.copy(CUPR_AT); n.position.copy(AERO_AT); scene.add(a, l, r, n); status.textContent = '';
+Promise.all([loadBoard('audio.glb.txt', 70), loadBoard('cup.glb.txt', 72), loadBoard('cup.glb.txt', 72), loadBoard('aeronode.glb.txt', null),
+             loadBoard('aeroimu.glb.txt', null), loadBoard('aerovault.glb.txt', null)]).then(([a, l, r, n, imu, vlt]) => {
+  a.position.copy(AUDIO_AT); l.position.copy(CUPL_AT); r.position.copy(CUPR_AT); n.position.copy(AERO_AT); imu.position.copy(IMU_ORG); vlt.position.copy(VAULT_ORG);
+  scene.add(a, l, r, n, imu, vlt); status.textContent = '';
 }).catch(e => { status.textContent = 'Board models did not load: ' + (e && e.message || e); });
 </script>

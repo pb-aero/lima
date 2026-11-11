@@ -25,3 +25,10 @@ PCB
   /usr/bin/python3 -I $D/slim_glb.py "$W/aeronode.glb" $D/aeronode.glb
   base64 -i $D/aeronode.glb -o $D/aeronode.glb.txt
 fi
+
+# AeroIMU Rev 0 and AeroVault Rev 0.0.2 board models (AS_Engineering/CAD/Aeronode, downloaded to ~/Downloads).
+# AeroIMU_Rev0.bin is a STEP file despite its extension.
+for pair in "AeroIMU_Rev0.bin:aeroimu" "AeroVault Rev0.0.2.step:aerovault"; do
+  src="$HOME/Downloads/${pair%%:*}"; out=${pair##*:}
+  if [ -f "$src" ]; then $D/step2glb.sh "$src" $D/$out.glb && rm -f $D/$out.raw.glb && base64 -i $D/$out.glb -o $D/$out.glb.txt; fi
+done
