@@ -187,6 +187,12 @@ const UP = V(0,1,0), wireMeshes = [];
 const smooth = (a,b,x) => { const t = Math.min(1, Math.max(0, (x-a)/(b-a))); return t*t*(3-2*t); };
 const flexMat = new THREE.MeshStandardMaterial({color:0xc98a2b, roughness:.45, transparent:true, opacity:.55, side:THREE.DoubleSide, depthWrite:false});
 for (const c of CABLES){ c.meshes = []; c.curves = []; if (!c.hdr) buildWires(c); }
+// header pins have no wires to hover, so each gets an invisible hover target around the pin and its housing block
+const pickMat = new THREE.MeshBasicMaterial({transparent:true, opacity:0, depthWrite:false}), pinPicks = [];
+for (const c of CABLES.filter(x => x.hdr)) c.pos.forEach((p, i) => {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(2.3, 12, 2.4), pickMat); m.position.set(p.x, 7.7, p.z);
+  m.userData = {cable:c, wire:c.wires[i], i, pick:true}; scene.add(m); pinPicks.push(m);
+});
 function buildWires(c){
   const s0 = mean(c.from), e0 = mean(c.to), lift = c.flex ? 0 : 1, stub = c.flex ? 3 : 7;
   const ctrl = [s0, s0.clone().addScaledVector(c.fromDir, stub).add(V(0,lift,0)), ...c.mids, e0.clone().addScaledVector(c.toDir, stub).add(V(0,lift*2,0)), e0];
@@ -297,20 +303,22 @@ const ray = new THREE.Raycaster(), mouse = new THREE.Vector2(); let hot = null;
 canvas.addEventListener('pointermove', e => {
   const r = canvas.getBoundingClientRect(); mouse.set((e.clientX - r.left)/r.width*2 - 1, -(e.clientY - r.top)/r.height*2 + 1);
   ray.setFromCamera(mouse, camera);
-  const hits = ray.intersectObjects(wireMeshes.filter(m => m.material.opacity > 0.5));
+  const targets = wireMeshes.filter(m => m.material.opacity > 0.5).concat(!active || active === 'hdr' ? pinPicks : []);
+  const hits = ray.intersectObjects(targets);
   const m = hits.length ? hits[0].object : null;
-  if (hot && hot !== m){ hot.material.emissive.setHex(0); } hot = m;
+  if (hot && hot !== m && !hot.userData.pick){ hot.material.emissive.setHex(0); } hot = m;
   document.querySelectorAll('tr.hot').forEach(x => x.classList.remove('hot'));
   if (!m){ tip.hidden = true; return; }
-  m.material.emissive.setHex(0x333333);
+  if (!m.userData.pick) m.material.emissive.setHex(0x333333);
   const {cable, wire, i} = m.userData;
-  tip.innerHTML = `<b>${cable.ends[0]} ${wire[0]} → ${cable.ends[1]} ${wire[1]}</b>${wire[2]}<br><span style="color:var(--muted)">${wire[3]}</span>`;
+  tip.innerHTML = (cable.hdr ? `<b>AeroMic ${wire[0]} ↔ ${wire[1]}</b>` : `<b>${cable.ends[0]} ${wire[0]} → ${cable.ends[1]} ${wire[1]}</b>`) +
+    `${wire[2]}<br><span style="color:var(--muted)">${wire[3]}</span>`;
   tip.hidden = false;
   const x = e.clientX - r.left + 14, y = e.clientY - r.top + 14;
   tip.style.left = Math.min(x, r.width - tip.offsetWidth - 8) + 'px'; tip.style.top = Math.min(y, r.height - tip.offsetHeight - 8) + 'px';
   if (active === cable.id){ const row = wiresEl.querySelector(`tr[data-i="${i}"]`); if (row) row.classList.add('hot'); }
 });
-canvas.addEventListener('pointerleave', () => { tip.hidden = true; if (hot){ hot.material.emissive.setHex(0); hot = null; } });
+canvas.addEventListener('pointerleave', () => { tip.hidden = true; if (hot){ if (!hot.userData.pick) hot.material.emissive.setHex(0); hot = null; } });
 
 // ---- run
 function resize(){ const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w/h; camera.updateProjectionMatrix(); }
