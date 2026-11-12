@@ -13,6 +13,8 @@ artwork. Replace any of them with a manufacturer STEP when one is in hand (and g
 | Bourns_SM-LP-5001.wrl | SM-LP-5001 | 12.8 × 9.0 × 7.5 | Bourns SM-LP-5001 product dimensions |
 | Cvilux_CF31241D0R0-05-NH.wrl | CF31 24P | 16.2 × 5.07 × 1.95 | Cvilux CF3101SF |
 
+**STEP body boxes (2026-11-09/12, for MCAD export).** STEP export cannot carry VRML, so `kicad-cli pcb export step --subst-models` left out every part whose only model here is a `.wrl`. These three `.step` files sit beside their `.wrl` twins, so the substitution picks them up: `AD_LFCSP-SS-64-1EP_9x9mm_P0.5mm_CS-64-2.step` 9 × 9 × 0.75, `Maxim_OLGA-14_2.9x4.3mm_MAXM86161.step` 2.9 × 4.3 × 1.4, `Panasonic_GU-SOP8_AQW61xS.step` 4.4 × 9.37 × 2.1 (mm, body only, no leads, origin at the body centre, bottom on z = 0) `[measured]` from the exported points. Made by exporting a throwaway board whose outline is the body and whose thickness is the body height + 0.07 mm (kicad-cli subtracts two copper layers), `--board-only`. The board files' other custom parts (audio board) have no STEP twin yet.
+
 The ADAU1372 footprint uses KiCad's stock `QFN-40-1EP_6x6mm_P0.5mm.step` (same package).
 
 **Why `restore_models.py` exists:** Konnect's schematic→PCB sync drops footprint `(model …)` blocks, so synced boards
