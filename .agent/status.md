@@ -1854,3 +1854,11 @@ JLCPCB assembly, JST GH for all off-board connectors.** Approved downloads: Open
   nothing), the housing ends are symmetric, and the board body has 20 identical round 1.2 mm drill holes with no copper,
   so there's no square pad and no silk. Drive holds only the STEP + schematic PDF for the AeroMic. Needs the PCB file
   (Altium PcbDoc / Gerbers), the silkscreen, or a look at the bare board's square pad.
+- **2026-11-12 Black Maverick V1 LANDED on the shelf:** `reports/peter/LIMA_black_maverick_v1_harness_3d.html`
+  + manifest row, company repo `1191b78` (local == remote, 40 chars). Built by `docs/h1-harness-3d/make_report.py`
+  from `lima@46c8799`: three.js r128 inlined (sha256-pinned; Peter OK'd the download from jsdelivr), the four board models
+  gzip+base64 embedded and decoded with DecompressionStream, so 7.54 MB with no external fetches (`[measured]`: served
+  alone from an empty folder, 0 resource requests, all 4 models loaded, 0 console errors). Banner CURRENT, record
+  `f02cb9c` measured. Sweeps clean: banner present, no file://, no http(s) src/href, no root-relative. The push printed
+  the expected `protect-peter` bypass notice (see MEMORY). **To re-land after a page change:** commit the page in lima,
+  rebuild with the new SHA in the banner, replace the file, update the manifest SHA/date.
