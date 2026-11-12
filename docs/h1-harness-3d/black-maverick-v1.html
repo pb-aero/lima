@@ -27,6 +27,8 @@ header p{margin:0;color:var(--muted);max-width:80ch}
 .tag.board{font:500 12px/1 var(--display);padding:4px 7px}
 .tag.ghost{color:var(--muted);border-style:dashed}
 .tag.wire{transform:translate(-50%,-50%);border-left-width:4px;font-weight:400}
+.tag.pinL{transform:translate(calc(-100% - 8px),-50%);border-right-width:4px;font-weight:400}
+.tag.pinR{transform:translate(8px,-50%);border-left-width:4px;font-weight:400}
 #tip{position:absolute;pointer-events:none;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:7px 9px;font-size:12px;max-width:300px;box-shadow:0 4px 14px rgb(0 0 0 / .12)}
 #tip b{font:500 12px var(--mono);display:block}
 #status{position:absolute;left:12px;bottom:10px;font:12px var(--mono);color:var(--muted)}
@@ -95,11 +97,13 @@ const AERO_AT = V(-217, 0, 48), J9_OPEN_X = 86.2, J9_ZC = -70.95, J9_Y = 2.6;
 const J9 = Array.from({length:24}, (_, i) => V(AERO_AT.x + J9_OPEN_X + 0.4, J9_Y, AERO_AT.z + J9_ZC - 5.75 + i*0.5));   // index i = J9 pin i+1
 // AeroMic Rev 0.1 board model (26.9 x 27.8 mm), measured from its STEP: J3 = Cvilux CF31241D0R0-05-NH (24-way, same part as AeroNode J9)
 // body x 0.05..5.83, z -20.85..-4.55, opening assumed at the x = 0 edge facing the AeroNode; mic U1 DMM-4026-B-I2S-R at x 18.5..21.5, z -15..-11;
-// J1/J2 two 1x10 2.54 mm headers at x 8.7..13.8 (which column is J1 is assumed)
+// J1/J2 two 1x10 2.54 mm headers: J1 pins at x 10.00, J2 at x 12.54 (STEP placements), pins z -2.54..-25.4, tops at y 13.6
+// Which end is pin 1 is not in the STEP; drawn at the -z end (the J3.24 end), since both headers follow J3's order from pin 24 down
 const MIC_ORG = V(-80, 0, AERO_AT.z + J9_ZC + 12.7);
 // Per the AeroMic schematic, J3 contact n carries the signal of J9 pin 25-n, so a straight (untwisted) cable puts J3.24 opposite J9.1
 const MIC_IN = Array.from({length:24}, (_, i) => V(MIC_ORG.x - 0.4, 2.6, MIC_ORG.z - 12.7 - 5.75 + i*0.5));          // index i = AeroMic J3 contact 24-i
 const MIC_U1 = MIC_ORG.clone().add(V(20, 2.2, -12.97));
+const HDR_PIN = (x, k) => MIC_ORG.clone().add(V(x, 14, -25.4 + (k - 1) * 2.54));   // header pin k (1..10) top
 // AeroNode J11 (16-way, AeroIMU) and J12 (10-way, AeroVault): Cvilux CF31 FPCs on the far edge (J11 x 35.5..47.8, J12 x 56.4..65.7, z -106..-100.2)
 const fpcRow = (cx, n, z, y=2.6) => Array.from({length:n}, (_, i) => V(cx + (i - (n-1)/2) * 0.5, y, z));
 const J11 = fpcRow(AERO_AT.x + 41.65, 16, AERO_AT.z - 106.4), J12 = fpcRow(AERO_AT.x + 61.05, 10, AERO_AT.z - 106.4);
@@ -134,11 +138,27 @@ const MICUSE = ['ground', 'U1 VDD (C1 100 nF); header J1.1', 'header J1.2 only',
 const J9COL = net => net === 'GND' ? C.gnd : net === 'Vcm3.3' ? C.v33 : net.startsWith('Vsys') ? C.red :
   net === 'Audio_I2S_SCLK' ? C.clk : net === 'Audio_I2S_WS' ? C.cs : net === 'Audio_I2S_SDI0' ? C.dout : C.ffc;
 
+// ---- AeroMic breakout headers (AeroMic Rev 0.1 schematic): [header pin, J3 contact or null, net as on the AeroNode]
+const HDR = {
+  J1:{x:10.0, pins:[[1,23,'Vcm3.3'],[2,22,'Audio_IN_Dat0_I2S_SDI3'],[3,20,'Audio_IN_Clk_I2S_SDO2'],[4,17,'Audio_I2S_SDI1'],[5,14,'Audio_I2S_SCLK'],
+                    [6,11,'Audio_I2S_SDI0'],[7,null,'GND'],[8,8,'GPIO_RLY_SPKR'],[9,5,'sensor_I2C_SCL'],[10,2,'Vsys (switched)']]},
+  J2:{x:12.54, pins:[[1,null,'GND'],[2,21,'Audio_IN_Dat1_I2S_SDO3'],[3,18,'Audio_I2S_SDI2'],[4,16,'Audio_I2S_SDO1'],[5,12,'Audio_I2S_WS'],
+                     [6,10,'Audio_I2S_SDO0'],[7,null,'GND'],[8,7,'GPIO_RLY_MIC'],[9,4,'sensor_I2C_SDA'],[10,null,'GND']]}};
+const U1USE = {'Vcm3.3':'also U1 VDD', 'Audio_I2S_SCLK':'also U1 SCK', 'Audio_I2S_WS':'also U1 WS', 'Audio_I2S_SDI0':'also U1 SD, through R1 33 Ω'};
+const SHORT = {'Vcm3.3':'3.3V', 'Vsys (switched)':'Vsys'};
+const hdrRows = [], hdrPos = [];
+for (const [ref, h] of Object.entries(HDR)) for (const [k, j3, net] of h.pins){
+  hdrRows.push([`${ref}.${k}`, j3 ? `J3.${j3} / J9.${25 - j3}` : 'ground', SHORT[net] || net, J9WHAT[net] + (U1USE[net] ? `; ${U1USE[net]}` : ''), J9COL(net), ref]);
+  hdrPos.push(HDR_PIN(h.x, k));
+}
+
 // ---- cables: each wire = [from pin label, to pin label, net, what, colour]
 const CABLES = [
  {id:'mic', title:'AeroNode J9 → AeroMic J3', sub:'24-way 0.5 mm FFC to the AeroMic Rev 0.1. Its J3 is the same CF31 24-way part as J9, and contact numbers reverse across the cable (J3.n = J9 pin 25−n). The I²S mic U1 (DMM-4026-B-I2S-R) uses only 3.3 V, SCLK, WS and SDI0 (coloured); every other line goes only to the breakout headers J1/J2. U1’s L/R channel is set by solder jumper JP1 (GND) or JP2 (3.3 V). Signals per the AeroNode (sheet 6) and AeroMic schematics',
   from:J9, fromDir:V(1,0,0), to:MIC_IN, toDir:V(-1,0,0), mids:[V((J9[0].x + MIC_IN[0].x)/2, 6, J9[12].z)], r:0.17, sp:0.5, flex:true,
   wires:J9NET.map((net, i) => [`J9.${i+1}`, `J3.${24 - i}`, net, `${J9WHAT[net]}. AeroMic: ${MICUSE[i]}`, J9COL(net)]), ends:['AeroNode', 'AeroMic']},
+ {id:'hdr', title:'AeroMic J1 / J2 headers', sub:'Two 10-way 2.54 mm male headers on the AeroMic, breaking out the J9 lines for probing or bench wiring. J1 is the column next to J3. Pinout per the AeroMic Rev 0.1 schematic; which end is pin 1 is assumed (drawn at the J3.24 end, since both headers follow J3’s order)',
+  hdr:true, arrow:'↔', wires:hdrRows, pos:hdrPos, ends:['Header', 'AeroMic J3']},
  {id:'imu', title:'AeroNode J11 → AeroIMU J1', sub:'16-way 0.5 mm FPC to the AeroIMU Rev 0, whose J1 is also a Cvilux CF31. Signals are from AeroNode schematic sheet 8. Contact order at the far end is assumed one to one', flex:true,
   from:J11, fromDir:V(0,0,-1), to:IMU_IN, toDir:V(0,0,1), mids:[V(IMU_AT.x, 3, -74)], r:0.13, sp:0.5,
   wires:[['J11.1','IMU 1','Vcm5','5 V on its own trace, to keep noise off the sensors',C.red],['J11.2','IMU 2','Vcm5','5 V',C.red],
@@ -166,7 +186,7 @@ const CABLES = [
 const UP = V(0,1,0), wireMeshes = [];
 const smooth = (a,b,x) => { const t = Math.min(1, Math.max(0, (x-a)/(b-a))); return t*t*(3-2*t); };
 const flexMat = new THREE.MeshStandardMaterial({color:0xc98a2b, roughness:.45, transparent:true, opacity:.55, side:THREE.DoubleSide, depthWrite:false});
-for (const c of CABLES){ c.meshes = []; c.curves = []; buildWires(c); }
+for (const c of CABLES){ c.meshes = []; c.curves = []; if (!c.hdr) buildWires(c); }
 function buildWires(c){
   const s0 = mean(c.from), e0 = mean(c.to), lift = c.flex ? 0 : 1, stub = c.flex ? 3 : 7;
   const ctrl = [s0, s0.clone().addScaledVector(c.fromDir, stub).add(V(0,lift,0)), ...c.mids, e0.clone().addScaledVector(c.toDir, stub).add(V(0,lift*2,0)), e0];
@@ -228,7 +248,7 @@ function loadBoard(url){
 const TAGS = [];
 function tag(text, pos, cls=''){ const el = document.createElement('div'); el.className = 'tag ' + cls; el.textContent = text; tagsEl.appendChild(el); const t = {el, pos}; TAGS.push(t); return t; }
 tag('AeroNode Rev 0.0.2', AERO_AT.clone().add(V(52,24,-58)), 'board');
-tag('AeroMic Rev 0.1', MIC_ORG.clone().add(V(13.5,20,-14)), 'board'); tag('I²S mic U1', MIC_U1.clone().add(V(0,3,0)));
+const micTag = tag('AeroMic Rev 0.1', MIC_ORG.clone().add(V(13.5,20,-14)), 'board'); tag('I²S mic U1', MIC_U1.clone().add(V(0,3,0)));
 tag('J9', V(AERO_AT.x + 83.3, 7, AERO_AT.z + J9_ZC)); tag('J3', MIC_ORG.clone().add(V(3,6,-12.7)));
 tag('J1/J2 headers', MIC_ORG.clone().add(V(11.3,14,3)));
 tag('J11', J11[8].clone().add(V(0,5,4))); tag('J12', J12[5].clone().add(V(0,5,4)));
@@ -245,14 +265,20 @@ for (const c of CABLES){
   b.onclick = () => setActive(active === c.id ? null : c.id); legend.appendChild(b); c.btn = b;
 }
 function setActive(id){
-  active = id;
+  active = id; micTag.el.style.visibility = id === 'hdr' ? 'hidden' : '';
   for (const t of wireTags) t.el.remove(); TAGS.splice(TAGS.length - wireTags.length, wireTags.length); wireTags = [];
   for (const c of CABLES){ const on = !id || c.id === id; for (const m of c.meshes) m.material.opacity = on ? (m.material.side === THREE.DoubleSide ? .55 : 1) : 0.08; c.btn.setAttribute('aria-pressed', String(c.id === id)); }
   const c = CABLES.find(x => x.id === id);
   if (!c){ wtTitle.textContent = 'Wires'; wiresEl.innerHTML = '<p class="note">Pick a cable to list its wires.</p>'; return; }
   wtTitle.textContent = c.title;
-  wiresEl.innerHTML = `<p class="note">${c.sub}. ${c.ends[0]} → ${c.ends[1]}.</p><table><thead><tr><th></th><th>Pins</th><th>Signal</th></tr></thead><tbody>` +
-    c.wires.map((w, i) => `<tr data-i="${i}"><td><i class="sw" style="background:${w[4]}"></i></td><td class="pin">${w[0]} → ${w[1]}</td><td class="net">${w[2]}<span class="what">${w[3]}</span></td></tr>`).join('') + '</tbody></table>';
+  wiresEl.innerHTML = `<p class="note">${c.sub}.${c.hdr ? '' : ` ${c.ends[0]} → ${c.ends[1]}.`}</p><table><thead><tr><th></th><th>Pins</th><th>Signal</th></tr></thead><tbody>` +
+    c.wires.map((w, i) => `<tr data-i="${i}"><td><i class="sw" style="background:${w[4]}"></i></td><td class="pin">${w[0]} ${c.arrow || '→'} ${w[1]}</td><td class="net">${w[2]}<span class="what">${w[3]}</span></td></tr>`).join('') + '</tbody></table>';
+  if (c.hdr){   // label every header pin (J1 to the left, J2 to the right) and look down on them
+    c.pos.forEach((p, i) => { const w = c.wires[i], left = w[5] === 'J1', t = tag(left ? `${w[2]}  ${w[0]}` : `${w[0]}  ${w[2]}`, p, left ? 'pinL' : 'pinR');
+      t.el.style[left ? 'borderRightColor' : 'borderLeftColor'] = w[4]; wireTags.push(t); });
+    const centre = mean(c.pos.map(p => p.clone()));
+    controls.target.copy(centre); camera.position.copy(centre).add(V(0, 95, 22)); return;
+  }
   const n = c.wires.length;
   if (n <= 8) c.curves.forEach((cv, i) => {
     const t = tag(c.wires[i][2], cv.getPointAt(0.22 + 0.56 * i / Math.max(1, n - 1)).add(V(0, 3 + (i % 2) * 5, 0)), 'wire'); t.el.style.borderLeftColor = c.wires[i][4]; wireTags.push(t);

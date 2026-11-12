@@ -1845,3 +1845,7 @@ JLCPCB assembly, JST GH for all off-board connectors.** Approved downloads: Open
   audio board's J1). U1 uses only 3.3 V (J9.2), Audio_I2S_SCLK (J9.11), Audio_I2S_WS (J9.13) and Audio_I2S_SDI0 (J9.14,
   via R1 33R + R2 100k pull-down); L/R by solder jumper JP1 GND / JP2 3.3 V. **Correction:** v1 of the page flagged
   J9.3-5 ("PDM or I2S" group) as the likely mic lines — wrong; those go to the headers only. Page republished (v2).
+- **2026-11-12 (later still) AeroMic J1/J2 header pinouts added** to the Black Maverick V1 page (legend entry
+  "AeroMic J1 / J2 headers": table + 3D pin labels). Pinout `[repo]` from the AeroMic schematic. `[measured]` from the
+  STEP assembly: J1 pins at x 10.00, J2 at x 12.54 (J1 is the column next to J3). `[assumed]` pin-1 end: the STEP bakes
+  all pins into one shape, so it is drawn at the J3.24 end (both headers follow J3's order). Peter can confirm from silk.
