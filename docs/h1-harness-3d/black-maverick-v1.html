@@ -67,7 +67,7 @@ tr.hot td{background:color-mix(in srgb,var(--focus) 12%,transparent)}
     <div class="row"><button id="all" type="button">Show all</button><button id="reset" type="button">Reset view</button></div>
     <h2 id="wt-title">Wires</h2>
     <div id="wires"><p class="note">Pick a cable to list its wires.</p></div>
-    <p class="note">Board models: AeroNode Rev 0.0.2 (updated GPS), AeroMic Rev 0.1, AeroIMU Rev 0 and AeroVault Rev 0.0.2. The battery pack is a stand-in. AeroNode signal names come from its schematic (HW 0.0.2 rev 1). There is no AeroMic schematic yet, so the page does not show which J9 lines the AeroMic uses, and the AeroMic's J1 contact order is assumed to match J9 one to one. Which end of each connector is contact 1 is also assumed. Cable routes and lengths are illustrative only.</p>
+    <p class="note">Board models: AeroNode Rev 0.0.2 (updated GPS), AeroMic Rev 0.1, AeroIMU Rev 0 and AeroVault Rev 0.0.2. The battery pack is a stand-in. Signals come from the AeroNode schematic (HW 0.0.2 rev 1) and the AeroMic Rev 0.1 schematic. On the AeroMic, J3 is the flat-cable connector and J1/J2 are 10-way breakout headers carrying the J9 lines. Which end of each connector is contact 1 is assumed. Cable routes and lengths are illustrative only.</p>
   </aside>
 </div>
 
@@ -93,11 +93,12 @@ const sun = new THREE.DirectionalLight(0xffffff, 0.75); sun.position.set(120, 30
 // J9 = 24-way Cvilux CF31 FFC at its right edge, measured from the model: body x 80.4..86.2, z -79.3..-62.6, opening assumed towards +x
 const AERO_AT = V(-217, 0, 48), J9_OPEN_X = 86.2, J9_ZC = -70.95, J9_Y = 2.6;
 const J9 = Array.from({length:24}, (_, i) => V(AERO_AT.x + J9_OPEN_X + 0.4, J9_Y, AERO_AT.z + J9_ZC - 5.75 + i*0.5));   // index i = J9 pin i+1
-// AeroMic Rev 0.1 board model (26.9 x 27.8 mm), measured from its STEP: J1 = Cvilux CF3124 (24-way, same part as AeroNode J9)
+// AeroMic Rev 0.1 board model (26.9 x 27.8 mm), measured from its STEP: J3 = Cvilux CF31241D0R0-05-NH (24-way, same part as AeroNode J9)
 // body x 0.05..5.83, z -20.85..-4.55, opening assumed at the x = 0 edge facing the AeroNode; mic U1 DMM-4026-B-I2S-R at x 18.5..21.5, z -15..-11;
-// J2/J3 two 1x10 2.54 mm headers at x 8.7..13.8
+// J1/J2 two 1x10 2.54 mm headers at x 8.7..13.8 (which column is J1 is assumed)
 const MIC_ORG = V(-80, 0, AERO_AT.z + J9_ZC + 12.7);
-const MIC_IN = Array.from({length:24}, (_, i) => V(MIC_ORG.x - 0.4, 2.6, MIC_ORG.z - 12.7 - 5.75 + i*0.5));          // index i = AeroMic J1 contact i+1 (assumed)
+// Per the AeroMic schematic, J3 contact n carries the signal of J9 pin 25-n, so a straight (untwisted) cable puts J3.24 opposite J9.1
+const MIC_IN = Array.from({length:24}, (_, i) => V(MIC_ORG.x - 0.4, 2.6, MIC_ORG.z - 12.7 - 5.75 + i*0.5));          // index i = AeroMic J3 contact 24-i
 const MIC_U1 = MIC_ORG.clone().add(V(20, 2.2, -12.97));
 // AeroNode J11 (16-way, AeroIMU) and J12 (10-way, AeroVault): Cvilux CF31 FPCs on the far edge (J11 x 35.5..47.8, J12 x 56.4..65.7, z -106..-100.2)
 const fpcRow = (cx, n, z, y=2.6) => Array.from({length:n}, (_, i) => V(cx + (i - (n-1)/2) * 0.5, y, z));
@@ -118,21 +119,26 @@ const C = {red:'#c0392b', blk:'#2b2b2b', gnd:'#7d8480', ffc:'#b9bfbb', v33:'#eaa
 const J9NET = ['GND','Vcm3.3','Audio_IN_Dat0_I2S_SDI3','Audio_IN_Dat1_I2S_SDO3','Audio_IN_Clk_I2S_SDO2','GND','Audio_I2S_SDI2','Audio_I2S_SDI1','Audio_I2S_SDO1','GND',
   'Audio_I2S_SCLK','GND','Audio_I2S_WS','Audio_I2S_SDI0','Audio_I2S_SDO0','reserved','GPIO_RLY_SPKR','GPIO_RLY_MIC','GND','sensor_I2C_SCL','sensor_I2C_SDA','GND','Vsys (switched)','GND'];
 const J9WHAT = {GND:'Ground', 'Vcm3.3':'3.3 V from the CM5 (C43 decoupling at J9)',
-  'Audio_IN_Dat0_I2S_SDI3':'Audio input data 0 to the CM5. The sheet groups J9.3–5 as the "PDM or I²S" input, the most likely lines for the AeroMic',
-  'Audio_IN_Dat1_I2S_SDO3':'Audio input data 1, or I²S SDO3 from the CM5. Part of the "PDM or I²S" group',
-  'Audio_IN_Clk_I2S_SDO2':'Audio input clock from the CM5, or I²S SDO2. Part of the "PDM or I²S" group',
+  'Audio_IN_Dat0_I2S_SDI3':'"PDM or I²S" input data 0, to the CM5', 'Audio_IN_Dat1_I2S_SDO3':'"PDM or I²S" input data 1, or I²S SDO3 from the CM5',
+  'Audio_IN_Clk_I2S_SDO2':'"PDM or I²S" input clock from the CM5, or I²S SDO2',
   'Audio_I2S_SDI2':'I²S data to the CM5', 'Audio_I2S_SDI1':'I²S data to the CM5', 'Audio_I2S_SDI0':'I²S data to the CM5', 'Audio_I2S_SDO1':'I²S data from the CM5', 'Audio_I2S_SDO0':'I²S data from the CM5',
-  'Audio_I2S_SCLK':'I²S bit clock', 'Audio_I2S_WS':'I²S word select', reserved:'Reserved, not connected on the AeroNode',
-  'GPIO_RLY_SPKR':'Speaker relay drive (used by the V2 audio board)', 'GPIO_RLY_MIC':'Mic relay drive (used by the V2 audio board)',
+  'Audio_I2S_SCLK':'I²S bit clock from the CM5', 'Audio_I2S_WS':'I²S word select from the CM5', reserved:'Reserved, not connected at either end',
+  'GPIO_RLY_SPKR':'Speaker relay drive (for the V2 audio board)', 'GPIO_RLY_MIC':'Mic relay drive (for the V2 audio board)',
   'sensor_I2C_SCL':'Sensor I²C clock, shared with the BME690, ADS1115 and LP5815', 'sensor_I2C_SDA':'Sensor I²C data, same shared bus',
   'Vsys (switched)':'Vsys through Q1 (switched by Audio_nPower), D1 and the 100 mA polyfuse F1'};
-const J9COL = net => net === 'GND' ? C.gnd : net === 'Vcm3.3' ? C.v33 : net.startsWith('Vsys') ? C.red : net.startsWith('Audio_IN') ? C.aud : C.ffc;
+// where each J9 line lands on the AeroMic (AeroMic Rev 0.1 schematic), indexed by J9 pin - 1. J1/J2 are its 10-way breakout headers.
+const MICUSE = ['ground', 'U1 VDD (C1 100 nF); header J1.1', 'header J1.2 only', 'header J2.2 only', 'header J1.3 only', 'ground',
+  'header J2.3 only', 'header J1.4 only', 'header J2.4 only', 'ground', 'U1 SCK (pin 6); header J1.5', 'ground', 'U1 WS (pin 5); header J2.5',
+  'U1 SD (pin 7) through R1 33 Ω, with R2 100 kΩ pull-down; header J1.6', 'header J2.6 only', 'not connected', 'header J1.8 only', 'header J2.8 only',
+  'ground', 'header J1.9 only', 'header J2.9 only', 'ground', 'header J1.10 only', 'ground'];
+const J9COL = net => net === 'GND' ? C.gnd : net === 'Vcm3.3' ? C.v33 : net.startsWith('Vsys') ? C.red :
+  net === 'Audio_I2S_SCLK' ? C.clk : net === 'Audio_I2S_WS' ? C.cs : net === 'Audio_I2S_SDI0' ? C.dout : C.ffc;
 
 // ---- cables: each wire = [from pin label, to pin label, net, what, colour]
 const CABLES = [
- {id:'mic', title:'AeroNode J9 → AeroMic J1', sub:'24-way 0.5 mm FFC to the AeroMic Rev 0.1, which has a CF3124 24-way connector, the same part as J9. Signal names are the AeroNode’s. There is no AeroMic schematic yet, so which lines its I²S mic (DMM-4026-B-I2S-R) uses is not known; J9.3–5 (orange) are the lines the AeroNode sheet marks for PDM or I²S input. Contact order is assumed one to one',
+ {id:'mic', title:'AeroNode J9 → AeroMic J3', sub:'24-way 0.5 mm FFC to the AeroMic Rev 0.1. Its J3 is the same CF31 24-way part as J9, and contact numbers reverse across the cable (J3.n = J9 pin 25−n). The I²S mic U1 (DMM-4026-B-I2S-R) uses only 3.3 V, SCLK, WS and SDI0 (coloured); every other line goes only to the breakout headers J1/J2. U1’s L/R channel is set by solder jumper JP1 (GND) or JP2 (3.3 V). Signals per the AeroNode (sheet 6) and AeroMic schematics',
   from:J9, fromDir:V(1,0,0), to:MIC_IN, toDir:V(-1,0,0), mids:[V((J9[0].x + MIC_IN[0].x)/2, 6, J9[12].z)], r:0.17, sp:0.5, flex:true,
-  wires:J9NET.map((net, i) => [`J9.${i+1}`, `J1.${i+1}`, net, J9WHAT[net], J9COL(net)]), ends:['AeroNode', 'AeroMic']},
+  wires:J9NET.map((net, i) => [`J9.${i+1}`, `J3.${24 - i}`, net, `${J9WHAT[net]}. AeroMic: ${MICUSE[i]}`, J9COL(net)]), ends:['AeroNode', 'AeroMic']},
  {id:'imu', title:'AeroNode J11 → AeroIMU J1', sub:'16-way 0.5 mm FPC to the AeroIMU Rev 0, whose J1 is also a Cvilux CF31. Signals are from AeroNode schematic sheet 8. Contact order at the far end is assumed one to one', flex:true,
   from:J11, fromDir:V(0,0,-1), to:IMU_IN, toDir:V(0,0,1), mids:[V(IMU_AT.x, 3, -74)], r:0.13, sp:0.5,
   wires:[['J11.1','IMU 1','Vcm5','5 V on its own trace, to keep noise off the sensors',C.red],['J11.2','IMU 2','Vcm5','5 V',C.red],
@@ -223,7 +229,8 @@ const TAGS = [];
 function tag(text, pos, cls=''){ const el = document.createElement('div'); el.className = 'tag ' + cls; el.textContent = text; tagsEl.appendChild(el); const t = {el, pos}; TAGS.push(t); return t; }
 tag('AeroNode Rev 0.0.2', AERO_AT.clone().add(V(52,24,-58)), 'board');
 tag('AeroMic Rev 0.1', MIC_ORG.clone().add(V(13.5,20,-14)), 'board'); tag('I²S mic U1', MIC_U1.clone().add(V(0,3,0)));
-tag('J9', V(AERO_AT.x + 83.3, 7, AERO_AT.z + J9_ZC)); tag('J1', MIC_ORG.clone().add(V(3,6,-12.7)));
+tag('J9', V(AERO_AT.x + 83.3, 7, AERO_AT.z + J9_ZC)); tag('J3', MIC_ORG.clone().add(V(3,6,-12.7)));
+tag('J1/J2 headers', MIC_ORG.clone().add(V(11.3,14,3)));
 tag('J11', J11[8].clone().add(V(0,5,4))); tag('J12', J12[5].clone().add(V(0,5,4)));
 tag('AeroIMU Rev 0', IMU_AT.clone().add(V(-12,9,-12)), 'board'); tag('AeroVault Rev 0.0.2', VAULT_AT.clone().add(V(12,9,-11)), 'board');
 tag('Battery pack 2S (stand-in)', PACK.at.clone().add(V(0, PACK.h + 8, 10)), 'board ghost'); tag('J2', J2B[2].clone().add(V(0,7,-3)));

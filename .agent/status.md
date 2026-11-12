@@ -1839,3 +1839,9 @@ JLCPCB assembly, JST GH for all off-board connectors.** Approved downloads: Open
   (J9.1 GND, .2 Vcm3.3, .3-.5 "PDM or I2S" Audio_IN_Dat0/Dat1/Clk, .23 switched Vsys). **Open `[gap]`: no AeroMic
   schematic exists in the Drive folder**, so which J9 lines the mic uses, and its J1 contact order, are unknown; the
   page says so. Rendered and checked in the browser, no console errors.
+- **2026-11-12 (later) Black Maverick V1 wired from the AeroMic schematic — gap above CLOSED.** Peter put
+  `AeroMic Rev 0.1.PDF` in Drive AS_Engineering/CAD/Aeronode. `[repo]` read in full (1 sheet): the FFC connector is
+  **J3**, not J1 (J1/J2 are 10-way breakout headers carrying all J9 lines); **J3.n = J9 pin 25-n** (same reversal as the
+  audio board's J1). U1 uses only 3.3 V (J9.2), Audio_I2S_SCLK (J9.11), Audio_I2S_WS (J9.13) and Audio_I2S_SDI0 (J9.14,
+  via R1 33R + R2 100k pull-down); L/R by solder jumper JP1 GND / JP2 3.3 V. **Correction:** v1 of the page flagged
+  J9.3-5 ("PDM or I2S" group) as the likely mic lines — wrong; those go to the headers only. Page republished (v2).
