@@ -1831,3 +1831,11 @@ JLCPCB assembly, JST GH for all off-board connectors.** Approved downloads: Open
   (4) Fix the `ROTATION_NONE` placeholders against the rev 0.0.2 mechanical drawing.
   (5) Island heater is unwired → runs unheated; the thermal island's purpose is unrealised.
   (6) Still owed upstream: file patches 0001/0002.
+- **2026-11-12 Black Maverick V1 3D harness page** (Peter: V1 = AeroMic in place of the audio board and earcups,
+  which move to V2). `docs/h1-harness-3d/black-maverick-v1.html`, artifact https://claude.ai/artifact/W2p1WdCjcZnLYAdGSPQSXu.
+  AeroMic Rev 0.1 STEP (Drive AS_Engineering/CAD/Aeronode, ~/Downloads) → `aeromic.glb` via step2glb.sh, added to
+  build.sh. `[measured]` from the STEP: 26.9 x 27.8 mm, J1 = Cvilux CF3124 24-way (same part as AeroNode J9, so the same FFC),
+  U1 = DMM-4026-B-I2S-R I2S mic, J2/J3 = 1x10 2.54 mm headers. `[repo]` AeroNode J9 pinout read off schematic sheet 6
+  (J9.1 GND, .2 Vcm3.3, .3-.5 "PDM or I2S" Audio_IN_Dat0/Dat1/Clk, .23 switched Vsys). **Open `[gap]`: no AeroMic
+  schematic exists in the Drive folder**, so which J9 lines the mic uses, and its J1 contact order, are unknown; the
+  page says so. Rendered and checked in the browser, no console errors.

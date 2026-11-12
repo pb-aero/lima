@@ -27,8 +27,8 @@ PCB
 fi
 
 # AeroIMU Rev 0 and AeroVault Rev 0.0.2 board models (AS_Engineering/CAD/Aeronode, downloaded to ~/Downloads).
-# AeroIMU_Rev0.bin is a STEP file despite its extension.
-for pair in "AeroIMU_Rev0.bin:aeroimu" "AeroVault Rev0.0.2.step:aerovault"; do
+# AeroIMU_Rev0.bin is a STEP file despite its extension. AeroMic Rev 0.1 is for the Black Maverick V1 page (black-maverick-v1.html).
+for pair in "AeroIMU_Rev0.bin:aeroimu" "AeroVault Rev0.0.2.step:aerovault" "AeroMic Rev 0.1.step:aeromic"; do
   src="$HOME/Downloads/${pair%%:*}"; out=${pair##*:}
   if [ -f "$src" ]; then $D/step2glb.sh "$src" $D/$out.glb && rm -f $D/$out.raw.glb && base64 -i $D/$out.glb -o $D/$out.glb.txt; fi
 done

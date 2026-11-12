@@ -1,0 +1,300 @@
+<meta charset="utf-8">
+<title>Black Maverick V1</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Same layout as the H1 harness page: one canvas, a rail on the right for cables and the wires of the picked cable. */
+:root{
+  --bg:#eef0ee; --panel:#ffffff; --fg:#1d2321; --muted:#5e6964; --line:#cfd6d2; --scene:#e3e7e4; --focus:#6c4fd1;
+  --display:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --panel:#1c2220; --fg:#e4ebe7; --muted:#9aa7a1; --line:#2f3935; --scene:#19201d; --focus:#9b85f0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --panel:#1c2220; --fg:#e4ebe7; --muted:#9aa7a1; --line:#2f3935; --scene:#19201d; --focus:#9b85f0; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font:14px/1.5 var(--display);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px;box-sizing:border-box}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px;margin-bottom:12px}
+h1{font-size:20px;font-weight:500;margin:0;text-wrap:balance}
+header p{margin:0;color:var(--muted);max-width:80ch}
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:12px}
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)}}
+#stage{position:relative;min-height:440px;height:calc(100vh - 150px);max-height:860px;background:var(--scene);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+#stage canvas{display:block;width:100%;height:100%;cursor:grab}
+#tags{position:absolute;inset:0;pointer-events:none}
+.tag{position:absolute;transform:translate(-50%,-120%);font:500 11px/1 var(--mono);background:var(--panel);color:var(--fg);border:1px solid var(--line);padding:3px 5px;border-radius:4px;white-space:nowrap}
+.tag.board{font:500 12px/1 var(--display);padding:4px 7px}
+.tag.ghost{color:var(--muted);border-style:dashed}
+.tag.wire{transform:translate(-50%,-50%);border-left-width:4px;font-weight:400}
+#tip{position:absolute;pointer-events:none;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:7px 9px;font-size:12px;max-width:300px;box-shadow:0 4px 14px rgb(0 0 0 / .12)}
+#tip b{font:500 12px var(--mono);display:block}
+#status{position:absolute;left:12px;bottom:10px;font:12px var(--mono);color:var(--muted)}
+aside{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px;min-width:0;max-height:calc(100vh - 150px);overflow:auto}
+@media (max-width:900px){aside{max-height:none}}
+aside h2{font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0}
+.legend{display:flex;flex-direction:column;gap:4px}
+.legend button{all:unset;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:baseline;padding:6px 8px;border-radius:6px;border:1px solid transparent}
+.legend button:hover{border-color:var(--line)}
+.legend button:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.legend button[aria-pressed="true"]{border-color:var(--fg)}
+.legend b{font-weight:500}
+.legend span{color:var(--muted);font:12px var(--mono)}
+table{border-collapse:collapse;width:100%;font-size:12px}
+th{text-align:left;font-weight:500;color:var(--muted);padding:4px 4px;border-bottom:1px solid var(--line)}
+td{padding:5px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+td.pin{font-family:var(--mono);white-space:nowrap;font-variant-numeric:tabular-nums}
+td.net{font-family:var(--mono);overflow-wrap:anywhere}
+td .what{color:var(--muted);display:block;font-family:var(--display)}
+.sw{display:inline-block;width:18px;height:6px;border-radius:3px;margin-top:5px}
+tr.hot td{background:color-mix(in srgb,var(--focus) 12%,transparent)}
+.note{font-size:12px;color:var(--muted);margin:0}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row button{all:unset;cursor:pointer;font-size:12px;padding:5px 9px;border:1px solid var(--line);border-radius:6px}
+.row button:hover{border-color:var(--fg)}
+.row button:focus-visible{outline:2px solid var(--focus)}
+</style>
+
+<header>
+  <h1>Black Maverick V1</h1>
+  <p>The V1 harness: the AeroNode, with the AeroMic on the flat cable from J9, plus the AeroIMU, AeroVault and battery. The audio board and earcups come in V2. Drag to orbit, scroll to zoom, hover a wire to see its signal, pick a cable to list and label its wires.</p>
+</header>
+<div class="wrap">
+  <div id="stage"><canvas id="c"></canvas><div id="tags"></div><div id="tip" hidden></div><div id="status">Loading board models…</div></div>
+  <aside>
+    <h2>Cables</h2>
+    <div class="legend" id="legend"></div>
+    <div class="row"><button id="all" type="button">Show all</button><button id="reset" type="button">Reset view</button></div>
+    <h2 id="wt-title">Wires</h2>
+    <div id="wires"><p class="note">Pick a cable to list its wires.</p></div>
+    <p class="note">Board models: AeroNode Rev 0.0.2 (updated GPS), AeroMic Rev 0.1, AeroIMU Rev 0 and AeroVault Rev 0.0.2. The battery pack is a stand-in. AeroNode signal names come from its schematic (HW 0.0.2 rev 1). There is no AeroMic schematic yet, so the page does not show which J9 lines the AeroMic uses, and the AeroMic's J1 contact order is assumed to match J9 one to one. Which end of each connector is contact 1 is also assumed. Cable routes and lengths are illustrative only.</p>
+  </aside>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const V = (x,y,z) => new THREE.Vector3(x,y,z);
+const mean = a => a.reduce((s,p) => s.add(p), V(0,0,0)).multiplyScalar(1/a.length);
+const stage = document.getElementById('stage'), canvas = document.getElementById('c'), tagsEl = document.getElementById('tags'), tip = document.getElementById('tip');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.outputEncoding = THREE.sRGBEncoding;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 1, 1, 5000);
+const HOME = {pos:V(-135, 240, 235), tgt:V(-140, 0, -5)};
+camera.position.copy(HOME.pos);
+const controls = new THREE.OrbitControls(camera, canvas); controls.target.copy(HOME.tgt); controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8a908c, 0.95));
+const sun = new THREE.DirectionalLight(0xffffff, 0.75); sun.position.set(120, 300, 160); scene.add(sun);
+
+// ---- AeroNode Rev 0.0.2 board model (mm, its own origin); same placement as the H1 page.
+// J9 = 24-way Cvilux CF31 FFC at its right edge, measured from the model: body x 80.4..86.2, z -79.3..-62.6, opening assumed towards +x
+const AERO_AT = V(-217, 0, 48), J9_OPEN_X = 86.2, J9_ZC = -70.95, J9_Y = 2.6;
+const J9 = Array.from({length:24}, (_, i) => V(AERO_AT.x + J9_OPEN_X + 0.4, J9_Y, AERO_AT.z + J9_ZC - 5.75 + i*0.5));   // index i = J9 pin i+1
+// AeroMic Rev 0.1 board model (26.9 x 27.8 mm), measured from its STEP: J1 = Cvilux CF3124 (24-way, same part as AeroNode J9)
+// body x 0.05..5.83, z -20.85..-4.55, opening assumed at the x = 0 edge facing the AeroNode; mic U1 DMM-4026-B-I2S-R at x 18.5..21.5, z -15..-11;
+// J2/J3 two 1x10 2.54 mm headers at x 8.7..13.8
+const MIC_ORG = V(-80, 0, AERO_AT.z + J9_ZC + 12.7);
+const MIC_IN = Array.from({length:24}, (_, i) => V(MIC_ORG.x - 0.4, 2.6, MIC_ORG.z - 12.7 - 5.75 + i*0.5));          // index i = AeroMic J1 contact i+1 (assumed)
+const MIC_U1 = MIC_ORG.clone().add(V(20, 2.2, -12.97));
+// AeroNode J11 (16-way, AeroIMU) and J12 (10-way, AeroVault): Cvilux CF31 FPCs on the far edge (J11 x 35.5..47.8, J12 x 56.4..65.7, z -106..-100.2)
+const fpcRow = (cx, n, z, y=2.6) => Array.from({length:n}, (_, i) => V(cx + (i - (n-1)/2) * 0.5, y, z));
+const J11 = fpcRow(AERO_AT.x + 41.65, 16, AERO_AT.z - 106.4), J12 = fpcRow(AERO_AT.x + 61.05, 10, AERO_AT.z - 106.4);
+// AeroIMU Rev 0 (16.5 x 20.2 mm) and AeroVault Rev 0.0.2 (13.7 x 18.4 mm): each has its own CF31 J1 on the edge facing the AeroNode
+const IMU_ORG = V(-183.2, 0, -85.8), VAULT_ORG = V(-144.7, 0, -93.8);
+const IMU_AT = IMU_ORG.clone().add(V(8.25, 0, -10.1)), VAULT_AT = VAULT_ORG.clone().add(V(6.85, 0, -9.2));
+const IMU_IN = fpcRow(IMU_ORG.x + 7.16, 16, IMU_ORG.z - 0.6, 2.4), VAULT_IN = fpcRow(VAULT_ORG.x + 6.66, 10, VAULT_ORG.z - 0.6, 2.4);
+// AeroNode J2 battery connector: Molex picoSPOX 87438-0543, 5-way 1.5 mm (x 42.7..51.5, z -20.1..-12.4). Pack is a stand-in.
+const J2B = Array.from({length:5}, (_, i) => V(AERO_AT.x + 47.1 + (i - 2) * 1.5, 3.6, AERO_AT.z - 12.0));
+const PACK = {at:V(-170, 0, 98), w:44, h:22, l:74};
+const PACK_IN = Array.from({length:5}, (_, i) => V(PACK.at.x + (i - 2) * 2.2, PACK.h - 4, PACK.at.z - PACK.l/2 - 3));
+
+// ---- wire colours (to tell conductors apart; not a harness colour code)
+const C = {red:'#c0392b', blk:'#2b2b2b', gnd:'#7d8480', ffc:'#b9bfbb', v33:'#eaa79e', aud:'#e0702a', cs:'#7a5ad6', clk:'#d9c22e', di:'#3d6fd6', dout:'#2f9e4f'};
+
+// ---- AeroNode J9, from the schematic (HW 0.0.2 rev 1, sheet 6, "audio breakout"; flex contact side to face the PCB)
+const J9NET = ['GND','Vcm3.3','Audio_IN_Dat0_I2S_SDI3','Audio_IN_Dat1_I2S_SDO3','Audio_IN_Clk_I2S_SDO2','GND','Audio_I2S_SDI2','Audio_I2S_SDI1','Audio_I2S_SDO1','GND',
+  'Audio_I2S_SCLK','GND','Audio_I2S_WS','Audio_I2S_SDI0','Audio_I2S_SDO0','reserved','GPIO_RLY_SPKR','GPIO_RLY_MIC','GND','sensor_I2C_SCL','sensor_I2C_SDA','GND','Vsys (switched)','GND'];
+const J9WHAT = {GND:'Ground', 'Vcm3.3':'3.3 V from the CM5 (C43 decoupling at J9)',
+  'Audio_IN_Dat0_I2S_SDI3':'Audio input data 0 to the CM5. The sheet groups J9.3–5 as the "PDM or I²S" input, the most likely lines for the AeroMic',
+  'Audio_IN_Dat1_I2S_SDO3':'Audio input data 1, or I²S SDO3 from the CM5. Part of the "PDM or I²S" group',
+  'Audio_IN_Clk_I2S_SDO2':'Audio input clock from the CM5, or I²S SDO2. Part of the "PDM or I²S" group',
+  'Audio_I2S_SDI2':'I²S data to the CM5', 'Audio_I2S_SDI1':'I²S data to the CM5', 'Audio_I2S_SDI0':'I²S data to the CM5', 'Audio_I2S_SDO1':'I²S data from the CM5', 'Audio_I2S_SDO0':'I²S data from the CM5',
+  'Audio_I2S_SCLK':'I²S bit clock', 'Audio_I2S_WS':'I²S word select', reserved:'Reserved, not connected on the AeroNode',
+  'GPIO_RLY_SPKR':'Speaker relay drive (used by the V2 audio board)', 'GPIO_RLY_MIC':'Mic relay drive (used by the V2 audio board)',
+  'sensor_I2C_SCL':'Sensor I²C clock, shared with the BME690, ADS1115 and LP5815', 'sensor_I2C_SDA':'Sensor I²C data, same shared bus',
+  'Vsys (switched)':'Vsys through Q1 (switched by Audio_nPower), D1 and the 100 mA polyfuse F1'};
+const J9COL = net => net === 'GND' ? C.gnd : net === 'Vcm3.3' ? C.v33 : net.startsWith('Vsys') ? C.red : net.startsWith('Audio_IN') ? C.aud : C.ffc;
+
+// ---- cables: each wire = [from pin label, to pin label, net, what, colour]
+const CABLES = [
+ {id:'mic', title:'AeroNode J9 → AeroMic J1', sub:'24-way 0.5 mm FFC to the AeroMic Rev 0.1, which has a CF3124 24-way connector, the same part as J9. Signal names are the AeroNode’s. There is no AeroMic schematic yet, so which lines its I²S mic (DMM-4026-B-I2S-R) uses is not known; J9.3–5 (orange) are the lines the AeroNode sheet marks for PDM or I²S input. Contact order is assumed one to one',
+  from:J9, fromDir:V(1,0,0), to:MIC_IN, toDir:V(-1,0,0), mids:[V((J9[0].x + MIC_IN[0].x)/2, 6, J9[12].z)], r:0.17, sp:0.5, flex:true,
+  wires:J9NET.map((net, i) => [`J9.${i+1}`, `J1.${i+1}`, net, J9WHAT[net], J9COL(net)]), ends:['AeroNode', 'AeroMic']},
+ {id:'imu', title:'AeroNode J11 → AeroIMU J1', sub:'16-way 0.5 mm FPC to the AeroIMU Rev 0, whose J1 is also a Cvilux CF31. Signals are from AeroNode schematic sheet 8. Contact order at the far end is assumed one to one', flex:true,
+  from:J11, fromDir:V(0,0,-1), to:IMU_IN, toDir:V(0,0,1), mids:[V(IMU_AT.x, 3, -74)], r:0.13, sp:0.5,
+  wires:[['J11.1','IMU 1','Vcm5','5 V on its own trace, to keep noise off the sensors',C.red],['J11.2','IMU 2','Vcm5','5 V',C.red],
+         ['J11.3','IMU 3','GND','Ground on its own trace',C.gnd],['J11.4','IMU 4','GND','Ground',C.gnd],
+         ['J11.5','IMU 5','heater_control','Thermal-island heater drive',C.aud],['J11.6','IMU 6','reserved','Reserved',C.ffc],['J11.7','IMU 7','reserved','Reserved',C.ffc],
+         ['J11.8','IMU 8','Vcm3.3','3.3 V',C.v33],['J11.9','IMU 9','GND','Ground',C.gnd],
+         ['J11.10','IMU 10','IMU_SPI_nCS','IMU SPI chip select (CM5)',C.cs],['J11.11','IMU 11','IMU_SPI_SCK','IMU SPI clock',C.clk],
+         ['J11.12','IMU 12','IMU_SPI_SDI','IMU SPI data (SDI)',C.di],['J11.13','IMU 13','IMU_SPI_SDO','IMU SPI data (SDO)',C.dout],
+         ['J11.14','IMU 14','Vcm5','5 V',C.red],['J11.15','IMU 15','GND','Ground',C.gnd],['J11.16','IMU 16','Vcm3.3','3.3 V, reserved for a future power-control signal',C.v33]], ends:['AeroNode', 'AeroIMU']},
+ {id:'vault', title:'AeroNode J12 → AeroVault J1', sub:'10-way 0.5 mm FPC to the AeroVault Rev 0.0.2, whose J1 is also a Cvilux CF31. It carries SPI NAND flash for the fireproof section. Signals are from AeroNode schematic sheet 8. Contact order at the far end is assumed one to one', flex:true,
+  from:J12, fromDir:V(0,0,-1), to:VAULT_IN, toDir:V(0,0,1), mids:[V((J12[0].x + VAULT_AT.x)/2, 4, -78)], r:0.13, sp:0.5,
+  wires:[['J12.1','Vault 1','GND','Ground',C.gnd],['J12.2','Vault 2','reserved','Reserved for a future power-enable signal',C.ffc],
+         ['J12.3','Vault 3','AeroVault_SPI_nCS','Flash chip select',C.cs],['J12.4','Vault 4','AeroVault_SPI_SIO1','SIO1 = MISO, flash → CM5',C.dout],
+         ['J12.5','Vault 5','Vcm3.3','Pulls nWP high; could become SIO2 for quad SPI',C.v33],['J12.6','Vault 6','Vcm3.3','Pulls nHOLD high; could become SIO3',C.v33],
+         ['J12.7','Vault 7','AeroVault_SPI_SIO0','SIO0 = MOSI, CM5 → flash',C.di],['J12.8','Vault 8','AeroVault_SPI_CLK','Flash SPI clock',C.clk],
+         ['J12.9','Vault 9','reserved','Reserved',C.ffc],['J12.10','Vault 10','Vcm3.3','3.3 V flash supply',C.red]], ends:['AeroNode', 'AeroVault']},
+ {id:'batt', title:'Battery pack → AeroNode J2', sub:'5-wire lead into a Molex picoSPOX 5-way (J2). Pack: 2S Li-ion with a BQ40Z50 gauge, 7.2 V nominal (8.45 V max charging), 5 Ah, about 36 Wh, per AeroNode schematic sheet 1. The pack size is a stand-in, and which end of J2 is pin 1 is assumed',
+  from:PACK_IN, fromDir:V(0,0,-1), to:J2B, toDir:V(0,0,1), mids:[V(PACK.at.x, 10, 52)], r:0.5, sp:1.6,
+  wires:[['pack −','J2.1','PACK−','Pack negative, to AeroNode GND',C.blk],['pack −','J2.2','PACK−','Pack negative (second contact for current)',C.blk],
+         ['pack NTC','J2.3','NTC','10 kΩ NTC in the pack (103AT, B 3435 K), to the BQ25798 charger TS input via R9/R11','#e8d34a'],
+         ['pack +','J2.4','PACK+','Pack positive = Vbat: 7.2 V nominal, 8.45 V max while charging',C.red],['pack +','J2.5','PACK+','Pack positive (second contact for current)',C.red]], ends:['Battery', 'AeroNode']},
+];
+
+// ---- build wires: start at the real pin, fan into a flat bundle along a centreline, fan out to the mating pin
+const UP = V(0,1,0), wireMeshes = [];
+const smooth = (a,b,x) => { const t = Math.min(1, Math.max(0, (x-a)/(b-a))); return t*t*(3-2*t); };
+const flexMat = new THREE.MeshStandardMaterial({color:0xc98a2b, roughness:.45, transparent:true, opacity:.55, side:THREE.DoubleSide, depthWrite:false});
+for (const c of CABLES){ c.meshes = []; c.curves = []; buildWires(c); }
+function buildWires(c){
+  const s0 = mean(c.from), e0 = mean(c.to), lift = c.flex ? 0 : 1, stub = c.flex ? 3 : 7;
+  const ctrl = [s0, s0.clone().addScaledVector(c.fromDir, stub).add(V(0,lift,0)), ...c.mids, e0.clone().addScaledVector(c.toDir, stub).add(V(0,lift*2,0)), e0];
+  const centre = new THREE.CatmullRomCurve3(ctrl, false, 'catmullrom', 0.3);
+  const n = c.wires.length, N = c.flex ? 60 : 90;
+  const t0 = centre.getTangentAt(0.2), perp0 = new THREE.Vector3().crossVectors(t0, UP).normalize();
+  const order = c.from.map((p,i) => [p.clone().sub(s0).dot(perp0), i]).sort((a,b) => a[0]-b[0]).map(x => x[1]);
+  const rank = []; order.forEach((wi, k) => rank[wi] = k);
+  if (c.flex){   // polyimide behind the traces
+    const pos = [], half = n * c.sp / 2 + 0.6;
+    for (let k = 0; k <= N; k++){
+      const t = k/N, p = centre.getPointAt(t), tan = centre.getTangentAt(t);
+      let perp = new THREE.Vector3().crossVectors(tan, UP); if (perp.lengthSq() < 1e-6) perp.set(1,0,0); perp.normalize().multiplyScalar(half);
+      pos.push(...p.clone().add(perp).toArray(), ...p.clone().sub(perp).toArray());
+    }
+    const idx = []; for (let k = 0; k < N; k++){ const a = 2*k; idx.push(a, a+1, a+2, a+1, a+3, a+2); }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
+    const strip = new THREE.Mesh(g, flexMat.clone()); scene.add(strip); c.meshes.push(strip);
+  }
+  c.from.forEach((_, i) => {
+    const w = c.wires[i], sOff = c.from[i].clone().sub(s0), eOff = c.to[i].clone().sub(e0), pts = [];
+    for (let k = 0; k <= N; k++){
+      const t = k / N, p = centre.getPointAt(t), tan = centre.getTangentAt(t);
+      let perp = new THREE.Vector3().crossVectors(tan, UP); if (perp.lengthSq() < 1e-6) perp.set(1,0,0); perp.normalize();
+      const mOff = perp.multiplyScalar((rank[i] - (n-1)/2) * c.sp);
+      const off = sOff.clone().lerp(mOff, smooth(0, 0.16, t)).lerp(eOff, smooth(0.84, 1, t));
+      pts.push(p.add(off));
+    }
+    const curve = new THREE.CatmullRomCurve3(pts);
+    const mat = new THREE.MeshStandardMaterial({color:w[4], roughness:.5, transparent:true});
+    const mesh = new THREE.Mesh(new THREE.TubeGeometry(curve, N*2, c.r, 8, false), mat);
+    mesh.userData = {cable:c, wire:w, i}; scene.add(mesh); wireMeshes.push(mesh); c.meshes.push(mesh); c.curves.push(curve);
+  });
+}
+
+// ---- battery pack stand-in: two cells side by side under shrink, gauge board and lead exit at the AeroNode end
+function solid(geo, color, at, op){ const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({color, roughness:.6, transparent:!!op, opacity:op||1})); m.position.copy(at); scene.add(m); return m; }
+for (const dx of [-11, 11]){ const cell = solid(new THREE.CylinderGeometry(10.5, 10.5, PACK.l - 4, 32), 0xb9c2c7, V(PACK.at.x + dx, 10.8, PACK.at.z)); cell.rotation.x = Math.PI/2; }
+solid(new THREE.BoxGeometry(PACK.w, PACK.h, PACK.l), 0x2f6fb3, V(PACK.at.x, PACK.h/2, PACK.at.z), .55);
+solid(new THREE.BoxGeometry(30, 1.2, 9), 0x1f5e43, V(PACK.at.x, PACK.h - 2, PACK.at.z - PACK.l/2 + 6));
+solid(new THREE.BoxGeometry(14, 4, 4), 0x222222, V(PACK.at.x, PACK.h - 4, PACK.at.z - PACK.l/2 - 1));
+solid(new THREE.BoxGeometry(9.5, 3.2, 5), 0xe9e4d4, J2B[2].clone().add(V(0, 0.2, 2.2)));     // picoSPOX housing on the lead
+
+// ---- boards (KiCad GLB shipped as base64 text; the artifact host serves no .glb)
+const loader = new THREE.GLTFLoader(), glbCache = {};
+function fetchGLB(url){
+  return glbCache[url] = glbCache[url] || fetch(url).then(r => { if (!r.ok) throw new Error(url + ' ' + r.status); return r.text(); })
+    .then(t => { const s = atob(t.replace(/\s+/g,'')), b = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) b[i] = s.charCodeAt(i); return b.buffer; });
+}
+function loadBoard(url){
+  return fetchGLB(url).then(buf => new Promise((res, rej) => loader.parse(buf, '', g => {
+    const m = g.scene, s = new THREE.Box3().setFromObject(m).getSize(V(0,0,0));
+    if (s.z < s.y && s.z < s.x) m.rotation.x = -Math.PI/2;
+    const grp = new THREE.Group(); grp.add(m); res(grp);
+  }, rej)));
+}
+
+// ---- tags
+const TAGS = [];
+function tag(text, pos, cls=''){ const el = document.createElement('div'); el.className = 'tag ' + cls; el.textContent = text; tagsEl.appendChild(el); const t = {el, pos}; TAGS.push(t); return t; }
+tag('AeroNode Rev 0.0.2', AERO_AT.clone().add(V(52,24,-58)), 'board');
+tag('AeroMic Rev 0.1', MIC_ORG.clone().add(V(13.5,20,-14)), 'board'); tag('I²S mic U1', MIC_U1.clone().add(V(0,3,0)));
+tag('J9', V(AERO_AT.x + 83.3, 7, AERO_AT.z + J9_ZC)); tag('J1', MIC_ORG.clone().add(V(3,6,-12.7)));
+tag('J11', J11[8].clone().add(V(0,5,4))); tag('J12', J12[5].clone().add(V(0,5,4)));
+tag('AeroIMU Rev 0', IMU_AT.clone().add(V(-12,9,-12)), 'board'); tag('AeroVault Rev 0.0.2', VAULT_AT.clone().add(V(12,9,-11)), 'board');
+tag('Battery pack 2S (stand-in)', PACK.at.clone().add(V(0, PACK.h + 8, 10)), 'board ghost'); tag('J2', J2B[2].clone().add(V(0,7,-3)));
+let wireTags = [];
+
+// ---- legend, wire table, highlight
+const legend = document.getElementById('legend'), wiresEl = document.getElementById('wires'), wtTitle = document.getElementById('wt-title');
+let active = null;
+for (const c of CABLES){
+  const b = document.createElement('button'); b.type = 'button'; b.id = 'cable-' + c.id; b.setAttribute('aria-pressed','false');
+  b.innerHTML = `<b>${c.title}</b><span>${c.wires.length}</span>`; b.title = c.sub;
+  b.onclick = () => setActive(active === c.id ? null : c.id); legend.appendChild(b); c.btn = b;
+}
+function setActive(id){
+  active = id;
+  for (const t of wireTags) t.el.remove(); TAGS.splice(TAGS.length - wireTags.length, wireTags.length); wireTags = [];
+  for (const c of CABLES){ const on = !id || c.id === id; for (const m of c.meshes) m.material.opacity = on ? (m.material.side === THREE.DoubleSide ? .55 : 1) : 0.08; c.btn.setAttribute('aria-pressed', String(c.id === id)); }
+  const c = CABLES.find(x => x.id === id);
+  if (!c){ wtTitle.textContent = 'Wires'; wiresEl.innerHTML = '<p class="note">Pick a cable to list its wires.</p>'; return; }
+  wtTitle.textContent = c.title;
+  wiresEl.innerHTML = `<p class="note">${c.sub}. ${c.ends[0]} → ${c.ends[1]}.</p><table><thead><tr><th></th><th>Pins</th><th>Signal</th></tr></thead><tbody>` +
+    c.wires.map((w, i) => `<tr data-i="${i}"><td><i class="sw" style="background:${w[4]}"></i></td><td class="pin">${w[0]} → ${w[1]}</td><td class="net">${w[2]}<span class="what">${w[3]}</span></td></tr>`).join('') + '</tbody></table>';
+  const n = c.wires.length;
+  if (n <= 8) c.curves.forEach((cv, i) => {
+    const t = tag(c.wires[i][2], cv.getPointAt(0.22 + 0.56 * i / Math.max(1, n - 1)).add(V(0, 3 + (i % 2) * 5, 0)), 'wire'); t.el.style.borderLeftColor = c.wires[i][4]; wireTags.push(t);
+  });
+  // frame the picked cable: its wires are under a millimetre thick, so the overview can't show them
+  const box = new THREE.Box3(); c.curves.forEach(cv => cv.getPoints(40).forEach(p => box.expandByPoint(p)));
+  const centre = box.getCenter(V(0,0,0)), size = Math.max(box.getSize(V(0,0,0)).length(), 40);
+  const dir = camera.position.clone().sub(controls.target).normalize();
+  controls.target.copy(centre); camera.position.copy(centre).addScaledVector(dir, size * 1.9);
+}
+document.getElementById('all').onclick = () => setActive(null);
+document.getElementById('reset').onclick = () => { camera.position.copy(HOME.pos); controls.target.copy(HOME.tgt); };
+
+// ---- hover
+const ray = new THREE.Raycaster(), mouse = new THREE.Vector2(); let hot = null;
+canvas.addEventListener('pointermove', e => {
+  const r = canvas.getBoundingClientRect(); mouse.set((e.clientX - r.left)/r.width*2 - 1, -(e.clientY - r.top)/r.height*2 + 1);
+  ray.setFromCamera(mouse, camera);
+  const hits = ray.intersectObjects(wireMeshes.filter(m => m.material.opacity > 0.5));
+  const m = hits.length ? hits[0].object : null;
+  if (hot && hot !== m){ hot.material.emissive.setHex(0); } hot = m;
+  document.querySelectorAll('tr.hot').forEach(x => x.classList.remove('hot'));
+  if (!m){ tip.hidden = true; return; }
+  m.material.emissive.setHex(0x333333);
+  const {cable, wire, i} = m.userData;
+  tip.innerHTML = `<b>${cable.ends[0]} ${wire[0]} → ${cable.ends[1]} ${wire[1]}</b>${wire[2]}<br><span style="color:var(--muted)">${wire[3]}</span>`;
+  tip.hidden = false;
+  const x = e.clientX - r.left + 14, y = e.clientY - r.top + 14;
+  tip.style.left = Math.min(x, r.width - tip.offsetWidth - 8) + 'px'; tip.style.top = Math.min(y, r.height - tip.offsetHeight - 8) + 'px';
+  if (active === cable.id){ const row = wiresEl.querySelector(`tr[data-i="${i}"]`); if (row) row.classList.add('hot'); }
+});
+canvas.addEventListener('pointerleave', () => { tip.hidden = true; if (hot){ hot.material.emissive.setHex(0); hot = null; } });
+
+// ---- run
+function resize(){ const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w/h; camera.updateProjectionMatrix(); }
+new ResizeObserver(resize).observe(stage); resize();
+const theme = () => { scene.background = new THREE.Color(css('--scene')); };
+theme(); matchMedia('(prefers-color-scheme: dark)').addEventListener('change', theme);
+new MutationObserver(theme).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+const v = V(0,0,0);
+(function frame(){
+  controls.update(); renderer.render(scene, camera);
+  const w = stage.clientWidth, h = stage.clientHeight;
+  for (const t of TAGS){ v.copy(t.pos).project(camera); const vis = v.z < 1; t.el.hidden = !vis; if (vis){ t.el.style.left = ((v.x+1)/2*w) + 'px'; t.el.style.top = ((1-v.y)/2*h) + 'px'; } }
+  requestAnimationFrame(frame);
+})();
+const status = document.getElementById('status');
+Promise.all([loadBoard('aeronode.glb.txt'), loadBoard('aeromic.glb.txt'), loadBoard('aeroimu.glb.txt'), loadBoard('aerovault.glb.txt')]).then(([n, mic, imu, vlt]) => {
+  n.position.copy(AERO_AT); mic.position.copy(MIC_ORG); imu.position.copy(IMU_ORG); vlt.position.copy(VAULT_ORG);
+  scene.add(n, mic, imu, vlt); status.textContent = '';
+}).catch(e => { status.textContent = 'Board models did not load: ' + (e && e.message || e); });
+</script>
