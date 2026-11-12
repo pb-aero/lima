@@ -1849,3 +1849,8 @@ JLCPCB assembly, JST GH for all off-board connectors.** Approved downloads: Open
   "AeroMic J1 / J2 headers": table + 3D pin labels). Pinout `[repo]` from the AeroMic schematic. `[measured]` from the
   STEP assembly: J1 pins at x 10.00, J2 at x 12.54 (J1 is the column next to J3). `[assumed]` pin-1 end: the STEP bakes
   all pins into one shape, so it is drawn at the J3.24 end (both headers follow J3's order). Peter can confirm from silk.
+- **2026-11-12 AeroMic header pin 1 is NOT recoverable from the STEP** `[measured]`: all 10 pins and 10 housing blocks per
+  header are identical shapes with positions baked in (the occurrence transforms are all the same, so their order carries
+  nothing), the housing ends are symmetric, and the board body has 20 identical round 1.2 mm drill holes with no copper,
+  so there's no square pad and no silk. Drive holds only the STEP + schematic PDF for the AeroMic. Needs the PCB file
+  (Altium PcbDoc / Gerbers), the silkscreen, or a look at the bare board's square pad.
