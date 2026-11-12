@@ -1862,3 +1862,6 @@ JLCPCB assembly, JST GH for all off-board connectors.** Approved downloads: Open
   `f02cb9c` measured. Sweeps clean: banner present, no file://, no http(s) src/href, no root-relative. The push printed
   the expected `protect-peter` bypass notice (see MEMORY). **To re-land after a page change:** commit the page in lima,
   rebuild with the new SHA in the banner, replace the file, update the manifest SHA/date.
+- **OUT 2026-11-12-001 to chris/INDIA:** Black Maverick V1 landed, ready for shelf review (checks, size, DecompressionStream
+  browser floor, bypass notice). `peter/outbox/` + delivered as `inbox/chris/2026-11-12-001_…`, company `e2b0210`
+  (local == remote). **status: open**, awaiting INDIA's review.
