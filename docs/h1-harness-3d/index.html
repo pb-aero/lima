@@ -27,6 +27,9 @@ header p{margin:0;color:var(--muted);max-width:75ch}
 .tag.board{font:500 12px/1 var(--display);padding:4px 7px}
 .tag.ghost{color:var(--muted);border-style:dashed}
 .tag.wire{transform:translate(-50%,-50%);border-left-width:4px;font-weight:400}
+.tag.contact{font-weight:400;border-left-width:4px}
+.tag.contact.cl{transform:translate(-100%,-50%)}
+.tag.contact.cr{transform:translate(0,-50%)}
 #tip{position:absolute;pointer-events:none;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:7px 9px;font-size:12px;max-width:300px;box-shadow:0 4px 14px rgb(0 0 0 / .12)}
 #tip b{font:500 12px var(--mono);display:block}
 #status{position:absolute;left:12px;bottom:10px;font:12px var(--mono);color:var(--muted)}
@@ -304,19 +307,20 @@ solid(new THREE.SphereGeometry(4.5, 24, 16), 0x202322, boomEnd);
 function gaPlug(at, d, handleR, handleL, seg){
   const r = d/2, axis = g => { g.rotateX(Math.PI/2); return g; };
   const metal = 0xc9ccca, ins = 0x1d1f1e; let z = at.z - 6;
-  const part = (geo, color, len) => { solid(axis(geo), color, V(at.x, at.y, z + len/2)); z += len; };
+  const mid = {}, part = (geo, color, len, name) => { solid(axis(geo), color, V(at.x, at.y, z + len/2)); if (name) mid[name] = V(at.x, at.y, z + len/2); z += len; };
   part(new THREE.CylinderGeometry(handleR*0.6, handleR*0.6, 4, 24), 0x2c2f2e, 4);            // strain relief
   part(new THREE.CylinderGeometry(handleR, handleR, handleL, 32), 0x3a3e3c, handleL);         // handle
   part(new THREE.CylinderGeometry(r*1.25, r*1.25, 1.5, 24), metal, 1.5);                      // shoulder
-  part(new THREE.CylinderGeometry(r, r, seg[0], 24), metal, seg[0]);                          // sleeve
+  part(new THREE.CylinderGeometry(r, r, seg[0], 24), metal, seg[0], 'sleeve');
   part(new THREE.CylinderGeometry(r, r, seg[1], 24), ins, seg[1]);
-  part(new THREE.CylinderGeometry(r, r, seg[2], 24), metal, seg[2]);                          // ring
+  part(new THREE.CylinderGeometry(r, r, seg[2], 24), metal, seg[2], 'ring');
   part(new THREE.CylinderGeometry(r*0.8, r*0.8, seg[3], 24), ins, seg[3]);
-  part(new THREE.CylinderGeometry(r*0.55, r, seg[4], 24), metal, seg[4]);                     // tip
+  part(new THREE.CylinderGeometry(r*0.55, r, seg[4], 24), metal, seg[4], 'tip');
   solid(new THREE.SphereGeometry(r*0.55, 16, 12), metal, V(at.x, at.y, z));
+  return mid;                                                  // contact centres, for the labels
 }
-gaPlug(PHONE, 6.35, 6.2, 36, [17, 2.5, 5, 2.5, 5.5]);      // PJ-055 headphone
-gaPlug(MICPLUG, 5.23, 5.4, 32, [14, 2, 4.5, 2, 4.5]);      // PJ-068 mic
+const PJ055 = gaPlug(PHONE, 6.35, 6.2, 36, [17, 2.5, 5, 2.5, 5.5]);      // PJ-055 headphone
+const PJ068 = gaPlug(MICPLUG, 5.23, 5.4, 32, [14, 2, 4.5, 2, 4.5]);      // PJ-068 mic
 // battery pack stand-in: two cells side by side under shrink, gauge board and lead exit at the AeroNode end
 for (const dx of [-11, 11]){ const cell = solid(new THREE.CylinderGeometry(10.5, 10.5, PACK.l - 4, 32), 0xb9c2c7, V(PACK.at.x + dx, 10.8, PACK.at.z)); cell.rotation.x = Math.PI/2; }
 solid(new THREE.BoxGeometry(PACK.w, PACK.h, PACK.l), 0x2f6fb3, V(PACK.at.x, PACK.h/2, PACK.at.z), .55);
@@ -354,6 +358,17 @@ tag('J9', V(AERO_AT.x + 83.3, 7, AERO_AT.z + J9_ZC)); tag('J11', J11[8].clone().
 tag('AeroIMU Rev 0', IMU_AT.clone().add(V(0,9,-12)), 'board');
 tag('Battery pack 2S (stand-in)', PACK.at.clone().add(V(0, PACK.h + 8, 10)), 'board ghost'); tag('J2', J2B[2].clone().add(V(0,7,-3))); tag('AeroVault Rev 0.0.2', VAULT_AT.clone().add(V(0,9,-11)), 'board'); tag('Boom mic', boomEnd.clone().add(V(0,8,0)));
 tag('PJ-055 headphone', PHONE.clone().add(V(0,10,40))); tag('PJ-068 mic', MICPLUG.clone().add(V(0,9,34)));
+// contact labels on the outer side of each plug (common GA practice; confirm against the aircraft jack wiring)
+// labels sit 14 mm out to the side and are spread along the plug (contacts are only ~5-13 mm apart), with a leader line back
+const leaderMat = new THREE.LineBasicMaterial({color:0x7d8480});
+function contactTag(text, pos, side, dz, colour){
+  const anchor = pos.clone().add(V(side * 14, 0, dz));
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([pos.clone().add(V(side * 3.4, 0, 0)), anchor.clone().add(V(-side * 1, 0, 0))]), leaderMat));
+  const t = tag(text, anchor, 'contact ' + (side < 0 ? 'cl' : 'cr') + (colour ? '' : ' ghost'));
+  if (colour){ if (side < 0){ t.el.style.borderLeftWidth = '1px'; t.el.style.borderRightWidth = '4px'; t.el.style.borderRightColor = colour; } else t.el.style.borderLeftColor = colour; }
+}
+contactTag('Tip · EAR_HI', PJ055.tip, -1, 9, C.earH); contactTag('Ring · not used (mono)', PJ055.ring, -1, -4); contactTag('Sleeve · EAR_RTN', PJ055.sleeve, -1, -8, C.earR);
+contactTag('Tip · PTT (not carried)', PJ068.tip, 1, 9); contactTag('Ring · MIC_HI', PJ068.ring, 1, -4, C.micH); contactTag('Sleeve · MIC_LO', PJ068.sleeve, 1, -8, C.micL);
 for (const c of CABLES.filter(x => x.flex && x.inst)) for (const inst of c.inst) tag(c.ends[1], inst.end.clone().add(V(0,5,0)));
 let wireTags = [];
 
