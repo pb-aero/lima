@@ -1865,3 +1865,14 @@ JLCPCB assembly, JST GH for all off-board connectors.** Approved downloads: Open
 - **OUT 2026-11-12-001 to chris/INDIA:** Black Maverick V1 landed, ready for shelf review (checks, size, DecompressionStream
   browser floor, bypass notice). `peter/outbox/` + delivered as `inbox/chris/2026-11-12-001_…`, company `e2b0210`
   (local == remote). **status: open**, awaiting INDIA's review.
+
+## 2026-11-13 · GMA match board — schematic done, PCB waiting on KiCad
+
+Peter: *"from the audio board i need to breakout the impedance matching portion from the adau1372 to the
+gma245r"*. Ruled: **both paths, standalone test PCB, K1 left out.** New project `kicad/gma-match-board/`
+(README there). TX: T4 SM-LP-5001 + R10/C37; RX: T2/T3 SP-74 + R7/R8/C27/D1/C26 tap. Audio-board refdes,
+values and footprints are kept. J1 = 2.54 mm codec header for the ADAU1372 EVB, J5 = the audio board's GH panel
+connector, J2 = 2.54 mm twin, J3/J4 = speakers. Netlist == `doc/design_nets.py` (negative control fails), ERC 0/0
+`[measured]`. Schematic commit `1442e2b`.
+**Next:** PCB. Needs Peter to open the project in KiCad (from the project manager) for the Konnect sync; then
+place, route, DRC. Before wiring to the EVB, check J16's pin order in UG-807.
