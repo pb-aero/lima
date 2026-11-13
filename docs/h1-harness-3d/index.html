@@ -86,7 +86,7 @@ const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.outputEncoding = THREE.sRGBEncoding;
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(35, 1, 1, 5000);
-const HOME = {pos:V(10, 470, 520), tgt:V(0, 0, 15)};
+const HOME = {pos:V(-10, 560, 640), tgt:V(-20, 0, 70)};
 camera.position.copy(HOME.pos);
 const controls = new THREE.OrbitControls(camera, canvas); controls.target.copy(HOME.tgt); controls.enableDamping = true;
 scene.add(new THREE.HemisphereLight(0xffffff, 0x8a908c, 0.95));
@@ -138,7 +138,21 @@ const PACK = {at:V(-170, 0, 98), w:44, h:22, l:74};
 const PACK_IN = Array.from({length:5}, (_, i) => V(PACK.at.x + (i - 2) * 2.2, PACK.h - 4, PACK.at.z - PACK.l/2 - 3));
 const boomBase = P(CUPL_AT, PADS.cup.J12[0]).addScaledVector(radial(CUPL_AT,'J12'), 14).add(V(0,5,0));
 const boomEnd = P(CUPL_AT, PADS.cup.J12[0]).addScaledVector(radial(CUPL_AT,'J12'), 78).add(V(0,22,0));
-const PHONE = V(-78,4,125), MICPLUG = V(-50,4,125);
+const PHONE = V(-78,4,125), MICPLUG = V(-50,4,129);     // both plug shoulders land on the panel at z 160.5
+// Garmin GMA 245R remote audio panel (GMA 245/245R Installation Manual 190-01879-11 Rev 14): unit 159.8 W x 34.5 H x
+// 167.3 D mm (Table 1-2); two 44-pin high-density D-subs J2401/J2402 at the rear. Pilot headset: J2402-16 LEFT, -31 RIGHT,
+// -1 LO; pilot mic: J2401-33 AUDIO IN HI, -35 LO, -34 MIC KEY* (Tables 4-1/4-2). Jacks per Figures C-2/C-3: headphone
+// tip LEFT / ring RIGHT / sleeve LO; mic ring HI / sleeve LO / tip = MIC KEY (note 6: needed for hand mics). Placement and
+// the position of J2401 vs J2402 on the rear face are assumed; D-sub pin positions follow the standard HD-44 layout.
+const PANEL_Z = 160.5, GMA = {at:V(-64, 20, 330), w:159.8, h:34.5, d:167.3};
+const GMA_REAR = GMA.at.z - GMA.d/2;
+function hd44(cx, cy){       // pin n -> rear-face contact position (rows 1-15, 16-30, 31-44; 2.29 mm pitch, 1.98 mm rows)
+  return n => { const row = n <= 15 ? 0 : n <= 30 ? 1 : 2, k = row === 0 ? n - 1 : row === 1 ? n - 16 : n - 31, cnt = row === 2 ? 14 : 15;
+    return V(cx - (k - (cnt - 1)/2) * 2.29 + (row === 1 ? 1.145 : 0), cy + (1 - row) * 1.98, GMA_REAR - 8.6); };
+}
+const J2401P = hd44(-40, GMA.at.y), J2402P = hd44(-90, GMA.at.y);
+const lugs = at => ({tip:V(at.x, at.y - 5, PANEL_Z + 31), ring:V(at.x, at.y, PANEL_Z + 30), sleeve:V(at.x, at.y + 5, PANEL_Z + 29)});
+const PHJ = lugs(PHONE), MCJ = lugs(MICPLUG), PTT_AT = V(-12, 6, 205);
 const drvTerm = at => [at.clone().add(V(11,-3,14)), at.clone().add(V(14,-3,11))];
 
 // flex mic boards (Infineon KIT_IM73A135V01_FLEX / KIT_IM72D128V01_FLEX): 6-contact 0.5 mm tail into the ZIF, module at the far end
@@ -193,7 +207,7 @@ const CABLES = [
   from:Array.from({length:24}, (_, n) => J9[24 - (n+1)]), fromDir:V(1,0,0), to:pins('audio',AUDIO_AT,'J1'), toDir:V(0,0,-1),
   mids:[V(-70,8,-52), V(-15,8,-46)], r:0.17, sp:0.5,
   wires:J1NET.map((net, i) => [`J9.${24 - i}`, `J1.${i+1}`, net, J1WHAT[net], i === 0 ? C.red : net === 'GND' ? C.gnd : C.ffc]), ends:['AeroNode', AUD]},
- {id:'panel', title:'Audio J5 → PJ-055 / PJ-068 plugs', sub:'4 wires, aircraft side, to the GA headset plugs: PJ-055 (¼ in) headphone, PJ-068 (0.206 in) mic. Contact use follows common GA practice (headphone: tip audio, sleeve return; mic: ring mic audio, sleeve return, tip PTT not carried by H1); not from a datasheet, so confirm against the aircraft jack wiring',
+ {id:'panel', title:'Audio J5 → PJ-055 / PJ-068 plugs', sub:'4 wires, aircraft side, to the GA headset plugs: PJ-055 (¼ in) headphone, PJ-068 (0.206 in) mic, plugged into the pilot jacks of the GMA 245R. Jack contacts per the GMA 245/245R installation manual (Figures C-2/C-3): headphone tip LEFT, ring RIGHT, sleeve LO; mic ring HI, sleeve LO, tip = PTT (not carried by H1). Note: the manual’s failsafe check relies on a mono plug shorting ring to sleeve, so H1’s PJ-055 should be a 2-circuit mono plug (or tie ring to sleeve)',
   from:pins('audio',AUDIO_AT,'J5'), fromDir:V(-1,0,0), to:[PHONE.clone().add(V(-0.6,0,-6)), PHONE.clone().add(V(0.6,0,-6)), MICPLUG.clone().add(V(-0.6,0,-6)), MICPLUG.clone().add(V(0.6,0,-6))], toDir:V(0,0,-1),
   mids:[V(-52,6,30), V(-62,5,90)], r:0.36, sp:1.0,
   wires:[['J5.1','PJ-055 tip','EAR_HI','Aircraft earphone audio in, to both SP-74 primaries',C.earH],
@@ -231,6 +245,17 @@ const CABLES = [
   wires:[['pack −','J2.1','PACK−','Pack negative, to AeroNode GND',C.blk],['pack −','J2.2','PACK−','Pack negative (second contact for current)',C.blk],
          ['pack NTC','J2.3','NTC','10 kΩ NTC in the pack (103AT, B 3435 K), to the BQ25798 charger TS input via R9/R11','#e8d34a'],
          ['pack +','J2.4','PACK+','Pack positive = Vbat: 7.2 V nominal, 8.45 V max while charging',C.red],['pack +','J2.5','PACK+','Pack positive (second contact for current)',C.red]], ends:['Battery', 'AeroNode']},
+ {id:'gmaPhone', title:'GMA 245R J2402 → pilot headphone jack', sub:'Aircraft wiring, shielded (MIL-C-27500 per the GMA manual). Pins per GMA 245/245R Installation Manual Table 4-2 and Figure C-3; conductor colours are the MIL-C-27500 white/blue/orange order, not specified by Garmin',
+  from:[PHJ.tip, PHJ.ring, PHJ.sleeve], fromDir:V(0,0,1), to:[J2402P(16), J2402P(31), J2402P(1)], toDir:V(0,0,-1), mids:[V(-84, 14, 222)], r:0.4, sp:1.1,
+  wires:[['jack tip','J2402.16','PILOT HEADSET AUDIO OUT LEFT','Left channel; H1’s PJ-055 tip (EAR_HI) picks it up','#f2f2ee'],
+         ['jack ring','J2402.31','PILOT HEADSET AUDIO OUT RIGHT','Right channel; a mono plug shorts it to the sleeve (GMA failsafe check)','#3d6fd6'],
+         ['jack sleeve','J2402.1','PILOT HEADSET AUDIO OUT LO','Headset return; H1’s PJ-055 sleeve (EAR_RTN)','#e2832b']], ends:['Headphone jack', 'GMA 245R']},
+ {id:'gmaMic', title:'GMA 245R J2401 → pilot mic jack + PTT', sub:'Aircraft wiring, shielded. Pins per GMA 245/245R Installation Manual Table 4-1 and Figure C-2. PILOT MIC KEY* (J2401-34) is active low: the yoke PTT grounds it, and note 6 ties it to the mic jack tip for hand mics',
+  from:[MCJ.tip, MCJ.ring, MCJ.sleeve, PTT_AT.clone().add(V(-3,0,0))], fromDir:V(0,0,1), to:[J2401P(34), J2401P(33), J2401P(35), J2401P(34).add(V(0.7,0.6,0))], toDir:V(0,0,-1), mids:[V(-40, 14, 222)], r:0.4, sp:1.1,
+  wires:[['jack tip','J2401.34','PILOT MIC KEY*','Push-to-talk from a headset or hand mic (H1 doesn’t carry it)','#f2f2ee'],
+         ['jack ring','J2401.33','PILOT MIC AUDIO IN HI','Mic audio in; H1’s PJ-068 ring (MIC_HI: DAC via T4, or the failsafe electret via K1)','#3d6fd6'],
+         ['jack sleeve','J2401.35','PILOT MIC AUDIO IN LO','Mic return; H1’s PJ-068 sleeve (MIC_LO)','#e2832b'],
+         ['yoke PTT','J2401.34','PILOT MIC KEY*','Yoke PTT switch to ground keys the pilot mic','#3fae5c']], ends:['Mic jack / PTT', 'GMA 245R']},
  {id:'ff', title:'Feed-forward mic flex (J9)', sub:'6-contact flex tail, both cups. IM73A135 analog, differential into U1 AINP0/AINN0. Contact order is a placeholder until checked on a kit', flex:true,
   inst:[flexInst(CUPL_AT,'J9'), flexInst(CUPR_AT,'J9')], r:0.13, sp:0.5,
   wires:[['J9.1','flex 1','3V3_MIC','Mic supply, 2.75 V class rail (U8)',C.red],['J9.2','flex 2','MK1_OUTP','Feed-forward mic output +, to U1 AINP0','#3d6fd6'],
@@ -321,6 +346,21 @@ function gaPlug(at, d, handleR, handleL, seg){
 }
 const PJ055 = gaPlug(PHONE, 6.35, 6.2, 36, [17, 2.5, 5, 2.5, 5.5]);      // PJ-055 headphone
 const PJ068 = gaPlug(MICPLUG, 5.23, 5.4, 32, [14, 2, 4.5, 2, 4.5]);      // PJ-068 mic
+// instrument panel section with the pilot jacks (insulated, per the GMA manual), jack bodies behind it, solder lugs at the back
+solid(new THREE.BoxGeometry(72, 44, 2), 0x8d9491, V(-64, 4, PANEL_Z + 1), .35);
+for (const [at, r, J] of [[PHONE, 6.4, PHJ], [MICPLUG, 5.6, MCJ]]){
+  const nut = solid(new THREE.CylinderGeometry(r + 2.2, r + 2.2, 2.4, 6), 0xb9bdbb, V(at.x, at.y, PANEL_Z - 1.2)); nut.rotation.x = Math.PI/2;
+  const body = solid(new THREE.CylinderGeometry(r, r, 26, 24), 0x2b2b2b, V(at.x, at.y, PANEL_Z + 15)); body.rotation.x = Math.PI/2;
+  for (const p of [J.tip, J.ring, J.sleeve]) solid(new THREE.BoxGeometry(2.4, 0.5, 4), 0xc9a24a, p.clone().add(V(0, 0, -1.6)));
+}
+// GMA 245R unit (remote mount) with its two 44-pin HD D-subs on the rear face
+const gmaBox = solid(new THREE.BoxGeometry(GMA.w, GMA.h, GMA.d), 0x2c2f33, GMA.at);
+const gmaEdges = new THREE.LineSegments(new THREE.EdgesGeometry(gmaBox.geometry), new THREE.LineBasicMaterial({color:0x5c6068})); gmaEdges.position.copy(GMA.at); scene.add(gmaEdges);
+for (const cx of [-40, -90]){
+  solid(new THREE.BoxGeometry(53, 12.5, 1), 0xb9bdbb, V(cx, GMA.at.y, GMA_REAR - 0.5));
+  solid(new THREE.BoxGeometry(40, 8, 7.5), 0x111111, V(cx, GMA.at.y, GMA_REAR - 4.75));
+}
+solid(new THREE.BoxGeometry(10, 8, 10), 0x1d1f1e, PTT_AT); solid(new THREE.CylinderGeometry(2.5, 2.5, 3, 16), 0xc0392b, PTT_AT.clone().add(V(0, 5.5, 0)));
 // battery pack stand-in: two cells side by side under shrink, gauge board and lead exit at the AeroNode end
 for (const dx of [-11, 11]){ const cell = solid(new THREE.CylinderGeometry(10.5, 10.5, PACK.l - 4, 32), 0xb9c2c7, V(PACK.at.x + dx, 10.8, PACK.at.z)); cell.rotation.x = Math.PI/2; }
 solid(new THREE.BoxGeometry(PACK.w, PACK.h, PACK.l), 0x2f6fb3, V(PACK.at.x, PACK.h/2, PACK.at.z), .55);
@@ -367,7 +407,10 @@ function contactTag(text, pos, side, dz, colour){
   const t = tag(text, anchor, 'contact ' + (side < 0 ? 'cl' : 'cr') + (colour ? '' : ' ghost'));
   if (colour){ if (side < 0){ t.el.style.borderLeftWidth = '1px'; t.el.style.borderRightWidth = '4px'; t.el.style.borderRightColor = colour; } else t.el.style.borderLeftColor = colour; }
 }
-contactTag('Tip · EAR_HI', PJ055.tip, -1, 9, C.earH); contactTag('Ring · not used (mono)', PJ055.ring, -1, -4); contactTag('Sleeve · EAR_RTN', PJ055.sleeve, -1, -8, C.earR);
+tag('GMA 245R', GMA.at.clone().add(V(0, GMA.h/2 + 8, 0)), 'board'); tag('J2401', V(-40, GMA.at.y + 10, GMA_REAR - 4)); tag('J2402', V(-90, GMA.at.y + 10, GMA_REAR - 4));
+tag('Instrument panel', V(-64, 30, PANEL_Z), 'ghost'); tag('Pilot PTT (yoke)', PTT_AT.clone().add(V(0, 12, 0)));
+tag('Pilot headphone jack', V(PHONE.x - 8, 14, PANEL_Z + 20)); tag('Pilot mic jack', V(MICPLUG.x + 6, 14, PANEL_Z + 24));
+contactTag('Tip · EAR_HI', PJ055.tip, -1, 9, C.earH); contactTag('Ring · not wired (GMA RIGHT)', PJ055.ring, -1, -4); contactTag('Sleeve · EAR_RTN', PJ055.sleeve, -1, -8, C.earR);
 contactTag('Tip · PTT (not carried)', PJ068.tip, 1, 9); contactTag('Ring · MIC_HI', PJ068.ring, 1, -4, C.micH); contactTag('Sleeve · MIC_LO', PJ068.sleeve, 1, -8, C.micL);
 for (const c of CABLES.filter(x => x.flex && x.inst)) for (const inst of c.inst) tag(c.ends[1], inst.end.clone().add(V(0,5,0)));
 let wireTags = [];

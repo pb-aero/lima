@@ -242,3 +242,13 @@ branch (each link is one node's B port to the next node's A port), so that needs
 board (~20 bus-network parts, a second hub TDM port, a second I²C address, re-layout of the routed right edge).
 Gains would be one connector, a symmetric harness and cup R independent of cup L. **Peter: keep the daisy chain**
 (audio J3 → cup L J7, cup L J8 → cup R J7.1–2, audio J4 → cup R J7.3–6). Headband conductors are 6 either way.
+
+## Aircraft jacks vs the GMA 245R — 2026-11-13
+
+Garmin GMA 245/245R Installation Manual (190-01879-11 Rev 14), Figures C-2/C-3 and Tables 4-1/4-2 `[fetched]`:
+pilot headphone jack tip = J2402-16 LEFT, ring = J2402-31 RIGHT, sleeve = J2402-1 LO; pilot mic jack ring = J2401-33
+MIC AUDIO IN HI, sleeve = J2401-35 LO, tip = J2401-34 MIC KEY* (note 6: tip-to-PTT needed for hand mics). This confirms
+J5's plug contacts (EAR_HI tip, EAR_RTN sleeve, MIC_HI ring, MIC_LO sleeve). **Open (from §3.7.1 of that manual):** the
+GMA's failsafe check relies on a mono headset plug shorting the ring (RIGHT) to the sleeve. H1's headphone plug should
+therefore be a 2-circuit mono PJ-055 (PJ-055B), or tie ring to sleeve, not a 3-conductor plug with the ring floating.
+H1 carries no PTT; the pilot keys from the yoke switch (J2401-34 to ground).
