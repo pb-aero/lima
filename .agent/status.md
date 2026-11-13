@@ -1877,7 +1877,7 @@ connector, J2 = 2.54 mm twin, J3/J4 = speakers. Netlist == `doc/design_nets.py` 
 **Next:** PCB. Needs Peter to open the project in KiCad (from the project manager) for the Konnect sync; then
 place, route, DRC. Before wiring to the EVB, check J16's pin order in UG-807.
 
-## 2026-11-13 · Review of ALFA's own board set (inbox/peter/2026-11-13-002) — written, NOT yet published
+## 2026-11-13 · Review of ALFA's own board set (inbox/peter/2026-11-13-002) — PUBLISHED
 
 Chris/GOLF asked for a review of the four own boards (pack sha256 `f7947dcb…` verified, company `7189055`).
 Report `docs/own-boards-review/own-boards-review-2026-11-13.html` (shelf target `reports/peter/LIMA_own_boards_review.html`).
@@ -1890,5 +1890,5 @@ parser (`docs/own-boards-review/tools/`, positive control: matches ALFA's pcbnew
   centimetres" conflates intra/inter-pair; I²S is GPIO18–27 not 18–22; E1 cause is ADI's inconsistent datasheet.
 - **My own audio board has the same ADAU1372 DVDD fault** (C29 1 µF + C30 100 nF; ADI bulk 10–47 µF) — logged in its README, NOT fixed.
 - **Decision raised:** main board J14 is a third audio-FFC pin order (≠ BlackBox J9, ≠ my audio J1) and gives 5 V, not VBAT.
-- **Pending Peter's go-ahead:** push lima; land shelf copy + manifest row; outbox reply re 2026-11-13-002 → inbox/chris;
-  set `status: answered` on inbox/peter/2026-11-13-002. The auto-mode classifier blocked the push as outward communication.
+- **Published (Peter: "Yes, publish")**: company `76639c5` (local == remote, 40 chars; protect-peter bypass notice as expected). Shelf `reports/peter/LIMA_own_boards_review.html` from `lima@3e5fd06` + manifest row; OUT `peter/outbox/2026-11-13-001_own-boards-review.md` → `inbox/chris/` (fresh-clone checked);
+  inbox/peter/2026-11-13-002 `status: answered` + reply pointer. **OUT 2026-11-13-001 status: open** — awaiting Chris on J14 and the charger human review.
