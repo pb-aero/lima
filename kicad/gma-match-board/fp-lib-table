@@ -1,0 +1,5 @@
+(fp_lib_table
+  (version 7)
+
+  (lib (name "Triad") (type "KiCad") (uri "${KIPRJMOD}/../lib/Triad.pretty") (options "") (descr ""))
+  (lib (name "Bourns") (type "KiCad") (uri "${KIPRJMOD}/../lib/Bourns.pretty") (options "") (descr "")))
