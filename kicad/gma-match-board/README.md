@@ -70,3 +70,5 @@ J16's pin order, so **check J16's pinout against UG-807 before wiring**.
 3. **Mono plug:** the GMA failsafe check expects the headphone plug's ring shorted to the sleeve (audio-board README,
    2026-11-13). This board's harness should use the same 2-circuit plug.
 4. Cosmetic: C26's value text overlaps its GND label on the sheet.
+
+**3D view:** `docs/gma-match-board-3d.html` (published as https://claude.ai/artifact/V4U9sr6y48SbSyg5tSpB3R, private). Placement there is a sketch; its net list is checked equal to `doc/design_nets.py`.

@@ -1,0 +1,655 @@
+<meta charset="utf-8">
+<title>GMA Match Board in 3D</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Same family as the H1 harness pages: one working canvas, a rail on the right for signal flow, the picked part and the nets. */
+:root{
+  --bg:#eef0ee; --panel:#ffffff; --fg:#1d2321; --muted:#5e6964; --line:#cfd6d2; --scene:#e3e7e4; --focus:#6c4fd1;
+  --tx:#d9822b; --rx:#1a8fb8;
+  --display:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --panel:#1c2220; --fg:#e4ebe7; --muted:#9aa7a1; --line:#2f3935; --scene:#19201d; --focus:#9b85f0;
+  --tx:#f0a050; --rx:#45b9e0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --panel:#1c2220; --fg:#e4ebe7; --muted:#9aa7a1; --line:#2f3935; --scene:#19201d; --focus:#9b85f0;
+  --tx:#f0a050; --rx:#45b9e0; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font:14px/1.5 var(--display);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px;box-sizing:border-box}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px;margin-bottom:12px}
+h1{font-size:20px;font-weight:500;margin:0;text-wrap:balance}
+header p{margin:0;color:var(--muted);max-width:80ch}
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:12px}
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)}}
+#stage{position:relative;min-height:440px;height:calc(100vh - 150px);max-height:860px;background:var(--scene);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+#stage canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:none}
+#tags{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.tag{position:absolute;transform:translate(-50%,-120%);font:500 11px/1 var(--mono);background:var(--panel);color:var(--fg);border:1px solid var(--line);padding:3px 5px;border-radius:4px;white-space:nowrap}
+.tag.board{font:500 12px/1 var(--display);padding:4px 7px}
+.tag.pin{font-weight:400;font-size:10px;transform:translate(-50%,-50%);border-left-width:4px;color:var(--muted)}
+.tag.dim{opacity:.25}
+#tip{position:absolute;pointer-events:none;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:7px 9px;font-size:12px;max-width:280px;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+#tip b{font:500 12px var(--mono);display:block}
+#status{position:absolute;left:12px;bottom:10px;right:12px;font:12px var(--mono);color:var(--muted);pointer-events:none}
+aside{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:14px;min-width:0;max-height:calc(100vh - 150px);overflow:auto}
+@media (max-width:900px){aside{max-height:none}}
+aside section{display:flex;flex-direction:column;gap:6px;min-width:0}
+aside h2{font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0}
+.row{display:flex;gap:6px;flex-wrap:wrap}
+.row button{all:unset;cursor:pointer;font-size:12px;padding:5px 9px;border:1px solid var(--line);border-radius:6px}
+.row button:hover{border-color:var(--fg)}
+.row button:focus-visible,.legend button:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.row button[aria-pressed="true"]{border-color:var(--fg);background:color-mix(in srgb,var(--fg) 8%,transparent)}
+.row button .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.legend{display:flex;flex-direction:column;gap:2px}
+.legend h3{font-size:11px;font-weight:500;color:var(--muted);margin:6px 0 2px}
+.legend button{all:unset;cursor:pointer;display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:8px;align-items:center;padding:4px 6px;border-radius:6px;border:1px solid transparent}
+.legend button:hover{border-color:var(--line)}
+.legend button[aria-pressed="true"]{border-color:var(--fg)}
+.legend b{font:500 12px var(--mono)}
+.legend span{color:var(--muted);font:11px var(--mono);font-variant-numeric:tabular-nums}
+.sw{display:inline-block;width:18px;height:6px;border-radius:3px}
+#info .ttl{font:500 13px var(--mono)}
+#info .val{color:var(--muted);font-size:12px}
+#info p{margin:4px 0 0;font-size:13px}
+#info table{border-collapse:collapse;width:100%;font-size:12px;margin-top:6px}
+#info td{padding:3px 4px;border-bottom:1px solid var(--line);font-family:var(--mono)}
+#info td:first-child{white-space:nowrap;color:var(--muted)}
+.note{font-size:12px;color:var(--muted);margin:0}
+.note b{color:var(--fg);font-weight:500}
+@media (prefers-reduced-motion: reduce){.row button{transition:none}}
+</style>
+
+<header>
+  <h1>GMA match board</h1>
+  <p>The audio board's ADAU1372 ↔ GMA 245R matching networks on their own bench board, wired to an ADAU1372 eval board, the panel and the two cup drivers. Click a part or a wire; pick a net to trace it.</p>
+</header>
+
+<div class="wrap">
+  <div id="stage">
+    <canvas id="c" aria-label="3D view of the GMA match board and its connections"></canvas>
+    <div id="tags"></div>
+    <div id="tip" hidden></div>
+    <div id="status">Drag to orbit · right-drag to pan · scroll to zoom · click a part or a wire</div>
+  </div>
+  <aside>
+    <section>
+      <h2>Signal flow</h2>
+      <div class="row" id="flows">
+        <button type="button" id="f-tx" data-f="tx"><span class="dot" style="background:var(--tx)"></span>TX to panel mic</button>
+        <button type="button" id="f-rx" data-f="rx"><span class="dot" style="background:var(--rx)"></span>RX from earphone</button>
+        <button type="button" id="f-off" data-f="off">Off</button>
+      </div>
+      <p class="note" id="flownote"></p>
+    </section>
+    <section>
+      <h2>Selected</h2>
+      <div id="info"></div>
+    </section>
+    <section>
+      <h2>Nets</h2>
+      <div class="legend" id="nets"></div>
+    </section>
+    <section>
+      <h2>View</h2>
+      <div class="row">
+        <button type="button" id="v-iso">Angled</button>
+        <button type="button" id="v-top">Top</button>
+        <button type="button" id="v-board">Board only</button>
+        <button type="button" id="v-ext" aria-pressed="true">Bench equipment</button>
+      </div>
+    </section>
+    <p class="note"><b>Sketch placement.</b> The PCB isn't laid out yet, so the wires on the board show schematic connections, not routed copper. Part bodies are simple shapes at roughly the right size. The eval board and the GMA 245R are drawn as blocks, not to scale. Connectivity matches <span style="font-family:var(--mono)">kicad/gma-match-board/doc/design_nets.py</span> (schematic commit 1442e2b).</p>
+  </aside>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+"use strict";
+// ---------- connectivity: identical net membership to doc/design_nets.py; order = how the wires are chained ----------
+/*NETS-BEGIN*/
+const NETS = {
+  "GND": ["J1.3", "J1.7", "D1.1", "C26.2", "R8.2", "R9.2"],
+  "+3V3A": ["J1.6", "D1.2"],
+  "DAC_P": ["J1.1", "T4.1"],
+  "DAC_N": ["J1.2", "T4.2"],
+  "AIN1": ["D1.3", "J1.4", "C27.2"],
+  "AIN1REF": ["J1.5", "C26.1"],
+  "COMMS_TAP": ["J1.8", "R8.1", "C27.1", "R7.2"],
+  "PV_SEC": ["T4.3", "R10.1"],
+  "PV_ATT": ["R10.2", "C37.1"],
+  "EAR_HI": ["J2.1", "J5.1", "T2.1", "T3.1"],
+  "EAR_RTN": ["J2.2", "J5.2", "T2.2", "T3.2"],
+  "MIC_HI": ["C37.2", "J5.3", "J2.3"],
+  "MIC_LO": ["T4.4", "J5.4", "J2.4"],
+  "SPK_L_A": ["T2.5", "T2.3", "R7.1", "J3.1"],
+  "SPK_L_B": ["T2.4", "T2.6", "R9.1", "J3.2"],
+  "SPK_R_A": ["T3.3", "T3.5", "J4.1"],
+  "SPK_R_B": ["T3.4", "T3.6", "J4.2"]
+}
+/*NETS-END*/;
+const DOMAINS = [
+  {name:"Codec side · our ground", nets:["DAC_P","DAC_N","AIN1","AIN1REF","COMMS_TAP","+3V3A","GND"]},
+  {name:"Panel side · aircraft ground", nets:["EAR_HI","EAR_RTN","MIC_HI","MIC_LO","PV_SEC","PV_ATT"]},
+  {name:"Cup drivers", nets:["SPK_L_A","SPK_L_B","SPK_R_A","SPK_R_B"]}
+];
+const NETCOL = {
+  "DAC_P":"#2f6fe0","DAC_N":"#7a5cf0","AIN1":"#0aa2c0","AIN1REF":"#62a8d8","COMMS_TAP":"#17b39a","+3V3A":"#e0443e","GND":"#8d9692",
+  "EAR_HI":"#f08c1a","EAR_RTN":"#b86a2e","MIC_HI":"#f2cf1d","MIC_LO":"#a8902c","PV_SEC":"#f5a96b","PV_ATT":"#e2743a",
+  "SPK_L_A":"#e0529c","SPK_L_B":"#a8366f","SPK_R_A":"#c47ae2","SPK_R_B":"#8a4fb0"
+};
+const NETDESC = {
+  "DAC_P":"HPOUTL+ into T4's primary","DAC_N":"HPOUTL− into T4's primary","AIN1":"Tap into the codec, after C27, clamped by D1",
+  "AIN1REF":"C26 10 µF to ground","COMMS_TAP":"R7/R8 divider output, before C27","+3V3A":"D1's clamp rail, from the codec's AVDD",
+  "GND":"Codec ground","EAR_HI":"Panel headphone tip, J2402-16","EAR_RTN":"Panel headphone sleeve, J2402-1",
+  "MIC_HI":"Panel mic ring, J2401-33","MIC_LO":"Panel mic sleeve, J2401-35, T4 secondary return",
+  "PV_SEC":"T4 secondary into R10","PV_ATT":"R10 into C37",
+  "SPK_L_A":"T2 secondary, cup L driver +, and the tap","SPK_L_B":"T2 secondary, cup L driver −, grounded by R9",
+  "SPK_R_A":"T3 secondary, cup R driver +","SPK_R_B":"T3 secondary, cup R driver −"
+};
+
+// ---------- parts: board millimetres, origin top-left, x right, y down ----------
+const W = 84, D = 58;
+const PARTS = [
+  {ref:"J1", kind:"hdr", x:5, y:12, n:8, side:1, value:"2.54 mm 1×8 · codec",
+   info:"Jumper wires to the ADAU1372: DAC± from eval-board J16, AIN1, AIN1REF, the AVDD clamp rail and ground. Pin 8 is the divider tap before C27, for feeding the eval board's own AIN1 jack (J20) instead."},
+  {ref:"T4", kind:"lp5001", x:24, y:14, value:"Bourns SM-LP-5001 · 600:600 Ω",
+   info:"PureVoice output transformer (audio-board ruling 10). Both HPOUTL legs drive the primary directly, with no primary capacitor. The secondary floats on the panel's mic return and never touches our ground."},
+  {ref:"R10", kind:"smd", pkg:"0603", x:38, y:14, value:"10 kΩ · 0603",
+   info:"Attenuator on the secondary. The primary then sees about 116 Ω, and the low-frequency corner is about 5 Hz. On the primary side the corner would have been 419 Hz."},
+  {ref:"C37", kind:"smd", pkg:"1812", x:47, y:14, value:"220 nF film · 63 V · 1812",
+   info:"Blocks the console's mic bias (8–16 V) from T4's winding. 69 Hz corner with 10.47 kΩ."},
+  {ref:"J5", kind:"gh4", x:79, y:14, value:"JST GH 4-pin · panel",
+   info:"Same part and pinout as the audio board's J5, so one harness fits both: 1 EAR_HI, 2 EAR_RTN, 3 MIC_HI, 4 MIC_LO."},
+  {ref:"J2", kind:"hdr", x:73, y:20, n:4, side:-1, value:"2.54 mm 1×4 · panel bench",
+   info:"The same four panel nets as J5, on pins for clip leads."},
+  {ref:"T2", kind:"sp74", x:60, y:36, value:"Triad SP-74 · cup L",
+   info:"Primary on the panel earphone line. Secondaries paralleled (3/5 and 4/6) into the cup L driver; the comms tap reads this one. Secondary polarity is still unverified: wired wrongly, the two windings short each other."},
+  {ref:"T3", kind:"sp74", x:60, y:47, value:"Triad SP-74 · cup R",
+   info:"Cup R transformer. Kept even though the tap reads only T2: together the two primaries load the panel's headphone output with about 158 Ω, as the audio board will."},
+  {ref:"R7", kind:"smd", pkg:"0603", x:46, y:33, flip:true, value:"10 kΩ · 0603",
+   info:"Top of the divider that taps T2's secondary at half amplitude onto COMMS_TAP."},
+  {ref:"R8", kind:"smd", pkg:"0603", x:38, y:38, value:"10 kΩ · 0603", info:"Bottom of the tap divider, to ground."},
+  {ref:"R9", kind:"smd", pkg:"0603", x:48, y:42, flip:true, value:"0 Ω · 0603",
+   info:"Grounds SPK_L_B so the tap has a reference. This is the one place a cup-side net meets our ground. Remove it to float the speaker return."},
+  {ref:"C27", kind:"smd", pkg:"0603", x:30, y:33, flip:true, value:"1 µF · 0603", info:"AC-couples the tap into AIN1."},
+  {ref:"D1", kind:"sot23", x:18, y:36, value:"BAT54S · SOT-23",
+   info:"Clamps AIN1 between ground and +3V3A. The top diode only works when J1.6 is wired to the codec's AVDD."},
+  {ref:"C26", kind:"smd", pkg:"0805", x:12, y:43, value:"10 µF · 0805", info:"Decouples AIN1REF to ground."},
+  {ref:"J3", kind:"hdr", x:70, y:33, n:2, side:-1, value:"2.54 mm 1×2 · speaker L", info:"T2 secondary out to the cup L driver."},
+  {ref:"J4", kind:"hdr", x:70, y:46, n:2, side:-1, value:"2.54 mm 1×2 · speaker R", info:"T3 secondary out to the cup R driver."},
+  {ref:"H1", kind:"hole", x:3.5, y:3.5, value:"M3 · unplated", info:"Unplated, so neither ground reaches the chassis."},
+  {ref:"H2", kind:"hole", x:80.5, y:3.5, value:"M3 · unplated", info:"Unplated, so neither ground reaches the chassis."},
+  {ref:"H3", kind:"hole", x:3.5, y:54.5, value:"M3 · unplated", info:"Unplated, so neither ground reaches the chassis."},
+  {ref:"H4", kind:"hole", x:80.5, y:54.5, value:"M3 · unplated", info:"Unplated, so neither ground reaches the chassis."}
+];
+const EXT = {
+  evb:{label:"ADAU1372 eval board", x:-36, y:21, w:46, d:40,
+    info:"EVAL-ADAU1372Z, drawn as a block. Terminal names are the codec signals. J16 and J20 come from UG-807; check J16's pin order there before wiring."},
+  gma:{label:"GMA 245R", x:112, y:19, w:24, d:40, h:22,
+    info:"Garmin GMA 245R audio panel (remote), drawn as a block and not to scale. Pins from install manual 190-01879-11: J2402-16 LEFT (headphone tip), J2402-1 LO (sleeve), J2401-33 MIC AUDIO IN HI, J2401-35 MIC LO."},
+  cupL:{label:"Cup L driver", x:58, y:84, info:"Cup L earphone driver on T2's secondary (SPK_L_A / SPK_L_B)."},
+  cupR:{label:"Cup R driver", x:82, y:84, info:"Cup R earphone driver on T3's secondary (SPK_R_A / SPK_R_B)."}
+};
+// eval-board terminals, in J1's pin order; GMA contacts per J5 pin
+const EVB_T = ["HPOUTL+ (J16)","HPOUTL− (J16)","AGND","AIN1","AIN1REF","AVDD","AGND","J20 tip (optional)"];
+const GMA_P = ["J2402-16","J2402-1","J2401-33","J2401-35"];
+
+// ---------- three.js scene ----------
+const canvas = document.getElementById("c");
+const stage = document.getElementById("stage");
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(38, 1, 1, 2000);
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.enableDamping = true; controls.maxPolarAngle = Math.PI * 0.49;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x556655, 0.85));
+const sun = new THREE.DirectionalLight(0xffffff, 0.75); sun.position.set(60, 140, 90); scene.add(sun);
+const fill = new THREE.DirectionalLight(0xffffff, 0.25); fill.position.set(-80, 60, -60); scene.add(fill);
+
+const P = (x, y, h) => new THREE.Vector3(x - W / 2, h || 0, y - D / 2);
+const pickables = [];
+const partGroups = {};
+const pins = {};          // "REF.N" -> {x,y, at:Vector3 (internal wire end), tip:Vector3 (external wire end)}
+const tagDefs = [];       // {el, pos:Vector3, part?}
+
+function mat(color, opts) { return new THREE.MeshStandardMaterial(Object.assign({color, roughness:0.55, metalness:0.05}, opts || {})); }
+const M = {
+  black: mat(0x1b1c1e, {roughness:0.7}), gold: mat(0xd4af37, {metalness:0.8, roughness:0.3}), tin: mat(0xc8cbcf, {metalness:0.7, roughness:0.35}),
+  resistor: mat(0x222426), ceramic: mat(0xb89a72), film: mat(0x7a2f2f, {roughness:0.4}), steel: mat(0x6f7478, {metalness:0.6, roughness:0.45}),
+  tape: mat(0xe8c64a, {roughness:0.6}), bobbin: mat(0x2b2b2b), ghWhite: mat(0xefe9dc), evb: mat(0x24508f), panel: mat(0x2c2f33, {roughness:0.6}),
+  connector: mat(0x9aa1a6, {metalness:0.5, roughness:0.4}), cone: mat(0x3b3f45, {roughness:0.8})
+};
+function box(w, h, d, m, x, y, z) { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y, z); return b; }
+function cyl(r, h, m, seg) { return new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, seg || 16), m); }
+
+// ---------- board with a drawn silkscreen / copper texture ----------
+const S = 16, tex = document.createElement("canvas"); tex.width = W * S; tex.height = D * S;
+const g = tex.getContext("2d");
+const boardTex = new THREE.CanvasTexture(tex); boardTex.anisotropy = 4;
+const boardMats = [mat(0x1d5b3c), mat(0x1d5b3c), new THREE.MeshStandardMaterial({map:boardTex, roughness:0.6}), mat(0x1d5b3c), mat(0x1d5b3c), mat(0x1d5b3c)];
+const board = new THREE.Mesh(new THREE.BoxGeometry(W, 1.6, D), boardMats);
+board.position.set(0, -0.8, 0); scene.add(board);
+const silk = [];   // drawing ops recorded by the part builders, replayed into the texture
+function drawBoard() {
+  g.setTransform(S, 0, 0, S, 0, 0);
+  g.fillStyle = "#1d5b3c"; g.fillRect(0, 0, W, D);
+  // faint panel-side shading: everything the transformers isolate from our ground
+  g.fillStyle = "rgba(240,160,60,0.10)";
+  g.beginPath(); g.moveTo(24, 3); g.lineTo(W - 0.5, 3); g.lineTo(W - 0.5, 31); g.lineTo(52, 31); g.lineTo(52, 19.5); g.lineTo(24, 19.5); g.closePath(); g.fill();
+  for (const op of silk) op(g);
+  g.fillStyle = "#f2f2ee"; g.font = "500 2.6px 'IBM Plex Mono', monospace"; g.textBaseline = "alphabetic";
+  g.fillText("GMA MATCH BOARD", 10, 54.6);
+  g.font = "1.6px 'IBM Plex Mono', monospace";
+  g.fillText("ADAU1372 <-> GMA 245R · LIMA · 2026-11-13 · placement sketch", 10, 56.6);
+  g.fillText("CODEC SIDE", 9, 7.5); g.fillText("PANEL SIDE", 54, 7.5);
+  boardTex.needsUpdate = true;
+}
+const COPPER = "#d8b25a", SILKC = "#f2f2ee";
+function padRect(x, y, w, h) { silk.push(c => { c.fillStyle = COPPER; c.fillRect(x - w / 2, y - h / 2, w, h); }); }
+function padCirc(x, y, r, sq) { silk.push(c => { c.fillStyle = COPPER; if (sq) c.fillRect(x - r, y - r, 2 * r, 2 * r); else { c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); }
+  c.fillStyle = "#151515"; c.beginPath(); c.arc(x, y, r * 0.45, 0, 7); c.fill(); }); }
+function trace(x1, y1, x2, y2, w) { silk.push(c => { c.strokeStyle = COPPER; c.lineWidth = w || 0.4; c.lineCap = "round"; c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.stroke(); }); }
+function outline(x, y, w, h) { silk.push(c => { c.strokeStyle = SILKC; c.lineWidth = 0.15; c.strokeRect(x - w / 2, y - h / 2, w, h); }); }
+function label(t, x, y, size) { silk.push(c => { c.fillStyle = SILKC; c.font = `500 ${size || 1.3}px 'IBM Plex Mono', monospace`; c.textAlign = "center"; c.fillText(t, x, y); c.textAlign = "start"; }); }
+function pin1dot(x, y) { silk.push(c => { c.fillStyle = SILKC; c.beginPath(); c.arc(x, y, 0.35, 0, 7); c.fill(); }); }
+
+// ---------- part builders ----------
+function addPin(ref, n, x, y, at, tip) { pins[`${ref}.${n}`] = {x, y, at, tip: tip || at}; }
+function group(p) { const gr = new THREE.Group(); gr.userData = {type:"part", ref:p.ref}; scene.add(gr); partGroups[p.ref] = gr; return gr; }
+function pickable(gr, ref) { gr.traverse(o => { if (o.isMesh) { o.userData = {type:"part", ref}; pickables.push(o); } }); }
+
+const BUILD = {
+  hdr(p) {
+    const gr = group(p), len = p.n * 2.54, cy = p.y + (p.n - 1) * 1.27;
+    gr.add(box(2.54, 2.5, len, M.black, P(p.x, cy).x, 1.25, P(p.x, cy).z));
+    for (let i = 0; i < p.n; i++) {
+      const y = p.y + i * 2.54, v = P(p.x, y);
+      gr.add(box(0.64, 8.6, 0.64, M.gold, v.x, 4.3, v.z));
+      padCirc(p.x, y, 0.85, i === 0);
+      const ax = p.x + p.side * 2.2; trace(p.x, y, ax, y, 0.45);
+      addPin(p.ref, i + 1, p.x, y, P(ax, y, 0.15), P(p.x, y, 8.7));
+    }
+    outline(p.x, cy, 2.9, len + 0.4); label(p.ref, p.x, p.y - 2.2);
+    pickable(gr, p.ref); return {top: 8.6, cx: p.x, cy};
+  },
+  smd(p) {
+    const gr = group(p);
+    const dims = {"0603":[1.6, 0.8, 0.45, 1.55], "0805":[2.0, 1.25, 0.6, 1.9], "1812":[4.5, 3.2, 3.0, 4.3]}[p.pkg];
+    const [L, Wd, H, span] = dims, v = P(p.x, p.y);
+    const body = p.ref[0] === "R" ? M.resistor : (p.pkg === "1812" ? M.film : M.ceramic);
+    gr.add(box(L * 0.7, H, Wd, body, v.x, H / 2, v.z));
+    gr.add(box(L * 0.15, H, Wd, M.tin, v.x - L * 0.42, H / 2, v.z));
+    gr.add(box(L * 0.15, H, Wd, M.tin, v.x + L * 0.42, H / 2, v.z));
+    const s = p.flip ? -1 : 1;
+    padRect(p.x - span / 2, p.y, L * 0.4, Wd * 1.15); padRect(p.x + span / 2, p.y, L * 0.4, Wd * 1.15);
+    addPin(p.ref, 1, p.x - s * span / 2, p.y, P(p.x - s * (span / 2 + L * 0.12), p.y, Math.min(H, 0.6)));
+    addPin(p.ref, 2, p.x + s * span / 2, p.y, P(p.x + s * (span / 2 + L * 0.12), p.y, Math.min(H, 0.6)));
+    outline(p.x, p.y, L + 1.2, Wd + 0.9); label(p.ref, p.x, p.y - Wd / 2 - 1.0, 1.15);
+    pickable(gr, p.ref); return {top: H, cx: p.x, cy: p.y};
+  },
+  sot23(p) {
+    const gr = group(p), v = P(p.x, p.y);
+    gr.add(box(2.9, 1.0, 1.3, M.black, v.x, 0.6, v.z));
+    const pp = {1:[-0.95, 1.1], 2:[0.95, 1.1], 3:[0, -1.1]};
+    for (const n in pp) {
+      const [dx, dy] = pp[n], q = P(p.x + dx, p.y + dy);
+      gr.add(box(0.4, 0.15, 0.9, M.tin, q.x, 0.1, q.z - Math.sign(dy) * 0.0));
+      padRect(p.x + dx, p.y + dy, 0.9, 0.9);
+      addPin(p.ref, n, p.x + dx, p.y + dy, P(p.x + dx, p.y + dy + Math.sign(dy) * 0.6, 0.2));
+    }
+    outline(p.x, p.y, 3.6, 3.4); label(p.ref, p.x, p.y - 2.4, 1.15);
+    pickable(gr, p.ref); return {top: 1.1, cx: p.x, cy: p.y};
+  },
+  lp5001(p) { return xfmr(p, 12.8, 9.0, 7.0, {1:[-6, -2.54], 2:[-6, 2.54], 4:[6, -2.54], 3:[6, 2.54]}, 7.4, false); },
+  sp74(p) { return xfmr(p, 10.4, 7.9, 8.6, {1:[-3.81, -2.54], 3:[-3.81, 0], 5:[-3.81, 2.54], 2:[3.81, -2.54], 4:[3.81, 0], 6:[3.81, 2.54]}, 6.1, true); },
+  gh4(p) {
+    const gr = group(p), cy = p.y, v = P(p.x + 2.4, cy);
+    gr.add(box(4.6, 4.25, 6.75, M.ghWhite, v.x, 2.125, v.z));
+    gr.add(box(0.4, 3.0, 5.6, M.black, v.x + 2.12, 2.2, v.z));          // mouth, facing the board edge
+    for (let i = 0; i < 4; i++) {
+      const y = p.y - 1.875 + i * 1.25;
+      padRect(p.x, y, 1.6, 0.6); trace(p.x, y, p.x - 2.4, y, 0.35);
+      addPin(p.ref, i + 1, p.x, y, P(p.x - 2.4, y, 0.15), P(p.x + 4.8, y, 2.0));
+    }
+    padRect(p.x + 3.2, p.y - 4.3, 1.0, 2.0); padRect(p.x + 3.2, p.y + 4.3, 1.0, 2.0);
+    outline(p.x + 2.4, cy, 5.2, 9.6); label(p.ref, p.x + 1.6, p.y - 5.6);
+    pickable(gr, p.ref); return {top: 4.25, cx: p.x + 2.4, cy};
+  },
+  hole(p) {
+    silk.push(c => { c.strokeStyle = SILKC; c.lineWidth = 0.15; c.beginPath(); c.arc(p.x, p.y, 3.0, 0, 7); c.stroke();
+      c.fillStyle = "#0e0f0f"; c.beginPath(); c.arc(p.x, p.y, 1.6, 0, 7); c.fill(); });
+    const gr = group(p), v = P(p.x, p.y);
+    const ring = new THREE.Mesh(new THREE.CylinderGeometry(3.0, 3.0, 0.05, 32, 1, true), mat(0x1d5b3c));
+    ring.position.set(v.x, 0.02, v.z); gr.add(ring);
+    pickable(gr, p.ref); return {top: 0.3, cx: p.x, cy: p.y};
+  }
+};
+// transformer: laminated core, bobbin with yellow tape, leads out to attach points at the body edge
+function xfmr(p, L, Wd, H, pp, attachX, tht) {
+  const gr = group(p), v = P(p.x, p.y);
+  gr.add(box(L * 0.82, H * 0.86, Wd * 0.36, M.steel, v.x, H * 0.47, v.z));                       // centre limb
+  gr.add(box(L * 0.82, H * 0.14, Wd, M.steel, v.x, H * 0.93, v.z));                              // top yoke
+  gr.add(box(L * 0.82, H * 0.12, Wd, M.steel, v.x, H * 0.06 + 0.4, v.z));                        // bottom yoke
+  gr.add(box(L * 0.82, H * 0.86, Wd * 0.1, M.steel, v.x, H * 0.47, v.z - Wd * 0.45));
+  gr.add(box(L * 0.82, H * 0.86, Wd * 0.1, M.steel, v.x, H * 0.47, v.z + Wd * 0.45));
+  gr.add(box(L, H * 0.62, Wd * 0.72, M.bobbin, v.x, H * 0.5, v.z));
+  gr.add(box(L * 0.7, H * 0.66, Wd * 0.76, M.tape, v.x, H * 0.5, v.z));
+  for (const n in pp) {
+    const [dx, dy] = pp[n], ax = p.x + Math.sign(dx) * attachX;
+    if (tht) padCirc(p.x + dx, p.y + dy, 0.8, n === "1"); else padRect(p.x + dx, p.y + dy, 2.2, 1.4);
+    trace(p.x + dx, p.y + dy, ax, p.y + dy, 0.45);
+    const lead = P((p.x + Math.sign(dx) * L / 2 + ax) / 2, p.y + dy);
+    gr.add(box(Math.abs(ax - (p.x + Math.sign(dx) * L / 2)) + 0.4, 0.25, 0.5, M.tin, lead.x, 0.4, lead.z));
+    addPin(p.ref, n, p.x + dx, p.y + dy, P(ax, p.y + dy, 0.3));
+  }
+  pin1dot(p.x + (pp[1][0] < 0 ? -L / 2 - 1.0 : L / 2 + 1.0), p.y + pp[1][1]);
+  outline(p.x, p.y, L + 0.6, Wd + 0.6); label(p.ref, p.x, p.y - Wd / 2 - 1.0);
+  pickable(gr, p.ref); return {top: H, cx: p.x, cy: p.y};
+}
+const partInfo = {};
+for (const p of PARTS) {
+  const r = BUILD[p.kind](p); partInfo[p.ref] = Object.assign({}, p, r);
+  if (p.kind !== "hole") tagDefs.push({text:p.ref, pos:P(r.cx, r.cy, r.top + 1.2), part:p.ref});
+}
+
+// ---------- off-board equipment ----------
+const extGroup = new THREE.Group(); scene.add(extGroup);
+const extPins = {};
+function extPickable(o, id) { o.traverse(m => { if (m.isMesh) { m.userData = {type:"ext", id}; pickables.push(m); } }); }
+{ // eval board
+  const e = EXT.evb, gr = new THREE.Group(), v = P(e.x, e.y);
+  gr.add(box(e.w, 1.6, e.d, M.evb, v.x, -0.8, v.z));
+  gr.add(box(7, 1.0, 7, M.black, v.x - 6, 0.5, v.z - 6));
+  for (let i = 0; i < 3; i++) { const j = cyl(3, 6, M.black, 20); j.rotation.z = Math.PI / 2; j.position.set(v.x - e.w / 2 + 6, 3, v.z + 4 + i * 6.5); gr.add(j); }
+  const hx = e.x + e.w / 2 - 3;
+  for (let i = 0; i < 8; i++) {
+    const y = 12 + i * 2.54, q = P(hx, y);
+    if (i < 7) { gr.add(box(0.64, 8.6, 0.64, M.gold, q.x, 4.3, q.z)); gr.add(box(2.54, 2.5, 2.54, M.black, q.x, 1.25, q.z)); }
+    extPins["EVB." + (i + 1)] = i < 7 ? P(hx, y, 8.7) : P(hx - 6, 38, 3);
+    tagDefs.push({text:EVB_T[i], pos:i < 7 ? P(hx - 11, y, 3) : P(hx - 13, 38, 6), cls:"pin", col:NETCOL[pinNet("J1." + (i + 1))], net:pinNet("J1." + (i + 1)), ext:true});
+  }
+  const jack = cyl(2.6, 6, M.black, 20); jack.rotation.z = Math.PI / 2; jack.position.copy(P(hx - 6, 38, 3)); gr.add(jack);
+  extGroup.add(gr); extPickable(gr, "evb");
+  tagDefs.push({text:e.label, pos:P(e.x, e.y - e.d / 2, 4), cls:"board", ext:true});
+}
+{ // GMA 245R
+  const e = EXT.gma, gr = new THREE.Group(), v = P(e.x, e.y);
+  gr.add(box(e.w, e.h, e.d, M.panel, v.x, e.h / 2, v.z));
+  const faces = [[8, "J2401"], [30, "J2402"]];
+  for (const [yy] of faces) { const q = P(e.x - e.w / 2 - 0.8, yy); gr.add(box(1.6, 6, 14, M.connector, q.x, 9, q.z)); }
+  const order = [[30, -2.5], [30, 2.5], [8, -2.5], [8, 2.5]];   // J5 1..4 -> J2402-16, J2402-1, J2401-33, J2401-35
+  for (let i = 0; i < 4; i++) {
+    const [yy, dz] = order[i], q = P(e.x - e.w / 2 - 1.8, yy + dz, 9 + (i % 2 ? -1.2 : 1.2));
+    extPins["GMA." + (i + 1)] = q;
+    tagDefs.push({text:GMA_P[i], pos:q.clone().add(new THREE.Vector3(-7, 4 + (i % 2) * -1, 0)), cls:"pin", col:NETCOL[pinNet("J5." + (i + 1))], net:pinNet("J5." + (i + 1)), ext:true});
+  }
+  extGroup.add(gr); extPickable(gr, "gma");
+  tagDefs.push({text:e.label, pos:P(e.x, e.y, e.h + 3), cls:"board", ext:true});
+}
+for (const k of ["cupL", "cupR"]) { // earphone drivers
+  const e = EXT[k], gr = new THREE.Group(), v = P(e.x, e.y);
+  const rim = cyl(9, 3, M.panel, 32); rim.position.set(v.x, 1.5, v.z); gr.add(rim);
+  const cone = new THREE.Mesh(new THREE.ConeGeometry(7.5, 2.5, 32), M.cone); cone.rotation.x = Math.PI; cone.position.set(v.x, 3.6, v.z); gr.add(cone);
+  extPins[k + ".1"] = P(e.x - 3, e.y - 9, 1.5); extPins[k + ".2"] = P(e.x + 3, e.y - 9, 1.5);
+  extGroup.add(gr); extPickable(gr, k);
+  tagDefs.push({text:e.label, pos:P(e.x, e.y, 6), cls:"board", ext:true});
+}
+
+// ---------- wires ----------
+function pinNet(pin) { for (const n in NETS) if (NETS[n].includes(pin)) return n; return null; }
+const wires = [];            // {mesh, net, key, ext}
+const curves = {};           // "A|B" -> curve
+function arc(a, b, liftScale) {
+  const d = a.distanceTo(b), lift = Math.min(16, (2.2 + 0.2 * d) * (liftScale || 1)) + Math.max(a.y, b.y) * 0.35;
+  const up = new THREE.Vector3(0, 1, 0);
+  const pts = [a.clone(),
+    a.clone().lerp(b, 0.12).add(up.clone().multiplyScalar(lift * 0.75)),
+    a.clone().lerp(b, 0.5).add(up.clone().multiplyScalar(lift)),
+    a.clone().lerp(b, 0.88).add(up.clone().multiplyScalar(lift * 0.75)),
+    b.clone()];
+  return new THREE.CatmullRomCurve3(pts, false, "centripetal");
+}
+function addWire(net, keyA, keyB, a, b, ext, opts) {
+  const curve = arc(a, b, ext ? 1.25 : 1);
+  const m = new THREE.MeshStandardMaterial({color:NETCOL[net], roughness:0.45, transparent:true, opacity:(opts && opts.opacity) || 1});
+  const mesh = new THREE.Mesh(new THREE.TubeGeometry(curve, 48, ext ? 0.42 : 0.3, 8, false), m);
+  mesh.userData = {type:"net", net}; pickables.push(mesh);
+  (ext ? extGroup : scene).add(mesh);
+  const w = {mesh, net, ext, base:m.opacity}; wires.push(w);
+  curves[keyA + "|" + keyB] = curve;
+  return w;
+}
+for (const net in NETS) {
+  const L = NETS[net];
+  for (let i = 0; i + 1 < L.length; i++) addWire(net, L[i], L[i + 1], pins[L[i]].at, pins[L[i + 1]].at, false);
+}
+for (let i = 1; i <= 8; i++) addWire(pinNet("J1." + i), "EVB." + i, "J1." + i, extPins["EVB." + i], pins["J1." + i].tip, true, i === 8 ? {opacity:0.45} : null);
+for (let i = 1; i <= 4; i++) addWire(pinNet("J5." + i), "J5." + i, "GMA." + i, pins["J5." + i].tip, extPins["GMA." + i], true);
+addWire("SPK_L_A", "J3.1", "cupL.1", pins["J3.1"].tip, extPins["cupL.1"], true);
+addWire("SPK_L_B", "J3.2", "cupL.2", pins["J3.2"].tip, extPins["cupL.2"], true);
+addWire("SPK_R_A", "J4.1", "cupR.1", pins["J4.1"].tip, extPins["cupR.1"], true);
+addWire("SPK_R_B", "J4.2", "cupR.2", pins["J4.2"].tip, extPins["cupR.2"], true);
+
+// ---------- signal flow ----------
+function pinPt(k) { return pins[k] ? pins[k].at : extPins[k]; }
+function through(a, b, h) { const A = pinPt(a), B = pinPt(b); const pts = [A, A.clone().setY(h), B.clone().setY(h), B]; return new THREE.CatmullRomCurve3(pts, false, "centripetal", 0.2); }
+function hdrThrough(k) { const p = pins[k]; return new THREE.LineCurve3(p.at, p.tip); }
+function wire(a, b) { const c = curves[a + "|" + b]; if (c) return {c, rev:false}; return {c:curves[b + "|" + a], rev:true}; }
+const FLOWS = {
+  tx: {color:"--tx", note:"PureVoice leaves the codec as HPOUTL± on J1.1/J1.2, crosses T4, drops through R10, is DC-blocked by C37 and reaches the panel's MIC AUDIO IN HI (J2401-33). Return: T4.4 → MIC_LO.",
+    steps:[wire("EVB.1", "J1.1"), {c:hdrThrough("J1.1"), rev:true}, wire("J1.1", "T4.1"), {c:through("T4.1", "T4.3", 7.6)}, wire("T4.3", "R10.1"), {c:through("R10.1", "R10.2", 0.8)},
+      wire("R10.2", "C37.1"), {c:through("C37.1", "C37.2", 3.3)}, wire("C37.2", "J5.3"), {c:new THREE.LineCurve3(pins["J5.3"].at, pins["J5.3"].tip)}, wire("J5.3", "GMA.3")]},
+  rx: {color:"--rx", note:"The panel's earphone signal (J2402-16) enters on J5.1 and drives T2 and T3. T2's secondary feeds the cup L driver and the R7/R8 tap, which C27 couples into AIN1 on J1.4.",
+    steps:[wire("J5.1", "GMA.1"), {c:new THREE.LineCurve3(pins["J5.1"].tip, pins["J5.1"].at)}, wire("J5.1", "T2.1"), {c:through("T2.1", "T2.3", 9.2)}, wire("T2.3", "R7.1"),
+      {c:through("R7.1", "R7.2", 0.8)}, wire("R7.2", "C27.1"), {c:through("C27.1", "C27.2", 0.8)}, wire("C27.2", "J1.4"), {c:new THREE.LineCurve3(pins["J1.4"].at, pins["J1.4"].tip)}, wire("J1.4", "EVB.4")]}
+};
+// RX starts at the GMA: the first step's stored curve runs J5 -> GMA, so walk it backwards
+FLOWS.rx.steps[0].rev = true;
+function flowPolyline(f) {
+  const pts = [];
+  for (const s of f.steps) { let ps = s.c.getPoints(30); if (s.rev) ps = ps.reverse(); pts.push(...ps); }
+  const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + pts[i].distanceTo(pts[i - 1]));
+  return {pts, cum, len:cum[cum.length - 1]};
+}
+const flowObjs = {};
+for (const k in FLOWS) {
+  const poly = flowPolyline(FLOWS[k]);
+  const grp = new THREE.Group(); grp.visible = false; scene.add(grp);
+  const m = new THREE.MeshBasicMaterial({color:0xffffff});
+  const n = Math.max(6, Math.floor(poly.len / 9));
+  const dots = []; for (let i = 0; i < n; i++) { const s = new THREE.Mesh(new THREE.SphereGeometry(0.75, 12, 10), m); grp.add(s); dots.push(s); }
+  flowObjs[k] = {poly, grp, dots, m, n};
+  // a sub-branch for RX: tap -> cup L driver
+}
+const spkBranch = (() => {
+  const steps = [wire("R7.1", "J3.1"), {c:hdrThrough("J3.1")}, wire("J3.1", "cupL.1")];
+  steps[1] = {c:hdrThrough("J3.1")};
+  return flowPolyline({steps});
+})();
+{ const grp = new THREE.Group(); grp.visible = false; scene.add(grp); const dots = [];
+  for (let i = 0; i < 6; i++) { const s = new THREE.Mesh(new THREE.SphereGeometry(0.75, 12, 10), flowObjs.rx.m); grp.add(s); dots.push(s); }
+  flowObjs.rxspk = {poly:spkBranch, grp, dots, m:flowObjs.rx.m, n:6}; }
+function pointAt(poly, d) {
+  let lo = 0, hi = poly.cum.length - 1;
+  while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (poly.cum[mid] < d) lo = mid; else hi = mid; }
+  const t = (d - poly.cum[lo]) / Math.max(1e-6, poly.cum[hi] - poly.cum[lo]);
+  return poly.pts[lo].clone().lerp(poly.pts[hi], t);
+}
+
+// ---------- tags ----------
+const tagsEl = document.getElementById("tags");
+for (const t of tagDefs) {
+  const el = document.createElement("div"); el.className = "tag" + (t.cls ? " " + t.cls : ""); el.textContent = t.text;
+  if (t.col) el.style.borderLeftColor = t.col;
+  tagsEl.appendChild(el); t.el = el;
+}
+
+// ---------- state + UI ----------
+const state = {net:null, part:null, flow:"off", showExt:true};
+const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const info = document.getElementById("info");
+function partPins(ref) { const out = []; for (const k in pins) if (k.startsWith(ref + ".")) out.push([k, pinNet(k)]); return out.sort((a, b) => +a[0].split(".")[1] - +b[0].split(".")[1]); }
+function esc(s) { return String(s).replace(/[&<>]/g, c => ({"&":"&amp;", "<":"&lt;", ">":"&gt;"}[c])); }
+function showPart(ref) {
+  const p = partInfo[ref];
+  const rows = partPins(ref).map(([k, n]) => `<tr><td>${esc(k)}</td><td><span class="sw" style="background:${NETCOL[n]};margin-right:6px"></span>${esc(n)}</td></tr>`).join("");
+  info.innerHTML = `<div class="ttl">${esc(ref)}</div><div class="val">${esc(p.value)}</div><p>${esc(p.info)}</p>${rows ? `<table>${rows}</table>` : ""}`;
+}
+function showExt(id) { const e = EXT[id]; info.innerHTML = `<div class="ttl">${esc(e.label)}</div><p>${esc(e.info)}</p>`; }
+function showNet(n) {
+  const members = NETS[n].join(", ");
+  info.innerHTML = `<div class="ttl"><span class="sw" style="background:${NETCOL[n]};margin-right:6px"></span>${esc(n)}</div><div class="val">${esc(NETDESC[n])}</div><p style="font-family:var(--mono);font-size:12px">${esc(members)}</p>`;
+}
+function showDefault() {
+  info.innerHTML = `<p class="note" style="margin:0">Nothing picked. Click a part, a wire or a net. The amber-tinted area on the board is the panel side: everything there rides on aircraft ground, isolated from the codec by T2, T3 and T4.</p>`;
+}
+const netsEl = document.getElementById("nets");
+for (const dom of DOMAINS) {
+  const h = document.createElement("h3"); h.textContent = dom.name; netsEl.appendChild(h);
+  for (const n of dom.nets) {
+    const b = document.createElement("button"); b.type = "button"; b.dataset.net = n; b.setAttribute("aria-pressed", "false");
+    b.innerHTML = `<span class="sw" style="background:${NETCOL[n]}"></span><b>${esc(n)}</b><span>${NETS[n].length} pins</span>`;
+    b.addEventListener("click", () => selectNet(state.net === n ? null : n));
+    netsEl.appendChild(b);
+  }
+}
+function selectNet(n) {
+  state.net = n; state.part = null;
+  for (const b of netsEl.querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.net === n));
+  applyHighlight(); n ? showNet(n) : showDefault();
+}
+function selectPart(ref) { state.part = ref; state.net = null; for (const b of netsEl.querySelectorAll("button")) b.setAttribute("aria-pressed", "false"); applyHighlight(); showPart(ref); }
+function applyHighlight() {
+  const partNets = state.part ? new Set(partPins(state.part).map(x => x[1])) : null;
+  for (const w of wires) {
+    const on = state.net ? w.net === state.net : partNets ? partNets.has(w.net) : true;
+    w.mesh.material.opacity = on ? w.base : 0.08; w.mesh.material.depthWrite = on;
+  }
+  for (const ref in partGroups) {
+    const on = !state.net || NETS[state.net].some(k => k.startsWith(ref + "."));
+    const t = tagDefs.find(t => t.part === ref); if (t) t.el.classList.toggle("dim", !on);
+  }
+}
+function setFlow(f) {
+  state.flow = f;
+  for (const b of document.querySelectorAll("#flows button")) b.setAttribute("aria-pressed", String(b.dataset.f === f));
+  flowObjs.tx.grp.visible = f === "tx"; flowObjs.rx.grp.visible = f === "rx"; flowObjs.rxspk.grp.visible = f === "rx";
+  document.getElementById("flownote").textContent = f === "off" ? "Pick a direction to animate the signal through the board." : FLOWS[f].note;
+  updateFlowColors();
+}
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function updateFlowColors() { flowObjs.tx.m.color.set(cssVar("--tx") || "#d9822b"); flowObjs.rx.m.color.set(cssVar("--rx") || "#1a8fb8"); }
+for (const b of document.querySelectorAll("#flows button")) b.addEventListener("click", () => setFlow(b.dataset.f));
+
+// views: each one frames its content to the current window shape
+const VIEWS = {
+  iso:{dir:new THREE.Vector3(-0.2, 0.85, 0.85), all:true},
+  top:{dir:new THREE.Vector3(0, 1, 0.002), all:true},
+  board:{dir:new THREE.Vector3(-0.3, 0.8, 0.85), all:false}
+};
+let tween = null;
+function framing(k) {
+  const v = VIEWS[k], b = new THREE.Box3().expandByObject(board);
+  for (const r in partGroups) b.expandByObject(partGroups[r]);
+  if (v.all && state.showExt) b.expandByObject(extGroup);
+  const s = b.getBoundingSphere(new THREE.Sphere());
+  const vf = camera.fov * Math.PI / 180, hf = 2 * Math.atan(Math.tan(vf / 2) * camera.aspect);
+  const dist = s.radius / Math.sin(Math.min(vf, hf) / 2) * (v.all ? 0.9 : 1.0);
+  return {pos:s.center.clone().add(v.dir.clone().normalize().multiplyScalar(dist)), tgt:s.center.clone()};
+}
+function goView(k, now) {
+  const f = framing(k);
+  if (now) { camera.position.copy(f.pos); controls.target.copy(f.tgt); tween = null; return; }
+  tween = {p0:camera.position.clone(), t0:controls.target.clone(), p1:f.pos, t1:f.tgt, s:performance.now(), d:reduceMotion ? 1 : 700};
+}
+document.getElementById("v-iso").addEventListener("click", () => goView("iso"));
+document.getElementById("v-top").addEventListener("click", () => goView("top"));
+document.getElementById("v-board").addEventListener("click", () => goView("board"));
+const extBtn = document.getElementById("v-ext");
+extBtn.addEventListener("click", () => { state.showExt = !state.showExt; extGroup.visible = state.showExt; extBtn.setAttribute("aria-pressed", String(state.showExt)); });
+
+// picking
+const ray = new THREE.Raycaster(), mouse = new THREE.Vector2(), tip = document.getElementById("tip");
+function pick(ev) {
+  const r = canvas.getBoundingClientRect();
+  mouse.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(mouse, camera);
+  const hits = ray.intersectObjects(pickables.filter(o => o.visible && (!isExt(o) || state.showExt) && !(o.material && o.material.opacity < 0.1)), false);
+  return hits.length ? hits[0].object.userData : null;
+}
+function isExt(o) { let p = o; while (p) { if (p === extGroup) return true; p = p.parent; } return false; }
+let down = null;
+canvas.addEventListener("pointerdown", e => { down = {x:e.clientX, y:e.clientY}; });
+canvas.addEventListener("pointerup", e => {
+  if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 5) return;
+  const u = pick(e);
+  if (!u) { state.part = null; selectNet(null); return; }
+  if (u.type === "part") selectPart(u.ref); else if (u.type === "net") selectNet(u.net); else if (u.type === "ext") { state.part = null; selectNet(null); showExt(u.id); }
+});
+canvas.addEventListener("pointermove", e => {
+  if (e.buttons) { tip.hidden = true; return; }
+  const u = pick(e); const r = stage.getBoundingClientRect();
+  if (!u) { tip.hidden = true; canvas.style.cursor = "grab"; return; }
+  canvas.style.cursor = "pointer";
+  let html = "";
+  if (u.type === "part") html = `<b>${esc(u.ref)}</b>${esc(partInfo[u.ref].value)}`;
+  else if (u.type === "net") html = `<b>${esc(u.net)}</b>${esc(NETDESC[u.net])}`;
+  else html = `<b>${esc(EXT[u.id].label)}</b>Off-board`;
+  tip.innerHTML = html; tip.hidden = false;
+  const x = Math.min(e.clientX - r.left + 14, r.width - 290);
+  tip.style.left = x + "px"; tip.style.top = (e.clientY - r.top + 14) + "px";
+});
+canvas.addEventListener("pointerleave", () => { tip.hidden = true; });
+
+// theme
+function applyTheme() { scene.background = new THREE.Color(cssVar("--scene") || "#e3e7e4"); updateFlowColors(); }
+if (window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
+new MutationObserver(applyTheme).observe(document.documentElement, {attributes:true, attributeFilter:["data-theme"]});
+
+// ---------- loop ----------
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage);
+const v3 = new THREE.Vector3();
+let last = performance.now(), phase = 0;
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  if (tween) {
+    const t = Math.min(1, (now - tween.s) / tween.d), k = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    camera.position.lerpVectors(tween.p0, tween.p1, k); controls.target.lerpVectors(tween.t0, tween.t1, k);
+    if (t >= 1) tween = null;
+  }
+  controls.update();
+  if (state.flow !== "off") {
+    phase += dt * (reduceMotion ? 6 : 26);
+    const set = state.flow === "tx" ? [flowObjs.tx] : [flowObjs.rx, flowObjs.rxspk];
+    for (const f of set) {
+      const gap = f.poly.len / f.n;
+      f.dots.forEach((s, i) => s.position.copy(pointAt(f.poly, (phase + i * gap) % f.poly.len)));
+    }
+  }
+  renderer.render(scene, camera);
+  const w = stage.clientWidth, h = stage.clientHeight;
+  const close = camera.position.distanceTo(controls.target) < 150;
+  for (const t of tagDefs) {
+    if (t.ext && !state.showExt) { t.el.hidden = true; continue; }
+    if (t.net && !close && state.net !== t.net) { t.el.hidden = true; continue; }
+    v3.copy(t.pos).project(camera);
+    const vis = v3.z < 1 && Math.abs(v3.x) < 1.1 && Math.abs(v3.y) < 1.1;
+    t.el.hidden = !vis;
+    if (vis) { t.el.style.left = ((v3.x + 1) / 2 * w) + "px"; t.el.style.top = ((1 - v3.y) / 2 * h) + "px"; }
+  }
+  requestAnimationFrame(frame);
+}
+drawBoard();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawBoard);
+applyTheme(); showDefault(); setFlow(reduceMotion ? "off" : "tx"); resize(); goView("iso", true);
+requestAnimationFrame(frame);
+</script>
