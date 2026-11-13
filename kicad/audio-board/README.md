@@ -252,3 +252,9 @@ J5's plug contacts (EAR_HI tip, EAR_RTN sleeve, MIC_HI ring, MIC_LO sleeve). **O
 GMA's failsafe check relies on a mono headset plug shorting the ring (RIGHT) to the sleeve. H1's headphone plug should
 therefore be a 2-circuit mono PJ-055 (PJ-055B), or tie ring to sleeve, not a 3-conductor plug with the ring floating.
 H1 carries no PTT; the pilot keys from the yoke switch (J2401-34 to ground).
+
+## Open — codec core-supply bulk capacitor (found 2026-11-13, reviewing ALFA's AeroAudio)
+
+CODEC_DVDD (U6 REG_OUT/DVDD, pins 28/29) has only C29 1 µF + C30 100 nF. ADAU1372 Rev 0 p.39: *"Bypass each supply
+signal on the board with a single bulk capacitor (10 µF to 47 µF)"*; the regulator's load regulation is 6 mV/mA.
+GOLF raised the same on AeroAudio (E1). **Fix:** C29 → 10 µF (0603/0805). Not yet changed.

@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Own Boards Review</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1c1917;--muted:#57534e;--line:#d6d3d1;--card:#ffffff;--accent:#1d4ed8;
+--risk:#b45309;--brk:#b91c1c;--weak:#4d7c0f;--note:#475569;--code:#f1efe9}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171513;--fg:#ece8e1;--muted:#a8a29e;--line:#3f3a35;--card:#201d1a;--accent:#93b4ff;--risk:#f59e0b;--brk:#f87171;--weak:#a3e635;--note:#94a3b8;--code:#2a2622}}
+:root[data-theme="dark"]{--bg:#171513;--fg:#ece8e1;--muted:#a8a29e;--line:#3f3a35;--card:#201d1a;--accent:#93b4ff;--risk:#f59e0b;--brk:#f87171;--weak:#a3e635;--note:#94a3b8;--code:#2a2622}
+body{background:var(--bg);color:var(--fg);font:15px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;padding:24px 16px 64px}
+main{max-width:980px;margin:0 auto}
+h1{font-size:26px;line-height:1.25;margin:8px 0 4px}h2{font-size:20px;margin:36px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+h3{font-size:16px;margin:22px 0 6px}
+p,li{max-width:78ch}.sub{color:var(--muted);margin:0 0 16px}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:13px}
+table{border-collapse:collapse;width:100%;margin:8px 0 16px;font-size:13.5px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:6px 8px;vertical-align:top;text-align:left}th{background:var(--code)}
+.tw{overflow-x:auto}
+.s{font-weight:700;font-size:12px;white-space:nowrap}.BRK{color:var(--brk)}.RISK{color:var(--risk)}.WEAK{color:var(--weak)}.NOTE{color:var(--note)}
+.box{border:1px solid var(--line);background:var(--card);border-radius:6px;padding:12px 16px;margin:12px 0}
+.tag{font-size:11px;color:var(--muted)}
+</style>
+</head>
+<body>
+<!-- aerosense-report-status: current -->
+<div style="border:2px solid #15803d;background:#f0fdf4;color:#1c1917;padding:12px 16px;margin:0 0 24px;font:14px/1.5 system-ui,sans-serif;border-radius:6px">
+  <strong style="font-size:15px">STATUS: CURRENT</strong><br>
+  Reviewed 2026-11-13 by LIMA · verified against record <code>f02cb9c</code><br>
+  Source: <code>lima@SOURCE_SHA</code> · Supersedes: —<br>
+  <strong>What changed:</strong> first review of ALFA's own board set (pack <code>f7947dcb…</code>, company <code>7189055</code>); nothing has been built or ordered.<br>
+  <strong>Next:</strong> a human engineer on the charger sheet, and a ruling on which audio board the main board's J14 serves.
+</div>
+<main>
+<h1>Our own AeroNode boards: LIMA's review</h1>
+<p class="sub">For Chris, ALFA and GOLF. Answers <code>inbox/peter/2026-11-13-002</code>. LIMA for Peter Bruce, 13 Nov 2026. Tags: <b>[measured]</b> I ran it · <b>[repo]</b> in the files · <b>[fetched]</b> from a cited source · <b>[assumed]</b> not established.</p>
+
+<div class="box">
+<p><b>Short answer.</b> I agree with GOLF's verdict: <b>better than expected, and not ready to send to JLCPCB as it is.</b> I found no new board-killer. The fast pairs are the best part of the main board. USB 3 and PCIe are matched to within 0.04 mm and are coupled over almost their whole length. A continuous ground plane runs under them, except at the connector and via fields.</p>
+<p>The power stage is where I would hold the order. I agree with GOLF's battery, charger and via findings. I add one layout problem GOLF did not raise. The charger's coil sits 11 mm from the chip, so both switching nodes run on the <i>bottom outer layer</i>, through via arrays at each end. They cover about 45 mm² each there, and the system rail runs between them.</p>
+<p>Two smaller things should be fixed before upload:</p>
+<ul>
+<li>The factory folder has three different placement files and three parts lists. Two of them are stale.</li>
+<li>No board file states its stack-up or its inner copper weight.</li>
+</ul>
+<p>AeroAudio does what it says: a codec and cabin mic board. Against John's 21 Oct spec it meets §5.1 (the cabin mic) and nothing else, which ALFA states openly.</p>
+<p>The bigger issue sits on the main board. Its J14 audio socket now has a third pin order: not BlackBox's J9 and not my audio board's J1. It supplies 5 V where my board expects the battery. Someone has to rule on which audio board J14 is for before either board is ordered.</p></div>
+
+<h2>1 · How I checked, and what I could not</h2>
+<p>The pack has no KiCad layout files, though the message said it did: <code>alfa/</code> holds the PDFs, the JLCPCB files, renders and the inspector. So every layout number here comes from the <b>Gerber X2 files</b>. KiCad writes each track's net name and each pad's part and pin into them. I wrote a small parser for them (<code>lima/docs/own-boards-review/tools/</code>).</p>
+<p><b>Positive control:</b> its lengths match ALFA's own pcbnew numbers in <code>data/board_data.json</code> to 0.01 mm. For example USB3_0_TX 44.45/44.49 mm, RX 41.62/41.62 mm and PCIE_CLK 6.63/6.63 mm. <span class="tag">[measured]</span></p>
+<p>Reference planes were checked by rasterising the inner-layer pours at 25 µm and sampling under every 50 µm of each pair. Schematic points come from ALFA's PDFs, and part positions from the factory CSVs.</p>
+<p>Datasheets used:</p>
+<ul>
+<li>Raspberry Pi CM5 data sheet RP-008180-DS-7 <span class="tag">[fetched]</span></li>
+<li>ADI ADAU1372 Rev 0 and UG-807 (local copies)</li>
+<li>JLCPCB's 6-layer page <span class="tag">[fetched]</span></li>
+</ul>
+<p><b>Not checked:</b></p>
+<ul>
+<li>AeroImu and AeroVault, beyond reading GOLF on them.</li>
+<li>Clearances at the TPS25730 (GOLF B14).</li>
+<li>The charge-lock pump timing (B1a).</li>
+<li>Thermal behaviour.</li>
+<li>JLCPCB's own placement preview.</li>
+<li>Anything on hardware: nothing exists to measure.</li>
+</ul>
+<p>Like everything else in this pack, this review is by an AI agent.</p>
+
+<h2>2 · Before anything goes to JLCPCB: my list</h2>
+<div class="tw"><table>
+<tr><th>#</th><th>Sev.</th><th>What</th><th>Fix</th></tr>
+<tr><td>L1</td><td class="s RISK">RISK</td><td><b>Battery and charger: GOLF A1, B1, B1a, B2, B3, B6.</b> I agree with all six. I confirmed U15's EN pin is unconnected <span class="tag">[measured: <code>unconnected-(U15-EN-Pad1)</code>]</span>. The CM5 needs 4.75 V minimum, and the divider gives 4.992 V nominal <span class="tag">[fetched, CM5 DS §3.1; repo]</span></td><td>Rule on the chemistry first. Have a human engineer read sheet 6 before a pack is connected</td></tr>
+<tr><td>L2</td><td class="s RISK">RISK</td><td><b>Charger switching nodes on the bottom outer layer.</b> L2 is 11.5 mm from U14. Each switching node goes down through about 7–8 vias at the chip, along B.Cu, and up through 8 vias in the coil pad. Each node has about 45 mm² of B.Cu (44.1 and 45.9 mm²) plus 19 mm² on top. VSYS runs on B.Cu <i>between</i> the two nodes. This is ALFA's own open item 13. The In4 ground plane screens the inner layers but not the outside of the box. The board carries a GNSS receiver and a magnetometer, and nothing about the radiated noise is measured</td><td>Put L2 against U14's SW pins on the top layer, as in TI's layout example. Take the switching copper off B.Cu, and take VSYS out from between the nodes. If it cannot move this revision, plan a radiated-noise check with the GNSS running</td></tr>
+<tr><td>L3</td><td class="s RISK">RISK</td><td><b>Three different placement files and three parts lists in <code>alfa/fab/aeronode/</code>.</b> <code>cpl_jlc_merged.csv</code> (13:01) and <code>cpl_jlc_v3.csv</code> (13:36) predate the final <code>cpl_jlc.csv</code> (15:50). <code>_merged</code> differs from the final file in rotation on 26 parts (U4, U17, U18, D4, D5, D6, Q1, …) and in position on 11 (J1, J2, J6, J7, J10–J14, …). <code>_v3</code> differs on U6, C17 and C18, the old GNSS footprint. Both <code>bom_jlc_merged</code> and <code>_v3</code> still list the <b>DAN-F10N</b> GNSS, not the MAX-M10S. ALFA's README says rev A2 has not been uploaded yet, so the next upload will choose from these <span class="tag">[measured, diff]</span></td><td>Leave exactly one CPL and one BOM, generated with the gerbers, beside them. Delete the others or move them out of <code>fab/</code></td></tr>
+<tr><td>L4</td><td class="s RISK">RISK</td><td><b>No stack-up in the files (GOLF B12), and the inner copper weight is unstated too.</b> The gerber job file gives KiCad's default: five 0.274 mm dielectrics and 35 µm inner copper. JLCPCB offers finished inner copper of 0.5, 1 or 2 oz <span class="tag">[fetched]</span>. Their 6-layer stack listings show 0.5 oz inner <span class="tag">[fetched, secondary; default not confirmed]</span>. The In3 +5 V plane is a whole layer, so 0.5 oz costs only millivolts there. The In2 power strips (VBUS_SW to the fan, a parallel VBAT strip, VIN_PD) carry half what a 1 oz sum assumes</td><td>Write JLC06161H-3313 into the board file. Order with impedance control and the inner copper stated. Re-run <code>power_check.py</code> with the real inner copper</td></tr>
+<tr><td>L5</td><td class="s WEAK">WEAK</td><td><b>Missing ground stitching at the fast-pair layer changes (GOLF B15, ALFA item 12) <span class="tag">[measured]</span>.</b> The USB3_0_RX vias have their nearest ground via 2.3 and 2.8 mm away. The PCIE_CLK_P crossover has one at 0.9 mm and one at 2.4 mm</td><td>One ground via within 0.8 mm of each signal via</td></tr>
+<tr><td>L6</td><td class="s WEAK">WEAK</td><td><b>Ethernet pairs from the ESD parts to the jack (GOLF B15).</b> P/N skew is 3.20, 1.90, 2.09 and 2.85 mm. The CM5 data sheet asks for "ideally within 0.15 mm" <span class="tag">[fetched, §2.2.1]</span>. Uncoupled stretches are 5.4 mm (P0, top) and 5.0 and 3.9 mm (P1, P3, bottom). ETH_P1_N alone drops to In2 for 7.3 mm while P1_P stays outside <span class="tag">[measured]</span>. At about 20 ps this will almost certainly still link at 1 Gbit/s</td><td>Route the 5–10 mm from U2/U3 to J6 as coupled pairs, both legs on the same layers</td></tr>
+<tr><td>L7</td><td class="s NOTE">NOTE</td><td><b>J7, the USB-A socket, has no ESD part on any of its six data lines.</b> The nets go straight from the CM5 pins to J7 <span class="tag">[measured]</span>. Sheet 3 says this is deliberate, following Raspberry Pi's board. That is reasonable for a desktop board. On an aircraft box the USB-A port is the one a stranger plugs into. The board already uses TPD4EUSB30 on Ethernet, and that is a USB 3 part</td><td>Chris's call. Add TPD4EUSB30-class protection on J7 if the socket is reachable from outside the case</td></tr>
+<tr><td>L8</td><td class="s NOTE">NOTE</td><td><b>AUD_5V current limit (GOLF B8).</b> See §6: I disagree with "about 0.5 A"</td><td>Set it from the audio board's real load</td></tr>
+<tr><td>L9</td><td class="s RISK">RISK</td><td><b>D4 rotation (GOLF F1).</b> I did not re-verify it: I have no access to JLCPCB's footprint data. The final CPL does carry the extra 180° GOLF describes (KiCad 90°, CPL 270°) <span class="tag">[measured]</span></td><td>Check in JLCPCB's preview at upload</td></tr>
+</table></div>
+
+<h2>3 · Main board fast pairs</h2>
+<p>Stack as drawn:</p>
+<ul>
+<li>F.Cu signal</li>
+<li>In1 GND (one region over 8,621 mm²)</li>
+<li>In2 signal</li>
+<li>In3 +5 V plane (8,474 mm²)</li>
+<li>In4 GND</li>
+<li>B.Cu signal</li>
+</ul>
+<p>So F.Cu references In1 ground and B.Cu references In4 ground. In2 lies between ground and the 5 V plane. Of the fast pairs, only the Pixhawk's USB 2 and short stretches of Ethernet use In2.</p>
+<div class="tw"><table>
+<tr><th>Pair → socket</th><th>Length P / N (mm)</th><th>Layers</th><th>Width / edge gap</th><th>Coupled</th><th>Verdict</th></tr>
+<tr><td>USB3_0 TX → J7</td><td>44.45 / 44.49</td><td>F</td><td>0.14 / 0.15</td><td>41.2 of 44.5 mm at 0.15</td><td>Good</td></tr>
+<tr><td>USB3_0 RX → J7</td><td>41.62 / 41.62</td><td>F 4.4 + B 37.2, 2 vias each</td><td>0.14 / 0.15</td><td>35.6 mm on B at 0.15</td><td>Good. Add stitching (L5)</td></tr>
+<tr><td>USB3_0 D+/D− → J7</td><td>43.27 / 43.27</td><td>F</td><td>0.14 / 0.15</td><td>39.2 mm</td><td>Good</td></tr>
+<tr><td>PCIe TX → J5 35/37</td><td>5.63 / 5.64</td><td>F</td><td>0.14 / 0.15</td><td>yes</td><td>Good</td></tr>
+<tr><td>PCIe RX ← J5 41/43</td><td>5.83 / 5.84</td><td>F</td><td>0.14 / 0.15</td><td>yes</td><td>Good</td></tr>
+<tr><td>PCIe REFCLK → J5 47/49</td><td>6.63 / 6.63</td><td>P: F 5.16 + B 1.47, 2 vias. N: F only</td><td>0.14</td><td>P uncoupled 1.47 mm</td><td>Acceptable. Stitch it (L5)</td></tr>
+<tr><td>USB3_1 D+/D− → U18 → J8 (Pixhawk)</td><td>49.45 / 46.78</td><td>F + In2 (+B on D−)</td><td>0.127</td><td>no (32 mm apart)</td><td>Fine at the Pixhawk's 12 Mbit/s, as ALFA says</td></tr>
+<tr><td>ETH P0–P3 → U2/U3 → J6</td><td>37.05/33.85, 27.51/29.41, 18.50/20.59, 16.15/13.30</td><td>F + B, P1_N on In2</td><td>0.125 / 0.20</td><td>CM5 to ESD part yes. ESD part to jack no</td><td>Fix the last stretch (L6)</td></tr>
+</table></div>
+<p><b>Impedance class.</b> The CM5 data sheet asks for 90 Ω on PCIe and USB, and 100 Ω on Ethernet <span class="tag">[fetched, §2.3.1, §2.4, §2.2.1]</span>. The board uses 0.14/0.15 mm for the 90 Ω pairs and 0.125/0.20 mm for 100 Ω. Those widths hold only on the thin-prepreg JLC06161H-3313 stack (GOLF B12), hence L4.</p>
+<p><b>Reference plane.</b> Ground lies under every fast pair for its whole length, except 1–3 mm at each end where the pairs cross the connector and via-antipad fields <span class="tag">[measured]</span>.</p>
+<p><b>PCIe P/N swap.</b> Both data pairs are wired P to N at the M.2 socket on purpose: TX_P to pin 37, TX_N to 35, RX_P to 43, RX_N to 41 <span class="tag">[measured]</span>. The CM5 data sheet allows it: "You may swap the positive (P) and negative (N) line within a pair" <span class="tag">[fetched, §2.3.1]</span>. The clock is not swapped (P to 47) <span class="tag">[measured]</span>. On first power-up, check <code>lspci -vv</code> for LnkSta Gen2 x1 and a clean AER count.</p>
+<p><b>AC coupling.</b> None is needed on this board. The CM5 carries the PCIe TX and USB 3 TX capacitors, and the Hailo card carries its own TX capacitors <span class="tag">[fetched, CM5 DS pins 122/124, 140/142; §2.3]</span>. This matches sheet 3's note.</p>
+
+<h2>4 · Power stage and heavy rails</h2>
+<p>Topology <span class="tag">[measured, pad nets]</span>:</p>
+<ul>
+<li>J11 USB-C → U13 TPS25730 (VBUS_C) → VIN_PD → U14 BQ25798 → VSYS.</li>
+<li>VSYS → U15 TPS56637 → +5 V (L3, In3 plane) → CM5 and the three TPS2553 switches. The CM5's six 5 V pins are strapped on top and dropped through 3 vias.</li>
+<li>VSYS → U16 TPS564252 → +3V3_HAILO.</li>
+<li>Battery: J12.1 → B.Cu pour → 6 vias → U14 BAT.</li>
+</ul>
+<div class="tw"><table>
+<tr><th>Path</th><th>Current (whose figure)</th><th>Copper as built <span class="tag">[measured]</span></th><th>Comment</th></tr>
+<tr><td>VBUS_C, J11 → U13</td><td>≤ 2.15 A (ILIM, GOLF B3)</td><td>50 mm² F.Cu pour, 0.25 mm branches to caps and TVS</td><td>Adequate</td></tr>
+<tr><td>VBAT, J12 → U14</td><td>5–6.2 A (ALFA 5 A, GOLF up to 6.2 A)</td><td>B.Cu pour, about 2 mm neck, 6 vias up to C54/C55/U14. A parallel In2 strip ends in a single via</td><td>Agree with GOLF B6: 9 vias, 3 mm</td></tr>
+<tr><td>SYS → U15 input</td><td>about 5 A</td><td>9 vias at SYS, B.Cu strip about 2.1 mm, 6 vias at U15</td><td>6 vias at about 1 A each is the limit <span class="tag">[assumed, rule of thumb for 0.3 mm vias]</span></td></tr>
+<tr><td>SW1 / SW2</td><td>inductor current</td><td>see L2</td><td>Placement, not width</td></tr>
+<tr><td>L3 → +5 V plane</td><td>6 A</td><td>6–7 vias in L3 pad 2. C66/C67 reach it through single vias (GOLF B7)</td><td>Agree with GOLF: 9+ vias</td></tr>
+<tr><td>+5 V into CM5</td><td>CM5 rated "up to 5 A at 5 V" <span class="tag">[fetched]</span></td><td>3 vias under a top strap joining the six pins</td><td>GOLF's count is right. Add vias</td></tr>
+<tr><td>AUD_5V, HEAT_5V</td><td>switch limit 1.2–1.4 A, fuse 1.1 A</td><td>0.25 mm on F.Cu, 0.187 mm necks</td><td>Agree with GOLF B8 on width (0.5 mm), not on the limit (§6)</td></tr>
+<tr><td>VBUS_SW (USB-A, Pixhawk, fan)</td><td>≤ 1.3 A</td><td>Top near U4/J7/J8. A long In2 strip, about 1.2 mm wide, to the fan</td><td>Fine for a fan, at either inner copper weight</td></tr>
+</table></div>
+<p>ALFA's track sizes come from IPC-2221 for <i>outer</i> 1 oz copper at a <b>20 °C</b> rise (<code>12_why_each_part.md</code> §7). In a closed avionics box I would design to 10 °C, as GOLF did. That accounts for most of the gap between their "at or above" and GOLF's "neck".</p>
+
+<h2>5 · AeroAudio, against my audio board and John's 21 Oct spec</h2>
+<p>AeroAudio is the ADAU1372 codec, the IM68A130A cabin mic, a 12.288 MHz crystal, an LDO, a bench header for analog in and out, and a header of raw I²S lanes for the ear cups. My audio board <span class="tag">[repo, <code>lima/kicad/audio-board</code>]</span> carries the full spec: ADAU1467 hub, AD2428 A2B, T2/T3 SP-74, T4 for PureVoice out, K1 PhotoMOS bypass, 8 V A2B boost. The codec and the cabin mic are the same parts on both.</p>
+<div class="tw"><table>
+<tr><th>John's spec (21 Oct)</th><th>AeroAudio rev A1</th><th>Match?</th></tr>
+<tr><td>§5.1 cabin mic: single-ended analog IM68A130A into ADC0, no I²S mic</td><td>MIC_OUT → C17 10 µF → AIN0. AIN0REF → 10 µF → GND. ADI's single-ended form</td><td>Yes</td></tr>
+<tr><td>§5.1 mic supply 2.4–3.3 V, choice left to the board</td><td>+3V3A (TPS7A2033 LDO) → 100 Ω → 1.1 µF: a 1.4 kHz RC filter</td><td>Yes, a sound choice</td></tr>
+<tr><td>§5.1 "cabin capture dead until the CM5 has booted"</td><td>AUD_5V comes from U17, whose EN is tied to +3V3. That net is the CM5's own 3.3 V output (pins 84/86), which is off in standby <span class="tag">[measured; fetched]</span></td><td>Same behaviour</td></tr>
+<tr><td>§4 one 12.288 MHz XO into the ADAU1467 hub, hub is clock master, codec and CM5 slaves</td><td>Crystal on the codec. <b>The codec is the I²S master</b></td><td>No (hub out of scope). The CM5 is the clock <i>consumer</i> either way, so main-board wiring and the RP1 driver choice carry over. The codec's master configuration does not</td></tr>
+<tr><td>§5 ADC1 = comms tap from T2</td><td>AIN1 to bench header J2</td><td>Out of scope</td></tr>
+<tr><td>§5 DAC0 → buffer/T4 → K1 → panel mic line</td><td>HPOUT straight to J2, no DC block (GOLF E3)</td><td>Out of scope</td></tr>
+<tr><td>§1–2 cups over A2B</td><td>J3: raw I²S lanes on a 2.54 mm header</td><td>No. Neither my cup board nor the spec has an I²S cable to the cup. J3 is bench-only</td></tr>
+<tr><td>§3 K1 driven from a watchdog</td><td>Main board J14 carries AUDIO_WDI. AeroAudio leaves it open</td><td>Main board is ready for it</td></tr>
+</table></div>
+
+<h3>What carries over, and what I measured myself</h3>
+<p>The main board puts I²S on GPIO18–27 as one clock pair plus four lanes each way <span class="tag">[repo, sheet 1]</span>. With the codec as master, the CM5 must use RP1's <code>i2s1</code> (the clock-consumer block). I measured that exact configuration on a Pi 5 on 4 Sep, codec as master at 48 kHz:</p>
+<ul>
+<li>8 channels out and 8 channels in at once, byte-exact.</li>
+<li>All four SDO lanes toggling.</li>
+<li>Negative control: at 2 channels, lanes 1–3 stayed dead.</li>
+</ul>
+<p><span class="tag">[measured, <code>lima/linux/adau1860-pi5/duplex/MULTILANE.md</code>; ADAU1860 not 1372, Pi 5 not CM5, kernel 6.12.47]</span>. So the lane plan is sound. GOLF's software note "Unchanged: I²S on GPIO18–22" is incomplete: GPIO23–27 are now I²S lanes too, which is why PPS had to move off GPIO23.</p>
+
+<h3>The ADAU1372 core supply, on both boards</h3>
+<p>GOLF E1 says C11 on REG_OUT/DVDD should be 10 µF. ADI's data sheet gives two numbers:</p>
+<ul>
+<li>The pin table: "decouple DVDD to DGND with a 0.1 µF capacitor".</li>
+<li>The bypass section: "Bypass each supply signal on the board with a single bulk capacitor (10 µF to 47 µF)" <span class="tag">[repo, ADAU1372 Rev 0 p.39, local copy]</span>.</li>
+</ul>
+<p>The on-chip regulator's load regulation is 6 mV/mA, which makes bulk capacitance worth having. So I agree with the fix. I would drop "the script misread ADI's figure": the data sheet itself is inconsistent.</p>
+<p><b>My own audio board has the same 1 µF + 100 nF on CODEC_DVDD (C29/C30)</b> <span class="tag">[repo]</span>. It is logged against my board to fix; it is not changed yet.</p>
+
+<h3>AeroAudio layout, spot-checked <span class="tag">[measured]</span></h3>
+<p>GOLF's E4–E6 hold:</p>
+<ul>
+<li>MIC_OUT is 48.4 mm of track for a mic 13 mm from the codec. Most of that is the test-pad stub.</li>
+<li>XTALO is 18.3 mm.</li>
+<li>C7/C8 sit about 6 mm from AVDD pin 19, C12 (CM) 5.3 mm from pin 12, and C23/C24 about 7 mm from the crystal pins.</li>
+</ul>
+<p>The stack (F / GND / +3V3A plane / B) is sensible. The mic's sound port is a 0.6 mm non-plated hole under U3.</p>
+
+<h3>The decision this exposes: which audio board J14 is for</h3>
+<p>There are now three incompatible pin orders for the CM5-to-audio FFC:</p>
+<ul>
+<li>BlackBox's J9.</li>
+<li>My audio board's J1, which mates J9 (<code>our n = J9 25−n</code>).</li>
+<li>ALFA's J14, which mates AeroAudio J1.</li>
+</ul>
+<p>Beyond the pin order, the power and control lines differ:</p>
+<ul>
+<li>My board takes the <b>battery</b> on one contact (it boosts to 8 V for the A2B bus, and budgets 327 mA normal and 606 mA worst case at 5.0 V, <code>docs/h1-power-budget.md</code>). J14 gives <b>switched 5 V</b> on two contacts.</li>
+<li>My board needs CTL_SPKR and CTL_MIC. J14 has AUDIO_IRQ, AUDIO_nRST and AUDIO_WDI instead.</li>
+</ul>
+<p>J14's two power contacts and its watchdog line are better than BlackBox's single fused contact. My board can run from 5 V: it is at the bottom of its stated input range. So converging on J14 looks feasible. It is still a ruling, and it should come before the main board is ordered, because changing J14 afterwards is a respin.</p>
+
+<h2>6 · GOLF's review: where I differ</h2>
+<div class="tw"><table>
+<tr><th>GOLF item</th><th>My view</th></tr>
+<tr><td><b>B8</b>: "lower the audio limit to about 0.5 A"</td><td><b>Too low for the product audio board.</b> My board's worst case is 606 mA at 5.0 V, and its normal load is 327 mA. Size the TPS2553 limit from the board actually fitted, about 0.8 A for mine. Keep it within the FH12 contacts: two 5 V contacts at 0.5 A each <span class="tag">[assumed: FH12 contact rating from memory; check Hirose's sheet]</span>. GOLF's width fix (0.5 mm) stands</td></tr>
+<tr><td><b>B15</b>: Ethernet "expected to work"</td><td>Agreed on the outcome. But ALFA's reasoning, which GOLF let stand, is wrong: "1 Gbit/s tolerates centimetres" (<code>13_review</code> item 11). The CM5 tolerates <i>pair-to-pair</i> differences under 50 mm. <i>Within</i> a pair it asks for 0.15 mm <span class="tag">[fetched, §2.2.1]</span>. The next layout should not inherit that rule</td></tr>
+<tr><td><b>B12</b>: stack-up</td><td>Confirmed from the gerber job file. Add the inner copper weight (L4)</td></tr>
+<tr><td><b>E1</b>: REG_OUT 10 µF</td><td>Agreed. The cause is ADI's two inconsistent statements, not a misread (§5). My board has the same fault</td></tr>
+<tr><td><b>B17 / E2</b>: doubled I²C pull-ups</td><td>Confirmed at source. CM5 pins 80/82 have "internal 1.8 kΩ pull-up to CM5_3.3V" <span class="tag">[fetched, CM5 DS pin table]</span>. 1.8 k ∥ 2.0 k = 947 Ω. With a 3 mA sink at 0.4 V, that is just under the 967 Ω the bus allows</td></tr>
+<tr><td>Software notes: "Unchanged: I²S on GPIO18–22"</td><td>Incomplete: GPIO18–27 (§5)</td></tr>
+<tr><td>Verdict: "no certain board-killer"</td><td>Agreed. Two omissions rather than errors: the stale factory files (L3), and the switching-node placement (L2), which ALFA had listed open and GOLF did not escalate</td></tr>
+<tr><td>B6, B7, B11, B13, F1–F8, A1–A5</td><td>Where I measured, GOLF's numbers reproduce. Example: 3 vias under the CM5's 5 V strap. I have nothing to add</td></tr>
+</table></div>
+
+<h2>7 · Smaller observations</h2>
+<ul>
+<li>U1A/U1B (the CM5 sockets) in the CPL sit exactly on the centroids of pins 1–100 and 101–200 (69.0, −47.0 and 69.0, −81.0) <span class="tag">[measured]</span>.</li>
+<li>C17 (bottom) and C18 (top) share one XY on opposite sides, both decoupling the GNSS 3.3 V. Not a fault.</li>
+<li>U15 PG and U16 PG are unconnected. Either could gate the CM5's PMIC_EN, which the CM5 wants raised only after 5 V passes 4.75 V <span class="tag">[fetched, §3.1]</span>. Optional; it would also cover GOLF B2.</li>
+</ul>
+
+<h2>8 · What did not work, and what I would not trust</h2>
+<ul>
+<li>Counting "vias near a pad" by radius over-counted where other vias of the same net sit nearby. My first pass said 6 vias at the CM5's 5 V pins. A picture showed 3, which is GOLF's number. Every via count above is from a picture or from ALFA's own table, not from the radius count alone.</li>
+<li>JLCPCB's default inner copper weight is not confirmed: their page lists the options but not the default. L4 says "state it" for that reason.</li>
+<li>The switching-node concern (L2) is a layout-practice judgement against TI's guidance, not a measurement. It could prove harmless. Nobody can know until a board runs beside its GNSS.</li>
+<li>The I²S lane result is mine but was measured on a Pi 5 with an ADAU1860. The CM5 uses the same RP1, but that is an inference, not a measurement.</li>
+</ul>
+<p class="tag">Scripts and method: <code>lima/docs/own-boards-review/</code>. Pack: <code>chris/golf/own-boards-2026-11-13/own_boards_pack_2026-11-13.zip</code>, sha256 f7947dcba116e69330294932816d8d6dd6ed9ccf6428d937b4a1fc9dfe49d138 (verified). Company HEAD at review: 7189055.</p>
+</main>
+</body>
+</html>

@@ -1876,3 +1876,19 @@ connector, J2 = 2.54 mm twin, J3/J4 = speakers. Netlist == `doc/design_nets.py` 
 `[measured]`. Schematic commit `1442e2b`.
 **Next:** PCB. Needs Peter to open the project in KiCad (from the project manager) for the Konnect sync; then
 place, route, DRC. Before wiring to the EVB, check J16's pin order in UG-807.
+
+## 2026-11-13 · Review of ALFA's own board set (inbox/peter/2026-11-13-002) — written, NOT yet published
+
+Chris/GOLF asked for a review of the four own boards (pack sha256 `f7947dcb…` verified, company `7189055`).
+Report `docs/own-boards-review/own-boards-review-2026-11-13.html` (shelf target `reports/peter/LIMA_own_boards_review.html`).
+No `.kicad_pcb` in the pack (the message said there was), so layout was measured from the **Gerber X2** files with my own
+parser (`docs/own-boards-review/tools/`, positive control: matches ALFA's pcbnew lengths to 0.01 mm).
+- **Agree with GOLF's verdict** (not ready to order, no board-killer). New: charger SW nodes run on B.Cu via arrays,
+  ~45 mm² each, VSYS between them (L2 11.5 mm from U14); three CPL/BOM variants in `fab/aeronode/` (two stale, DAN-F10N);
+  inner copper weight unstated alongside the missing stack-up; Ethernet ESD→jack uncoupled, P1_N alone on In2.
+- **Differ with GOLF:** B8's 0.5 A audio limit too low for my audio board (606 mA worst); ALFA's "1 Gbit tolerates
+  centimetres" conflates intra/inter-pair; I²S is GPIO18–27 not 18–22; E1 cause is ADI's inconsistent datasheet.
+- **My own audio board has the same ADAU1372 DVDD fault** (C29 1 µF + C30 100 nF; ADI bulk 10–47 µF) — logged in its README, NOT fixed.
+- **Decision raised:** main board J14 is a third audio-FFC pin order (≠ BlackBox J9, ≠ my audio J1) and gives 5 V, not VBAT.
+- **Pending Peter's go-ahead:** push lima; land shelf copy + manifest row; outbox reply re 2026-11-13-002 → inbox/chris;
+  set `status: answered` on inbox/peter/2026-11-13-002. The auto-mode classifier blocked the push as outward communication.
