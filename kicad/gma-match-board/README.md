@@ -72,3 +72,19 @@ J16's pin order, so **check J16's pinout against UG-807 before wiring**.
 4. Cosmetic: C26's value text overlaps its GND label on the sheet.
 
 **3D view:** `docs/gma-match-board-3d.html` (published as https://claude.ai/artifact/V4U9sr6y48SbSyg5tSpB3R, private). Placement there is a sketch; its net list is checked equal to `doc/design_nets.py`.
+
+## Stripboard build (2026-11-16)
+
+Peter: *"can you please show me wiring on vera board"*. `doc/veroboard.py` holds a 0.1-inch stripboard layout,
+38 holes × 24 strips (A–X from the top, holes 1–38 from the left): 28 cuts, 15 links, through-hole stand-ins
+for the SMD parts at the same values (upright ¼ W resistors, radial MLCCs, a radial film C37 rated ≥ 63 V, two
+discrete Schottkys for the BAT54S, T4 on four wire legs, J5 as a GH pigtail into hole 37 of strips B–E).
+
+- `python3 -I doc/veroboard.py check` rebuilds every net from strips, cuts, links and leads and compares it with
+  `design_nets.NETS`: **OK** `[measured]`. Negative controls `[measured]`: dropping link M28–N28 (SPK_L_B) splits that
+  net; dropping cut N24 shorts SPK_L_A to SPK_L_B. Both exit 1.
+- Interactive build page: `docs/gma-match-veroboard.html`, built by `docs/build_veroboard_page.sh` from
+  `docs/gma-match-veroboard.src.html` plus the checked layout JSON. Published privately as
+  https://claude.ai/artifact/Bnxpw5DRqVF9zwFv5qbhyt.
+- **Not built or metered on real stripboard yet.** Strip-to-strip spacing on stripboard is about 1 mm, more than the
+  PCB's 0.5 mm Aircraft clearance. The single cut at F13 is the only thing separating GND from EAR_HI on strip F.

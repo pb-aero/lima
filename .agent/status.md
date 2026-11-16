@@ -1892,3 +1892,11 @@ parser (`docs/own-boards-review/tools/`, positive control: matches ALFA's pcbnew
 - **Decision raised:** main board J14 is a third audio-FFC pin order (≠ BlackBox J9, ≠ my audio J1) and gives 5 V, not VBAT.
 - **Published (Peter: "Yes, publish")**: company `76639c5` (local == remote, 40 chars; protect-peter bypass notice as expected). Shelf `reports/peter/LIMA_own_boards_review.html` from `lima@3e5fd06` + manifest row; OUT `peter/outbox/2026-11-13-001_own-boards-review.md` → `inbox/chris/` (fresh-clone checked);
   inbox/peter/2026-11-13-002 `status: answered` + reply pointer. **OUT 2026-11-13-001 status: open** — awaiting Chris on J14 and the charger human review.
+
+## 2026-11-16 · GMA match board — stripboard layout + 3D pages
+
+- 3D PCB-sketch page `docs/gma-match-board-3d.html` (artifact V4U9sr6y48SbSyg5tSpB3R), commit `9181fc8`.
+- Stripboard layout `kicad/gma-match-board/doc/veroboard.py` (`6be4fb1`): check == design_nets, two negative
+  controls fail as they should. Build page `docs/gma-match-veroboard.html` (artifact Bnxpw5DRqVF9zwFv5qbhyt),
+  rebuilt with `docs/build_veroboard_page.sh`. Not built on real stripboard.
+- **Still next:** the PCB, which needs Peter to open the project in KiCad for the Konnect sync.

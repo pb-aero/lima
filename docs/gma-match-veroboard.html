@@ -1,0 +1,550 @@
+<meta charset="utf-8">
+<title>GMA Match Stripboard</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Same family as the GMA match board and H1 harness pages: one working canvas, a rail on the right with the build steps. */
+:root{
+  --bg:#eef0ee; --panel:#ffffff; --fg:#1d2321; --muted:#5e6964; --line:#cfd6d2; --scene:#e3e7e4; --focus:#6c4fd1; --mark:#ffcc33;
+  --display:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --panel:#1c2220; --fg:#e4ebe7; --muted:#9aa7a1; --line:#2f3935; --scene:#19201d; --focus:#9b85f0; --mark:#ffd84d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --panel:#1c2220; --fg:#e4ebe7; --muted:#9aa7a1; --line:#2f3935; --scene:#19201d; --focus:#9b85f0; --mark:#ffd84d; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font:14px/1.5 var(--display);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px;box-sizing:border-box}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px;margin-bottom:12px}
+h1{font-size:20px;font-weight:500;margin:0;text-wrap:balance}
+header p{margin:0;color:var(--muted);max-width:80ch}
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:12px}
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)}}
+#stage{position:relative;min-height:440px;height:calc(100vh - 150px);max-height:860px;background:var(--scene);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+#stage canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:none}
+#tags{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.tag{position:absolute;transform:translate(-50%,-120%);font:500 11px/1 var(--mono);background:var(--panel);color:var(--fg);border:1px solid var(--line);padding:3px 5px;border-radius:4px;white-space:nowrap}
+.tag.grid{background:none;border:none;padding:0;color:var(--muted);font-weight:400;font-size:10px;transform:translate(-50%,-50%)}
+.tag.dim{opacity:.25}
+#tip{position:absolute;pointer-events:none;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:7px 9px;font-size:12px;max-width:280px;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+#tip b{font:500 12px var(--mono);display:block}
+#side{position:absolute;left:12px;top:10px;font:500 12px var(--mono);color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:4px 8px;pointer-events:none}
+#status{position:absolute;left:12px;bottom:10px;right:12px;font:12px var(--mono);color:var(--muted);pointer-events:none}
+aside{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:14px;min-width:0;max-height:calc(100vh - 150px);overflow:auto}
+@media (max-width:900px){aside{max-height:none}}
+aside section{display:flex;flex-direction:column;gap:6px;min-width:0}
+aside h2{font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0}
+.row{display:flex;gap:6px;flex-wrap:wrap}
+.row button{all:unset;cursor:pointer;font-size:12px;padding:5px 9px;border:1px solid var(--line);border-radius:6px}
+.row button:hover{border-color:var(--fg)}
+button:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.row button[aria-pressed="true"]{border-color:var(--fg);background:color-mix(in srgb,var(--fg) 8%,transparent)}
+ol.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+ol.steps button{all:unset;cursor:pointer;display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:8px;align-items:baseline;width:100%;box-sizing:border-box;padding:5px 6px;border-radius:6px;border:1px solid transparent}
+ol.steps button:hover{border-color:var(--line)}
+ol.steps button[aria-current="step"]{border-color:var(--fg);background:color-mix(in srgb,var(--fg) 6%,transparent)}
+ol.steps .n{font:500 12px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+ol.steps .c{font:11px var(--mono);color:var(--muted)}
+#stepbody p{margin:0;font-size:13px}
+#stepbody ul{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:1px}
+#stepbody li button{all:unset;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;width:100%;box-sizing:border-box;padding:3px 6px;border-radius:5px;font:12px var(--mono);border:1px solid transparent}
+#stepbody li button:hover{border-color:var(--line)}
+#stepbody li button[aria-pressed="true"]{border-color:var(--fg)}
+#stepbody li .w{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav{display:flex;gap:6px}
+.nav button{all:unset;cursor:pointer;font-size:12px;padding:5px 9px;border:1px solid var(--line);border-radius:6px}
+.nav button:hover{border-color:var(--fg)}
+.nav button[disabled]{opacity:.4;cursor:default}
+.legend{display:flex;flex-direction:column;gap:2px}
+.legend h3{font-size:11px;font-weight:500;color:var(--muted);margin:6px 0 2px}
+.legend button{all:unset;cursor:pointer;display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:8px;align-items:center;padding:4px 6px;border-radius:6px;border:1px solid transparent}
+.legend button:hover{border-color:var(--line)}
+.legend button[aria-pressed="true"]{border-color:var(--fg)}
+.legend b{font:500 12px var(--mono)}
+.legend span{color:var(--muted);font:11px var(--mono)}
+.sw{display:inline-block;width:18px;height:6px;border-radius:3px}
+#info .ttl{font:500 13px var(--mono)}
+#info .val{color:var(--muted);font-size:12px}
+#info p{margin:4px 0 0;font-size:13px}
+#info table{border-collapse:collapse;width:100%;font-size:12px;margin-top:6px}
+#info td{padding:3px 4px;border-bottom:1px solid var(--line);font-family:var(--mono)}
+#info td:first-child{white-space:nowrap;color:var(--muted)}
+.note{font-size:12px;color:var(--muted);margin:0}
+.note b{color:var(--fg);font-weight:500}
+</style>
+
+<header>
+  <h1>GMA match board on stripboard</h1>
+  <p>The ADAU1372 ↔ GMA 245R matching board laid out on 0.1-inch stripboard, 38 holes × 24 strips. Step through the build, flip to the copper side to see the cuts, and hover any hole for its strip and net.</p>
+</header>
+
+<div class="wrap">
+  <div id="stage">
+    <canvas id="c" aria-label="3D stripboard layout of the GMA match board"></canvas>
+    <div id="tags"></div>
+    <div id="side">Component side</div>
+    <div id="tip" hidden></div>
+    <div id="status">Drag to orbit · right-drag to pan · scroll to zoom · hover a hole · click a part, link or strip</div>
+  </div>
+  <aside>
+    <section>
+      <h2>View</h2>
+      <div class="row">
+        <button type="button" id="v-top">Component side</button>
+        <button type="button" id="v-cu">Copper side</button>
+        <button type="button" id="v-iso">Angled</button>
+      </div>
+      <p class="note">Copper side shows the board turned over left to right, so hole 1 is on the right. Strip A stays at the top.</p>
+    </section>
+    <section>
+      <h2>Build</h2>
+      <ol class="steps" id="steps"></ol>
+      <div id="stepbody"></div>
+      <div class="nav"><button type="button" id="prev">Previous</button><button type="button" id="next">Next</button></div>
+    </section>
+    <section>
+      <h2>Selected</h2>
+      <div id="info"></div>
+    </section>
+    <section>
+      <h2>Nets</h2>
+      <div class="legend" id="nets"></div>
+    </section>
+    <p class="note"><b>Checked layout.</b> <span style="font-family:var(--mono)">kicad/gma-match-board/doc/veroboard.py check</span> rebuilds every net from the strips, cuts, links and leads and matches the schematic's <span style="font-family:var(--mono)">design_nets.py</span> exactly. Removing one link or one cut makes it fail. Part bodies are simple shapes at roughly the right size. Through-hole parts stand in for the PCB's SMD parts, at the same values.</p>
+  </aside>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+"use strict";
+// Layout data: generated by `python3 -I kicad/gma-match-board/doc/veroboard.py json` (it refuses to emit unless the check passes).
+const V = {"cols":38,"rows":24,"segments":[{"row":0,"c0":0,"c1":37,"net":null},{"row":1,"c0":0,"c1":37,"net":"PV_ATT"},{"row":2,"c0":0,"c1":15,"net":"DAC_P"},{"row":2,"c0":17,"c1":37,"net":"MIC_LO"},{"row":3,"c0":0,"c1":4,"net":"DAC_P"},{"row":3,"c0":6,"c1":23,"net":null},{"row":3,"c0":25,"c1":37,"net":"MIC_HI"},{"row":4,"c0":0,"c1":15,"net":"DAC_N"},{"row":4,"c0":17,"c1":23,"net":"PV_SEC"},{"row":4,"c0":25,"c1":37,"net":"EAR_RTN"},{"row":5,"c0":0,"c1":11,"net":"GND"},{"row":5,"c0":13,"c1":37,"net":"EAR_HI"},{"row":6,"c0":0,"c1":13,"net":"AIN1"},{"row":6,"c0":15,"c1":37,"net":null},{"row":7,"c0":0,"c1":7,"net":"AIN1REF"},{"row":7,"c0":9,"c1":37,"net":null},{"row":8,"c0":0,"c1":11,"net":"+3V3A"},{"row":8,"c0":13,"c1":37,"net":null},{"row":9,"c0":0,"c1":18,"net":"GND"},{"row":9,"c0":20,"c1":37,"net":null},{"row":10,"c0":0,"c1":18,"net":"COMMS_TAP"},{"row":10,"c0":20,"c1":37,"net":null},{"row":11,"c0":0,"c1":37,"net":null},{"row":12,"c0":0,"c1":18,"net":null},{"row":12,"c0":20,"c1":22,"net":"EAR_HI"},{"row":12,"c0":24,"c1":37,"net":"EAR_RTN"},{"row":13,"c0":0,"c1":15,"net":null},{"row":13,"c0":17,"c1":22,"net":"SPK_L_A"},{"row":13,"c0":24,"c1":37,"net":"SPK_L_B"},{"row":14,"c0":0,"c1":15,"net":null},{"row":14,"c0":17,"c1":22,"net":"SPK_L_A"},{"row":14,"c0":24,"c1":37,"net":"SPK_L_B"},{"row":15,"c0":0,"c1":15,"net":null},{"row":15,"c0":17,"c1":37,"net":"SPK_L_A"},{"row":16,"c0":0,"c1":15,"net":null},{"row":16,"c0":17,"c1":37,"net":"SPK_L_B"},{"row":17,"c0":0,"c1":19,"net":"GND"},{"row":17,"c0":21,"c1":37,"net":null},{"row":18,"c0":0,"c1":18,"net":null},{"row":18,"c0":20,"c1":22,"net":"EAR_HI"},{"row":18,"c0":24,"c1":37,"net":"EAR_RTN"},{"row":19,"c0":0,"c1":15,"net":null},{"row":19,"c0":17,"c1":22,"net":"SPK_R_A"},{"row":19,"c0":24,"c1":37,"net":"SPK_R_B"},{"row":20,"c0":0,"c1":15,"net":null},{"row":20,"c0":17,"c1":22,"net":"SPK_R_A"},{"row":20,"c0":24,"c1":37,"net":"SPK_R_B"},{"row":21,"c0":0,"c1":15,"net":null},{"row":21,"c0":17,"c1":37,"net":"SPK_R_A"},{"row":22,"c0":0,"c1":15,"net":null},{"row":22,"c0":17,"c1":37,"net":"SPK_R_B"},{"row":23,"c0":0,"c1":37,"net":null}],"cuts":[{"row":2,"col":16,"hole":"C17"},{"row":3,"col":5,"hole":"D6"},{"row":3,"col":24,"hole":"D25"},{"row":4,"col":16,"hole":"E17"},{"row":4,"col":24,"hole":"E25"},{"row":5,"col":12,"hole":"F13"},{"row":6,"col":14,"hole":"G15"},{"row":7,"col":8,"hole":"H9"},{"row":8,"col":12,"hole":"I13"},{"row":9,"col":19,"hole":"J20"},{"row":10,"col":19,"hole":"K20"},{"row":12,"col":19,"hole":"M20"},{"row":12,"col":23,"hole":"M24"},{"row":13,"col":16,"hole":"N17"},{"row":13,"col":23,"hole":"N24"},{"row":14,"col":16,"hole":"O17"},{"row":14,"col":23,"hole":"O24"},{"row":15,"col":16,"hole":"P17"},{"row":16,"col":16,"hole":"Q17"},{"row":17,"col":20,"hole":"R21"},{"row":18,"col":19,"hole":"S20"},{"row":18,"col":23,"hole":"S24"},{"row":19,"col":16,"hole":"T17"},{"row":19,"col":23,"hole":"T24"},{"row":20,"col":16,"hole":"U17"},{"row":20,"col":23,"hole":"U24"},{"row":21,"col":16,"hole":"V17"},{"row":22,"col":16,"hole":"W17"}],"links":[{"a":[4,3],"b":[4,2],"from":"D5","to":"C5","net":"DAC_P"},{"a":[5,5],"b":[5,9],"from":"F6","to":"J6","net":"GND"},{"a":[14,9],"b":[14,17],"from":"J15","to":"R15","net":"GND"},{"a":[20,5],"b":[20,12],"from":"F21","to":"M21","net":"EAR_HI"},{"a":[21,12],"b":[21,18],"from":"M22","to":"S22","net":"EAR_HI"},{"a":[35,4],"b":[35,12],"from":"E36","to":"M36","net":"EAR_RTN"},{"a":[28,12],"b":[28,18],"from":"M29","to":"S29","net":"EAR_RTN"},{"a":[20,13],"b":[20,14],"from":"N21","to":"O21","net":"SPK_L_A"},{"a":[27,13],"b":[27,14],"from":"N28","to":"O28","net":"SPK_L_B"},{"a":[18,14],"b":[18,15],"from":"O19","to":"P19","net":"SPK_L_A"},{"a":[26,14],"b":[26,16],"from":"O27","to":"Q27","net":"SPK_L_B"},{"a":[20,19],"b":[20,20],"from":"T21","to":"U21","net":"SPK_R_A"},{"a":[27,19],"b":[27,20],"from":"T28","to":"U28","net":"SPK_R_B"},{"a":[18,20],"b":[18,21],"from":"U19","to":"V19","net":"SPK_R_A"},{"a":[26,20],"b":[26,22],"from":"U27","to":"W27","net":"SPK_R_B"}],"parts":[{"ref":"J1","kind":"header","value":"1x8 pin header · codec","pins":{"1":{"c":2,"r":3,"hole":"D3","net":"DAC_P"},"2":{"c":2,"r":4,"hole":"E3","net":"DAC_N"},"3":{"c":2,"r":5,"hole":"F3","net":"GND"},"4":{"c":2,"r":6,"hole":"G3","net":"AIN1"},"5":{"c":2,"r":7,"hole":"H3","net":"AIN1REF"},"6":{"c":2,"r":8,"hole":"I3","net":"+3V3A"},"7":{"c":2,"r":9,"hole":"J3","net":"GND"},"8":{"c":2,"r":10,"hole":"K3","net":"COMMS_TAP"}}},{"ref":"J2","kind":"header","value":"1x4 pin header · panel bench (pin 1 at the bottom)","pins":{"1":{"c":33,"r":5,"hole":"F34","net":"EAR_HI"},"2":{"c":33,"r":4,"hole":"E34","net":"EAR_RTN"},"3":{"c":33,"r":3,"hole":"D34","net":"MIC_HI"},"4":{"c":33,"r":2,"hole":"C34","net":"MIC_LO"}}},{"ref":"J5","kind":"pigtail","value":"JST GH 4-way pigtail · panel harness","pins":{"1":{"c":36,"r":5,"hole":"F37","net":"EAR_HI"},"2":{"c":36,"r":4,"hole":"E37","net":"EAR_RTN"},"3":{"c":36,"r":3,"hole":"D37","net":"MIC_HI"},"4":{"c":36,"r":2,"hole":"C37","net":"MIC_LO"}}},{"ref":"J3","kind":"header","value":"1x2 pin header · cup L driver","pins":{"1":{"c":31,"r":15,"hole":"P32","net":"SPK_L_A"},"2":{"c":31,"r":16,"hole":"Q32","net":"SPK_L_B"}}},{"ref":"J4","kind":"header","value":"1x2 pin header · cup R driver","pins":{"1":{"c":31,"r":21,"hole":"V32","net":"SPK_R_A"},"2":{"c":31,"r":22,"hole":"W32","net":"SPK_R_B"}}},{"ref":"T4","kind":"lp5001","value":"Bourns SM-LP-5001 · 600:600 on wire legs","pins":{"1":{"c":14,"r":2,"hole":"C15","net":"DAC_P"},"2":{"c":14,"r":4,"hole":"E15","net":"DAC_N"},"4":{"c":19,"r":2,"hole":"C20","net":"MIC_LO"},"3":{"c":19,"r":4,"hole":"E20","net":"PV_SEC"}}},{"ref":"T2","kind":"sp74","value":"Triad SP-74 · cup L","pins":{"1":{"c":22,"r":12,"hole":"M23","net":"EAR_HI"},"2":{"c":25,"r":12,"hole":"M26","net":"EAR_RTN"},"3":{"c":22,"r":13,"hole":"N23","net":"SPK_L_A"},"4":{"c":25,"r":13,"hole":"N26","net":"SPK_L_B"},"5":{"c":22,"r":14,"hole":"O23","net":"SPK_L_A"},"6":{"c":25,"r":14,"hole":"O26","net":"SPK_L_B"}}},{"ref":"T3","kind":"sp74","value":"Triad SP-74 · cup R","pins":{"1":{"c":22,"r":18,"hole":"S23","net":"EAR_HI"},"2":{"c":25,"r":18,"hole":"S26","net":"EAR_RTN"},"3":{"c":22,"r":19,"hole":"T23","net":"SPK_R_A"},"4":{"c":25,"r":19,"hole":"T26","net":"SPK_R_B"},"5":{"c":22,"r":20,"hole":"U23","net":"SPK_R_A"},"6":{"c":25,"r":20,"hole":"U26","net":"SPK_R_B"}}},{"ref":"R10","kind":"res","value":"10 kΩ ¼ W","pins":{"1":{"c":21,"r":4,"hole":"E22","net":"PV_SEC"},"2":{"c":21,"r":1,"hole":"B22","net":"PV_ATT"}}},{"ref":"C37","kind":"film","value":"220 nF film ≥63 V, 5.08 mm","pins":{"1":{"c":26,"r":1,"hole":"B27","net":"PV_ATT"},"2":{"c":26,"r":3,"hole":"D27","net":"MIC_HI"}}},{"ref":"R7","kind":"res","value":"10 kΩ ¼ W","pins":{"1":{"c":17,"r":13,"hole":"N18","net":"SPK_L_A"},"2":{"c":17,"r":10,"hole":"K18","net":"COMMS_TAP"}}},{"ref":"R8","kind":"res","value":"10 kΩ ¼ W","pins":{"1":{"c":15,"r":10,"hole":"K16","net":"COMMS_TAP"},"2":{"c":15,"r":9,"hole":"J16","net":"GND"}}},{"ref":"R9","kind":"res","value":"0 Ω (or a wire link)","pins":{"1":{"c":18,"r":16,"hole":"Q19","net":"SPK_L_B"},"2":{"c":18,"r":17,"hole":"R19","net":"GND"}}},{"ref":"C27","kind":"mlcc","value":"1 µF MLCC, legs to 10.16 mm","pins":{"1":{"c":13,"r":10,"hole":"K14","net":"COMMS_TAP"},"2":{"c":13,"r":6,"hole":"G14","net":"AIN1"}}},{"ref":"C26","kind":"mlcc","value":"10 µF MLCC","pins":{"1":{"c":7,"r":7,"hole":"H8","net":"AIN1REF"},"2":{"c":7,"r":9,"hole":"J8","net":"GND"}}},{"ref":"D1A","kind":"diode","value":"Schottky, half of D1 (GND → AIN1)","pins":{"A":{"c":9,"r":9,"hole":"J10","net":"GND"},"K":{"c":9,"r":6,"hole":"G10","net":"AIN1"}}},{"ref":"D1B","kind":"diode","value":"Schottky, half of D1 (AIN1 → +3V3A)","pins":{"A":{"c":11,"r":6,"hole":"G12","net":"AIN1"},"K":{"c":11,"r":8,"hole":"I12","net":"+3V3A"}}}],"mount":[{"c":0,"r":0},{"c":37,"r":0},{"c":0,"r":23},{"c":37,"r":23}]};
+
+const NETCOL = {
+  "DAC_P":"#2f6fe0","DAC_N":"#7a5cf0","AIN1":"#0aa2c0","AIN1REF":"#62a8d8","COMMS_TAP":"#17b39a","+3V3A":"#e0443e","GND":"#6f7874",
+  "EAR_HI":"#f08c1a","EAR_RTN":"#b86a2e","MIC_HI":"#e8c21a","MIC_LO":"#a8902c","PV_SEC":"#f5a96b","PV_ATT":"#e2743a",
+  "SPK_L_A":"#e0529c","SPK_L_B":"#a8366f","SPK_R_A":"#c47ae2","SPK_R_B":"#8a4fb0"
+};
+const DOMAINS = [
+  {name:"Codec side · our ground", nets:["DAC_P","DAC_N","AIN1","AIN1REF","COMMS_TAP","+3V3A","GND"]},
+  {name:"Panel side · aircraft ground", nets:["EAR_HI","EAR_RTN","MIC_HI","MIC_LO","PV_SEC","PV_ATT"]},
+  {name:"Cup drivers", nets:["SPK_L_A","SPK_L_B","SPK_R_A","SPK_R_B"]}
+];
+const ROLE = {
+  J1:"Codec header. Jumper wires to the ADAU1372: 1 DAC_P, 2 DAC_N, 3 GND, 4 AIN1, 5 AIN1REF, 6 +3V3A (codec AVDD), 7 GND, 8 COMMS_TAP.",
+  J2:"Panel bench header, pin 1 at the bottom (strip E): 1 EAR_HI, 2 EAR_RTN, 3 MIC_HI, 4 MIC_LO.",
+  J5:"The panel harness's JST GH plug on a pigtail. Its four wires solder into hole 37 of strips B–E, on the same strips as J2.",
+  J3:"Cup L driver: 1 SPK_L_A (strip O), 2 SPK_L_B (strip P).", J4:"Cup R driver: 1 SPK_R_A (strip U), 2 SPK_R_B (strip V).",
+  T4:"PureVoice output transformer. It is an SMD part, so solder a short 0.6 mm tinned-wire leg to each of its four feet. The feet are 12.0 mm apart and the holes 12.7 mm, so splay the legs slightly. Pin 1 (the dot) goes to B15.",
+  T2:"Cup L transformer. Drops straight in: its pads sit on the 0.1-inch grid. Pin 1 (square pad) goes to L23. Secondary polarity is still unverified.",
+  T3:"Cup R transformer. Pin 1 (square pad) goes to R23. Keeps the panel's load at about 158 Ω with T2.",
+  R10:"Attenuator on T4's secondary. Stood upright.", R7:"Top of the tap divider (SPK_L_A → COMMS_TAP).", R8:"Bottom of the tap divider, to GND.",
+  R9:"Grounds SPK_L_B so the tap has a reference. A plain wire link does the same job.",
+  C37:"Film cap, 5.08 mm lead pitch, rated 63 V or more. Blocks the console's mic bias from T4.",
+  C27:"Couples the tap into AIN1. Its holes are 10.16 mm apart, so bend the legs out.", C26:"Decouples AIN1REF.",
+  D1A:"Lower half of the PCB's BAT54S: anode on GND, cathode (band) on AIN1. Stand it with the band up.",
+  D1B:"Upper half of the BAT54S: anode on AIN1, cathode (band) on +3V3A. Stand it with the band up."
+};
+const GROUP = {res:3, diode:3, mlcc:4, film:4, header:5, pigtail:5, lp5001:6, sp74:6};
+const STEPS = [
+  {t:"Prepare the board", side:"top", p:"Cut a piece of 0.1-inch stripboard 38 holes × 24 strips (about 97 × 61 mm), strips running left to right. Letter the strips A–X from the top and number the holes 1–38 from the left. Drill M3 at A1, A38, X1 and X38 if you want to mount it."},
+  {t:"Cut the tracks", side:"cu", p:"From the copper side, break each strip at the holes listed, with a spot-face cutter or a 3.5 mm drill turned by hand. Meter across every cut: it must read open."},
+  {t:"Fit the links", side:"top", p:"Lay the links flat on the component side. Bare tinned wire is fine for the one-strip hops; use insulated wire for the long runs, which cross other strips."},
+  {t:"Resistors and diodes", side:"top", p:"All stand upright: body on the first hole, lead looped over to the second. Diodes stand with the band (cathode) at the top."},
+  {t:"Capacitors", side:"top", p:"C37 is the 220 nF film cap, rated 63 V or more. C27's holes are 10.16 mm apart, so bend its legs out."},
+  {t:"Headers and the J5 pigtail", side:"top", p:"J2 has pin 1 at the bottom, on strip E. The GH pigtail's wires go into hole 37: EAR_HI on E, EAR_RTN on D, MIC_HI on C, MIC_LO on B."},
+  {t:"Transformers", side:"top", p:"Fit T2 and T3 last: they cover the links beside them. T4 sits on wire legs. Before connecting anything, meter: J1.3 to J1.7 beeps (GND); no J2 or J5 pin beeps to GND; T2/T3 primaries read a few ohms between EAR_HI and EAR_RTN."}
+];
+
+// ---------- geometry ----------
+const PITCH = 2.54, MARGIN = 2.0;
+const W = (V.cols - 1) * PITCH + 2 * MARGIN, D = (V.rows - 1) * PITCH + 2 * MARGIN, T = 1.6;
+const hx = c => MARGIN + c * PITCH, hy = r => MARGIN + r * PITCH;
+const P = (c, r, h) => new THREE.Vector3(hx(c) - W / 2, h || 0, hy(r) - D / 2);
+const holeName = (c, r) => String.fromCharCode(65 + r) + (c + 1);
+
+const canvas = document.getElementById("c"), stage = document.getElementById("stage");
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(36, 1, 1, 2000);
+const controls = new THREE.OrbitControls(camera, canvas); controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x666655, 0.8));
+const sun = new THREE.DirectionalLight(0xffffff, 0.7); sun.position.set(50, 140, 80); scene.add(sun);
+const under = new THREE.DirectionalLight(0xffffff, 0.55); under.position.set(-30, -140, -40); scene.add(under);
+
+function mat(color, o) { return new THREE.MeshStandardMaterial(Object.assign({color, roughness:0.55, metalness:0.05}, o || {})); }
+const M = {black:mat(0x1b1c1e, {roughness:0.7}), gold:mat(0xd4af37, {metalness:0.8, roughness:0.3}), tin:mat(0xc9ccd0, {metalness:0.75, roughness:0.3}),
+  resBody:mat(0x6f9ad8, {roughness:0.45}), glass:mat(0xe07a2a, {roughness:0.2, transparent:true, opacity:0.85}), mlcc:mat(0xc9a25a, {roughness:0.6}),
+  film:mat(0xb23a35, {roughness:0.4}), steel:mat(0x6f7478, {metalness:0.6, roughness:0.45}), tape:mat(0xe8c64a), bobbin:mat(0x2b2b2b), ghWhite:mat(0xefe9dc)};
+const BAND = {brown:0x7a4a22, black:0x111111, orange:0xe8771e, gold:0xc9a227};
+function box(w, h, d, m, x, y, z) { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y, z); return b; }
+function cylY(r, h, m, x, y0, z) { const c = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 18), m); c.position.set(x, y0 + h / 2, z); return c; }
+function tube(pts, r, m) { return new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, false, "centripetal", 0.1), Math.max(16, pts.length * 12), r, 8, false), m); }
+
+// ---------- lookups ----------
+const segAt = {};   // "c,r" -> segment
+for (const s of V.segments) for (let c = s.c0; c <= s.c1; c++) segAt[c + "," + s.row] = s;
+const cutAt = {}; for (const k of V.cuts) cutAt[k.col + "," + k.row] = k;
+const holeUse = {};  // "c,r" -> description
+for (const p of V.parts) for (const n in p.pins) { const q = p.pins[n]; holeUse[q.c + "," + q.r] = {type:"part", ref:p.ref, pin:n}; }
+V.links.forEach((l, i) => { holeUse[l.a[0] + "," + l.a[1]] = {type:"link", i}; holeUse[l.b[0] + "," + l.b[1]] = {type:"link", i}; });
+const partStep = p => GROUP[p.kind];
+
+// ---------- board textures ----------
+const S = 14;
+const topC = document.createElement("canvas"), botC = document.createElement("canvas");
+topC.width = botC.width = Math.round(W * S); topC.height = botC.height = Math.round(D * S);
+const topTex = new THREE.CanvasTexture(topC), botTex = new THREE.CanvasTexture(botC);
+topTex.anisotropy = botTex.anisotropy = 4;
+const edge = mat(0xb08350);
+const board = new THREE.Mesh(new THREE.BoxGeometry(W, T, D), [edge, edge,
+  new THREE.MeshStandardMaterial({map:topTex, roughness:0.75}),
+  new THREE.MeshStandardMaterial({map:botTex, roughness:0.45, metalness:0.15}), edge, edge]);
+board.position.y = -T / 2; scene.add(board);
+// BoxGeometry's bottom face maps canvas row 0 to the board's far (+z) edge, so draw it flipped in y.
+function drawTop() {
+  const g = topC.getContext("2d"); g.setTransform(S, 0, 0, S, 0, 0);
+  g.fillStyle = "#c49a62"; g.fillRect(0, 0, W, D);
+  for (let r = 0; r < V.rows; r++) for (let c = 0; c < V.cols; c++) {
+    g.fillStyle = "#3b2a19"; g.beginPath(); g.arc(hx(c), hy(r), 0.5, 0, 7); g.fill();
+  }
+  for (const m of V.mount) { g.fillStyle = "#2a1e12"; g.beginPath(); g.arc(hx(m.c), hy(m.r), 1.6, 0, 7); g.fill(); }
+  if (sel && sel.type === "hole") ring(g, sel.c, sel.r);
+  topTex.needsUpdate = true;
+}
+function ring(g, c, r) { g.strokeStyle = cssVar("--mark") || "#ffcc33"; g.lineWidth = 0.35; g.beginPath(); g.arc(hx(c), hy(r), 1.15, 0, 7); g.stroke(); }
+function drawBottom() {
+  const g = botC.getContext("2d"); g.setTransform(S, 0, 0, -S, 0, D * S);
+  g.fillStyle = "#8c6438"; g.fillRect(0, 0, W, D);
+  const hiNet = sel && sel.type === "net" ? sel.net : null;
+  for (const s of V.segments) {
+    const x0 = hx(s.c0) - 1.1, x1 = hx(s.c1) + 1.1, y = hy(s.row);
+    const lit = hiNet && s.net === hiNet;
+    g.fillStyle = lit ? NETCOL[s.net] : "#d6904f";
+    g.fillRect(x0, y - 0.85, x1 - x0, 1.7);
+    if (s.net && !lit) { g.fillStyle = NETCOL[s.net]; g.globalAlpha = hiNet ? 0.25 : 0.85; g.fillRect(x0 + 0.3, y - 0.22, x1 - x0 - 0.6, 0.44); g.globalAlpha = 1; }
+  }
+  for (let r = 0; r < V.rows; r++) for (let c = 0; c < V.cols; c++) {
+    if (cutAt[c + "," + r] && step >= 1) {
+      g.fillStyle = "#8c6438"; g.beginPath(); g.arc(hx(c), hy(r), 1.3, 0, 7); g.fill();
+      g.strokeStyle = "#7c5530"; g.lineWidth = 0.15; g.stroke();
+    }
+    const u = holeUse[c + "," + r];
+    const built = u && (u.type === "link" ? step >= 2 : partStep(V.parts.find(p => p.ref === u.ref)) <= step);
+    if (built) {
+      const grd = g.createRadialGradient(hx(c) - 0.25, hy(r) - 0.25, 0.1, hx(c), hy(r), 0.95);
+      grd.addColorStop(0, "#f4f5f6"); grd.addColorStop(1, "#9aa0a6");
+      g.fillStyle = grd; g.beginPath(); g.arc(hx(c), hy(r), 0.95, 0, 7); g.fill();
+    } else { g.fillStyle = "#2a1e12"; g.beginPath(); g.arc(hx(c), hy(r), 0.5, 0, 7); g.fill(); }
+  }
+  for (const m of V.mount) { g.fillStyle = "#2a1e12"; g.beginPath(); g.arc(hx(m.c), hy(m.r), 1.6, 0, 7); g.fill(); }
+  if (sel && sel.type === "cut") ring(g, sel.col, sel.row);
+  if (sel && sel.type === "hole") ring(g, sel.c, sel.r);
+  for (const k of markHoles) ring(g, k[0], k[1]);
+  botTex.needsUpdate = true;
+}
+
+// ---------- parts ----------
+const pickables = [];
+const partGroups = {}, linkMeshes = [];
+const tagDefs = [];
+function pinsOf(p) { return Object.keys(p.pins).map(n => Object.assign({n}, p.pins[n])); }
+function centre(p) { const ps = pinsOf(p); return {c:ps.reduce((a, q) => a + q.c, 0) / ps.length, r:ps.reduce((a, q) => a + q.r, 0) / ps.length}; }
+function addPart(p) {
+  const gr = new THREE.Group(); scene.add(gr); partGroups[p.ref] = gr;
+  const ps = pinsOf(p), ctr = centre(p), cv = P(ctr.c, ctr.r);
+  let top = 3;
+  if (p.kind === "header") {
+    const rs = ps.map(q => q.r), r0 = Math.min(...rs), r1 = Math.max(...rs);
+    gr.add(box(2.5, 2.5, (r1 - r0 + 1) * PITCH, M.black, cv.x, 1.25, cv.z));
+    for (const q of ps) { const v = P(q.c, q.r); gr.add(box(0.64, 9, 0.64, M.gold, v.x, 4.2, v.z)); }
+    top = 8.6;
+  } else if (p.kind === "pigtail") {
+    const hv = new THREE.Vector3(W / 2 + 12, 3, cv.z);
+    gr.add(box(4.25, 4.25, 6.75, M.ghWhite, hv.x + 1, hv.y, hv.z));
+    ps.forEach(q => {
+      const v = P(q.c, q.r), end = new THREE.Vector3(hv.x - 1.2, hv.y, hv.z + (q.r - ctr.r) * 1.25);
+      gr.add(tube([v.clone().setY(0), v.clone().setY(3), new THREE.Vector3(v.x + 4, 5, v.z), new THREE.Vector3(end.x - 3, end.y + 1, end.z), end], 0.38, mat(NETCOL[q.net])));
+    });
+    top = 6;
+  } else if (p.kind === "res" || p.kind === "diode") {
+    const a = p.kind === "diode" ? p.pins.A : p.pins["1"], b = p.kind === "diode" ? p.pins.K : p.pins["2"];
+    const va = P(a.c, a.r), vb = P(b.c, b.r), isD = p.kind === "diode";
+    const h = isD ? 3.8 : 6.3, rad = isD ? 0.9 : 1.2, y0 = 0.9;
+    gr.add(cylY(rad, h, isD ? M.glass : M.resBody, va.x, y0, va.z));
+    gr.add(cylY(0.25, y0, M.tin, va.x, 0, va.z));
+    if (isD) gr.add(cylY(rad + 0.05, 0.6, M.black, va.x, y0 + h - 1.0, va.z));
+    else {
+      const bands = p.value.startsWith("0") ? ["black"] : ["brown", "black", "orange", "gold"];
+      bands.forEach((b, i) => gr.add(cylY(rad + 0.06, 0.55, mat(BAND[b]), va.x, y0 + 1.0 + i * 1.15 + (i === 3 ? 0.9 : 0), va.z)));
+    }
+    const yt = y0 + h, lift = yt + 1.6;
+    gr.add(tube([va.clone().setY(yt), va.clone().setY(lift), vb.clone().lerp(va, 0.25).setY(lift), vb.clone().setY(lift - 0.6), vb.clone().setY(0)], 0.25, M.tin));
+    top = lift;
+  } else if (p.kind === "mlcc" || p.kind === "film") {
+    const film = p.kind === "film", bodyY = film ? 4.6 : 4.2;
+    const body = film ? box(2.6, 6.5, 7.2, M.film, cv.x, bodyY, cv.z)
+                      : new THREE.Mesh(new THREE.SphereGeometry(2.1, 20, 14), M.mlcc);
+    if (!film) { body.scale.set(0.7, 1.15, 1.25); body.position.set(cv.x, bodyY, cv.z); }
+    gr.add(body);
+    for (const q of ps) { const v = P(q.c, q.r); gr.add(tube([v.clone().setY(0), v.clone().setY(1.2), new THREE.Vector3(cv.x, bodyY - 1.2, (v.z + cv.z * 2) / 3)], 0.25, M.tin)); }
+    top = bodyY + (film ? 3.3 : 2.4);
+  } else if (p.kind === "lp5001") {
+    const L = 12.8, Wd = 9.0, H = 7.0, base = 2.6;
+    xfmrBody(gr, cv, L, Wd, H, base);
+    for (const q of ps) {
+      const v = P(q.c, q.r), foot = new THREE.Vector3(cv.x + Math.sign(v.x - cv.x) * 6.0, base, v.z);
+      gr.add(box(1.4, 0.3, 0.8, M.tin, foot.x, base, foot.z));
+      gr.add(tube([foot.clone(), foot.clone().setY(base * 0.5), v.clone().setY(0.6), v.clone().setY(0)], 0.3, M.tin));
+    }
+    top = base + H;
+  } else if (p.kind === "sp74") {
+    xfmrBody(gr, cv, 10.4, 7.9, 8.6, 0);
+    top = 8.6;
+  }
+  gr.traverse(o => { if (o.isMesh) { o.userData = {type:"part", ref:p.ref}; pickables.push(o); } });
+  tagDefs.push({text:p.ref, pos:new THREE.Vector3(cv.x, top + 1.2, cv.z), part:p.ref, topOnly:true});
+}
+function xfmrBody(gr, cv, L, Wd, H, base) {
+  gr.add(box(L * 0.82, H * 0.14, Wd, M.steel, cv.x, base + H * 0.93, cv.z));
+  gr.add(box(L * 0.82, H * 0.12, Wd, M.steel, cv.x, base + H * 0.06, cv.z));
+  gr.add(box(L * 0.82, H * 0.86, Wd * 0.1, M.steel, cv.x, base + H * 0.47, cv.z - Wd * 0.45));
+  gr.add(box(L * 0.82, H * 0.86, Wd * 0.1, M.steel, cv.x, base + H * 0.47, cv.z + Wd * 0.45));
+  gr.add(box(L, H * 0.62, Wd * 0.72, M.bobbin, cv.x, base + H * 0.5, cv.z));
+  gr.add(box(L * 0.7, H * 0.66, Wd * 0.76, M.tape, cv.x, base + H * 0.5, cv.z));
+}
+V.parts.forEach(addPart);
+
+// links: flat on the component side; one-strip hops in bare tinned wire, longer runs insulated in the net colour
+V.links.forEach((l, i) => {
+  const a = P(l.a[0], l.a[1]), b = P(l.b[0], l.b[1]), long = Math.abs(l.a[1] - l.b[1]) > 1;
+  const h = long ? 0.75 : 0.5;
+  const m = long ? mat(NETCOL[l.net], {roughness:0.5}) : M.tin;
+  const mesh = tube([a.clone().setY(0), a.clone().setY(h), a.clone().lerp(b, 0.5).setY(h), b.clone().setY(h), b.clone().setY(0)], long ? 0.42 : 0.3, m);
+  mesh.userData = {type:"link", i}; pickables.push(mesh); scene.add(mesh); linkMeshes.push(mesh);
+});
+pickables.push(board);
+
+// grid references: strip letters down both edges, hole numbers along the top
+for (let r = 0; r < V.rows; r++) {
+  tagDefs.push({text:String.fromCharCode(65 + r), pos:P(-1.4, r, 0.2), cls:"grid"});
+  tagDefs.push({text:String.fromCharCode(65 + r), pos:P(V.cols, r, 0.2), cls:"grid"});
+}
+for (let c = 0; c < V.cols; c += (c === 0 ? 4 : 5)) tagDefs.push({text:String(c + 1), pos:P(c, -1.2, 0.2), cls:"grid"});
+tagDefs.push({text:String(V.cols), pos:P(V.cols - 1, -1.2, 0.2), cls:"grid"});
+
+// markers on the component side for the selected item's holes
+const markGroup = new THREE.Group(); scene.add(markGroup);
+let markHoles = [];
+function setMarks(holes) {
+  markHoles = holes; markGroup.clear();
+  const m = new THREE.MeshBasicMaterial({color:new THREE.Color(cssVar("--mark") || "#ffcc33")});
+  for (const [c, r] of holes) { const t = new THREE.Mesh(new THREE.TorusGeometry(1.15, 0.18, 8, 24), m); t.rotation.x = Math.PI / 2; t.position.copy(P(c, r, 0.08)); markGroup.add(t); }
+}
+
+// ---------- tags ----------
+const tagsEl = document.getElementById("tags");
+for (const t of tagDefs) { const el = document.createElement("div"); el.className = "tag" + (t.cls ? " " + t.cls : ""); el.textContent = t.text; tagsEl.appendChild(el); t.el = el; }
+
+// ---------- state ----------
+let step = STEPS.length - 1, sel = null;
+const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;"}[c])); }
+function sw(n) { return n ? `<span class="sw" style="background:${NETCOL[n]};margin-right:6px"></span>` : ""; }
+function applyBuild() {
+  for (const p of V.parts) partGroups[p.ref].visible = partStep(p) <= step;
+  for (const m of linkMeshes) m.visible = step >= 2;
+  for (const t of tagDefs) if (t.part) t.hiddenByStep = partStep(V.parts.find(p => p.ref === t.part)) > step;
+  drawTop(); drawBottom();
+}
+function applyNetDim() {
+  const n = sel && sel.type === "net" ? sel.net : null;
+  linkMeshes.forEach((m, i) => { m.material.transparent = true; m.material.opacity = !n || V.links[i].net === n ? 1 : 0.15; });
+  for (const t of tagDefs) if (t.part) {
+    const p = V.parts.find(q => q.ref === t.part);
+    t.el.classList.toggle("dim", !!n && !Object.values(p.pins).some(q => q.net === n));
+  }
+}
+const info = document.getElementById("info");
+function select(s) {
+  sel = s;
+  let holes = [];
+  if (!s) info.innerHTML = `<p class="note" style="margin:0">Nothing picked. Hover any hole to read its strip and net; click a part, a link or a strip, or pick a build item.</p>`;
+  else if (s.type === "part") {
+    const p = V.parts.find(q => q.ref === s.ref);
+    const rows = pinsOf(p).map(q => `<tr><td>${esc(p.ref)}.${esc(q.n)}</td><td>${esc(q.hole)}</td><td>${sw(q.net)}${esc(q.net)}</td></tr>`).join("");
+    info.innerHTML = `<div class="ttl">${esc(p.ref)}</div><div class="val">${esc(p.value)}</div><p>${esc(ROLE[p.ref] || "")}</p><table>${rows}</table>`;
+    holes = pinsOf(p).map(q => [q.c, q.r]);
+  } else if (s.type === "link") {
+    const l = V.links[s.i];
+    info.innerHTML = `<div class="ttl">Link ${esc(l.from)} – ${esc(l.to)}</div><div class="val">${sw(l.net)}${esc(l.net)}</div><p>${Math.abs(l.a[1] - l.b[1]) > 1 ? "Insulated wire: it crosses " + (Math.abs(l.a[1] - l.b[1]) - 1) + " strips without touching them." : "Bare tinned wire, one strip hop."}</p>`;
+    holes = [l.a, l.b];
+  } else if (s.type === "cut") {
+    const left = segAt[(s.col - 1) + "," + s.row], right = segAt[(s.col + 1) + "," + s.row];
+    info.innerHTML = `<div class="ttl">Cut at ${esc(s.hole)}</div><p>Separates ${sw(left && left.net)}${esc(left && left.net || "an unused strip end")} from ${sw(right && right.net)}${esc(right && right.net || "an unused strip end")}.</p>`;
+  } else if (s.type === "net") {
+    const segs = V.segments.filter(g => g.net === s.net).map(g => `${String.fromCharCode(65 + g.row)}${g.c0 + 1}–${g.c1 + 1}`).join(", ");
+    const pins = V.parts.flatMap(p => pinsOf(p).filter(q => q.net === s.net).map(q => `${p.ref}.${q.n} ${q.hole}`)).join(" · ");
+    info.innerHTML = `<div class="ttl">${sw(s.net)}${esc(s.net)}</div><p style="font-size:12px"><b style="font-weight:500">Strips</b> ${esc(segs)}</p><p style="font-family:var(--mono);font-size:12px">${esc(pins)}</p>`;
+  } else if (s.type === "hole") {
+    info.innerHTML = hoveredHtml(s.c, s.r); holes = [[s.c, s.r]];
+  }
+  for (const b of netsEl.querySelectorAll("button")) b.setAttribute("aria-pressed", String(!!s && s.type === "net" && b.dataset.net === s.net));
+  for (const b of document.querySelectorAll("#stepbody li button")) b.setAttribute("aria-pressed", String(!!s && b.dataset.key === keyOf(s)));
+  setMarks(holes); applyNetDim(); drawTop(); drawBottom();
+}
+function keyOf(s) { return s.type === "part" ? "p:" + s.ref : s.type === "link" ? "l:" + s.i : s.type === "cut" ? "c:" + s.hole : ""; }
+function hoveredHtml(c, r) {
+  const seg = segAt[c + "," + r], cut = cutAt[c + "," + r], u = holeUse[c + "," + r];
+  let what = cut ? "Cut here" : u ? (u.type === "part" ? `${u.ref}.${u.pin}` : `Link ${V.links[u.i].from}–${V.links[u.i].to}`) : "Empty";
+  const strip = seg ? `Strip ${String.fromCharCode(65 + r)}${seg.c0 + 1}–${seg.c1 + 1}` : "";
+  return `<div class="ttl">${esc(holeName(c, r))}</div><div class="val">${esc(what)}</div><p>${seg && seg.net ? sw(seg.net) + esc(seg.net) : seg ? "Unused strip" : "No strip (cut)"}${strip ? " · " + esc(strip) : ""}</p>`;
+}
+
+// nets legend
+const netsEl = document.getElementById("nets");
+for (const dom of DOMAINS) {
+  const h = document.createElement("h3"); h.textContent = dom.name; netsEl.appendChild(h);
+  for (const n of dom.nets) {
+    const b = document.createElement("button"); b.type = "button"; b.dataset.net = n; b.setAttribute("aria-pressed", "false");
+    const nseg = V.segments.filter(s => s.net === n).length;
+    b.innerHTML = `<span class="sw" style="background:${NETCOL[n]}"></span><b>${esc(n)}</b><span>${nseg} strip${nseg > 1 ? "s" : ""}</span>`;
+    b.addEventListener("click", () => select(sel && sel.type === "net" && sel.net === n ? null : {type:"net", net:n}));
+    netsEl.appendChild(b);
+  }
+}
+
+// build steps
+const stepsEl = document.getElementById("steps"), body = document.getElementById("stepbody");
+function itemsFor(i) {
+  if (i === 1) return V.cuts.map(k => ({key:"c:" + k.hole, label:k.hole, what:(() => { const l = segAt[(k.col - 1) + "," + k.row], r = segAt[(k.col + 1) + "," + k.row]; return (l && l.net || "—") + " | " + (r && r.net || "—"); })(), s:{type:"cut", hole:k.hole, col:k.col, row:k.row}}));
+  if (i === 2) return V.links.map((l, j) => ({key:"l:" + j, label:`${l.from} – ${l.to}`, what:l.net, s:{type:"link", i:j}}));
+  return V.parts.filter(p => partStep(p) === i).map(p => ({key:"p:" + p.ref, label:p.ref + "  " + pinsOf(p).map(q => q.hole).join(" "), what:p.value, s:{type:"part", ref:p.ref}}));
+}
+STEPS.forEach((st, i) => {
+  const li = document.createElement("li"), b = document.createElement("button"); b.type = "button";
+  const n = i === 0 ? "" : itemsFor(i).length;
+  b.innerHTML = `<span class="n">${i}</span><span>${esc(st.t)}</span><span class="c">${n}</span>`;
+  b.addEventListener("click", () => goStep(i, true));
+  li.appendChild(b); stepsEl.appendChild(li);
+});
+function goStep(i, moveCam) {
+  step = i;
+  stepsEl.querySelectorAll("button").forEach((b, j) => b.setAttribute("aria-current", j === i ? "step" : "false"));
+  const items = itemsFor(i);
+  body.innerHTML = `<p>${esc(STEPS[i].p)}</p>` + (i === 0 ? "" : `<ul>${items.map(it => `<li><button type="button" data-key="${esc(it.key)}"><span>${esc(it.label)}</span><span class="w">${esc(it.what)}</span></button></li>`).join("")}</ul>`);
+  body.querySelectorAll("li button").forEach((b, j) => b.addEventListener("click", () => select(items[j].s)));
+  document.getElementById("prev").disabled = i === 0; document.getElementById("next").disabled = i === STEPS.length - 1;
+  applyBuild();
+  if (moveCam) goView(STEPS[i].side === "cu" ? "cu" : "iso");
+}
+document.getElementById("prev").addEventListener("click", () => goStep(Math.max(0, step - 1), true));
+document.getElementById("next").addEventListener("click", () => goStep(Math.min(STEPS.length - 1, step + 1), true));
+
+// views
+const VIEWS = {top:new THREE.Vector3(0, 1, 0.0015), cu:new THREE.Vector3(0, -1, -0.0015), iso:new THREE.Vector3(-0.15, 0.9, 0.75)};
+let tween = null;
+function framing(k) {
+  const asp = isFinite(camera.aspect) && camera.aspect > 0 ? camera.aspect : 1.5;
+  const r = Math.hypot(W, D) / 2 + 6, vf = camera.fov * Math.PI / 180, hf = 2 * Math.atan(Math.tan(vf / 2) * asp);
+  const dist = r / Math.sin(Math.min(vf, hf) / 2) * 0.82;
+  return {pos:VIEWS[k].clone().normalize().multiplyScalar(dist), tgt:new THREE.Vector3(0, 0, 0)};
+}
+function goView(k, now) {
+  const f = framing(k);
+  for (const id of ["v-top", "v-cu", "v-iso"]) document.getElementById(id).setAttribute("aria-pressed", String(id === "v-" + k));
+  if (now || reduceMotion) { camera.position.copy(f.pos); controls.target.copy(f.tgt); tween = null; return; }
+  tween = {p0:camera.position.clone(), t0:controls.target.clone(), p1:f.pos, t1:f.tgt, s:performance.now(), d:700};
+}
+document.getElementById("v-top").addEventListener("click", () => goView("top"));
+document.getElementById("v-cu").addEventListener("click", () => goView("cu"));
+document.getElementById("v-iso").addEventListener("click", () => goView("iso"));
+
+// picking
+const ray = new THREE.Raycaster(), mouse = new THREE.Vector2(), tip = document.getElementById("tip");
+function pick(e) {
+  const r = canvas.getBoundingClientRect();
+  mouse.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(mouse, camera);
+  const hits = ray.intersectObjects(pickables.filter(o => o === board || isShown(o)), false);
+  if (!hits.length) return null;
+  const h = hits[0];
+  if (h.object === board) {
+    const x = h.point.x + W / 2, y = h.point.z + D / 2;
+    const c = Math.round((x - MARGIN) / PITCH), rr = Math.round((y - MARGIN) / PITCH);
+    if (c < 0 || rr < 0 || c >= V.cols || rr >= V.rows) return null;
+    return {type:"hole", c, r:rr, below:h.point.y < -T / 2};
+  }
+  return h.object.userData;
+}
+function isShown(o) { let p = o; while (p) { if (!p.visible) return false; p = p.parent; } return true; }
+let down = null;
+canvas.addEventListener("pointerdown", e => { down = {x:e.clientX, y:e.clientY}; });
+canvas.addEventListener("pointerup", e => {
+  if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 5) return;
+  const u = pick(e);
+  if (!u) return select(null);
+  if (u.type === "part") select({type:"part", ref:u.ref});
+  else if (u.type === "link") select({type:"link", i:u.i});
+  else if (u.type === "hole") {
+    const k = cutAt[u.c + "," + u.r];
+    if (k && u.below) select({type:"cut", hole:k.hole, col:k.col, row:k.row});
+    else { const seg = segAt[u.c + "," + u.r]; select(seg && seg.net ? {type:"net", net:seg.net} : {type:"hole", c:u.c, r:u.r}); }
+  }
+});
+canvas.addEventListener("pointermove", e => {
+  if (e.buttons) { tip.hidden = true; return; }
+  const u = pick(e), r = stage.getBoundingClientRect();
+  if (!u) { tip.hidden = true; canvas.style.cursor = "grab"; return; }
+  canvas.style.cursor = "pointer";
+  let html;
+  if (u.type === "part") { const p = V.parts.find(q => q.ref === u.ref); html = `<b>${esc(p.ref)}</b>${esc(p.value)}`; }
+  else if (u.type === "link") { const l = V.links[u.i]; html = `<b>Link ${esc(l.from)}–${esc(l.to)}</b>${esc(l.net)}`; }
+  else html = hoveredHtml(u.c, u.r).replace(/<div class="ttl">(.*?)<\/div><div class="val">(.*?)<\/div><p>(.*?)<\/p>/, "<b>$1 · $2</b>$3");
+  tip.innerHTML = html; tip.hidden = false;
+  tip.style.left = Math.min(e.clientX - r.left + 14, r.width - 290) + "px"; tip.style.top = (e.clientY - r.top + 14) + "px";
+});
+canvas.addEventListener("pointerleave", () => { tip.hidden = true; });
+
+// theme
+function applyTheme() { scene.background = new THREE.Color(cssVar("--scene") || "#e3e7e4"); setMarks(markHoles); drawTop(); drawBottom(); }
+if (window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
+new MutationObserver(applyTheme).observe(document.documentElement, {attributes:true, attributeFilter:["data-theme"]});
+
+// loop
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  if (!w || !h) return;                                  // hidden on load: keep the last good aspect
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+  if (!isFinite(camera.position.x)) goView("iso", true);
+}
+new ResizeObserver(resize).observe(stage);
+const v3 = new THREE.Vector3(), sideEl = document.getElementById("side");
+function frame(now) {
+  if (tween) {
+    const t = Math.min(1, (now - tween.s) / tween.d), k = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    camera.position.lerpVectors(tween.p0, tween.p1, k); controls.target.lerpVectors(tween.t0, tween.t1, k);
+    if (t >= 1) tween = null;
+  }
+  controls.update();
+  renderer.render(scene, camera);
+  const above = camera.position.y > 0;
+  sideEl.textContent = above ? "Component side" : "Copper side";
+  markGroup.visible = above;
+  const w = stage.clientWidth, h = stage.clientHeight;
+  for (const t of tagDefs) {
+    if ((t.topOnly && !above) || t.hiddenByStep) { t.el.hidden = true; continue; }
+    v3.copy(t.pos); if (t.cls === "grid" && !above) v3.y = -T - 0.2;
+    v3.project(camera);
+    const vis = v3.z < 1 && Math.abs(v3.x) < 1.05 && Math.abs(v3.y) < 1.05;
+    t.el.hidden = !vis;
+    if (vis) { t.el.style.left = ((v3.x + 1) / 2 * w) + "px"; t.el.style.top = ((1 - v3.y) / 2 * h) + "px"; }
+  }
+  requestAnimationFrame(frame);
+}
+resize(); select(null); goStep(STEPS.length - 1, false); goView("iso", true); applyTheme();
+requestAnimationFrame(frame);
+</script>
