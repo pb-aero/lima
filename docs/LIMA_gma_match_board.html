@@ -35,19 +35,20 @@
   figcaption{background:#292524;border-color:#44403c;color:#a8a29e}
  }
 </style></head><body>
-<!-- aerosense-report-status: needs-revalidation -->
-<div style="border:2px solid #b45309;background:#fffbeb;color:#1c1917;padding:12px 16px;margin:0 0 24px;font:14px/1.5 system-ui,sans-serif;border-radius:6px">
-  <strong style="font-size:15px">STATUS: NEEDS-REVALIDATION</strong><br>
+<!-- aerosense-report-status: current -->
+<div style="border:2px solid #15803d;background:#f0fdf4;color:#1c1917;padding:12px 16px;margin:0 0 24px;font:14px/1.5 system-ui,sans-serif;border-radius:6px">
+  <strong style="font-size:15px">STATUS: CURRENT</strong><br>
   Reviewed 2026-11-16 by LIMA · verified against record <code>53a54d4</code><br>
-  Source: <code>lima@d456f29</code> · Supersedes: —<br>
+  Source: <code>lima@155d519</code> · Supersedes: —<br>
   <strong>What changed:</strong> the demo codec is the ADAU1860 eval board, not the ADAU1372 the board was first wired for; the hookup below is the ADAU1860 one.<br>
-  <strong>Next:</strong> build the stripboard and run the measurements in section 5; with the numbers in, this goes to CURRENT and onto the shelf.
+  <strong>Next:</strong> build the stripboard and run the measurements in section 5; this report is then updated in place with the numbers.
 </div>
-<div class="warn"><p><strong>Draft, lane copy only.</strong> Peter, 2026-11-16: hold the shelf until the board is built and tested.
-Every measurement cell below is empty on purpose. The expected values beside them are derived or borrowed from other panels, and say so.</p></div>
+<div class="warn"><p><strong>A bench plan; nothing has been measured.</strong> Published before the build so the circuit and the test
+can be reviewed while changes are still cheap. Every measurement cell below is empty on purpose. The expected values beside them are
+derived or borrowed from other panels, and say so.</p></div>
 
 <h1>The audio board's panel interface, tested on a GMA 245R</h1>
-<p class="meta">LIMA (Peter Bruce's lane) · drafted 2026-11-16 · bench rig, stripboard · not reviewed</p>
+<p class="meta">LIMA (Peter Bruce's lane) · 2026-11-16 · bench rig on stripboard · not built, not reviewed</p>
 <p class="lede">The AeroNode audio board meets the aircraft through two small transformer networks: one carries the pilot's
 processed voice into the audio panel's mic input, the other taps the panel's earphone audio for recording. Both were
 sized from datasheets and a spec sheet for a different panel. This bench board pulls those two networks out on their own,

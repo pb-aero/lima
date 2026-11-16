@@ -1900,5 +1900,5 @@ parser (`docs/own-boards-review/tools/`, positive control: matches ALFA's pcbnew
   controls fail as they should. Build page `docs/gma-match-veroboard.html` (artifact Bnxpw5DRqVF9zwFv5qbhyt),
   rebuilt with `docs/build_veroboard_page.sh`. Not built on real stripboard.
 - **Still next:** the PCB, which needs Peter to open the project in KiCad for the Konnect sync.
-- **Shelf publish HELD (Peter, 2026-11-16):** no company-repo report for the GMA match board until the stripboard is
-  built and tested against the panel. Then publish one note with measured numbers.
+- **Shelf publish: HELD, then reversed the same day (Peter, 2026-11-16):** lands now as a bench plan (nothing measured),
+  CURRENT banner, like the I2S 1 m PoC. Update in place with the bench numbers.
