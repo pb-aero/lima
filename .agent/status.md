@@ -1902,3 +1902,6 @@ parser (`docs/own-boards-review/tools/`, positive control: matches ALFA's pcbnew
 - **Still next:** the PCB, which needs Peter to open the project in KiCad for the Konnect sync.
 - **Shelf publish: HELD, then reversed the same day (Peter, 2026-11-16):** lands now as a bench plan (nothing measured),
   CURRENT banner, like the I2S 1 m PoC. Update in place with the bench numbers.
+- **LANDED 2026-11-16:** `reports/peter/LIMA_gma_match_board.html` + manifest row, company `722d126` (CURRENT, record
+  `53a54d4`, source `lima@7a25ff7`). **OUT 2026-11-16-001 to chris/INDIA** (shelf review), company `af734f3`.
+  After the bench test: fill section 5, write section 6, re-measure record, replace the shelf file in place.
