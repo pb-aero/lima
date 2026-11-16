@@ -81,7 +81,7 @@ for the SMD parts at the same values (upright ¼ W resistors, radial MLCCs, a ra
 discrete Schottkys for the BAT54S, T4 on four wire legs, J5 as a GH pigtail into hole 37 of strips B–E).
 
 - `python3 -I doc/veroboard.py check` rebuilds every net from strips, cuts, links and leads and compares it with
-  `design_nets.NETS`: **OK** `[measured]`. Negative controls `[measured]`: dropping link M28–N28 (SPK_L_B) splits that
+  `design_nets.NETS`: **OK** `[measured]`. Negative controls `[measured]`: dropping link N28–O28 (SPK_L_B) splits that
   net; dropping cut N24 shorts SPK_L_A to SPK_L_B. Both exit 1.
 - Interactive build page: `docs/gma-match-veroboard.html`, built by `docs/build_veroboard_page.sh` from
   `docs/gma-match-veroboard.src.html` plus the checked layout JSON. Published privately as
