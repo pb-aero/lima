@@ -1239,8 +1239,18 @@ the second time that unversioned tree has given a stale answer — it is still t
 barometer fitted is a **BMP581 at I2C-1 0x46** — CHIP_ID (reg 0x01) reads **0x50**, REV_ID 0x32. Nothing
 answers at **0x76**, where ALFA's `bb_check.py` expects a BMP390 (it takes 0x76 from the schematic's sheet-7
 I2C map). Peter ruled it the same day: "the bmp390 is a bmp581". So a schematic listing *both* parts is
-not proof both are fitted — read the chip IDs on the real board. Same run: MMC5983MA (0x30) also absent,
-and unknown 0x34 answers; magnetometer part not yet identified.
+not proof both are fitted — read the chip IDs on the real board. The schematic (page 7, U9) draws ONE
+footprint "BMP390, pin compatible with BMP581" and lists both addresses (0x76 / 0x46): a checker must
+accept either. Same run: unknown 0x34 answers (J9 audio expansion? the sheet says "address unknown").
+
+**`[measured]` 2026-11-17, magnetometer:** Peter ruled the fitted part **is the MMC5983MA** (U10). It does not
+answer at **0x30** (5 retries of Product ID reg 0x2F → EREMOTEIO); a read-only scan of I2C-1 shows only
+0x2D 0x34 0x46 0x48 0x6B 0x77, so the bus and the 3.3 V feeding its neighbours are fine. The schematic is
+right `[repo: Downloads/Schematic for Aeronode HW ver 0.0.2 rev 1.PDF p.7, rendered and read]`: pin 4 CS/mode
+is tied to Vdd_IO ("this selects I2C"), VDD (2) and VDDIO (13) on 3.3 V filtered through Cp3, CAP C51 10 µF —
+matching the datasheet `[fetched: MEMSIC MMC5983MA Rev A p.9: CS "Tie to VDDIO for I²C", address 0110000]`.
+So the fault is physical and CANNOT-MEASURE-FROM-A-DESK: fitted? orientation (pin-1 dot)? LGA solder? 3.3 V at
+C50? CS high at pin 4? Route to Peter's bench.
 
 **Carry only patches, never whole bundles.** `upstream-pr/pi5-board-with-sensors.patch` is TWO
 commits, and the second declares the dev rig's MPU-9250/AK8963/LPS22HB. Copying that bundle into a
