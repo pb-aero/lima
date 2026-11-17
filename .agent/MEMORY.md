@@ -1278,6 +1278,16 @@ and a sensitivity check against the DMM-4026 data sheet.
 back in the gaps; zero-crossing frequency 10.6 kHz → 6.0 kHz. PASS: the mic hears. Sensitivity vs data sheet
 still unchecked. WAVs in `scratch-aeromic/` (untracked, not committed).
 
+**SCAR — the thermal-island heater is violent** `[measured]` 2026-11-17 on BB1 (Peter asked: IMU board to 35 C).
+heater_control = GPIO12 → J11.5 → heater on the AeroImu thermal island, fed from Vcm5, NO hardware cut-off.
+Run 1 at 60 % max duty: ~1.8 s of heater-on took the ICM-45686 from **26.2 to 38.3 C in 5 s**, and it kept
+rising to **40.75 C after the heater was off** — the 40 C software hard cut fired (guard proven live). Island
+≈ 0.6–0.8 J/K, cools with τ ≈ 20–30 s. Holding +9 C needs only **~3 % duty**. Run 2 (`scripts/heat_imu.py`:
+max 10 %, KP 0.02, KI 0.0005 within ±3 C, 0.5 s window, rate guard 1 C/s) reached 34.9 C in 58 s with no
+overshoot and held **34.8–35.2 C at ~3 % duty**. Run it only as a transient unit with
+`-p RuntimeMaxSec=… -p "ExecStopPost=/usr/bin/pinctrl set 12 op dl"` (off-path proven: ExecStopPost fires
+on a RuntimeMaxSec kill). **Any heater code: duty cap ≤ 10 %, hard cut on the IMU temp, never a long pulse.**
+
 **Carry only patches, never whole bundles.** `upstream-pr/pi5-board-with-sensors.patch` is TWO
 commits, and the second declares the dev rig's MPU-9250/AK8963/LPS22HB. Copying that bundle into a
 new board's image would re-import the exact scar the hwdef is written to avoid. I carried the
