@@ -1303,6 +1303,14 @@ REG0D=0x0D (IOTG 520 mA), REG12=0x40 (EN_OTG), REG2E bit7 (ADC on). VBUS_STAT 7 
 −26 mA, no faults. Converter = **CH340 1a86:7522** on bus 1 (dwc2, `1000480000.usb`) → `/dev/ttyUSB0`
 (`/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0`). Not persistent: no boot service — a power cycle drops it.
 
+**CO channel** `[repo: schematic p.6, rendered]` `[measured]` 2026-11-17: TGS5141-P00 (S6, ~2 nA/ppm) between Gnd
+and the − input of TLV8811 U7; + input grounded; R36 1 MΩ ∥ C44 1 µF (τ 1 s); single 3.3 V supply → ADS1115
+AIN0 (0x48). So **≈2 mV/ppm and clean air sits AT the 0 V rail** — wrong-direction current or negative offset
+also reads exactly 0 V; "0 V" cannot tell clean air from dead. Two early bb_check runs read 0.0000 V; 11 min
+after a later boot both bb_check and a ±0.256 V single-shot read read +6.4…+9.4 mV, drifting down (settling?).
+Next rev: lift the + input a few tens of mV so 0 ppm sits off the rail. **Sensor polarity not proven** —
+needs a CO stimulus (a blown-out match) and a live read.
+
 **Carry only patches, never whole bundles.** `upstream-pr/pi5-board-with-sensors.patch` is TWO
 commits, and the second declares the dev rig's MPU-9250/AK8963/LPS22HB. Copying that bundle into a
 new board's image would re-import the exact scar the hwdef is written to avoid. I carried the
