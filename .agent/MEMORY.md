@@ -1265,6 +1265,14 @@ map, GPIO18 SCLK / 19 WS / 20 SDI0 / 21 SDO0. But **GPIO16 = GPIO_RLY_SPKR, GPIO
 `i2s_clk_producer` with the CM5 as clock master, format i2s — the clean choice for the DMM-4026 I2S mic.
 As of 2026-11-17 BB1 has no capture card (only snd-aloop) and GPIO18-21 unconfigured, so the mic is invisible.
 
+**`[measured]` 2026-11-17, AeroMic ALIVE on BB1** (Peter's go-ahead): appended under `[all]` in
+`/boot/firmware/config.txt` (outside the aeronode-managed block; backup `config.txt.pre-aeromic`):
+`dtoverlay=adau7002-simple,card-name=aeromic`. After reboot: card 0 `aeromic`, GPIO18-21 = I2S0_SCLK/WS/SDI0/
+SDO0, GPIO16/17 untouched. `arecord -D hw:CARD=aeromic,DEV=0 -c 2 -f S32_LE -r 48000`: **left (ch0) carries
+the mic** (24-bit left-justified, low byte 0), right is constant 0x1. Start-up offset settles in ~0.75 s;
+then room noise −47…−55 dBFS RMS (DC-blocked), peaks −36…−46. Not yet done: a positive control (speech/tap)
+and a sensitivity check against the DMM-4026 data sheet.
+
 **Carry only patches, never whole bundles.** `upstream-pr/pi5-board-with-sensors.patch` is TWO
 commits, and the second declares the dev rig's MPU-9250/AK8963/LPS22HB. Copying that bundle into a
 new board's image would re-import the exact scar the hwdef is written to avoid. I carried the
