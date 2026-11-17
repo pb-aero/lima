@@ -1314,6 +1314,13 @@ Live watch 2026-11-17 (`scripts/co_watch.py`, auto-ranging, logs /tmp/co_watch.l
 6–11 mV, ±3 mV of baseline, no stimulus captured. Peter paused it to bring "a real fire" — CO response still
 UNPROVEN.
 
+**After the MMC5983MA rework** `[measured]` 2026-11-17 (Peter: "we reworked the magnetometer"): I2C-1 answers
+ONLY 0x48 (ADS1115) and 0x77 (BME690), 5/5 scans. Still silent: 0x30 MMC5983MA. Newly silent: 0x46 BMP581,
+0x2D LP5815, 0x6B BQ25798, 0x34 (unknown). SDA/SCL idle high (pulled up); IMU, flash, GNSS, CM5 5 V 5.01 V all
+PASS; IMU z −0.994 g (board upside down). Charger silent ⇒ either the board is now fed without J2/VBUS, or
+something on the bus branch/rails changed. U9 (BMP581) and U10 sit on the same sheet, each on Vcm3.3 via its
+own ferrite (Cp2 / Cp3) — check rework collateral there. OPEN: how the board is powered now.
+
 **SCAR — two remote-process mistakes in one hour (2026-11-17):**
 1. **A live readout that prints to an `ssh -t` terminal can freeze the measurement**: when the terminal tab
    stopped draining, `print()` blocked and sampling stopped at 14 s while the user was making smoke. Run the
