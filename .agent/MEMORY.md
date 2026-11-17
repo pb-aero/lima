@@ -1288,6 +1288,17 @@ overshoot and held **34.8–35.2 C at ~3 % duty**. Run it only as a transient un
 `-p RuntimeMaxSec=… -p "ExecStopPost=/usr/bin/pinctrl set 12 op dl"` (off-path proven: ExecStopPost fires
 on a RuntimeMaxSec kill). **Any heater code: duty cap ≤ 10 %, hard cut on the IMU temp, never a long pulse.**
 
+**Blackbox board charger + USB-C (J1)** `[measured]` regs on BB1 2026-11-17 + `[repo]` schematic p.1 + `[fetched]`
+TI SLUSDV2C (Jun 2026). BQ25798 strapped 2S (PROG R13 6k04, 1.5 MHz), ILIM_HIZ 100k/100k ≈ 1.8 A input limit.
+Nothing on BB1 writes it, so it sits in **default mode, watchdog expired**: VSYSMIN 7.0 V, VREG 8.40 V, ICHG 1.0 A,
+EN_CHG 1, EN_OTG 0, ADC off, no faults, TS in range, VBATOTG_LOW 0. **VSYS needs no setup.** J1 is
+**host** (dwc2 dr_mode=host — Peter: keep it host) and its VBUS connects ONLY to the charger, so 5 V out of J1 =
+charger OTG: `WATCHDOG`=0 (REG10 0x85→0x80) then `EN_OTG`=1 (REG12 bit 6); VOTG 5.00 V / IOTG 0x4B ≈ 3 A at
+default. EN_OTG is reset by watchdog expiry, REG_RST and POR → a boot service must re-apply it. **Hazard:** J1's
+CC1/CC2 go only via R3/R5 0R to the CM5's CC pins — no Rp, no CC/DRP controller, so it advertises as a power
+SINK. With OTG on, plugging a USB-C charger/laptop into J1 back-drives VBUS against the OTG output (the BQ only
+blocks OTG start when VBUS is already present; OTG_OVP won't trip at ~5 V). Next rev: a DRP CC controller.
+
 **Carry only patches, never whole bundles.** `upstream-pr/pi5-board-with-sensors.patch` is TWO
 commits, and the second declares the dev rig's MPU-9250/AK8963/LPS22HB. Copying that bundle into a
 new board's image would re-import the exact scar the hwdef is written to avoid. I carried the
