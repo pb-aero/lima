@@ -1310,6 +1310,18 @@ also reads exactly 0 V; "0 V" cannot tell clean air from dead. Two early bb_chec
 after a later boot both bb_check and a ±0.256 V single-shot read read +6.4…+9.4 mV, drifting down (settling?).
 Next rev: lift the + input a few tens of mV so 0 ppm sits off the rail. **Sensor polarity not proven** —
 needs a CO stimulus (a blown-out match) and a live read.
+Live watch 2026-11-17 (`scripts/co_watch.py`, auto-ranging, logs /tmp/co_watch.log): ~2 min of clean data at
+6–11 mV, ±3 mV of baseline, no stimulus captured. Peter paused it to bring "a real fire" — CO response still
+UNPROVEN.
+
+**SCAR — two remote-process mistakes in one hour (2026-11-17):**
+1. **A live readout that prints to an `ssh -t` terminal can freeze the measurement**: when the terminal tab
+   stopped draining, `print()` blocked and sampling stopped at 14 s while the user was making smoke. Run the
+   sampler detached (`setsid nohup … </dev/null >/dev/null 2>&1 &`), write only to a log, and let the viewer
+   `tail -f` the log — a stalled viewer then cannot stall the instrument.
+2. **`pkill -f NAME` / `pgrep -f NAME` sent over ssh match their own `bash -c '…NAME…'` command line**: pkill
+   killed its own shell (exit 255, nothing restarted); an `until ! pgrep -f …` wait never ended. Use a bracket
+   pattern (`pgrep -f "[c]o_watch.py"`) or a pidfile.
 
 **Carry only patches, never whole bundles.** `upstream-pr/pi5-board-with-sensors.patch` is TWO
 commits, and the second declares the dev rig's MPU-9250/AK8963/LPS22HB. Copying that bundle into a
