@@ -1235,6 +1235,13 @@ AeroNode is **RM3100 + BMP581**, read from the unversioned `~/aerosense/aeronode
 The rev 0.0.2 **vendor schematic** is **MMC5983MA + BMP390 + BMP581**. Follow the schematic. This is
 the second time that unversioned tree has given a stale answer — it is still the standing risk.
 
+**`[measured]` 2026-11-17, the first real Blackbox board (HW 0.0.2 rev 1, BB1 seated on it):** the
+barometer fitted is a **BMP581 at I2C-1 0x46** — CHIP_ID (reg 0x01) reads **0x50**, REV_ID 0x32. Nothing
+answers at **0x76**, where ALFA's `bb_check.py` expects a BMP390 (it takes 0x76 from the schematic's sheet-7
+I2C map). Peter ruled it the same day: "the bmp390 is a bmp581". So a schematic listing *both* parts is
+not proof both are fitted — read the chip IDs on the real board. Same run: MMC5983MA (0x30) also absent,
+and unknown 0x34 answers; magnetometer part not yet identified.
+
 **Carry only patches, never whole bundles.** `upstream-pr/pi5-board-with-sensors.patch` is TWO
 commits, and the second declares the dev rig's MPU-9250/AK8963/LPS22HB. Copying that bundle into a
 new board's image would re-import the exact scar the hwdef is written to avoid. I carried the
