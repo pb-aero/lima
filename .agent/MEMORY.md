@@ -1258,6 +1258,13 @@ JEDEC **EF AA 21 = Winbond W25N01GV** (1 Gbit SPI NAND) — the footprint-compat
 Foresee/Lexar F35SQ (MID 0xCD). Anything that writes the flash must use the W25N command set. bb_check
 then: 14 pass, 2 warn, 2 fail — the fails are the baro-address script issue and the silent MMC5983MA.
 
+**AeroMic on the Blackbox board — overlay hazard** `[repo: schematic p.3, rendered]`: J9 I2S is the standard
+map, GPIO18 SCLK / 19 WS / 20 SDI0 / 21 SDO0. But **GPIO16 = GPIO_RLY_SPKR, GPIO17 = GPIO_RLY_MIC (relays)**.
+`googlevoicehat-soundcard` (the usual "I2S MEMS mic on a Pi" overlay) drives GPIO16 as an output
+(`sdmode-gpios`, `[measured]` by dtc on BB1) — **never use it here**. `adau7002-simple` claims no GPIOs, targets
+`i2s_clk_producer` with the CM5 as clock master, format i2s — the clean choice for the DMM-4026 I2S mic.
+As of 2026-11-17 BB1 has no capture card (only snd-aloop) and GPIO18-21 unconfigured, so the mic is invisible.
+
 **Carry only patches, never whole bundles.** `upstream-pr/pi5-board-with-sensors.patch` is TWO
 commits, and the second declares the dev rig's MPU-9250/AK8963/LPS22HB. Copying that bundle into a
 new board's image would re-import the exact scar the hwdef is written to avoid. I carried the
