@@ -1320,6 +1320,7 @@ ONLY 0x48 (ADS1115) and 0x77 (BME690), 5/5 scans. Still silent: 0x30 MMC5983MA. 
 PASS; IMU z −0.994 g (board upside down). Charger silent ⇒ either the board is now fed without J2/VBUS, or
 something on the bus branch/rails changed. U9 (BMP581) and U10 sit on the same sheet, each on Vcm3.3 via its
 own ferrite (Cp2 / Cp3) — check rework collateral there. OPEN: how the board is powered now.
+Retry after a fresh boot (up 3 min), same day: identical — only 0x48 0x77, 0x30 EREMOTEIO. A reboot doesn't change it.
 
 **SCAR — two remote-process mistakes in one hour (2026-11-17):**
 1. **A live readout that prints to an `ssh -t` terminal can freeze the measurement**: when the terminal tab
