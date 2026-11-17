@@ -1329,7 +1329,12 @@ bb_check 14 pass, 2 warn, 2 fail (baro-address script issue + MMC).
 one RGB LED, LED3 IN-S126TBSRGB — out0 red, out1 green, out2 blue `[repo: schematic p.6]`. Sequence: 00h←03h
 (CHIP_EN + INSTABLINK_DIS), 01h←00h (25.5 mA range), 14h-16h←50h (~8 mA), 02h←07h, 04h←00h (manual), 0Fh←55h
 (UPDATE_CMD, required), PWM in 18h-1Ah. All readbacks correct; FLAG 40h = 01h = POR only (normal). Ran R/G/B ×3 +
-white ×3, left in standby (CHIP_EN 0). `scripts/led_test.py`. Visual result: Peter to confirm.
+white ×3, left in standby (CHIP_EN 0). `scripts/led_test.py`. **Peter: red and green light, BLUE DOES NOT.**
+LED3 is common-anode on **Vcm3.3** `[repo]`; Vf ≈ 2 V R / 3 V G / 3 V B at 20 mA `[fetched: DigiKey, Dasenic
+listings — not the Inolux PDF]`; LP5815 headroom ≤ 275 mV `[fetched]`. Green works at a similar Vf, so headroom
+alone is unlikely. Ran blue-only at 1.6 / 8 / 20 mA (4 s each) to separate headroom (would glow at low
+current) from open die/joint/trace (dark at all currents) — result: see Peter's report. Schematic note: this
+side-view LED "is easily damaged when it sticks past edge" of the board.
 
 **SCAR — two remote-process mistakes in one hour (2026-11-17):**
 1. **A live readout that prints to an `ssh -t` terminal can freeze the measurement**: when the terminal tab
