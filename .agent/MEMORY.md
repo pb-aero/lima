@@ -1252,6 +1252,12 @@ matching the datasheet `[fetched: MEMSIC MMC5983MA Rev A p.9: CS "Tie to VDDIO f
 So the fault is physical and CANNOT-MEASURE-FROM-A-DESK: fitted? orientation (pin-1 dot)? LGA solder? 3.3 V at
 C50? CS high at pin 4? Route to Peter's bench.
 
+**`[measured]` 2026-11-17, flexes connected (AeroImu J11, AeroVault J12):** both alive on the first try.
+ICM-45686 on SPI0: |a| 1.005 g (z +1.001, board flat), gyro −1.3/−1.3/−0.1 dps, 25.9 °C. AeroVault on SPI3:
+JEDEC **EF AA 21 = Winbond W25N01GV** (1 Gbit SPI NAND) — the footprint-compatible part, NOT the drawn
+Foresee/Lexar F35SQ (MID 0xCD). Anything that writes the flash must use the W25N command set. bb_check
+then: 14 pass, 2 warn, 2 fail — the fails are the baro-address script issue and the silent MMC5983MA.
+
 **Carry only patches, never whole bundles.** `upstream-pr/pi5-board-with-sensors.patch` is TWO
 commits, and the second declares the dev rig's MPU-9250/AK8963/LPS22HB. Copying that bundle into a
 new board's image would re-import the exact scar the hwdef is written to avoid. I carried the
