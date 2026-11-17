@@ -1321,6 +1321,9 @@ PASS; IMU z −0.994 g (board upside down). Charger silent ⇒ either the board 
 something on the bus branch/rails changed. U9 (BMP581) and U10 sit on the same sheet, each on Vcm3.3 via its
 own ferrite (Cp2 / Cp3) — check rework collateral there. OPEN: how the board is powered now.
 Retry after a fresh boot (up 3 min), same day: identical — only 0x48 0x77, 0x30 EREMOTEIO. A reboot doesn't change it.
+Next boot (Peter changed something between): 0x2D 0x34 0x46 0x48 0x6B 0x77 back (3/3 scans), charger no faults →
+the 4-device loss was power/setup, NOT rework damage. **MMC5983MA still silent after rework** (5× EREMOTEIO);
+bb_check 14 pass, 2 warn, 2 fail (baro-address script issue + MMC).
 
 **SCAR — two remote-process mistakes in one hour (2026-11-17):**
 1. **A live readout that prints to an `ssh -t` terminal can freeze the measurement**: when the terminal tab
