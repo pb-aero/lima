@@ -1298,6 +1298,10 @@ default. EN_OTG is reset by watchdog expiry, REG_RST and POR → a boot service 
 CC1/CC2 go only via R3/R5 0R to the CM5's CC pins — no Rp, no CC/DRP controller, so it advertises as a power
 SINK. With OTG on, plugging a USB-C charger/laptop into J1 back-drives VBUS against the OTG output (the BQ only
 blocks OTG start when VBUS is already present; OTG_OVP won't trip at ~5 V). Next rev: a DRP CC controller.
+**OTG proven live** 2026-11-17 (Peter plugged a USB-serial converter into J1): wrote REG10=0x80 (watchdog off),
+REG0D=0x0D (IOTG 520 mA), REG12=0x40 (EN_OTG), REG2E bit7 (ADC on). VBUS_STAT 7 (OTG), VBUS 4948 mV, IBUS
+−26 mA, no faults. Converter = **CH340 1a86:7522** on bus 1 (dwc2, `1000480000.usb`) → `/dev/ttyUSB0`
+(`/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0`). Not persistent: no boot service — a power cycle drops it.
 
 **Carry only patches, never whole bundles.** `upstream-pr/pi5-board-with-sensors.patch` is TWO
 commits, and the second declares the dev rig's MPU-9250/AK8963/LPS22HB. Copying that bundle into a
