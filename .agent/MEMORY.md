@@ -1325,6 +1325,12 @@ Next boot (Peter changed something between): 0x2D 0x34 0x46 0x48 0x6B 0x77 back 
 the 4-device loss was power/setup, NOT rework damage. **MMC5983MA still silent after rework** (5× EREMOTEIO);
 bb_check 14 pass, 2 warn, 2 fail (baro-address script issue + MMC).
 
+**LP5815 LED driver (U8, 0x2D) driven** `[measured]` 2026-11-17, `[fetched]` TI SNVSCP2B (Sep 2026) §8.2.3.2:
+one RGB LED, LED3 IN-S126TBSRGB — out0 red, out1 green, out2 blue `[repo: schematic p.6]`. Sequence: 00h←03h
+(CHIP_EN + INSTABLINK_DIS), 01h←00h (25.5 mA range), 14h-16h←50h (~8 mA), 02h←07h, 04h←00h (manual), 0Fh←55h
+(UPDATE_CMD, required), PWM in 18h-1Ah. All readbacks correct; FLAG 40h = 01h = POR only (normal). Ran R/G/B ×3 +
+white ×3, left in standby (CHIP_EN 0). `scripts/led_test.py`. Visual result: Peter to confirm.
+
 **SCAR — two remote-process mistakes in one hour (2026-11-17):**
 1. **A live readout that prints to an `ssh -t` terminal can freeze the measurement**: when the terminal tab
    stopped draining, `print()` blocked and sampling stopped at 14 s while the user was making smoke. Run the
