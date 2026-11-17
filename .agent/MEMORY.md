@@ -1272,6 +1272,11 @@ SDO0, GPIO16/17 untouched. `arecord -D hw:CARD=aeromic,DEV=0 -c 2 -f S32_LE -r 4
 the mic** (24-bit left-justified, low byte 0), right is constant 0x1. Start-up offset settles in ~0.75 s;
 then room noise −47…−55 dBFS RMS (DC-blocked), peaks −36…−46. Not yet done: a positive control (speech/tap)
 and a sensitivity check against the DMM-4026 data sheet.
+**Positive control done, same day:** 5 s clip while Peter made sound. Full-band (DC-blocked) it rose only
++2…+8 dB — sub-200 Hz drift masks it; **judge this mic above ~200 Hz.** There the quiet baseline is steady
+(−60.6…−63.0 dBFS per 0.25 s) and the sound clip rises +5…+18 dB in a syllable-like on/off pattern, falling
+back in the gaps; zero-crossing frequency 10.6 kHz → 6.0 kHz. PASS: the mic hears. Sensitivity vs data sheet
+still unchecked. WAVs in `scratch-aeromic/` (untracked, not committed).
 
 **Carry only patches, never whole bundles.** `upstream-pr/pi5-board-with-sensors.patch` is TWO
 commits, and the second declares the dev rig's MPU-9250/AK8963/LPS22HB. Copying that bundle into a
