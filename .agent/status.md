@@ -1947,3 +1947,6 @@ Peter: *"are we running ardupilot plane natively on bb1 yet?"* (no) → *"Yes, b
   killed the native ArduPlane->collector feed (measured); **moved both ends to 127.0.0.1:14550** (Peter), verified
   100 Hz with eth0 down; eth0 stopgap removed. Clock now NTP-synced (online). MQTT visible from the Mac (`mosquitto_sub -h bb1.local`). Open:
   `flash_cm5.sh`'s ant2 default should be fixed at the source.
+- **Later 2026-11-18 — GPS too slow; Peter chose AssistNow.** Settings can't fix it (5 Hz floor). The old AssistNow
+  token service is EOL 2026-05-31; the new chipcode/ZTP flow needs Peter's Thingstream account + ZTP token (pending).
+  BB1's battery died 13:18Z (clean cut at 5.02 V); replugged, booted 13:29Z, all services + Wi-Fi came back.

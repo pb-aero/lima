@@ -1434,6 +1434,22 @@ DHCP reservation for 2C:CF:67:D4:8C:FF. **BB1's clock fixed itself once online**
 Offline BB1 will drift again. **Its MQTT is visible from the Mac:** `brew install mosquitto`, then
 `mosquitto_sub -h bb1.local -t 'aeronode/#' -v` (anonymous, 1883; websockets 9001; web UI :8000). ~1300 msg/s
 total; Mac got 997 vs BB1 1001 imu msgs in 10 s — full rate over Wi-Fi.
+**`[measured]` A flat battery looks like a clean cut, not a brownout:** BB1 on the patio died 13:18:37Z with
+`logs/power.csv` (`/home/node/aeronode/logs/`) at a steady 5.02 V, throttled 0x0, 49 °C to the last row, then
+nothing; journal -b -1 ends mid-line. Peter: "battery died". The monitor gives NO warning of an emptying pack —
+ask about power before suspecting the board. Every such cut = GNSS cold start again (no V_BCKP).
+
+**`[fetched]` GNSS assistance, 2026-11-18 — the old route is gone.** ArduPilot can't help via settings:
+`GPS_RATE_MS` is clamped to ≤200 ms (`AP_GPS.cpp:1796 get_rate_ms`, MIN(rate, GPS_MAX_RATE_MS)) and the driver
+re-forces it; airborne model 8 is right for a plane. The lever is A-GNSS. **u-blox AssistNow Online/Offline
+(token + GetOnlineData.ashx) is End of Support from 2026-05-31** (Thingstream guide). The replacement is
+`https://assistnow.services.u-blox.com/GetAssistNowData.ashx?chipcode=…&data=ualm,uporb_N,ulorb_l1,utime,ukion,usvht
+&gnss=gps,gal,glo,bds,qzss[&filteronpos&lat&lon&pacc]` (assistnowapi.services.u-blox.com). The chipcode is per
+receiver: poll UBX-SEC-UNIQID (B5 62 27 03 00 00 2A A5) + UBX-MON-VER (B5 62 0A 04 00 00 0E 34), POST them with a
+**ZTP token** from a Thingstream domain/ZTP device profile, and get a `chipcode` back. The registration docs are
+behind a Thingstream login (support.thingstream.io gives 403 to fetchers). iNav users say Predictive Orbits is free.
+`[assumed]` DAN-F10N is supported — not confirmed. Injection path: MAVLink GPS_INJECT_DATA/GPS_RTCM_DATA ->
+`AP_GPS::inject_data` -> raw bytes to the receiver's UART (`AP_GPS.cpp:1265-1377`), via the 14552 link.
 
 **`[measured]` 2026-11-18, BB1's DAN-F10N (u-blox F10) GNSS:** on `/dev/ttyAMA0`. Factory state was NMEA at
 38400. **Since ArduPlane ran it (Peter's go-ahead), it is UBX-only at 230400, saved to the receiver's flash**
