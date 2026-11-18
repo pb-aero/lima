@@ -1382,3 +1382,24 @@ standalone `0002` and grepped it for sensor lines before committing.
 `aerosync` beside BLE/GATT/UDP/WebSocket: zero hits. Memory says App V1 does BLE 5.2, which MAVLink
 does not speak. The bridge therefore emits JSON to stdout or UDP and is meant to be re-pointed.
 **Ask Peter before building a BLE writer against a guessed GATT profile.**
+
+## Fact — how to reach BB1, and three transfer scars (2026-11-18)
+
+`[measured]` BB1 = `Raspberry Pi Compute Module 5 Rev 1.0`, hostname `bb1`, machine-id
+`ad0a0fbd3b064476a100b652968a1ed0`, Debian 13 trixie, kernel 6.18.50+rpt-rpi-2712, user `node`
+(passwordless sudo). It sits on a **direct Ethernet cable** to Peter's Mac (USB adapter `en8`,
+Realtek 00:e0:4c:36:0a:34, 100baseTX). eth0 holds static 192.168.144.1 and .2, and **the Mac has no
+IPv4 on that subnet**, so none of the old bench addresses work. Reach it over IPv6:
+- **Stable:** `node@fdbf:e1d0:e7be:74bc:57ab:fcc9:dc7b:e2e6` (ULA from the Mac's RA, no scope id).
+- Link-local `fe80::57c4:fc51:3c24:b692%<if>` — but **the interface name moves**: mid-session `en8`
+  was pulled into the Mac's Internet Sharing bridge and lost its own addresses, so `%en8` died with
+  "No route to host" and only `%bridge100` answered. Find it with `ping6 -I <if> ff02::1`.
+- **BB1 has NO internet** (`Network is unreachable`). Stage source/wheels on the Mac and push.
+- **BB1's clock is ~84 days slow** (reads late Aug; no RTC sync offline). Extract with `tar -m` or
+  rsync **without** `-t`, or every file lands "in the future".
+
+**SCAR — macOS `/usr/bin/rsync` is openrsync and mis-parses `user@[ipv6%if]:path` as a LOCAL path.**
+It "succeeded" in 11 s and wrote three dirs named `node@[fe80…]rdupilot` etc. into the lima repo root.
+Use an ssh alias instead (`ssh -F conf` with `Host bb1`/`HostName <ula>`; `rsync -e "ssh -F conf" … bb1:`).
+Then check the repo root for strays. **In zsh, `$E bb1` with E="ssh -F conf" does not word-split** —
+spell the command out.
