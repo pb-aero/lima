@@ -1950,3 +1950,6 @@ Peter: *"are we running ardupilot plane natively on bb1 yet?"* (no) → *"Yes, b
 - **Later 2026-11-18 — GPS too slow; Peter chose AssistNow.** Settings can't fix it (5 Hz floor). The old AssistNow
   token service is EOL 2026-05-31; the new chipcode/ZTP flow needs Peter's Thingstream account + ZTP token (pending).
   BB1's battery died 13:18Z (clean cut at 5.02 V); replugged, booted 13:29Z, all services + Wi-Fi came back.
+- **13:43Z — AssistNow registered + Predictive orbits injected into BB1's GNSS, all 190 frames ACK-accepted.**
+  Live orbits 403002 (usage limit, Evaluation?). Measuring TTFF now. Next: boot-time injector via MAVLink
+  GPS_INJECT_DATA on 14552 (no ArduPlane stop), cache the data for offline boots.

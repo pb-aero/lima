@@ -1450,6 +1450,19 @@ receiver: poll UBX-SEC-UNIQID (B5 62 27 03 00 00 2A A5) + UBX-MON-VER (B5 62 0A 
 behind a Thingstream login (support.thingstream.io gives 403 to fetchers). iNav users say Predictive Orbits is free.
 `[assumed]` DAN-F10N is supported — not confirmed. Injection path: MAVLink GPS_INJECT_DATA/GPS_RTCM_DATA ->
 `AP_GPS::inject_data` -> raw bytes to the receiver's UART (`AP_GPS.cpp:1265-1377`), via the 14552 link.
+**`[measured]` 2026-11-18 13:43Z — AssistNow WORKS for BB1's DAN-F10N.** Thingstream domain `aerosense`
+(AssistNow ZTP already enabled), ZTP device profile `bb1` (type AssistNow, module OTHER, Predictive+Live,
+**Evaluation**). Endpoint `https://api.thingstream.io/ztp/assistnow/credentials`, body
+`{"token":…, "messages":{"UBX-SEC-UNIQID":HEX,"UBX-MON-VER":HEX}}` (full frames, uppercase hex) -> HTTP 200
+`{chipcode(28), serviceUrl, allowedData}`; allowedData = ualm, uporb_1/3/7/14, ulorb_l1, utime, ukion, usvht.
+Secrets on BB1 only: `~/.config/aeronode/assistnow/{ztp_token,ztp_credentials.json}` (600). Receiver reports
+`MOD=DAN-F10N`, `SPGL1L5 6.00`, PROTVER 40.00, uniqueId 6 B. **First `ulorb_l1` (Live) request -> 403002
+"usage limit has been reached for your device"**; `uporb_1` (Predictive) -> 12028 B / 190 frames, and with
+CFG-NAVSPG-ACKAIDING on in RAM **all 190 MGA-ACK (type 1, infoCode 0) = accepted**. Tools:
+`linux/aeronode-cm5-image/scripts/assistnow_{set_token.sh,bootstrap.py}`. Breaking ArduPlane is avoided by
+wrapping in systemd-run with a trap that always restarts it. **ArduPilot's inject path silently drops a whole
+packet when UART txspace is short** (`GPS_Backend.cpp:117`) — send one whole UBX frame per GPS_INJECT_DATA
+(every MGA frame is <=96 B) and pace it. Peter pasted the token twice once (72 chars): the length check caught it.
 
 **`[measured]` 2026-11-18, BB1's DAN-F10N (u-blox F10) GNSS:** on `/dev/ttyAMA0`. Factory state was NMEA at
 38400. **Since ArduPlane ran it (Peter's go-ahead), it is UBX-only at 230400, saved to the receiver's flash**
