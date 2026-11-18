@@ -1,6 +1,6 @@
 [Unit]
 Description=ArduPilot ArduPlane (AeroNode rev 0.0.2 / CM5, native)
-# The collector's udpin socket binds 192.168.144.1 on eth0; ArduPlane sends to it.
+# The collector's udpin socket binds 127.0.0.1 (loopback, so it never depends on the eth0 cable); ArduPlane sends to it.
 After=network-online.target
 Wants=network-online.target
 
@@ -12,7 +12,7 @@ User=root
 WorkingDirectory=/var/lib/ardupilot
 StateDirectory=ardupilot
 
-# --serial0  -> the aeronode collector (udpin:192.168.144.1:14550, AERONODE_MAVLINK_CONNECTION).
+# --serial0  -> the aeronode collector (udpin:127.0.0.1:14550, AERONODE_MAVLINK_CONNECTION).
 #              The address the old Pixhawk 6X sent to, so the collector needs no change.
 # --serial1  -> local MAVLink for aerosync/ekf_bridge.py (--in udp:127.0.0.1:14552).
 # --serial3  -> u-blox DAN-F10N on UART0. ArduPilot auto-configures it (UBX @ 230400, saved
@@ -20,7 +20,7 @@ StateDirectory=ardupilot
 # -l         -> DataFlash logs (written while armed; LOG_DISARMED=0).
 # The old -A/-B spellings are deprecated ("will be removed in a future release").
 ExecStart=/usr/local/bin/arduplane \
-    --serial0 udp:192.168.144.1:14550 \
+    --serial0 udp:127.0.0.1:14550 \
     --serial1 udp:127.0.0.1:14552 \
     --serial3 /dev/ttyAMA0 \
     -l /var/lib/ardupilot/logs

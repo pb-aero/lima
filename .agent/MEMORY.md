@@ -1417,14 +1417,18 @@ spell the command out.
   keeper's next retry joined fine. So a one-off assoc reject on this radio is not proof of a bad password.
 - **`192.168.0.118` was in the Mac's known_hosts for another device** (DHCP reuse). Verified BB1's ed25519
   `SHA256:B60POIg6…+Lms` over the Ethernet ULA first, then replaced the entry. Don't blindly `ssh-keygen -R`.
-**`[measured]` Unplugging Ethernet KILLED native ArduPlane -> collector** — even though both run on BB1: the
-collector binds `192.168.144.1:14550`, an address on `fc-eth` (eth0). Cable out -> NM drops fc-eth ->
-`192.168.144.1` routed out the Wi-Fi gateway, zero MAVLink topics. Fixed with
-`/etc/NetworkManager/conf.d/aeronode-eth0-ignore-carrier.conf` (`[device-…] match-device=interface-name:eth0`,
-`ignore-carrier=yes`) + `nmcli general reload conf` + `con up fc-eth`: cable still out, address local on `lo`,
-imu/attitude/vfr_hud/global_position back at 100 Hz, collector needed no restart. `[assumed]` survives a reboot
-with no cable (docs: static-only connections activate without carrier) — untested. The cleaner long-term fix is
-pointing both ends at 127.0.0.1; Peter said leave eth0 for now. BB1's clock still ~84 d slow: chrony now has
+**`[measured]` Unplugging Ethernet KILLED native ArduPlane -> collector** — even though both run on BB1: both
+ends used `192.168.144.1:14550`, an address on `fc-eth` (eth0), which NM drops with the cable. **Now both ends use
+`127.0.0.1:14550`** (Peter's call): `/etc/systemd/system/arduplane.service` `--serial0 udp:127.0.0.1:14550` (repo
+copy `linux/aeronode-cm5-image/service/arduplane.service`) and `AERONODE_MAVLINK_CONNECTION=udpin:127.0.0.1:14550`
+in `/home/node/aeronode/.env` (backups `*.bak-20261118`). Verified with eth0 fully down: 100 Hz topics, disarmed,
+no recording. The interim NM `ignore-carrier` stopgap was removed again. **Restarting the collector on the mavlink
+source does not start a recording** (collector.py ~5544), so it does not arm the FC. `fc-eth` was left
+`nmcli con down` — `[assumed]` it autoconnects when the cable returns; check on the next plug-in.
+**Wi-Fi drop 13:25 (BB1 clock) was DHCP, not RF:** moleculex hands out **600 s leases**; the first lease's renewals
+failed silently and it expired -> NM `ip-config-unavailable` -> ~40 s off-air, keeper rejoined. Next renewal
+(13:31:15) succeeded `[measured]`. One clean renewal ≠ fixed: if drops recur every ~10 min, ask Peter for a router
+DHCP reservation for 2C:CF:67:D4:8C:FF. BB1's clock still ~84 d slow: chrony now has
 internet sources but reach 0 at poll time; `makestep 1 3` won't step it later — needs `chronyc makestep`.
 
 **`[measured]` 2026-11-18, BB1's DAN-F10N (u-blox F10) GNSS:** on `/dev/ttyAMA0`. Factory state was NMEA at
