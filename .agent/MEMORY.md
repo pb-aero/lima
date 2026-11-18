@@ -1424,6 +1424,9 @@ leaves the collector's link alone. **Starting a collector recording auto-arms th
 R37 100k to Vcm5, the designer marked it with a red "?"). `GPS_AntSel` = GPIO34 (low = internal antenna, how BB1
 runs), `GPS_nRes` = GPIO35, TimePulse = GPIO42. **A reboot power-cycles the GNSS** (NAV-STATUS msss ≈ Linux uptime,
 `scripts/ubx_uptime.py`); a service restart does not. With no V_BCKP every boot is a cold start, which needs
-−145 dBm where hot start needs −156 and tracking −164 (DAN-F10N DS R04 Table 2). So **indoors it tracks forever
-but never re-acquires after a reboot**, and EKF3 (which needs a fix on a plane) never starts. Fix = V_BCKP from an
+−145 dBm where hot start needs −156 and tracking −164 (DAN-F10N DS R04 Table 2). **`[correction]` "never
+re-acquires" was an overclaim:** the previous boot was also cold (same circuit), and by the time I first sniffed, it
+had a fix with 8 SVs and HDOP 1.37 on the onboard antenna (Peter: "we should get fix with onboard antenna"). So a cold
+start here is SLOW or uncertain, not impossible. Second candidate: ArduPilot's config (saved to flash) changed which
+GNSS/signals it searches; the earlier cold start used the factory config. Not yet separated. EKF3 waits for a fix. Fix = V_BCKP from an
 always-on rail (31 µA). Which rail drops on reset: scope TP15 Vgps.
