@@ -13,7 +13,7 @@ Run by assistnow-inject.service every time arduplane.service starts (so: every b
      from assistnow_bootstrap.py and cached in last.ubx; offline or --no-fetch -> the cache if < 3 days old.
      The server's own MGA-INI-TIME is dropped (ours is fresher).
   5. --save-pos: then waits up to 20 min for a 3D fix with hAcc < 50 m (MAVLink GPS_RAW_INT) and saves it
-     ROUNDED to 0.1 deg with a 50 km accuracy to coarse_pos, for the next boot. Never printed.
+     ROUNDED to 0.1 deg with a 20 km accuracy to coarse_pos, for the next boot. Never printed.
 
 ArduPilot writes each GPS_INJECT_DATA packet to the receiver UART only if it fits in the TX buffer and
 otherwise drops it silently (GPS_Backend.cpp:117), so every packet carries exactly ONE whole UBX frame
@@ -149,8 +149,8 @@ def save_pos(m, wait_s=1200):
         g = m.recv_match(type="GPS_RAW_INT", blocking=True, timeout=5)
         if g and g.fix_type >= 3 and 0 < getattr(g, "h_acc", 0) < 50_000:  # h_acc in mm
             lat, lon = round(g.lat / 1e7, 1), round(g.lon / 1e7, 1)
-            write_private(POSF, f"{lat:.1f} {lon:.1f} 50000\n".encode())
-            log("saved a coarse position (0.1 deg, 50 km) for the next boot")
+            write_private(POSF, f"{lat:.1f} {lon:.1f} 20000\n".encode())  # 0.1 deg rounding <= ~8 km
+            log("saved a coarse position (0.1 deg, 20 km) for the next boot")
             return
     log("no 3D fix with hAcc < 50 m within the wait; coarse position not updated")
 

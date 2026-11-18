@@ -1,6 +1,6 @@
 # AeroNode BB1: after ArduPlane is up, refresh time + coarse position through it (2 small MGA-INI frames,
 # the only kind proven to survive GPS_INJECT_DATA), then wait up to 20 min for a 3D fix with hAcc < 50 m
-# and save it ROUNDED to 0.1 deg (50 km) in ~/.config/aeronode/assistnow/coarse_pos for the next boot.
+# and save it ROUNDED to 0.1 deg (20 km) in ~/.config/aeronode/assistnow/coarse_pos for the next boot.
 # Holds udpin 127.0.0.1:14552 while it waits: stop it before using param_set.py on that port.
 
 [Unit]
