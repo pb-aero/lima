@@ -1428,8 +1428,12 @@ source does not start a recording** (collector.py ~5544), so it does not arm the
 **Wi-Fi drop 13:25 (BB1 clock) was DHCP, not RF:** moleculex hands out **600 s leases**; the first lease's renewals
 failed silently and it expired -> NM `ip-config-unavailable` -> ~40 s off-air, keeper rejoined. Next renewal
 (13:31:15) succeeded `[measured]`. One clean renewal ≠ fixed: if drops recur every ~10 min, ask Peter for a router
-DHCP reservation for 2C:CF:67:D4:8C:FF. BB1's clock still ~84 d slow: chrony now has
-internet sources but reach 0 at poll time; `makestep 1 3` won't step it later — needs `chronyc makestep`.
+DHCP reservation for 2C:CF:67:D4:8C:FF. **BB1's clock fixed itself once online**
+`[measured]`: by 12:59Z it matched the Mac to 1 s, chrony synced to teraco.co.za. (I wrongly predicted
+`makestep 1 3` would refuse the 84-day step — it counts the first 3 *clock updates*, not the first 3 polls.)
+Offline BB1 will drift again. **Its MQTT is visible from the Mac:** `brew install mosquitto`, then
+`mosquitto_sub -h bb1.local -t 'aeronode/#' -v` (anonymous, 1883; websockets 9001; web UI :8000). ~1300 msg/s
+total; Mac got 997 vs BB1 1001 imu msgs in 10 s — full rate over Wi-Fi.
 
 **`[measured]` 2026-11-18, BB1's DAN-F10N (u-blox F10) GNSS:** on `/dev/ttyAMA0`. Factory state was NMEA at
 38400. **Since ArduPlane ran it (Peter's go-ahead), it is UBX-only at 230400, saved to the receiver's flash**

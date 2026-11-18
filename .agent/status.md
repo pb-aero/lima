@@ -1945,5 +1945,5 @@ Peter: *"are we running ardupilot plane natively on bb1 yet?"* (no) → *"Yes, b
   Was silent because `flash_cm5.sh` set `dtparam=ant2` (external antenna, none fitted) -> `ant1`, rebooted.
   Joined `moleculex`, 192.168.0.118 / `bb1.local`, SSH over Wi-Fi verified, internet up. Unplugging eth0
   killed the native ArduPlane->collector feed (measured); **moved both ends to 127.0.0.1:14550** (Peter), verified
-  100 Hz with eth0 down; eth0 stopgap removed. Open: clock still slow (needs `chronyc makestep`);
+  100 Hz with eth0 down; eth0 stopgap removed. Clock now NTP-synced (online). MQTT visible from the Mac (`mosquitto_sub -h bb1.local`). Open:
   `flash_cm5.sh`'s ant2 default should be fixed at the source.
