@@ -1403,3 +1403,10 @@ It "succeeded" in 11 s and wrote three dirs named `node@[fe80…]rdupilot` etc. 
 Use an ssh alias instead (`ssh -F conf` with `Host bb1`/`HostName <ula>`; `rsync -e "ssh -F conf" … bb1:`).
 Then check the repo root for strays. **In zsh, `$E bb1` with E="ssh -F conf" does not word-split** —
 spell the command out.
+
+**`[measured]` 2026-11-18, BB1's DAN-F10N (u-blox F10) GNSS:** on `/dev/ttyAMA0`. Factory state was NMEA at
+38400. **Since ArduPlane ran it (Peter's go-ahead), it is UBX-only at 230400, saved to the receiver's flash**
+(`GPS_AUTO_CONFIG=1`, `GPS_SAVE_CFG=2`). Anything that wants NMEA from it must reconfigure the receiver
+or go through ArduPilot. Read-only tools: `linux/aeronode-cm5-image/scripts/gnss_sniff.py` (finds the baud)
+and `ubx_pvt.py` (NAV-PVT/NAV-SAT/MON-RF). **Never print or commit its position**: both tools leave it out
+on purpose. A plane's EKF3 needs a 3D fix to initialise at all (`AP_NavEKF3_core.cpp:457`).

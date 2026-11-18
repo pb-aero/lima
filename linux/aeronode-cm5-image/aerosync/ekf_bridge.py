@@ -169,6 +169,28 @@ def build_frame(latest):
         out["ekf_status"] = None
         fault("ekf_status", age)
 
+    # Horizontal position is only an EKF solution when the EKF says so.
+    # [measured 2026-11-18 on BB1] On the bench with no compass, EKF3 runs in
+    # const_pos_mode with pos_horiz_abs/rel false, yet GLOBAL_POSITION_INT and
+    # LOCAL_POSITION_NED still carry lat/lon and x/y. Emitting those as a
+    # solution would be the "renders a value its source disowns" failure, so
+    # null them with a named fault. Altitude and velocity follow their own flags
+    # and are left alone. No EKF status at all -> nothing vouches for them.
+    flags = out["ekf_status"]["flags"] if out["ekf_status"] else None
+    abs_ok = bool(flags) and flags["pos_horiz_abs"] and not flags["const_pos_mode"]
+    rel_ok = bool(flags) and (flags["pos_horiz_rel"] or flags["pos_horiz_abs"]) \
+        and not flags["const_pos_mode"]
+    if out["position"] is not None and not abs_ok:
+        out["position"]["lat_deg"] = None
+        out["position"]["lon_deg"] = None
+        out["faults"].append({"field": "position.horizontal",
+                              "reason": "ekf_no_abs_horiz_position"})
+    if out["local_ned"] is not None and not rel_ok:
+        out["local_ned"]["x"] = None
+        out["local_ned"]["y"] = None
+        out["faults"].append({"field": "local_ned.horizontal",
+                              "reason": "ekf_no_horiz_position"})
+
     hud, age = latest.get("VFR_HUD")
     if hud:
         out["air"] = {"airspeed_ms": hud.airspeed, "groundspeed_ms": hud.groundspeed,

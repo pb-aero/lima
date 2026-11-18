@@ -1921,3 +1921,9 @@ Peter: *"are we running ardupilot plane natively on bb1 yet?"* (no) → *"Yes, b
   config) + sky view → EKF; (2) is BB1 sitting level? attitude reads ~8–11° roll / 3–7° pitch;
   (3) point ArduPlane at the collector (`udpin:192.168.144.1:14550`, it can arm/calibrate)?
   (4) fix the service (`--serial0`, WorkingDirectory) and install; (5) file 0001–0003 upstream.
+- **Later 2026-11-18 — GPS connected (Peter: "Yes, connect GPS").** DAN-F10N on ttyAMA0 → ArduPlane serial3:
+  **EKF3 initialised (10.8 s) + tilt aligned**, flags 0x00a7 (att/vel/alt; const_pos_mode — no compass →
+  yaw needs motion). Receiver now **UBX-only at 230400, saved to its flash** (GPS_SAVE_CFG=2). Weak sky
+  (C/N0 ≤22 dB-Hz, 5→7 SVs, no jamming). **Bridge fix:** lat/lon and NED x/y now null+fault unless the EKF
+  has a horizontal solution (tests 16→21, negative control fails on the old code; live: 0/62 numeric lat).
+  Next: sky view + motion/compass for yaw; is BB1 level?; collector feed (Peter); service install; upstream.

@@ -9,7 +9,7 @@ pkill -x arduplane 2>/dev/null; sudo pkill -x arduplane 2>/dev/null; sleep 1
 (timeout $((secs + 15)) ~/aeronode/.venv/bin/python -u ~/mav_probe.py udpin:127.0.0.1:14551 $((secs - 8)) "$@" \
     > "$out.probe" 2>&1 &)
 sleep 1
-cd ~ && sudo setsid nohup timeout "$secs" "$bin" --serial0 udp:127.0.0.1:14551 -l /home/node/ap-run/logs \
+cd ~ && sudo setsid nohup timeout "$secs" "$bin" --serial0 udp:127.0.0.1:14551 ${AP_EXTRA:-} -l /home/node/ap-run/logs \
     </dev/null > "$out.stdout" 2>&1 &
 sleep $((secs + 3))
 while pgrep -x arduplane >/dev/null; do sleep 1; done

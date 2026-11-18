@@ -133,6 +133,31 @@ check("lat scaling is 1e-7 deg", "NEGATIVE",
       abs(f6["position"]["lat_deg"] - (-33.8)) < 1e-9,
       f"lat={f6['position']['lat_deg']}")
 
+# --- 7. POSITIVE control: const_pos_mode must NOT emit lat/lon or x/y -------
+# [measured 2026-11-18 on BB1] the bench state: flags 0x00a7 = attitude,
+# vel h/v, pos_vert_abs, const_pos_mode -- no horizontal position solution.
+FLAGS_BENCH = 0x00a7
+L7 = Latest(dict(MAX_AGE_DEFAULT))
+L7.put(attitude()); L7.put(ekf_status(FLAGS_BENCH))
+L7.put(Msg("GLOBAL_POSITION_INT", lat=-338000000, lon=184000000, alt=50000,
+           relative_alt=10000, vx=100, vy=0, vz=0, hdg=9000))
+L7.put(Msg("LOCAL_POSITION_NED", x=1.0, y=2.0, z=-3.0, vx=1.0, vy=0.0, vz=0.0))
+L7.put(Msg("VFR_HUD", airspeed=0.0, groundspeed=0.0, alt=50.0, climb=0.0))
+f7 = build_frame(L7)
+check("const_pos_mode: lat/lon are null, not the GPS echo", "POSITIVE",
+      f7["position"]["lat_deg"] is None and f7["position"]["lon_deg"] is None,
+      f"position={f7['position']}")
+check("const_pos_mode: local x/y are null", "POSITIVE",
+      f7["local_ned"]["x"] is None and f7["local_ned"]["y"] is None)
+check("const_pos_mode: named horizontal-position faults", "POSITIVE",
+      {"position.horizontal", "local_ned.horizontal"}
+      <= {x["field"] for x in f7["faults"]}, str(f7["faults"]))
+check("const_pos_mode: altitude and attitude still emitted", "NEGATIVE",
+      f7["position"]["alt_amsl_m"] == 50.0 and f7["attitude"] is not None
+      and not any(x.get("reason") == "ekf_not_healthy" for x in f7["faults"]))
+check("frame 6 (healthy EKF) still keeps lat/lon", "NEGATIVE",
+      f6["position"]["lat_deg"] is not None and f6["local_ned"]["x"] == 1.0)
+
 print()
 if fails:
     print(f"{len(fails)} CHECK(S) FAILED: {fails}")
