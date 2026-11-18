@@ -1956,3 +1956,6 @@ Peter: *"are we running ardupilot plane natively on bb1 yet?"* (no) → *"Yes, b
 - **13:52Z — BB1 3D fix + EKF3 initialised** after AssistNow orbits + coarse position aid (via MAVLink inject,
   ArduPlane running) + Peter moving it to open sky. Real limit = reception (3 SVs heard before the move).
   Next: boot-time injector service (fetch/cache, inject when ArduPlane up), clean TTFF A/B, Live-orbits quota.
+- **14:35Z — boot-time AssistNow installed + proven on a real reboot** (preload before ArduPlane: 38400 found,
+  182/182 accepted; savepos after). Fix at 14:32Z after Peter moved BB1 to open sky. TTFF from the boot injection
+  being measured. Open: Live-orbits quota, antenna (the real limit), V_BCKP.

@@ -1473,6 +1473,21 @@ open sky -> 8 tracked -> 3D fix 13:52:34Z, 11 SV, hAcc 46 m; ArduPlane 3D 7-9 SV
 3 ArduPlane pauses): a clean A/B (power-cycle, inject at boot, same spot) is still owed. ArduPlane does not reset the
 receiver unless GPS_AUTO_CONFIG=3 (`AP_GPS_UBLOX_CFGv2.cpp:1173`, mask 0x0000 anyway).
 Peek tool: `/home/node/gnss_peek_run.sh` (stops ArduPlane 12 s, ubx_pvt.py --poll-sat, trap restarts it).
+**`[measured]` BOOT-TIME AssistNow on BB1 — what finally works (2026-11-18 14:35Z):**
+`assistnow-preload.service` (oneshot, RemainAfterExit, Before=arduplane, WantedBy=arduplane, TimeoutStartSec 90)
+runs `/home/node/aeronode-scripts/assistnow_inject.py --serial`: finds the receiver by polling MON-VER at
+230400/38400/115200/9600 (**after a power cycle it answers at 38400 — ArduPilot's GPS_SAVE_CFG does NOT keep the
+baud**; reboot of BB1 = GNSS power cycle), sends MGA-INI-TIME + coarse POS + Live orbits (with **utime**), ACKs on,
+resends "no time" rejects once -> **182/182 accepted, then ArduPlane starts.** `assistnow-savepos.service` (after
+ArduPlane) refreshes time+pos via GPS_INJECT_DATA and saves a 0.1 deg position after a fix with hAcc < 50 m.
+**Scars:** (1) GPS_INJECT_DATA bulk (178 frames) is LOST — only the 2 small INI frames are proven through
+ArduPlane; (2) AP drops injections until it has detected the GPS (`drivers[i]==nullptr`); (3) without `utime`,
+or on a just-cold receiver, ~105/182 frames come back infoCode 1 "no time" although INI-TIME was ACKed — resend;
+(4) my cold-reset "test" at 13:58 threw away a working 9-SV fix and cost Peter ~35 min: reacquisition needs more
+signal than tracking on this antenna. **Reception still decides TTFF**: 2 strong SVs heard near the house vs a
+fix ~4 min after moving to open sky. Peter's rough position: entered by him via hidden prompt
+(`scripts/assistnow_set_pos.sh`), rounded 0.1 deg, ±20 km, on BB1 only. macOS CoreLocationCLI was denied even
+after he allowed Claude — CLI tools don't inherit it; don't retry that route.
 
 **`[measured]` 2026-11-18, BB1's DAN-F10N (u-blox F10) GNSS:** on `/dev/ttyAMA0`. Factory state was NMEA at
 38400. **Since ArduPlane ran it (Peter's go-ahead), it is UBX-only at 230400, saved to the receiver's flash**

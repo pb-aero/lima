@@ -1,0 +1,29 @@
+# AeroNode BB1: load u-blox AssistNow data into the GNSS BEFORE ArduPlane takes the UART, once per boot.
+#   scripts/assistnow_inject.py --serial : MGA-INI-TIME + coarse MGA-INI-POS + orbits (fresh Live orbits,
+#   else cached < 3 days with a synced clock), written straight to /dev/ttyAMA0 @230400 with MGA ACKs on,
+#   counted, and "no time" rejects resent once. Measured 2026-11-18: 182/182 accepted.
+# Why not through ArduPlane (MAVLink GPS_INJECT_DATA)? Measured: the bulk orbit burst was lost that way
+# (and AP drops everything until it has detected the GPS). Only the 2 small INI frames survive it.
+# The receiver has no V_BCKP, so every power-up is a cold start; an ArduPlane restart is not, so this
+# runs once per boot (RemainAfterExit) and never delays a later ArduPlane restart.
+# ArduPlane waits for this (Before=), at most TimeoutStartSec; a failure does not stop ArduPlane (Wants).
+# Assistance cannot add signal: the antenna still needs open sky.
+# One-time setup: scripts/assistnow_set_token.sh + scripts/assistnow_bootstrap.py (ZTP -> chipcode).
+# Install: sudo cp service/assistnow-*.service /etc/systemd/system/ && sudo systemctl daemon-reload
+#          sudo systemctl enable assistnow-preload.service assistnow-savepos.service
+
+[Unit]
+Description=AeroNode: preload u-blox AssistNow data into the GNSS before ArduPlane (direct UART, ACK-checked)
+Before=arduplane.service
+After=network-online.target chrony.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=node
+ExecStart=/home/node/aeronode/.venv/bin/python /home/node/aeronode-scripts/assistnow_inject.py --serial
+TimeoutStartSec=90
+
+[Install]
+WantedBy=arduplane.service
