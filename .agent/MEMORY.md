@@ -1463,6 +1463,16 @@ CFG-NAVSPG-ACKAIDING on in RAM **all 190 MGA-ACK (type 1, infoCode 0) = accepted
 wrapping in systemd-run with a trap that always restarts it. **ArduPilot's inject path silently drops a whole
 packet when UART txspace is short** (`GPS_Backend.cpp:117`) — send one whole UBX frame per GPS_INJECT_DATA
 (every MGA frame is <=96 B) and pace it. Peter pasted the token twice once (72 chars): the length check caught it.
+**`[measured]` Position aid matters, and it works THROUGH ArduPlane.** After orbits alone the receiver listed
+18 SVs (1 GPS) and tracked 2. `assistnow_inject.py --pos-only` (fresh MGA-INI-TIME from chrony + MGA-INI-POS_LLH
+= centre of ZA ±1000 km, deliberately coarse) sent via MAVLink GPS_INJECT_DATA with ArduPlane RUNNING: 21 s later
+gps_raw h_acc went 4294967 m -> 817 km (receiver took it) and NAV-SAT listed 34 SVs (10 GPS/9 GAL/11 BDS/4 SBAS).
+**Still only 3 tracked (30/27/20 dB-Hz) -> no fix: reception-limited, not data-limited.** Peter moved BB1 to
+open sky -> 8 tracked -> 3D fix 13:52:34Z, 11 SV, hAcc 46 m; ArduPlane 3D 7-9 SV, EKF3 1024 -> 167 at 13:52:53Z
+(bit 128 const-pos-mode: hAcc ~28 m still too poor for the GPS checks). **TTFF NOT attributable** (moved mid-trial,
+3 ArduPlane pauses): a clean A/B (power-cycle, inject at boot, same spot) is still owed. ArduPlane does not reset the
+receiver unless GPS_AUTO_CONFIG=3 (`AP_GPS_UBLOX_CFGv2.cpp:1173`, mask 0x0000 anyway).
+Peek tool: `/home/node/gnss_peek_run.sh` (stops ArduPlane 12 s, ubx_pvt.py --poll-sat, trap restarts it).
 
 **`[measured]` 2026-11-18, BB1's DAN-F10N (u-blox F10) GNSS:** on `/dev/ttyAMA0`. Factory state was NMEA at
 38400. **Since ArduPlane ran it (Peter's go-ahead), it is UBX-only at 230400, saved to the receiver's flash**

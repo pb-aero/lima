@@ -1953,3 +1953,6 @@ Peter: *"are we running ardupilot plane natively on bb1 yet?"* (no) → *"Yes, b
 - **13:43Z — AssistNow registered + Predictive orbits injected into BB1's GNSS, all 190 frames ACK-accepted.**
   Live orbits 403002 (usage limit, Evaluation?). Measuring TTFF now. Next: boot-time injector via MAVLink
   GPS_INJECT_DATA on 14552 (no ArduPlane stop), cache the data for offline boots.
+- **13:52Z — BB1 3D fix + EKF3 initialised** after AssistNow orbits + coarse position aid (via MAVLink inject,
+  ArduPlane running) + Peter moving it to open sky. Real limit = reception (3 SVs heard before the move).
+  Next: boot-time injector service (fetch/cache, inject when ArduPlane up), clean TTFF A/B, Live-orbits quota.
