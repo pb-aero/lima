@@ -1941,3 +1941,8 @@ Peter: *"are we running ardupilot plane natively on bb1 yet?"* (no) → *"Yes, b
 - **Later 2026-11-18 — EKF3 RUNNING on BB1** after a factory-config GNSS cold start taken outdoors (Peter):
   3D/11 SVs, EKF3 init 10.8 s, GPS healthy. ArduPilot's GNSS config cold-starts slowly (>20 min ×2 vs 9.5 min
   factory; key not isolated). Onboard antenna ~15 dB weak even outdoors. Every power-up is cold (no V_BCKP).
+- **Later 2026-11-18 — BB1 on Wi-Fi (Peter: "connect bb1 to my wifi so i can disconnect the ethernet").**
+  Was silent because `flash_cm5.sh` set `dtparam=ant2` (external antenna, none fitted) -> `ant1`, rebooted.
+  Joined `moleculex`, 192.168.0.118 / `bb1.local`, SSH over Wi-Fi verified, internet up. Open: unplugging
+  eth0 likely drops 192.168.144.1 (collector feed) — untested; clock still slow (needs `chronyc makestep`);
+  `flash_cm5.sh`'s ant2 default should be fixed at the source.

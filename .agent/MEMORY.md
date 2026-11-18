@@ -1404,6 +1404,23 @@ Use an ssh alias instead (`ssh -F conf` with `Host bb1`/`HostName <ula>`; `rsync
 Then check the repo root for strays. **In zsh, `$E bb1` with E="ssh -F conf" does not word-split** —
 spell the command out.
 
+**`[measured]` 2026-11-18 — BB1 on Wi-Fi: `ssh node@bb1.local` / `node@192.168.0.118` (DHCP on Peter's home
+`moleculex`, internet works).** Three things in the way, each a scar:
+- **`flash_cm5.sh` writes `dtparam=ant2` (EXTERNAL U.FL antenna) into `/boot/firmware/config.txt`.** BB1 has no
+  external antenna, so scans heard *nothing*. Now `dtparam=ant1` (onboard PCB antenna; backup
+  `config.txt.bak-ant2`). Needs a reboot. On ant1 moleculex is −62…−67 dBm, but ~1 scan in 4 still hears nothing.
+  Any other CM5 flashed by that script without an antenna has the same silent fault.
+- **`devkit-wifi-keeper.service` races an interactive join.** Every ~60 s down it `con up`s any known profile in
+  the air — including a just-created one with no PSK, which kills an `nmcli --ask` prompt mid-typing. Create the
+  profile WITH the PSK in one step (`nmcli con add … wifi-sec.psk`), prompt read with `read -s` on BB1, never
+  through chat. First `con up` then failed `ASSOC-REJECT status_code=16` (pre-handshake, not a wrong key); the
+  keeper's next retry joined fine. So a one-off assoc reject on this radio is not proof of a bad password.
+- **`192.168.0.118` was in the Mac's known_hosts for another device** (DHCP reuse). Verified BB1's ed25519
+  `SHA256:B60POIg6…+Lms` over the Ethernet ULA first, then replaced the entry. Don't blindly `ssh-keygen -R`.
+**`[assumed]` Unplugging Ethernet stops ArduPlane -> collector**: the collector binds `192.168.144.1:14550`, an
+address on `fc-eth` (eth0, manual, no ignore-carrier). Untested. BB1's clock still ~84 d slow: chrony now has
+internet sources but reach 0 at poll time; `makestep 1 3` won't step it later — needs `chronyc makestep`.
+
 **`[measured]` 2026-11-18, BB1's DAN-F10N (u-blox F10) GNSS:** on `/dev/ttyAMA0`. Factory state was NMEA at
 38400. **Since ArduPlane ran it (Peter's go-ahead), it is UBX-only at 230400, saved to the receiver's flash**
 (`GPS_AUTO_CONFIG=1`, `GPS_SAVE_CFG=2`). Anything that wants NMEA from it must reconfigure the receiver
