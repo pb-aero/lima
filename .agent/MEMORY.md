@@ -1443,3 +1443,10 @@ suspect, culprit not isolated. Outdoors on the **onboard antenna**: still only 2
 (~15 dB low), fixed after a few minutes. **Working recipe when it won't fix:** stop arduplane →
 `scripts/gnss_factory.py` → wait for fix (`nmea_watch.py`) → start arduplane; ArduPilot keeps the fix and EKF3
 initialises in ~11 s.
+
+**SCAR — BB1 is shared with other Claude sessions on the same Mac (2026-11-18).** A reboot that killed my GNSS
+recovery came from session "BB1 WiFi connection" (switched `dtparam=ant2`→`ant1` in config.txt, then `systemctl
+reboot`), not from power or my code. Its SSH source address is the Mac's own, the same as mine, so the journal
+can't tell us apart; only the commands can. **Before long or stateful work on BB1, run `ListAgents` and look for
+peer sessions touching the board. When BB1 reboots unexpectedly, read `journalctl -b -1` for `sudo ... reboot`
+before blaming power.** Every reboot = GNSS cold start (no V_BCKP), so uncoordinated reboots cost ~10 min of EKF.
