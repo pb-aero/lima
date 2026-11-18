@@ -1943,6 +1943,7 @@ Peter: *"are we running ardupilot plane natively on bb1 yet?"* (no) → *"Yes, b
   factory; key not isolated). Onboard antenna ~15 dB weak even outdoors. Every power-up is cold (no V_BCKP).
 - **Later 2026-11-18 — BB1 on Wi-Fi (Peter: "connect bb1 to my wifi so i can disconnect the ethernet").**
   Was silent because `flash_cm5.sh` set `dtparam=ant2` (external antenna, none fitted) -> `ant1`, rebooted.
-  Joined `moleculex`, 192.168.0.118 / `bb1.local`, SSH over Wi-Fi verified, internet up. Open: unplugging
-  eth0 likely drops 192.168.144.1 (collector feed) — untested; clock still slow (needs `chronyc makestep`);
+  Joined `moleculex`, 192.168.0.118 / `bb1.local`, SSH over Wi-Fi verified, internet up. Unplugging eth0
+  killed the native ArduPlane->collector feed (measured); fixed live with NM `ignore-carrier` on eth0 (100 Hz
+  back, cable out; reboot-without-cable untested; Peter: leave eth0 for now). Open: clock still slow (needs `chronyc makestep`);
   `flash_cm5.sh`'s ant2 default should be fixed at the source.

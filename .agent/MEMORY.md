@@ -1417,8 +1417,14 @@ spell the command out.
   keeper's next retry joined fine. So a one-off assoc reject on this radio is not proof of a bad password.
 - **`192.168.0.118` was in the Mac's known_hosts for another device** (DHCP reuse). Verified BB1's ed25519
   `SHA256:B60POIg6…+Lms` over the Ethernet ULA first, then replaced the entry. Don't blindly `ssh-keygen -R`.
-**`[assumed]` Unplugging Ethernet stops ArduPlane -> collector**: the collector binds `192.168.144.1:14550`, an
-address on `fc-eth` (eth0, manual, no ignore-carrier). Untested. BB1's clock still ~84 d slow: chrony now has
+**`[measured]` Unplugging Ethernet KILLED native ArduPlane -> collector** — even though both run on BB1: the
+collector binds `192.168.144.1:14550`, an address on `fc-eth` (eth0). Cable out -> NM drops fc-eth ->
+`192.168.144.1` routed out the Wi-Fi gateway, zero MAVLink topics. Fixed with
+`/etc/NetworkManager/conf.d/aeronode-eth0-ignore-carrier.conf` (`[device-…] match-device=interface-name:eth0`,
+`ignore-carrier=yes`) + `nmcli general reload conf` + `con up fc-eth`: cable still out, address local on `lo`,
+imu/attitude/vfr_hud/global_position back at 100 Hz, collector needed no restart. `[assumed]` survives a reboot
+with no cable (docs: static-only connections activate without carrier) — untested. The cleaner long-term fix is
+pointing both ends at 127.0.0.1; Peter said leave eth0 for now. BB1's clock still ~84 d slow: chrony now has
 internet sources but reach 0 at poll time; `makestep 1 3` won't step it later — needs `chronyc makestep`.
 
 **`[measured]` 2026-11-18, BB1's DAN-F10N (u-blox F10) GNSS:** on `/dev/ttyAMA0`. Factory state was NMEA at
