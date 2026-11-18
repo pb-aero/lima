@@ -1343,6 +1343,9 @@ to the 4.5 V VINDPM limit — it is weak). CHG_STAT 2 = pre-charge at IPRECHG 12
 (code 3 = 71.4 % of 8.4 V ≈ 6.0 V). IBAT reads 0 because EN_IBAT (REG14 b5) = 0. TS 58.6 % → NTC ≈ 9.8 kΩ ≈ 25 °C
 (R9 5k23 / R11 30k1, β assumed). VSYS 5.69 V. A near-empty pack + weak USB source may explain the earlier
 "devices vanish / unexplained reboots" — not proven.
+Better USB-C charger (same day): VBUS 5.19–5.20 V, IBUS 0.70–0.82 A, no VINDPM/IINDPM limiting, **VSYS 7.35 V
+(now regulated above VSYSMIN — the board runs off USB, not the pack)**, die 41 °C, no faults. Still pre-charge
+(120 mA); VBAT 5.68 V — not yet seen rising (−40 mV vs the weak-source reading). Recheck that VBAT climbs.
 
 **SCAR — two remote-process mistakes in one hour (2026-11-17):**
 1. **A live readout that prints to an `ssh -t` terminal can freeze the measurement**: when the terminal tab
