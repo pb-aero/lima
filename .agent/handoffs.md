@@ -187,3 +187,22 @@ Audio PCB `cbe49e5`: J3/J4 swapped in place (old pins unchanged), ELEC J3<->J4 l
 clearance only — NOT in a plane-free corridor like EAR). 0 unconnected / 0 errors.
 Open: tick J12 "In BOM" off in eeschema; CUP_R variant with J11 DNP (voice mic cup L only, Peter 2026-10-30); ELEC over the planes is RULED fine (Peter 2026-10-29, no corridor);
 harness drawings for cup R (J7 3-6 from audio J4 1-4). Daisy chain KEPT (Peter 2026-10-30; 12-way + second AD2428 rejected).
+
+## 2026-11-18 · BB1 on Wi-Fi, feed on loopback, boot-time AssistNow (Peter: "leave it there for today")
+
+**State on BB1 (all measured):** Wi-Fi `moleculex` 192.168.0.118 / `bb1.local` (onboard antenna `dtparam=ant1`;
+`flash_cm5.sh` writes ant2 — fix at the source). Feed ArduPlane->collector on `127.0.0.1:14550` (unit + `.env`).
+Clock NTP-synced when online. Dashboard http://bb1.local:8000 (MQTT ws 9001 answers 101; my browser pane can't
+open local WebSockets — not BB1's fault). Two services: `assistnow-preload` (before ArduPlane: baud-detect,
+182/182 accepted) + `assistnow-savepos` (time+pos via ArduPlane, saves 0.1 deg pos). Thingstream domain `aerosense`,
+profile `bb1` (Evaluation). Secrets/position only in `~/.config/aeronode/assistnow/` on BB1.
+**GPS reality:** boot fixes at +211 s / +319 s in open sky; near the house only 2 SVs heard. Stuck at hAcc ~30 m,
+vAcc ~24 m, sAcc ~2 m/s with 12 SV / HDOP 1.07 -> EKF3 stays CONST_POS (Plane limits 7.5 m / 11.25 m / 1.5 m/s,
+EK3_CHECK_SCALE 150). Antenna is the limit. Offered, NOT done: EK3_CHECK_SCALE 500 for bench only.
+**Open for Peter / next session:** (1) antenna: external active GNSS antenna or ground-plane fix; V_BCKP for hot
+starts; (2) EK3_CHECK_SCALE bench override? (Peter's call, revert before flight); (3) Evaluation profile limits /
+Commercial cost unknown; (4) Peter's Wi-Fi password was typed into his Mac shell once (zsh history, old terminal
+tab) — he was told to clear it; (5) `flash_cm5.sh` ant2 default; (6) status.md is 140 KB — archive to journal.md;
+(7) Wi-Fi drops ~1/20 min (DHCP 600 s lease once, beacon loss once) — keeper recovers in <1 min.
+**Mistakes of mine today:** cold-reset test threw away a working fix; MAVLink bulk injection assumed working
+(it wasn't); dropped `utime`; sanity check printed a distance band to Peter's position.
