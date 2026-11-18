@@ -1,0 +1,38 @@
+From 2f25a92efccc4acacef09d9a7d14f2b916605b4c Mon Sep 17 00:00:00 2001
+From: pb-aero <noreply@example.invalid>
+Date: Wed, 18 Nov 2026 08:37:47 +0200
+Subject: [PATCH] AP_Baro: BMP581: soft reset before checking the power-on
+ flags
+
+INT_STATUS.por is clear-on-read and the BMP581 stays in normal mode across
+a process restart, so a second init reads por=0 and nvm_rdy=0 and the driver
+returns false ("Baro: unable to initialise driver") until the board is
+power-cycled. Measured on a CM5 Linux board: after one ArduPlane run,
+INT_STATUS=0x00 STATUS=0x01; after CMD 0x7E <- 0xB6, INT_STATUS=0x10
+STATUS=0x02.
+---
+ libraries/AP_Baro/AP_Baro_BMP581.cpp | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/libraries/AP_Baro/AP_Baro_BMP581.cpp b/libraries/AP_Baro/AP_Baro_BMP581.cpp
+index 8ea96e1..eb26d55 100644
+--- a/libraries/AP_Baro/AP_Baro_BMP581.cpp
++++ b/libraries/AP_Baro/AP_Baro_BMP581.cpp
+@@ -103,6 +103,14 @@ bool AP_Baro_BMP581::init()
+         return false;
+     }
+ 
++    // Soft reset before checking the power-on flags. INT_STATUS.por is
++    // clear-on-read and the device stays in normal mode across a process
++    // restart, so without a reset a second init (e.g. a service restart on
++    // Linux) reads por=0 and nvm_rdy=0 and fails until the board is
++    // power-cycled.
++    _dev->write_register(BMP581_REG_CMD, 0xB6);
++    hal.scheduler->delay(5);
++
+     uint8_t status;
+     if (!_dev->read_registers(BMP581_REG_STATUS, &status, 1)) {
+         return false;
+-- 
+2.50.1 (Apple Git-155)
+

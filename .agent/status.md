@@ -1905,3 +1905,19 @@ parser (`docs/own-boards-review/tools/`, positive control: matches ALFA's pcbnew
 - **LANDED 2026-11-16:** `reports/peter/LIMA_gma_match_board.html` + manifest row, company `722d126` (CURRENT, record
   `53a54d4`, source `lima@7a25ff7`). **OUT 2026-11-16-001 to chris/INDIA** (shelf review), company `af734f3`.
   After the bench test: fill section 5, write section 6, re-measure record, replace the shelf file in place.
+
+## 2026-11-18 · ArduPlane native on BB1 — RUNNING (no EKF yet: needs GPS)
+
+Peter: *"are we running ardupilot plane natively on bb1 yet?"* (no) → *"Yes, bring it up"*.
+- **Built and run on BB1's CM5**: master `c61ba6b` + patches 0001/0002/**0003**, board `aeronode-cm5`,
+  5m54s build, binary at `~/ardupilot/build/aeronode-cm5/bin/arduplane` (NOT installed, no service).
+  `RPI 5` detected; ICM-45686 (spidev0.0) + BMP581 healthy; MAVLink 9–10 Hz on private udp 14551.
+- **New patch 0003**: the BMP581 driver fails every restart without a power cycle (POR flag clear-on-read,
+  no soft reset). Proven by patched/unpatched/patched controls (0 / 12 / 0 config errors).
+- **hwdef**: `HAL_AIRSPEED_TYPE_DEFAULT 0` (the MS4525 probe claimed the BMP581 at 0x46).
+- **EKF3 uninitialized by design** until a GPS 3D fix (`AP_NavEKF3_core.cpp:457`).
+- Evidence: `linux/aeronode-cm5-image/RESULTS-2026-11-18.md`.
+- **Next / Peter's calls:** (1) let ArduPilot drive the DAN-F10N on ttyAMA0 (it rewrites the receiver
+  config) + sky view → EKF; (2) is BB1 sitting level? attitude reads ~8–11° roll / 3–7° pitch;
+  (3) point ArduPlane at the collector (`udpin:192.168.144.1:14550`, it can arm/calibrate)?
+  (4) fix the service (`--serial0`, WorkingDirectory) and install; (5) file 0001–0003 upstream.

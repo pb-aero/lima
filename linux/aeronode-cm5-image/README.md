@@ -57,7 +57,7 @@ month of driver writing.
 
 ---
 
-## 3. Two upstream patches are MANDATORY, and both are still unlanded
+## 3. Three upstream patches are MANDATORY, and all are unlanded
 
 `[measured 2026-11-05]` against `ArduPilot/ardupilot` master:
 
@@ -75,8 +75,16 @@ hwdef/ directory listing:                 no 'pi5' board
 * **`patches/0002`** — adds `HAL_BOARD_SUBTYPE_LINUX_PI5` and the generic `pi5` board, which this
   hwdef's `CONFIG_HAL_BOARD_SUBTYPE` refers to.
 
-`[derived, not measured]` A CM5 is the same BCM2712, so it should also yield base `0x10` → `RPI_5`.
-**The one-command test is in `scripts/discover-buses.sh` step 1** — run it before building.
+`[measured 2026-11-18 on BB1]` A CM5 does yield `RPI_5`: every patched run printed `RPI 5`.
+Master `c61ba6b` (2026-11-18) still has the `"soc",4` bug, and 0001/0002 still apply cleanly.
+
+* **`patches/0003`** (added 2026-11-18) — **BMP581 soft reset before the power-on check.** The
+  upstream driver requires `INT_STATUS.por` (0x27 bit 4), which is clear-on-read, and it never
+  resets the chip. So the first ArduPilot start after power-up passes, and **every restart after
+  that fails** with `Config Error: Baro: unable to initialise driver` until the board is
+  power-cycled. `[measured]` on BB1: after one run `INT_STATUS=0x00 STATUS=0x01`, and after
+  `0x7E ← 0xB6` it reads `INT_STATUS=0x10 STATUS=0x02`. Controls: patched → unpatched → patched,
+  run back to back: pass / **12 config errors** / pass. See `RESULTS-2026-11-18.md`.
 
 `scripts/build-on-board.sh patch` refuses to continue if a patch neither applies nor is already
 applied, and greps for the fixed line afterwards as a positive control.
@@ -228,6 +236,15 @@ Runs anywhere — it stubs `pymavlink` and never opens a link.
   build stopped `[measured]`, and it is what you will hit if the baro addresses in the hwdef do not
   match the board. It prevents arming. Do **not** paper over it with `Restart=always` in the
   service: a board that reboot-loops looks identical to a board that is running.
+  **A second cause, measured on BB1 2026-11-18:** the right address, but a *second start* of
+  ArduPilot without a power cycle (the BMP581's POR flag was already consumed). Fixed by
+  `patches/0003`. The heartbeat keeps coming in this state (mode `INITIALISING`, all sensors 0),
+  so a heartbeat alone proves nothing.
+* **`MS4525[0]: Found bus 1 addr 0x46`** — Plane's default airspeed driver probes 0x46, which is
+  the BMP581. The hwdef now sets `HAL_AIRSPEED_TYPE_DEFAULT 0`. `[measured 2026-11-18]`
+* **EKF3 stays `uninitialized` (flags `0x0400`) on the bench. That's expected.** For a plane EKF3
+  will not start without a GPS 3D fix (`AP_NavEKF3_core.cpp:457`, "EKF3 init failure: No GPS
+  lock"). AHRS falls back to DCM. No GPS + sky view means no EKF data, whatever else works.
 * **`ModuleNotFoundError: No module named 'em'`** reads like a missing dependency. It is not. `waf`
   caches the interpreter it saw **at configure time**, so a `configure` run outside the venv poisons
   the build. Activate the venv before `configure`, not just before `build`. `[scar]`
@@ -238,6 +255,10 @@ Runs anywhere — it stubs `pymavlink` and never opens a link.
 ---
 
 ## 9. What I could not verify, and will not round up to green
+
+> **Superseded in part on 2026-11-18** — ArduPlane built and ran natively on BB1. The CM5 `RPI_5`
+> row, the hwdef row, the ICM-45686 row and the spidev row are now `[measured]`; see
+> `RESULTS-2026-11-18.md`. The table below is the 2026-11-05 state, kept as written.
 
 | Claim | Status |
 |---|---|
