@@ -1933,3 +1933,8 @@ Peter: *"are we running ardupilot plane natively on bb1 yet?"* (no) → *"Yes, b
   50 Hz plane loop → **SCHED_LOOP_RATE=400** (fleet value; param, not hwdef — a wiped state dir reverts it).
   Collector now publishes aeronode/BB1/* at 100/50/10 Hz; load 1.1 %. No recording started (it auto-arms).
   **BB1's clock is ~84 d slow in every MQTT `ts`.** Next: enable at boot? clock source; sky view; level?
+- **Later 2026-11-18 — enabled at boot, proven by reboot** (Peter: "Yes, enable at boot"): active 7.5 s into
+  boot, 0 restarts, params kept, baro OK (0003 in the boot path), collector + MQTT at full rate. **But GNSS came
+  back cold.** Peter: "check the schematic for V_BCKP" → **pin 55 is nc**; reboot power-cycles the GNSS
+  (msss ≈ uptime); indoors on the internal antenna a cold start can't acquire (DS: −145 vs −156 dBm) → no fix →
+  no EKF. Fix options (V_BCKP feed / rework / ext antenna) in RESULTS. Scope TP15 Vgps on reboot to find the rail.

@@ -1418,3 +1418,12 @@ interval faster than 40 Hz and those streams sit at 1 Hz with no error on the FC
 It's a parameter in `/var/lib/ardupilot/ArduPlane.stg`, so a fresh state directory reverts it silently. Set or
 read params over `--serial1 udp:127.0.0.1:14552` with `linux/aeronode-cm5-image/scripts/param_set.py`, which
 leaves the collector's link alone. **Starting a collector recording auto-arms the FC.**
+
+**`[repo]`+`[measured]` 2026-11-18, Blackbox board GNSS has NO backup domain.** Schematic sheet 9: DAN-F10N pin 55
+`V_back` = **nc**. `Vgps` = U11 TPS7A2033, En = `GPS_Power` = CM5 pin 82 = **GPIO38/SDA0** (1k8 pull-up to CM5 3.3 V,
+R37 100k to Vcm5, the designer marked it with a red "?"). `GPS_AntSel` = GPIO34 (low = internal antenna, how BB1
+runs), `GPS_nRes` = GPIO35, TimePulse = GPIO42. **A reboot power-cycles the GNSS** (NAV-STATUS msss ≈ Linux uptime,
+`scripts/ubx_uptime.py`); a service restart does not. With no V_BCKP every boot is a cold start, which needs
+−145 dBm where hot start needs −156 and tracking −164 (DAN-F10N DS R04 Table 2). So **indoors it tracks forever
+but never re-acquires after a reboot**, and EKF3 (which needs a fix on a plane) never starts. Fix = V_BCKP from an
+always-on rail (31 µA). Which rail drops on reset: scope TP15 Vgps.
