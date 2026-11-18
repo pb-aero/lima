@@ -1927,3 +1927,9 @@ Peter: *"are we running ardupilot plane natively on bb1 yet?"* (no) → *"Yes, b
   (C/N0 ≤22 dB-Hz, 5→7 SVs, no jamming). **Bridge fix:** lat/lon and NED x/y now null+fault unless the EKF
   has a horizontal solution (tests 16→21, negative control fails on the old code; live: 0/62 numeric lat).
   Next: sky view + motion/compass for yaw; is BB1 level?; collector feed (Peter); service install; upstream.
+- **Later 2026-11-18 — collector fed (Peter: "Yes, feed collector").** `arduplane.service` rewritten
+  (--serial0 → collector udp 192.168.144.1:14550, --serial1 → bridge 14552, --serial3 GPS, state in
+  /var/lib/ardupilot) and **installed + started, NOT enabled at boot**. High-rate streams were denied at the
+  50 Hz plane loop → **SCHED_LOOP_RATE=400** (fleet value; param, not hwdef — a wiped state dir reverts it).
+  Collector now publishes aeronode/BB1/* at 100/50/10 Hz; load 1.1 %. No recording started (it auto-arms).
+  **BB1's clock is ~84 d slow in every MQTT `ts`.** Next: enable at boot? clock source; sky view; level?

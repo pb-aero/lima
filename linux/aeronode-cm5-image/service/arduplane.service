@@ -1,36 +1,40 @@
 [Unit]
 Description=ArduPilot ArduPlane (AeroNode rev 0.0.2 / CM5, native)
+# The collector's udpin socket binds 192.168.144.1 on eth0; ArduPlane sends to it.
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=simple
 User=root
+# ArduPilot writes ArduPlane.stg (all parameters) into its CURRENT DIRECTORY.
+# [measured 2026-11-18] without this it landed in whatever cwd launched it.
+WorkingDirectory=/var/lib/ardupilot
+StateDirectory=ardupilot
 
-# -A  primary MAVLink endpoint. udp:<app-host>:14550 is the DEFAULT GUESS and
-#     is almost certainly the thing you need to change: see README section 7,
-#     "the one open question".  The AeroSync transport is not recorded anywhere
-#     in this repo, so this ships as plain MAVLink over UDP and the bridge in
-#     aerosync/ adapts it.
-# -B  GPS serial port (u-blox DAN-F10N on UART0).
-# -l  log/storage directory.
+# --serial0  -> the aeronode collector (udpin:192.168.144.1:14550, AERONODE_MAVLINK_CONNECTION).
+#              The address the old Pixhawk 6X sent to, so the collector needs no change.
+# --serial1  -> local MAVLink for aerosync/ekf_bridge.py (--in udp:127.0.0.1:14552).
+# --serial3  -> u-blox DAN-F10N on UART0. ArduPilot auto-configures it (UBX @ 230400, saved
+#              to the receiver's flash) -- see RESULTS-2026-11-18.md.
+# -l         -> DataFlash logs (written while armed; LOG_DISARMED=0).
+# The old -A/-B spellings are deprecated ("will be removed in a future release").
 ExecStart=/usr/local/bin/arduplane \
-    -A udp:127.0.0.1:14550 \
-    -B /dev/ttyAMA0 \
-    -l /var/lib/ardupilot \
-    --module-directory /usr/local/share/ardupilot/modules
+    --serial0 udp:192.168.144.1:14550 \
+    --serial1 udp:127.0.0.1:14552 \
+    --serial3 /dev/ttyAMA0 \
+    -l /var/lib/ardupilot/logs
 
+# Safe only because of patches/0003: without it a restart can never re-init the
+# BMP581 and the board sits in "Config Error: Baro" forever while still sending
+# heartbeats. Do NOT make this Restart=always -- a crash loop must stay visible.
 Restart=on-failure
 RestartSec=3
 
-# Real-time: the Linux HAL sets its own thread priorities (timer 15, UART 14,
-# RCIN 13, IMU poller 12, main loop 12) but needs the capability to do so.
+# Real-time: the Linux HAL sets its own thread priorities but needs the capability.
 LimitRTPRIO=99
 LimitMEMLOCK=infinity
 
-# Do NOT add Restart=always without reading README section 8: a board that
-# reboot-loops on "Config Error: Baro: unable to initialise driver" looks
-# exactly like a board that is running.
 StandardOutput=journal
 StandardError=journal
 

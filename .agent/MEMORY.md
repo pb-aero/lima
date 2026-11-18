@@ -1410,3 +1410,11 @@ spell the command out.
 or go through ArduPilot. Read-only tools: `linux/aeronode-cm5-image/scripts/gnss_sniff.py` (finds the baud)
 and `ubx_pvt.py` (NAV-PVT/NAV-SAT/MON-RF). **Never print or commit its position**: both tools leave it out
 on purpose. A plane's EKF3 needs a 3D fix to initialise at all (`AP_NavEKF3_core.cpp:457`).
+
+**`[measured]` 2026-11-18, native ArduPlane on BB1 feeds the aeronode collector.** `arduplane.service`
+(installed, **not** enabled at boot) sends `--serial0 udp:192.168.144.1:14550`, the collector's udpin. **The
+collector's 50–100 Hz stream requests need `SCHED_LOOP_RATE=400`**: at Plane's default 50 ArduPilot DENIES any
+interval faster than 40 Hz and those streams sit at 1 Hz with no error on the FC side (`GCS_Common.cpp:278`).
+It's a parameter in `/var/lib/ardupilot/ArduPlane.stg`, so a fresh state directory reverts it silently. Set or
+read params over `--serial1 udp:127.0.0.1:14552` with `linux/aeronode-cm5-image/scripts/param_set.py`, which
+leaves the collector's link alone. **Starting a collector recording auto-arms the FC.**
