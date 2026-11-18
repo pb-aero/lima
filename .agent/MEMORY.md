@@ -1336,6 +1336,14 @@ alone is unlikely. Ran blue-only at 1.6 / 8 / 20 mA (4 s each) to separate headr
 current) from open die/joint/trace (dark at all currents) — result: see Peter's report. Schematic note: this
 side-view LED "is easily damaged when it sticks past edge" of the board.
 
+**Battery reading** `[measured]` 2026-11-18 via BQ25798 one-shot ADC (REG2E←C0h; VBAT 3Bh 1 mV, IBAT 33h signed
+1 mA, VSYS 3Dh, VBUS 35h, TS 3Fh ×0.0977 %, TDIE 41h ×0.5 °C — `[fetched]` SLUSDV2C): **VBAT 5.72–5.74 V = 2.87
+V/cell, effectively empty for a 2S Li-ion.** VBUS 4.55 V present, PG 1, **VINDPM_STAT 1** (the USB-C source sags
+to the 4.5 V VINDPM limit — it is weak). CHG_STAT 2 = pre-charge at IPRECHG 120 mA until VBAT > VBAT_LOWV
+(code 3 = 71.4 % of 8.4 V ≈ 6.0 V). IBAT reads 0 because EN_IBAT (REG14 b5) = 0. TS 58.6 % → NTC ≈ 9.8 kΩ ≈ 25 °C
+(R9 5k23 / R11 30k1, β assumed). VSYS 5.69 V. A near-empty pack + weak USB source may explain the earlier
+"devices vanish / unexplained reboots" — not proven.
+
 **SCAR — two remote-process mistakes in one hour (2026-11-17):**
 1. **A live readout that prints to an `ssh -t` terminal can freeze the measurement**: when the terminal tab
    stopped draining, `print()` blocked and sampling stopped at 14 s while the user was making smoke. Run the
