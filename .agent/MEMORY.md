@@ -1491,6 +1491,9 @@ after he allowed Claude — CLI tools don't inherit it; don't retry that route.
 **`[measured]` First assisted BOOT TTFF: 211 s** (reboot = GNSS power cycle, open-sky spot, preload 182/182 at
 14:35:38Z -> ArduPlane 3D 4 SV at 14:39:09Z). n=1, not an A/B: unassisted cold starts earlier today were 443 s
 (factory cfg) and 679 s / >20 min (ArduPilot cfg) in other spots/sky. Assistance helps; signal still sets the floor.
+**`[measured]` 2nd assisted boot (Peter's reboot 14:44:56Z): preload 182/182 at +28 s (38400 baud, fresh Live
+orbits), ArduPlane detected GPS at +40 s, 3D fix at +319 s (5 SV), EKF3 1024->167; at +341 s 8 SV, HDOP 1.38,
+hAcc 69 m.** Two assisted boots: 211 s and ~291 s after injection. Minutes, not seconds — reception-bound.
 savepos **verified**: wrote coarse_pos at 14:40:13Z when hAcc fell below 50 m (5 min after boot), then exited. It used ±50 km, looser than Peter's ±20 km entry — now ±20 km (0.1 deg rounding <= ~8 km).
 
 **`[measured]` 2026-11-18, BB1's DAN-F10N (u-blox F10) GNSS:** on `/dev/ttyAMA0`. Factory state was NMEA at
