@@ -1430,3 +1430,16 @@ had a fix with 8 SVs and HDOP 1.37 on the onboard antenna (Peter: "we should get
 start here is SLOW or uncertain, not impossible. Second candidate: ArduPilot's config (saved to flash) changed which
 GNSS/signals it searches; the earlier cold start used the factory config. Not yet separated. EKF3 waits for a fix. Fix = V_BCKP from an
 always-on rail (31 µA). Which rail drops on reset: scope TP15 Vgps.
+
+**SCAR — never open a serial port a watcher already holds (2026-11-18).** I sniffed `/dev/ttyAMA0` while
+`nmea_watch.py` was reading it; the watcher died with "multiple access on port", and the job that was meant to
+start ArduPlane on the first fix waited on a dead log while Peter stood outside with a fix. **One reader per
+tty.** To peek, read the watcher's log, or stop it first. And any wait-for-X loop must also exit on its
+worker dying (`pgrep` it), not just on the success string.
+
+**`[measured]` 2026-11-18, BB1 GNSS cold start:** factory config, indoors: 9.5 min once, >13 min once.
+ArduPilot config (CFGv2: 5 Hz rate, airborne dynmodel, min-elev, L5 health override, RAWX): >20 min twice, so
+suspect, culprit not isolated. Outdoors on the **onboard antenna**: still only 27–29 dB-Hz at high elevation
+(~15 dB low), fixed after a few minutes. **Working recipe when it won't fix:** stop arduplane →
+`scripts/gnss_factory.py` → wait for fix (`nmea_watch.py`) → start arduplane; ArduPilot keeps the fix and EKF3
+initialises in ~11 s.

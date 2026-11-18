@@ -1938,3 +1938,6 @@ Peter: *"are we running ardupilot plane natively on bb1 yet?"* (no) → *"Yes, b
   back cold.** Peter: "check the schematic for V_BCKP" → **pin 55 is nc**; reboot power-cycles the GNSS
   (msss ≈ uptime); indoors on the internal antenna a cold start can't acquire (DS: −145 vs −156 dBm) → no fix →
   no EKF. Fix options (V_BCKP feed / rework / ext antenna) in RESULTS. Scope TP15 Vgps on reboot to find the rail.
+- **Later 2026-11-18 — EKF3 RUNNING on BB1** after a factory-config GNSS cold start taken outdoors (Peter):
+  3D/11 SVs, EKF3 init 10.8 s, GPS healthy. ArduPilot's GNSS config cold-starts slowly (>20 min ×2 vs 9.5 min
+  factory; key not isolated). Onboard antenna ~15 dB weak even outdoors. Every power-up is cold (no V_BCKP).
