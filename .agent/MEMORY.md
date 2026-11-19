@@ -1622,3 +1622,9 @@ coulomb counting on 5000 mAh, re-anchored to 100 % at charge DONE; journal line 
 old file kept as battery.csv.old-<UTC>. **First estimate: OCV ≈ 3.27 V/cell ≈ 2 % — the pack is essentially flat**
 (it was already near-empty before the drive: 85 min × ~3.6 W ≈ 5 Wh of a ~36 Wh pack). USB 5 V nets only ~30–100 mA
 into it while BB1 runs (~50+ h to full) — charge it with BB1 off or from a proper charger.
+**`[measured]` BB1 heat / power levers (2026-11-19, bench, on USB):** ondemand 1.5–2.4 GHz averages ~1.67 GHz at ~8 %
+total CPU (collector python ~16 % of a core, ArduPlane ~8 %, mosquitto ~3 %). **Capping scaling_max_freq at 1.5 GHz
+(the floor): CM5 PMIC 2.37 -> 1.93 W (−0.44 W, −19 %), board input-minus-charge 5.19 -> 4.54 W (−0.65 W)**, SoC −1.3 C in
+90 s (not settled). Test was temporary (restored 2.4 GHz). Board total ≫ PMIC: ~2.8 W goes elsewhere (charger buck-boost,
+GNSS, sensors, Wi-Fi); on battery the whole board was ~3.6 W vs ~5.2 W on 5 V USB — boosting 5 V up to VSYS ~7.3 V costs.
+No fan (fan_rpm empty). Drive peak 77.7 C was mostly cabin heat (8 % load). ArduPlane loop overruns at 1.5 GHz unchecked.
