@@ -1,0 +1,11 @@
+# /etc/systemd/system/recorder-prune.timer — run recorder_prune.sh 1 min after boot, then every 10 min
+# (~50 MB of logs + audio arrive between runs).
+[Unit]
+Description=Recordings ring buffer, every 10 min
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=10min
+
+[Install]
+WantedBy=timers.target

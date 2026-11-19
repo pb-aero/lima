@@ -1,0 +1,12 @@
+# /etc/systemd/system/recorder-prune.service — one cyclic space for BB1's always-on recordings
+# (ArduPilot .BIN logs + aeromic FLAC audio): oldest file across both deleted first once the pool is
+# over 14 GB or the disk under 3 GB free. Root: the .BIN files are root's. Run by recorder-prune.timer.
+# Change the pool: sudo systemctl edit recorder-prune  ->  [Service] Environment=RECORDER_POOL_MB=10000
+[Unit]
+Description=Recordings ring buffer: delete the oldest ArduPilot logs / mic audio over the pool size
+
+[Service]
+Type=oneshot
+ExecStart=/home/node/aeronode-scripts/recorder_prune.sh
+Nice=10
+IOSchedulingClass=idle

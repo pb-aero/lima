@@ -1540,8 +1540,15 @@ then a full REBOOT -> no "[startup] ... setting it back to 0" line, LOG_DISARMED
 channel, 24-bit mono FLAC, 60 s files, UTC names, `~/aeronode/logs/aeromic/`) + `aeromic-prune.timer` (10 min; cap
 8 GB, floor 2 GB free, oldest first, never the newest; controls tested in a temp dir). ~138 MB/h quiet room. Resumed
 after the reboot. ffmpeg's own alsa input xran 7x/14 s — use arecord's buffer. aeronode-audio-capture.service is
-UMIK-2-only and its capture.py isn't even deployed on BB1 — irrelevant to the aeromic. Retention: ArduPilot .BIN
-pruned only by LOG_FILE_MB_FREE=500 at each new log; at ~145 MB/h one very long boot could still eat the disk.
+UMIK-2-only and its capture.py isn't even deployed on BB1 — irrelevant to the aeromic.
+**`[measured]` Same day, Peter: "cyclic space" -> ONE shared ring buffer** replaced aeromic-prune (removed from BB1 +
+repo): `scripts/recorder_prune.sh` via `recorder-prune.timer` (root, 1 min after boot then every 10 min). Pool =
+ArduPilot `<N>.BIN` + `aeromic_*.flac`; while pool > 14 GB (RECORDER_POOL_MB) or free < 3 GB (RECORDER_FLOOR_MB),
+delete the OLDEST file across both by mtime, so logs and audio cover the same last ~48 h. Never deletes the newest of
+each set or anything written < 180 s ago. Controls on BB1 (tmpfs): neg (no delete), pos (exact oldest-first order
+across sets), protect, floor, dry-run all PASS; real dirs dry-run at 200 MB picked 00000001/2.BIN only; real run
+deleted 0 (pool 353 MB). `--dry-run` lists without deleting. Residual: a .BIN is per-boot and the active one is
+protected — a multi-day single boot can outgrow the pool alone.
 
 **`[measured]` 2026-11-18, BB1's DAN-F10N (u-blox F10) GNSS:** on `/dev/ttyAMA0`. Factory state was NMEA at
 38400. **Since ArduPlane ran it (Peter's go-ahead), it is UBX-only at 230400, saved to the receiver's flash**

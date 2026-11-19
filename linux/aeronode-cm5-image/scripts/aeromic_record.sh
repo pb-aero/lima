@@ -9,7 +9,7 @@
 # Known quirk: ffmpeg's segment muxer leaves the FLAC header's total-samples blank (duration "N/A" in
 # ffprobe); the audio decodes fully.
 #
-# The disk cap is aeromic_prune.sh (run before each start and by aeromic-prune.timer).
+# Disk: these files share one ring buffer with the ArduPilot logs — recorder_prune.sh / recorder-prune.timer.
 # Judge this mic above ~200 Hz: sub-200 Hz drift dominates (MEMORY.md, 2026-11-17).
 set -euo pipefail
 
