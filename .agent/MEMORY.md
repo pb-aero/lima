@@ -1495,6 +1495,15 @@ after he allowed Claude — CLI tools don't inherit it; don't retry that route.
 orbits), ArduPlane detected GPS at +40 s, 3D fix at +319 s (5 SV), EKF3 1024->167; at +341 s 8 SV, HDOP 1.38,
 hAcc 69 m.** Two assisted boots: 211 s and ~291 s after injection. Minutes, not seconds — reception-bound.
 savepos **verified**: wrote coarse_pos at 14:40:13Z when hAcc fell below 50 m (5 min after boot), then exited. It used ±50 km, looser than Peter's ±20 km entry — now ±20 km (0.1 deg rounding <= ~8 km).
+**`[measured]` 2026-11-19 — BB1 logging + 3D track viewer.** No ArduPilot log had EVER existed (never armed;
+LOG_DISARMED was 0). Set **LOG_DISARMED=1** via param_set.py on 14552 (stop assistnow-savepos first — it holds
+the port): `/var/lib/ardupilot/logs/00000001.BIN` started at once, **41 KB/s ≈ 145 MB/h** (LOG_BITMASK 65535,
+SCHED 400), 20 GB free ≈ 140 h; new file per boot. `scripts/track3d.py LOG.BIN [out.html]` -> offline 3D viewer:
+EKF track (XKF1 core 0 PN/PE/PD) + GPS 3D fixes as ENU metres about ORGN (or first fix); **no coordinates in the
+HTML**; tested on a real BB1 log (no fix -> clean "no trajectory" page) and a labelled synthetic loop. Keep
+outputs local (shape of the walk). **Gap seen at the 05:48Z boot: preload sent position ONLY** — Wi-Fi/clock not
+up when it ran (no RTC), so no time and no orbits. Needs a network/clock wait (cost: later ArduPlane start).
+Note: ArduPlane's terrain dir names a 1x1 deg tile — don't quote it.
 
 **`[measured]` 2026-11-18, BB1's DAN-F10N (u-blox F10) GNSS:** on `/dev/ttyAMA0`. Factory state was NMEA at
 38400. **Since ArduPlane ran it (Peter's go-ahead), it is UBX-only at 230400, saved to the receiver's flash**

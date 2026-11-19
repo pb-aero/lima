@@ -1959,3 +1959,6 @@ Peter: *"are we running ardupilot plane natively on bb1 yet?"* (no) → *"Yes, b
 - **14:35Z — boot-time AssistNow installed + proven on a real reboot** (preload before ArduPlane: 38400 found,
   182/182 accepted; savepos after). Fix at 14:32Z after Peter moved BB1 to open sky. TTFF from the boot injection
   being measured. Open: Live-orbits quota, antenna (the real limit), V_BCKP.
+- **2026-11-19 — LOG_DISARMED=1 on BB1 (logs now always written, ~145 MB/h); `scripts/track3d.py` builds an offline
+  3D trajectory page from a .BIN (relative metres only).** No real trajectory yet: needs GPS + a walk.
+  Found: boot preload had no clock/network at 05:48Z -> position-only assistance.
