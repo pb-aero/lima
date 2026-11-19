@@ -1681,3 +1681,8 @@ is still off" — **BB1 measures an ILIM clamp of 1830 mA (100k/100k), i.e. NOT 
 intended pack has a BQ40Z50 SMBus gauge, but nothing answers at 0x0B on I2C-1. Peter's supply = Raspberry Pi 5 V 5 A
 USB-C PSU: USB-PD, not Quick Charge -> the HVDCP code can't help with it; the lever is IINDPM (EN_EXTILIM=0 lets the
 host exceed the ILIM clamp, BQ25798 max 3.3 A; inductors 1 µH 11 A rated).
+**`[measured]` USB-PD on BB1 works — via the CM5, 5 V only (2026-11-19).** /proc/device-tree/chosen/power: max_current
+0x1388 = **5000 mA negotiated**, rpi_power_supply 2e8a:000f (official Pi PSU), usbpd_power_data_objects = 5 V 5 A,
+9 V 3 A, 12 V 2.25 A, 15 V 1.8 A. The CM5 (which owns J1's CC) picks the 5 V PDO; Pi firmware has no known option to
+request 9 V **[assumed — not checked against the bootloader docs]**; the BQ25798 itself cannot do PD. 12/15 V must never
+reach VBUS (SMBJ12A TVS). So the usable lever is IINDPM: 5 V × 3.0 A = 15.6 W, inside the 5 A contract.
