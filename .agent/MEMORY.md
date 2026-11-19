@@ -1686,3 +1686,12 @@ host exceed the ILIM clamp, BQ25798 max 3.3 A; inductors 1 µH 11 A rated).
 9 V 3 A, 12 V 2.25 A, 15 V 1.8 A. The CM5 (which owns J1's CC) picks the 5 V PDO; Pi firmware has no known option to
 request 9 V **[assumed — not checked against the bootloader docs]**; the BQ25798 itself cannot do PD. 12/15 V must never
 reach VBUS (SMBJ12A TVS). So the usable lever is IINDPM: 5 V × 3.0 A = 15.6 W, inside the 5 A contract.
+**CORRECTION 2026-11-19 (my error, twice above): the VBUS input TVS is an SMBJ18A** ("TVS 18V, unidirectional [20.0 to
+22.1V, 29.2V peak]", note "this will leak if we try to negotiate for more than 20V", "must clamp 30V"; input caps 35 V).
+The SMBJ12A (TVS1, "can probably tighten this to approx 10V") is a different net near the charger — battery side by its
+notes, not VBUS. So 9/12/15 V on VBUS is fine by the schematic; only > ~20 V is out. **9 V 3 A on rev 0.0.2:** power
+stage OK (BQ25798 30 V abs max, VAC_OVP 26 V, 1 µH 11 A inductors) but NOTHING on the board can ask for it: J1 CC goes
+only to the CM5 via 0R R3/R5, and Raspberry Pi firmware requests 5 V PDOs only, ignoring higher ones `[fetched]` (RPi
+white paper RP-009856-WP "USB Power delivery on Raspberry Pi 5"); the schematic itself asks "this negotiates for 5V 5A,
+but we want/can use a higher voltage?". Needs a PD sink controller on CC (STUSB4500 / CH224K-class; a mod = lift R3/R5
++ add a trigger) — the CM5 then sees no PD (its 5 V comes from the board's buck off VSYS, so that is fine).

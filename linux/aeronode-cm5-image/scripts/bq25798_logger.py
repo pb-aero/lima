@@ -100,7 +100,8 @@ def setup(bus):
 
 class QuickCharge:
     """9 V Quick Charge (HVDCP) per TI's procedure [SLUSDV2C 7.3.4.5.2] — Peter 2026-11-19 "enable quick charge".
-    Keep AUTO_INDET_EN=1, EN_9V=1, EN_12V=0 (12 V NOT used: the board's input TVS is an SMBJ12A, 12 V stand-off),
+    Keep AUTO_INDET_EN=1, EN_9V=1, EN_12V=0 (12 V simply not needed; CORRECTED 2026-11-19: the VBUS TVS is an
+    SMBJ18A — "leaks above ~20 V" per the schematic — not the SMBJ12A, which sits on the charger/battery side),
     HVDCP_EN=0. Only when BC1.2 detects a DCP: IINDPM -> 1.5 A FIRST, then HVDCP_EN=1; when the handshake is done
     (VBUS_STAT = HVDCP) or after 5 s, HVDCP_EN=0 again, ready for the next plug-in. EN_9V/HVDCP_EN/EN_12V are reset
     only by REG_RST/POR; AUTO_INDET_EN also by the watchdog — all re-applied every loop.
