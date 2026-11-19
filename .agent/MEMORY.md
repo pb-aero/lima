@@ -1674,3 +1674,10 @@ BC1.2 -> still **"unknown adapter" (0101), never DCP -> no 9 V**. Possible cause
 **J1's D+/D- are shared by the charger AND the CM5 USB host** [repo: schematic USB2_D_P/M on J1, CM5 and charger;
 note "charger negotiation when CPU is on"] — the host's pull-downs can spoil BC1.2. Positive control (a QC 3.0 adapter
 reaching ~9 V) NOT yet done. Live after deploy: REG11=0x50, IINDPM 1830 mA, charging unaffected (~7.5 W in).
+**`[repo]` Blackbox 0.0.2 charger design intent vs BB1 (vendor schematic notes, read 2026-11-19):** ILIM_HIZ note "with
+Rtop = 47k we call for 3.0A" + "perhaps this should try for a bit more than 3A, then we might get ~15W charging when CPU
+is still off" — **BB1 measures an ILIM clamp of 1830 mA (100k/100k), i.e. NOT the 3.0 A the designer intended.** CC note:
+"this negotiates for 5V 5A" (CM5 owns CC). Pack BOM note: "2S pack with BQ40Z50 inside, 7.2(8.4)V 5Ah ~36Wh" — the
+intended pack has a BQ40Z50 SMBus gauge, but nothing answers at 0x0B on I2C-1. Peter's supply = Raspberry Pi 5 V 5 A
+USB-C PSU: USB-PD, not Quick Charge -> the HVDCP code can't help with it; the lever is IINDPM (EN_EXTILIM=0 lets the
+host exceed the ILIM clamp, BQ25798 max 3.3 A; inductors 1 µH 11 A rated).
