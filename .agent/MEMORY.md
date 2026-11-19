@@ -1645,3 +1645,15 @@ battery_percent = SoC estimate, power_source external/battery from power-good, c
 (red under 20 %). AeroNode quirk (not ours): the badge reads `charging_bool`, the DB path returns `charging`, so the
 badge says "UPS: MAINS" even while charging. The collector also reads power_ups into lite_status, so sessions get it too.
 Side effect seen: with the 1.5 GHz cap the pack nets ~130 mA on USB (was 20–100 mA).
+**`[measured]` BB1 charging is slow for 3 reasons — and the IBAT ADC UNDER-READS while charging (2026-11-19).**
+Regs (logger running): VSYSMIN 7.0 V (REG00 0x12, PROG strap), VREG 8.40 V, ICHG 1.0 A, IPRECHG 120 mA, VINDPM 4.5 V
+(VBUS0−0.7), IINDPM 1830 mA (= ILIM_HIZ clamp, 100k/100k from REGN), EN_ICO 0, HVDCP_EN 0, TREG 120 C; status: no
+IINDPM/VINDPM/TREG, TS normal, CHG fast (CC), **VSYS_STAT=1 (VBAT < VSYSMIN -> BATFET in LDO mode)**.
+(1) **LDO mode with a flat pack:** input stuck at ~5.55 W (IBUS 1.06 A). Test: REG00 -> 0x0E (VSYSMIN 6.0 V) for 15 s:
+VSYS_STAT 0, **input 5.55 -> 8.3 W (IBUS 1.58 A)**, VBAT +80 mV; restored 0x12 — and it STAYED out of LDO (pack at
+6.96–6.97 V, VSYS_STAT 0, input ~7.46 W). Self-resolving once the pack is above ~7.0 V (3.5 V/cell). (2) **5 V input:**
+ILIM clamp 1.83 A ≈ 9.5 W max from 5 V; HVDCP (9/12 V QC) is off (REG11 0x40) and the board has no USB-PD controller.
+(3) **IBAT ADC under-reads in charge mode:** EN_CHG=0 test: input 5.55 -> 2.85 W, so charging took ~2.7 W (≈0.33 A
+into the pack, matching the 90 mV VBAT step × 0.3 Ω) while IBAT read 0.05–0.18 A; at 7.46 W in, IBAT reads ~30 mA.
+Discharge reading DID match (−0.55 A ≈ 3.6 W/6.46 V). Cause unknown. => the logger's coulomb count/SoC under-counts
+while charging. Both tests were 15 s / 10 s, register restored exactly and read back.
