@@ -1504,6 +1504,9 @@ HTML**; tested on a real BB1 log (no fix -> clean "no trajectory" page) and a la
 outputs local (shape of the walk). **Gap seen at the 05:48Z boot: preload sent position ONLY** — Wi-Fi/clock not
 up when it ran (no RTC), so no time and no orbits. Needs a network/clock wait (cost: later ArduPlane start).
 Note: ArduPlane's terrain dir names a 1x1 deg tile — don't quote it.
+**`[measured]` 2026-11-19 06:08Z: manual full load (`preload_now.sh`) after a position-only boot -> 182/182
+accepted (receiver at 230400 since ArduPlane had configured it), 3D fix 6 SV in 63 s.** Fastest yet: the receiver
+had been powered and searching outdoors 19 min, and this time got time + 20 km position + Live orbits together.
 
 **`[measured]` 2026-11-18, BB1's DAN-F10N (u-blox F10) GNSS:** on `/dev/ttyAMA0`. Factory state was NMEA at
 38400. **Since ArduPlane ran it (Peter's go-ahead), it is UBX-only at 230400, saved to the receiver's flash**
