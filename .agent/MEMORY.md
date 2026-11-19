@@ -1703,3 +1703,19 @@ ONLY for unknown-adapter/DCP (SDP/CDP/non-std/HVDCP keep the charger's own value
 charge 0.59 -> ~1.12 A** (VBAT +143 mV ≈ +0.48 A at 0.3 Ω agrees), charger die 47 -> 61 C after ~4 min, CM5 53.8 C.
 **Not the full 1.5 A** — nothing flags a limit; cause unknown (the estimate rests on η 0.90 / P_sys 2.85 W; IBAT ADC
 can't arbitrate). Readback: REG14 3C, ICHG 1500, IINDPM 3000, VINDPM 4.5 V.
+**`[measured]` Why BB1 doesn't reach ICHG 1.5 A (2026-11-19, Peter asked; probes in scratchpad chg_probe/chg_sweep/
+iin_sweep.py, logger stopped during each, registers restored + read back).** Pi 5 A PSU, VBAT ~7.2–7.4 V:
+- ICHG sweep (read-back exact): 300/700/1000 mA -> in 7.4 W, IBAT_adc ~75 mA (the ADC is WRONG in this regime: power
+  says ~0.6 A); 1100 -> 12.35 W / 1119; 1200 -> 1226; 1270 -> 1297; 1300 -> 1331; **1400/1500/1700/2000 -> ~12.0 W,
+  IBAT_adc 1360–1390 (plateau)**. Two odd regimes, a step between 1000 and 1100 mA.
+- IINDPM sweep at ICHG 2.0 A: 3300/3000/2700 identical (12.0 W, IBAT 1.37–1.39 A, IINDPM_STAT 0); the input limit only
+  bites at <= 2400 (IINDPM_STAT 1). **IBUS ADC reads ~5.6 % low** (2266 mA while the 2.4 A loop holds). So input is not
+  the cap (real input ~2.4 A of 3.0 A).
+- 30 s latched-flag watch (REG22–27 every 0.25 s) at ICHG 1.5 A: **no flags at all** (no CONV_OCP, IINDPM, VINDPM, TREG,
+  TS, IBAT_REG, OCP). Die 61 C (TREG 120). VSYS−VBAT ≈ 100 mV at ~1.37 A (≈70 mΩ — more than a fully-on BATFET).
+- "Independent" check (pack R 222 mΩ from a HIZ discharge step, then VBAT step on EN_CHG toggle) = 1.31 A — but R used the
+  IBAT ADC, so not truly independent. Power balance at 12.0 W in, ~3.0 W idle system: η would have to be >1 for
+  IBAT_adc 1.37 A -> instruments disagree ~15 %; real charge is somewhere ~1.2–1.4 A.
+=> No documented charger loop is limiting; NOT a configuration problem. Ceiling ≈1.38 A by the charger's own ADC.
+**CANNOT-MEASURE-FROM-A-DESK:** needs an external DC clamp on the battery lead and/or a USB-C power meter to split
+"ADC scale" vs "real cap". The logger's power-balance estimate (η 0.90, P_sys 2.85 W) reads ~1.1 A here — likely low.
