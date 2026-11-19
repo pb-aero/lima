@@ -45,3 +45,9 @@ dtoverlay=pwm,pin=12,func=4
 # ArduPilot's Linux HAL runs the IMU poller and main loop at RT prio 12.
 # Keep the CPU out of dynamic clocking so loop jitter does not chase it.
 force_turbo=1
+# 2026-11-19 (Peter: "Yes, cap it"): pin the ARM at 1.5 GHz — the cpufreq floor, so with force_turbo the
+# clock is FIXED there (no dynamic clocking at all) and the heat drops. [measured on BB1] CM5 PMIC 2.37 -> 1.93 W
+# at ~8 % load; ArduPlane PM: 400 Hz loop, MaxT median ~2.52 ms, 0.001 % long loops — identical before/after.
+# (BB1 itself is provisioned by aeronode's provision.sh, not this fragment: there it is appended at the end
+# of config.txt, backup config.txt.bak-pre-armfreq.)
+arm_freq=1500

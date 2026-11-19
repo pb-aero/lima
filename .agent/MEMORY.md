@@ -1628,3 +1628,11 @@ total CPU (collector python ~16 % of a core, ArduPlane ~8 %, mosquitto ~3 %). **
 90 s (not settled). Test was temporary (restored 2.4 GHz). Board total ≫ PMIC: ~2.8 W goes elsewhere (charger buck-boost,
 GNSS, sensors, Wi-Fi); on battery the whole board was ~3.6 W vs ~5.2 W on 5 V USB — boosting 5 V up to VSYS ~7.3 V costs.
 No fan (fan_rpm empty). Drive peak 77.7 C was mostly cabin heat (8 % load). ArduPlane loop overruns at 1.5 GHz unchecked.
+**`[measured]` 1.5 GHz cap APPLIED (Peter: "Yes, cap it", 2026-11-19):** `arm_freq=1500` appended under `[all]` at the end
+of BB1's /boot/firmware/config.txt (outside the aeronode-managed block; backup `config.txt.bak-pre-armfreq`). After
+reboot: scaling_max 1.5 GHz, available list = 1500000 only, measure_clock 1.500 GHz, throttled 0x0, all services up
+(arduplane, collector, aeromic-record, bq25798-logger, recorder-prune.timer). **ArduPlane PM before (log 5, ondemand)
+vs after (log 6, capped): 400 Hz both; long loops 1/524k vs 1/100k (the start-up loop); MaxT median 2519 vs 2520 µs,
+p95 2543 vs 2546; Load 1.4 % vs 1.8 %** — no cost. 5 min after boot SoC 57.0 C (vs 60.9 before the test), not settled.
+`devkit-cpu-governor` (ondemand) is harmless now; the disabled `cpu-governor-performance` would also stay at 1.5 GHz.
+Repo `config/config.txt.fragment` gains arm_freq=1500.
