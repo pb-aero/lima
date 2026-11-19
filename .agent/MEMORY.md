@@ -1531,6 +1531,17 @@ sensor_data/flights are empty too (events.jsonl = health only). Log 2 (walk + 80
 drive/flight: **start a recording in the AeroSync app / dashboard** (sets LOG_DISARMED=1 AND records sensors).
 Truly always-on needs `log_disarmed_follows_record=false` — a design change to AeroNode, Peter's call (the config
 comment explains why it exists: a 29 GB eMMC once filled with bench data).
+**`[measured]` FIXED same day (Peter: "make logging always on as well as mic record"):**
+(1) BB1 `~/aeronode/config.toml` [collector] gets `log_disarmed_follows_record = false` (box-local — the AeroNode
+tree on BB1 is not a git checkout and this repo doesn't ship config.toml; backup `config.toml.bak-20261119`; an
+AeroNode redeploy would undo it — re-check after any). LOG_DISARMED=1 set again. Positive control: collector restart
+then a full REBOOT -> no "[startup] ... setting it back to 0" line, LOG_DISARMED reads 1, new 00000004.BIN growing
+~42 KB/s. (2) Always-on onboard-mic recorder: `aeromic-record.service` (arecord hw:CARD=aeromic -> ffmpeg, left
+channel, 24-bit mono FLAC, 60 s files, UTC names, `~/aeronode/logs/aeromic/`) + `aeromic-prune.timer` (10 min; cap
+8 GB, floor 2 GB free, oldest first, never the newest; controls tested in a temp dir). ~138 MB/h quiet room. Resumed
+after the reboot. ffmpeg's own alsa input xran 7x/14 s — use arecord's buffer. aeronode-audio-capture.service is
+UMIK-2-only and its capture.py isn't even deployed on BB1 — irrelevant to the aeromic. Retention: ArduPilot .BIN
+pruned only by LOG_FILE_MB_FREE=500 at each new log; at ~145 MB/h one very long boot could still eat the disk.
 
 **`[measured]` 2026-11-18, BB1's DAN-F10N (u-blox F10) GNSS:** on `/dev/ttyAMA0`. Factory state was NMEA at
 38400. **Since ArduPlane ran it (Peter's go-ahead), it is UBX-only at 230400, saved to the receiver's flash**

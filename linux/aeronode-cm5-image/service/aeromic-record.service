@@ -1,0 +1,25 @@
+# /etc/systemd/system/aeromic-record.service
+# ALWAYS-ON recording of the Blackbox board's onboard I2S mic (Peter 2026-11-19). Independent of the
+# AeroNode Record button and of aeronode-audio-capture.service (that one is UMIK-2-only and only records
+# inside a session). 60 s 24-bit mono FLAC files in /home/node/aeronode/logs/aeromic, size-capped by
+# aeromic_prune.sh. Stop it: sudo systemctl disable --now aeromic-record aeromic-prune.timer
+[Unit]
+Description=AeroMic always-on recorder (onboard I2S mic -> 60 s FLAC files)
+After=sound.target local-fs.target
+StartLimitIntervalSec=300
+StartLimitBurst=10
+
+[Service]
+Type=simple
+User=node
+Group=node
+SupplementaryGroups=audio
+Environment=TZ=UTC
+ExecStartPre=/home/node/aeronode-scripts/aeromic_prune.sh
+ExecStart=/home/node/aeronode-scripts/aeromic_record.sh
+Restart=always
+RestartSec=5
+MemoryMax=128M
+
+[Install]
+WantedBy=multi-user.target

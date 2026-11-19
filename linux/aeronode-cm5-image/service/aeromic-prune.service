@@ -1,0 +1,9 @@
+# /etc/systemd/system/aeromic-prune.service — size cap for the always-on AeroMic recordings (see the timer)
+[Unit]
+Description=AeroMic recordings: delete oldest files over the size cap / under the free-space floor
+
+[Service]
+Type=oneshot
+User=node
+Group=node
+ExecStart=/home/node/aeronode-scripts/aeromic_prune.sh
