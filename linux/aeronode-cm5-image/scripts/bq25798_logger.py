@@ -6,7 +6,8 @@ VBAT, IBAT (charge +, discharge -), VBUS/IBUS, VAC1/2, VSYS, TS and the die temp
 them every --period s to a CSV (fsync'd every row, so the last reading before a power cut survives)
 and keeps a running coulomb count (mAh in/out since the logger started).
 
-WRITES — exactly three, none touches charging limits (VREG/ICHG/IINDPM/VSYSMIN are never written):
+WRITES — the three below, plus the 9 V Quick Charge sequence (class QuickCharge: REG11 AUTO_INDET_EN/EN_9V/
+HVDCP_EN, and IINDPM -> 1.5 A ONLY when a DCP is detected, per TI). VREG/ICHG/VSYSMIN are never written:
   REG2E ADC_Control  = 0x90  ADC_EN=1, continuous, 14-bit, no averaging         [SLUSDV2C 7.5.1.42]
   REG14 bit5 EN_IBAT = 1     (read-modify-write) discharge current in battery-only mode, slightly higher Iq [7.5.1.17]
   REG10 bit3 WD_RST  = 1     (read-modify-write) kick the I2C watchdog                   [7.5.1.13]
@@ -95,6 +96,50 @@ def setup(bus):
     if not r14 & 0x20:
         bus.write_byte_data(ADDR, 0x14, r14 | 0x20)
     bus.write_byte_data(ADDR, 0x10, rd(bus, 0x10)[0] | 0x08)
+
+
+class QuickCharge:
+    """9 V Quick Charge (HVDCP) per TI's procedure [SLUSDV2C 7.3.4.5.2] — Peter 2026-11-19 "enable quick charge".
+    Keep AUTO_INDET_EN=1, EN_9V=1, EN_12V=0 (12 V NOT used: the board's input TVS is an SMBJ12A, 12 V stand-off),
+    HVDCP_EN=0. Only when BC1.2 detects a DCP: IINDPM -> 1.5 A FIRST, then HVDCP_EN=1; when the handshake is done
+    (VBUS_STAT = HVDCP) or after 5 s, HVDCP_EN=0 again, ready for the next plug-in. EN_9V/HVDCP_EN/EN_12V are reset
+    only by REG_RST/POR; AUTO_INDET_EN also by the watchdog — all re-applied every loop.
+    Board caveat [repo: schematic]: J1's D+/D- are shared by the charger AND the CM5's USB host, so a host's
+    pull-downs / bus activity may spoil BC1.2/HVDCP detection while the CM5 runs (the schematic notes
+    'charger negotiation when CPU is on'). 2026-11-19 adapter detected as 'unknown adapter' -> no DCP -> no 9 V."""
+
+    def __init__(self):
+        self.started = None          # monotonic time HVDCP_EN was set
+        self.tried = False           # one attempt per plug-in
+
+    def step(self, bus, log):
+        r11 = rd(bus, 0x11)[0] & ~0x80                       # FORCE_INDET self-clears; never write it back
+        want = (r11 | 0x50) & ~0x20                          # AUTO_INDET_EN + EN_9V, no EN_12V
+        vstat = (rd(bus, 0x1C)[0] >> 1) & 0xF
+        if vstat == 0:                                       # unplugged: next plug-in may try again
+            self.tried, self.started = False, None
+        if vstat == 3 and not self.tried:                    # DCP: TI order — IINDPM 1.5 A, then HVDCP_EN
+            bus.write_byte_data(ADDR, 0x06, 0x00)
+            bus.write_byte_data(ADDR, 0x07, 0x96)
+            want |= 0x08
+            self.tried, self.started = True, time.monotonic()
+            log("bq25798: DCP detected -> IINDPM 1.5 A, starting 9 V Quick Charge handshake")
+        elif self.started is not None:
+            if vstat == 4 or time.monotonic() - self.started > 5:
+                want &= ~0x08
+                if vstat != 4:                               # plain DCP: give back its 3.25 A (ILIM clamps ~1.83 A)
+                    bus.write_byte_data(ADDR, 0x06, 0x01)
+                    bus.write_byte_data(ADDR, 0x07, 0x45)
+                a = rd(bus, 0x35, 2)
+                log(f"bq25798: Quick Charge handshake {'DONE (HVDCP)' if vstat == 4 else 'no HVDCP response'}; "
+                    f"VBUS {a[0] << 8 | a[1]} mV")
+                self.started = None
+            else:
+                want |= 0x08
+        else:
+            want &= ~0x08
+        if want != r11:
+            bus.write_byte_data(ADDR, 0x11, want)
 
 
 def sample(bus) -> dict:
@@ -186,10 +231,12 @@ def main():
         last_report = 0.0
         n_samples = 0
         db_err = None
+        qc = QuickCharge()
         while True:
             t0 = time.monotonic()
             try:
                 setup(bus)              # re-arm after any watchdog/POR reset + kick the watchdog
+                qc.step(bus, lambda m: print(m, flush=True))
                 s = sample(bus)
             except OSError as e:
                 print(f"bq25798 logger: I2C error {e}; retrying", flush=True)

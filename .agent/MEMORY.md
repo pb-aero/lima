@@ -1665,3 +1665,12 @@ the IBAT ADC (verified right when discharging). New CSV cols p_in_w, ichg_est_ma
 power_ups.battery_current_ma = the estimate while charging. First run: input 7.47 W -> est ~0.59 A, OCV 3.42 V/cell,
 ~4.3 %, ~483 min to full; API battery_percent 4, battery_current_ma 590. **Unplugged (coulomb) path not re-tested
 since this change** — same IBAT path as before, but confirm on the next unplug.
+**`[measured]` 9 V Quick Charge (HVDCP) enabled — but THIS adapter can't use it (Peter: "enable quick charge", 2026-11-19).**
+bq25798_logger `QuickCharge` follows TI SLUSDV2C 7.3.4.5.2: REG11 kept at AUTO_INDET_EN|EN_9V (0x50), EN_12V=0 (**12 V
+NOT used: input TVS is SMBJ12A, 12 V stand-off**), HVDCP_EN=0; on DCP (VBUS_STAT 0011): IINDPM 1.5 A FIRST, then
+HVDCP_EN=1; at HVDCP (0100) or 5 s: HVDCP_EN=0 (and IINDPM back to 3.25 A -> ILIM-clamped 1.83 A if no response);
+one try per plug-in. Fake-bus test covered unknown/DCP/HVDCP/no-response/replug — all correct. Live: FORCE_INDET re-ran
+BC1.2 -> still **"unknown adapter" (0101), never DCP -> no 9 V**. Possible causes: the adapter isn't QC/DCP, and/or
+**J1's D+/D- are shared by the charger AND the CM5 USB host** [repo: schematic USB2_D_P/M on J1, CM5 and charger;
+note "charger negotiation when CPU is on"] — the host's pull-downs can spoil BC1.2. Positive control (a QC 3.0 adapter
+reaching ~9 V) NOT yet done. Live after deploy: REG11=0x50, IINDPM 1830 mA, charging unaffected (~7.5 W in).
