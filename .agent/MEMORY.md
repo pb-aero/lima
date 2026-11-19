@@ -1507,6 +1507,13 @@ Note: ArduPlane's terrain dir names a 1x1 deg tile — don't quote it.
 **`[measured]` 2026-11-19 06:08Z: manual full load (`preload_now.sh`) after a position-only boot -> 182/182
 accepted (receiver at 230400 since ArduPlane had configured it), 3D fix 6 SV in 63 s.** Fastest yet: the receiver
 had been powered and searching outdoors 19 min, and this time got time + 20 km position + Live orbits together.
+**`[measured]` First real BB1 walk track (2026-11-19, 06:08–06:35Z, log 00000002.BIN):** 4771 GPS 3D fixes (96.9 %),
+median hAcc 10.2 m (vs ~30 m in yesterday's patio spot), GPS horizontal extent 226 m — a clean out-and-back of
+~190 m with the return a few m off the outward leg. **EKF extent 0 m: CONST_POS the whole walk, never fused GPS**
+(hAcc never under Plane's 7.5 m). Page built ON BB1 (`track3d.py` with the venv python, ~40 s) — pulling a 72 MB
+live .BIN over this Wi-Fi crawled and `scp` of a file ArduPlane is still writing never ends: **snapshot with cp
+first, build on BB1, copy back the ~0.5 MB HTML.** Output kept in the scratchpad only (it traces the walk).
+Viewer note: with no EKF origin the EKF dot is not aligned to the GPS track.
 
 **`[measured]` 2026-11-18, BB1's DAN-F10N (u-blox F10) GNSS:** on `/dev/ttyAMA0`. Factory state was NMEA at
 38400. **Since ArduPlane ran it (Peter's go-ahead), it is UBX-only at 230400, saved to the receiver's flash**
