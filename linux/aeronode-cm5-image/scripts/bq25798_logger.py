@@ -27,11 +27,19 @@ STATE OF CHARGE (an ESTIMATE — this is not a fuel gauge). Pack per Peter 2026-
 Expect the start value to be off by ~10 % until a first full charge anchors it; it is worst near empty
 and at the 3.6-3.8 V/cell plateau.
 
+WEB PAGE (Peter 2026-11-19: "show the battery percent on the aeronode web page"): every --db-every samples a
+row goes into AeroNode's existing `power_ups` table in data/device_health.db — the table the PiPower5 UPS would
+fill (absent on BB1). aeronode-web's /api/device/battery reads its newest row (stale after 60 s) and the Device
+page shows it as "UPS battery %" — no AeroNode code or UI change. Mapping: input = VBUS/IBUS, output = VSYS,
+battery = VBAT/IBAT (charge +), battery_percent = the estimate above, power_source 'external' when the charger
+reports power-good else 'battery', charging = an active charge phase. A DB error never stops the CSV log.
+
 Register map, byte order and scales from TI SLUSDV2C (Jun 2026): 16-bit ADC registers, MSB at the lower
 offset; IBUS/IBAT/TDIE two's complement; 1 mA / 1 mV steps; TS 0.0976563 %/LSB; TDIE 0.5 C/LSB.
 """
 import argparse
 import os
+import sqlite3
 import sys
 import time
 
@@ -96,6 +104,25 @@ def sample(bus) -> dict:
     }
 
 
+CHARGING_PHASES = {"trickle", "pre-charge", "fast (CC)", "taper (CV)", "top-off"}
+
+
+def db_insert(path: str, s: dict) -> None:
+    """One power_ups row (AeroNode schema.py) — what the web page's battery card reads."""
+    now = time.time()
+    ts = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime(now)) + f".{int(now % 1 * 1000):03d}"   # naive UTC
+    soc = s.get("soc_pct")
+    with sqlite3.connect(path, timeout=5) as conn:
+        conn.execute(
+            "INSERT INTO power_ups (ts, ts_ms, input_voltage_mv, input_current_ma, output_voltage_mv, "
+            "output_current_ma, battery_voltage_mv, battery_current_ma, battery_percent, power_source, "
+            "usb_plugged, charging, shutdown_request) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (ts, int(now * 1000), s["vbus_mv"], s["ibus_ma"], s["vsys_mv"], None, s["vbat_mv"], s["ibat_ma"],
+             round(soc) if soc != "" and soc is not None else None, "external" if s["pg"] else "battery",
+             s["pg"], int(s["chg_stat"] in CHARGING_PHASES), 0))
+    conn.close()
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="/home/node/aeronode/logs/battery.csv")
@@ -105,6 +132,9 @@ def main():
     ap.add_argument("--capacity-mah", type=float, default=5000.0)
     ap.add_argument("--cells", type=int, default=2, help="cells in SERIES")
     ap.add_argument("--r-ohm", type=float, default=0.30, help="pack resistance for the OCV correction")
+    ap.add_argument("--db", default="/home/node/aeronode/data/device_health.db",
+                    help="AeroNode health DB for the web page's battery card ('' = off)")
+    ap.add_argument("--db-every", type=int, default=5, help="write a power_ups row every N samples")
     args = ap.parse_args()
 
     with SMBus(1) as bus:
@@ -139,6 +169,8 @@ def main():
         i_avg = None
         alpha = 2.0 / (30 + 1)          # ~1 min EMA at 2 s samples
         last_report = 0.0
+        n_samples = 0
+        db_err = None
         while True:
             t0 = time.monotonic()
             try:
@@ -187,6 +219,15 @@ def main():
             fh.write(",".join(str(s[k]) for k in FIELDS) + "\n")
             fh.flush()
             os.fsync(fh.fileno())
+            n_samples += 1
+            if args.db and n_samples % args.db_every == 1:
+                try:
+                    db_insert(args.db, s)
+                    db_err = None
+                except sqlite3.Error as e:
+                    if str(e) != db_err:
+                        print(f"bq25798 logger: web DB write failed: {e} (CSV unaffected)", flush=True)
+                    db_err = str(e)
             state = (s["chg_stat"], s["vbus_stat"], s["pg"], s["faults"])
             if state != last_state:
                 print(f"bq25798: {s['chg_stat']}, input {s['vbus_stat']}, power-good {s['pg']}, faults {s['faults']}; "

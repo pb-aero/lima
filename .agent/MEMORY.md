@@ -1636,3 +1636,12 @@ vs after (log 6, capped): 400 Hz both; long loops 1/524k vs 1/100k (the start-up
 p95 2543 vs 2546; Load 1.4 % vs 1.8 %** — no cost. 5 min after boot SoC 57.0 C (vs 60.9 before the test), not settled.
 `devkit-cpu-governor` (ondemand) is harmless now; the disabled `cpu-governor-performance` would also stay at 1.5 GHz.
 Repo `config/config.txt.fragment` gains arm_freq=1500.
+**`[measured]` Battery % on the AeroNode web page (2026-11-19, Peter asked):** no UI/AeroNode change needed — the Device
+page already has a "UPS battery" card fed by `/api/device/battery`, which reads the newest `power_ups` row in
+`data/device_health.db` (stale after 60 s; else falls back to a PiPower5 shell-out -> `available:false`). bq25798_logger
+now INSERTs a power_ups row every 5th sample (10 s): input = VBUS/IBUS, output = VSYS, battery = VBAT/IBAT (charge +),
+battery_percent = SoC estimate, power_source external/battery from power-good, charging = active phase. Verified: API
+`available:true, source:db, battery_percent 4, charging true`; page http://bb1.local:8000/device shows "UPS BATTERY 4 %"
+(red under 20 %). AeroNode quirk (not ours): the badge reads `charging_bool`, the DB path returns `charging`, so the
+badge says "UPS: MAINS" even while charging. The collector also reads power_ups into lite_status, so sessions get it too.
+Side effect seen: with the 1.5 GHz cap the pack nets ~130 mA on USB (was 20–100 mA).
