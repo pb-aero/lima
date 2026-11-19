@@ -1313,6 +1313,12 @@ needs a CO stimulus (a blown-out match) and a live read.
 Live watch 2026-11-17 (`scripts/co_watch.py`, auto-ranging, logs /tmp/co_watch.log): ~2 min of clean data at
 6–11 mV, ±3 mV of baseline, no stimulus captured. Peter paused it to bring "a real fire" — CO response still
 UNPROVEN.
+**`[measured]` 2026-11-19 ~07:2xZ — CO RESPONSE PROVEN, polarity correct.** `co_watch.py 300` on BB1, Peter held a
+blown-out match near the TGS5141 outdoors: baseline (0–120 s) 4.0–5.7 mV, sd 1.6 mV; at 120–135 s mean 17.2 mV,
+**peak 32.66 mV at 128 s (+27.7 mV ≈ 17× noise)**, back to +0.1 mV by 138.8 s (~10 s recovery). Nominal 2 mV/ppm ->
+~16 ppm peak, but uncalibrated and TGS5141 sensitivity spreads ~2:1, so ~11–27 ppm. Cross-sensitive to H2/ethanol:
+proves the chain responds to combustion gas in the right sense, NOT a calibrated CO number. The rail issue stays
+(0 ppm sits ~5 mV above 0 V here, but a negative offset would still clip at 0 V): next rev lift the + input.
 
 **After the MMC5983MA rework** `[measured]` 2026-11-17 (Peter: "we reworked the magnetometer"): I2C-1 answers
 ONLY 0x48 (ADS1115) and 0x77 (BME690), 5/5 scans. Still silent: 0x30 MMC5983MA. Newly silent: 0x46 BMP581,
