@@ -6,8 +6,20 @@ VBAT, IBAT (charge +, discharge -), VBUS/IBUS, VAC1/2, VSYS, TS and the die temp
 them every --period s to a CSV (fsync'd every row, so the last reading before a power cut survives)
 and keeps a running coulomb count (mAh in/out since the logger started).
 
+CHARGE LIMITS (Peter 2026-11-19: "set 3A input and 1.5A charge"; apply_limits()):
+  ICHG (REG03-04) = --ichg-ma 1500 — reset by WATCHDOG, so if this logger stops it falls back to 1 A (fail-safe).
+  EN_EXTILIM (REG14 bit1) = 0 — the board's ILIM_HIZ resistors (100k/100k) clamp at 1.83 A; the schematic intended
+    3.0 A ("Rtop = 47k"). Reset only by REG_RST/POR: if this logger stops, the charger keeps its OWN per-adapter
+    limits (BC1.2 table) without the 1.83 A clamp.
+  IINDPM (REG06-07) = --iin-ma 3000 ONLY for adapters whose BC1.2 default is already >= 3 A (unknown adapter 3 A —
+    the Raspberry Pi 5 A USB-C PSU lands here — and DCP 3.25 A). SDP 500 mA / CDP 1.5 A / non-standard / HVDCP keep
+    the charger's detected value. Never during a Quick Charge handshake. Chip max 3.3 A. VINDPM still backs off a
+    sagging source.
+  16-bit registers are written as one 2-byte block (MSB first).
+
 WRITES — the three below, plus the 9 V Quick Charge sequence (class QuickCharge: REG11 AUTO_INDET_EN/EN_9V/
-HVDCP_EN, and IINDPM -> 1.5 A ONLY when a DCP is detected, per TI). VREG/ICHG/VSYSMIN are never written:
+HVDCP_EN, and IINDPM -> 1.5 A ONLY when a DCP is detected, per TI), plus the CHARGE LIMITS above.
+VREG and VSYSMIN are never written:
   REG2E ADC_Control  = 0x90  ADC_EN=1, continuous, 14-bit, no averaging         [SLUSDV2C 7.5.1.42]
   REG14 bit5 EN_IBAT = 1     (read-modify-write) discharge current in battery-only mode, slightly higher Iq [7.5.1.17]
   REG10 bit3 WD_RST  = 1     (read-modify-write) kick the I2C watchdog                   [7.5.1.13]
@@ -98,6 +110,29 @@ def setup(bus):
     bus.write_byte_data(ADDR, 0x10, rd(bus, 0x10)[0] | 0x08)
 
 
+def write16(bus, reg: int, value: int) -> None:
+    bus.write_i2c_block_data(ADDR, reg, [(value >> 8) & 0xFF, value & 0xFF])
+
+
+def apply_limits(bus, ichg_ma: int, iin_ma: int, qc_busy: bool, log) -> None:
+    """ICHG, EN_EXTILIM=0 and (for >=3 A adapters) IINDPM — see CHARGE LIMITS in the header."""
+    ichg_ma = max(50, min(2000, ichg_ma))         # sanity clamp: 0.4 C of the 5 Ah pack
+    iin_ma = max(100, min(3300, iin_ma))          # BQ25798 IINDPM range
+    r14 = rd(bus, 0x14)[0]
+    if r14 & 0x02:
+        bus.write_byte_data(ADDR, 0x14, r14 & ~0x02 & 0xFF)
+        log("bq25798: EN_EXTILIM=0 (board ILIM resistors no longer clamp the input at 1.83 A)")
+    if (u16(rd(bus, 0x03, 2)) & 0x1FF) * 10 != ichg_ma:
+        write16(bus, 0x03, ichg_ma // 10)
+        log(f"bq25798: charge current limit -> {ichg_ma} mA")
+    if qc_busy:
+        return
+    vstat = (rd(bus, 0x1C)[0] >> 1) & 0xF
+    if vstat in (3, 5) and (u16(rd(bus, 0x06, 2)) & 0x1FF) * 10 != iin_ma:
+        write16(bus, 0x06, iin_ma // 10)
+        log(f"bq25798: input current limit -> {iin_ma} mA ({'DCP' if vstat == 3 else 'unknown adapter'})")
+
+
 class QuickCharge:
     """9 V Quick Charge (HVDCP) per TI's procedure [SLUSDV2C 7.3.4.5.2] — Peter 2026-11-19 "enable quick charge".
     Keep AUTO_INDET_EN=1, EN_9V=1, EN_12V=0 (12 V simply not needed; CORRECTED 2026-11-19: the VBUS TVS is an
@@ -120,8 +155,7 @@ class QuickCharge:
         if vstat == 0:                                       # unplugged: next plug-in may try again
             self.tried, self.started = False, None
         if vstat == 3 and not self.tried:                    # DCP: TI order — IINDPM 1.5 A, then HVDCP_EN
-            bus.write_byte_data(ADDR, 0x06, 0x00)
-            bus.write_byte_data(ADDR, 0x07, 0x96)
+            write16(bus, 0x06, 150)                          # IINDPM 1.5 A
             want |= 0x08
             self.tried, self.started = True, time.monotonic()
             log("bq25798: DCP detected -> IINDPM 1.5 A, starting 9 V Quick Charge handshake")
@@ -129,8 +163,7 @@ class QuickCharge:
             if vstat == 4 or time.monotonic() - self.started > 5:
                 want &= ~0x08
                 if vstat != 4:                               # plain DCP: give back its 3.25 A (ILIM clamps ~1.83 A)
-                    bus.write_byte_data(ADDR, 0x06, 0x01)
-                    bus.write_byte_data(ADDR, 0x07, 0x45)
+                    write16(bus, 0x06, 325)
                 a = rd(bus, 0x35, 2)
                 log(f"bq25798: Quick Charge handshake {'DONE (HVDCP)' if vstat == 4 else 'no HVDCP response'}; "
                     f"VBUS {a[0] << 8 | a[1]} mV")
@@ -187,6 +220,8 @@ def main():
     ap.add_argument("--cells", type=int, default=2, help="cells in SERIES")
     ap.add_argument("--r-ohm", type=float, default=0.30, help="pack resistance for the OCV correction")
     ap.add_argument("--eta", type=float, default=0.90, help="charger efficiency for the charge-current estimate")
+    ap.add_argument("--ichg-ma", type=int, default=1500, help="charge current limit (ICHG), mA")
+    ap.add_argument("--iin-ma", type=int, default=3000, help="input current limit for >=3 A adapters, mA")
     ap.add_argument("--p-sys-w", type=float, default=2.85,
                     help="BB1's own draw seen at the input, W (measured 2.85 W at 1.5 GHz with charging paused); "
                          "re-measured live whenever input is present and the charger is not charging")
@@ -238,6 +273,7 @@ def main():
             try:
                 setup(bus)              # re-arm after any watchdog/POR reset + kick the watchdog
                 qc.step(bus, lambda m: print(m, flush=True))
+                apply_limits(bus, args.ichg_ma, args.iin_ma, qc.started is not None, lambda m: print(m, flush=True))
                 s = sample(bus)
             except OSError as e:
                 print(f"bq25798 logger: I2C error {e}; retrying", flush=True)

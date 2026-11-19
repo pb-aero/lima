@@ -1695,3 +1695,11 @@ only to the CM5 via 0R R3/R5, and Raspberry Pi firmware requests 5 V PDOs only, 
 white paper RP-009856-WP "USB Power delivery on Raspberry Pi 5"); the schematic itself asks "this negotiates for 5V 5A,
 but we want/can use a higher voltage?". Needs a PD sink controller on CC (STUSB4500 / CH224K-class; a mod = lift R3/R5
 + add a trigger) — the CM5 then sees no PD (its 5 V comes from the board's buck off VSYS, so that is fine).
+**`[measured]` Charge limits raised (Peter: "set 3A input and 1.5A charge", 2026-11-19):** bq25798_logger apply_limits():
+ICHG 1500 mA (reset by WATCHDOG -> 1 A if the logger dies), EN_EXTILIM=0 (only REG_RST/POR resets it), IINDPM 3000 mA
+ONLY for unknown-adapter/DCP (SDP/CDP/non-std/HVDCP keep the charger's own value; skipped during a QC handshake);
+16-bit regs as one block write. Fake-bus test: Pi PSU -> writes once then idempotent; SDP 500 mA untouched; DCP 3.25 A
+-> capped 3.0 A. Live on the Pi 5 A PSU: **input 7.56 -> ~12.0 W (IBUS ~2.3 A, no IINDPM/VINDPM/TREG flag), estimated
+charge 0.59 -> ~1.12 A** (VBAT +143 mV ≈ +0.48 A at 0.3 Ω agrees), charger die 47 -> 61 C after ~4 min, CM5 53.8 C.
+**Not the full 1.5 A** — nothing flags a limit; cause unknown (the estimate rests on η 0.90 / P_sys 2.85 W; IBAT ADC
+can't arbitrate). Readback: REG14 3C, ICHG 1500, IINDPM 3000, VINDPM 4.5 V.
