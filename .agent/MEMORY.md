@@ -1657,3 +1657,11 @@ ILIM clamp 1.83 A ≈ 9.5 W max from 5 V; HVDCP (9/12 V QC) is off (REG11 0x40) 
 into the pack, matching the 90 mV VBAT step × 0.3 Ω) while IBAT read 0.05–0.18 A; at 7.46 W in, IBAT reads ~30 mA.
 Discharge reading DID match (−0.55 A ≈ 3.6 W/6.46 V). Cause unknown. => the logger's coulomb count/SoC under-counts
 while charging. Both tests were 15 s / 10 s, register restored exactly and read back.
+**`[measured]` SoC estimator fixed for charging (Peter: "Yes, fix it", 2026-11-19):** bq25798_logger now ESTIMATES the
+charge current as (VBUS·IBUS − P_sys_in)·η/VBAT (η 0.90; P_sys_in default 2.85 W = measured input draw with charging
+paused, re-learned live whenever input is present but not charging) and, while charging, follows the IR-corrected
+voltage (smoothed EMA 0.05, never backwards, capped 97 % in CV/top-off); 100 % at DONE; on battery it coulomb-counts
+the IBAT ADC (verified right when discharging). New CSV cols p_in_w, ichg_est_ma (old CSV kept as .old-20261119T133014Z);
+power_ups.battery_current_ma = the estimate while charging. First run: input 7.47 W -> est ~0.59 A, OCV 3.42 V/cell,
+~4.3 %, ~483 min to full; API battery_percent 4, battery_current_ma 590. **Unplugged (coulomb) path not re-tested
+since this change** — same IBAT path as before, but confirm on the next unplug.

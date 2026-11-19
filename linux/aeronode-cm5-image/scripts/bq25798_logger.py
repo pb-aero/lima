@@ -21,11 +21,18 @@ STATE OF CHARGE (an ESTIMATE — this is not a fuel gauge). Pack per Peter 2026-
   * At logger start: SoC from the open-circuit voltage, OCV = VBAT - IBAT x R (R = --r-ohm, 0.30 ohm
     measured from the 2026-11-19 unplug step: 0.29-0.34 ohm incl. wiring/BATFET), per cell, through a
     GENERIC Li-ion (NMC/NCA) rest curve [assumed — the pack's own curve is unknown].
-  * Then coulomb counting: SoC += net mAh / capacity. Re-anchored to 100 % when the charger reports
-    charge DONE. Every start re-anchors from voltage (a power cut may hide a charge in between).
-  * min_left (discharging) / min_to_full (charging) from a ~1 min average of IBAT.
-Expect the start value to be off by ~10 % until a first full charge anchors it; it is worst near empty
-and at the 3.6-3.8 V/cell plateau.
+  * ON BATTERY (no input): coulomb counting from the IBAT ADC — verified right when discharging.
+  * CHARGING: the IBAT ADC UNDER-READS here (2026-11-19: ~0.1 A shown while the power balance and the VBAT
+    step said ~0.33 A), so the charge current is ESTIMATED as (VBUS*IBUS - P_sys) * eta / VBAT, with BB1's
+    own input-side draw P_sys (default 2.85 W, measured with charging paused) re-learned whenever input is
+    present but not charging. SoC then follows the IR-corrected voltage (smoothed, never backwards while
+    charging, capped at 97 % in the CV/taper phase where the voltage is pinned at VREG).
+  * 100 % when the charger reports DONE. Input present + not charging: held. Every start re-anchors from
+    voltage (a power cut may hide a charge in between).
+  * min_left (discharging) / min_to_full (charging) from a ~1 min average of that battery current.
+  * ibat_ma stays the raw ADC value; ichg_est_ma / mah_in use the estimate while charging.
+Expect it to be off by ~10 % until a first full charge anchors it; worst near empty and on the 3.6-3.8 V/cell
+plateau.
 
 WEB PAGE (Peter 2026-11-19: "show the battery percent on the aeronode web page"): every --db-every samples a
 row goes into AeroNode's existing `power_ups` table in data/device_health.db — the table the PiPower5 UPS would
@@ -51,7 +58,7 @@ VBUS_STAT = {0: "no input", 1: "USB SDP", 2: "USB CDP", 3: "USB DCP", 4: "HVDCP"
              6: "non-standard adapter", 7: "OTG", 8: "not qualified", 0xB: "powered from VBUS"}
 FIELDS = ["ts_utc", "up_s", "vbat_mv", "ibat_ma", "vbus_mv", "ibus_ma", "vac1_mv", "vac2_mv", "vsys_mv",
           "ts_pct", "tdie_c", "chg_stat", "vbus_stat", "pg", "faults", "mah_in", "mah_out",
-          "ocv_cell_mv", "soc_pct", "soc_src", "ibat_avg_ma", "min_left", "min_to_full"]
+          "p_in_w", "ichg_est_ma", "ocv_cell_mv", "soc_pct", "soc_src", "ibat_avg_ma", "min_left", "min_to_full"]
 
 # Generic Li-ion (NMC/NCA) open-circuit voltage per cell -> % [assumed; typical 18650 rest curve]
 OCV_CURVE = [(3000, 0), (3300, 2), (3450, 5), (3550, 10), (3620, 15), (3670, 20), (3700, 30), (3730, 40),
@@ -117,7 +124,8 @@ def db_insert(path: str, s: dict) -> None:
             "INSERT INTO power_ups (ts, ts_ms, input_voltage_mv, input_current_ma, output_voltage_mv, "
             "output_current_ma, battery_voltage_mv, battery_current_ma, battery_percent, power_source, "
             "usb_plugged, charging, shutdown_request) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
-            (ts, int(now * 1000), s["vbus_mv"], s["ibus_ma"], s["vsys_mv"], None, s["vbat_mv"], s["ibat_ma"],
+            (ts, int(now * 1000), s["vbus_mv"], s["ibus_ma"], s["vsys_mv"], None, s["vbat_mv"],
+             s["ichg_est_ma"] if s.get("ichg_est_ma") not in ("", None) else s["ibat_ma"],
              round(soc) if soc != "" and soc is not None else None, "external" if s["pg"] else "battery",
              s["pg"], int(s["chg_stat"] in CHARGING_PHASES), 0))
     conn.close()
@@ -132,6 +140,10 @@ def main():
     ap.add_argument("--capacity-mah", type=float, default=5000.0)
     ap.add_argument("--cells", type=int, default=2, help="cells in SERIES")
     ap.add_argument("--r-ohm", type=float, default=0.30, help="pack resistance for the OCV correction")
+    ap.add_argument("--eta", type=float, default=0.90, help="charger efficiency for the charge-current estimate")
+    ap.add_argument("--p-sys-w", type=float, default=2.85,
+                    help="BB1's own draw seen at the input, W (measured 2.85 W at 1.5 GHz with charging paused); "
+                         "re-measured live whenever input is present and the charger is not charging")
     ap.add_argument("--db", default="/home/node/aeronode/data/device_health.db",
                     help="AeroNode health DB for the web page's battery card ('' = off)")
     ap.add_argument("--db-every", type=int, default=5, help="write a power_ups row every N samples")
@@ -165,8 +177,11 @@ def main():
         mah_in = mah_out = 0.0
         last_t = None
         last_state = None
-        soc_anchor = None               # (soc %, net mAh at the anchor, source)
-        i_avg = None
+        soc = None                      # % estimate (float)
+        soc_src = ""
+        v_soc_avg = None                # smoothed voltage-based % while charging
+        p_sys_in = args.p_sys_w         # system draw seen at the INPUT (W), recalibrated when not charging
+        i_avg = None                    # ~1 min average of the battery current actually used (mA)
         alpha = 2.0 / (30 + 1)          # ~1 min EMA at 2 s samples
         last_report = 0.0
         n_samples = 0
@@ -181,29 +196,59 @@ def main():
                 time.sleep(args.period)
                 continue
             s.pop("_adc_en")
+            # Which current to trust. IBAT ADC: right when DISCHARGING (matched the board's draw), but it
+            # UNDER-READS while charging (2026-11-19: ~0.1 A shown vs ~0.33 A by power balance). So while
+            # charging, estimate the charge current from the input power instead:
+            #   I_chg = (VBUS*IBUS - P_sys_in) * eta / VBAT
+            # where P_sys_in (BB1's own draw, seen at the input) is re-measured whenever input is present
+            # but the charger is not charging (e.g. after DONE).
+            p_in = s["vbus_mv"] * s["ibus_ma"] / 1e6
+            charging = bool(s["pg"]) and s["chg_stat"] in CHARGING_PHASES
+            if s["pg"] and s["chg_stat"] in ("not charging", "done") and p_in > 0.5:
+                p_sys_in += 0.1 * (p_in - p_sys_in)
+            if charging and s["vbat_mv"] > 0:
+                i_used = max(0.0, (p_in - p_sys_in) * args.eta / (s["vbat_mv"] / 1000.0) * 1000.0)
+            elif not s["pg"]:
+                i_used = float(s["ibat_ma"])          # battery only: the ADC is trustworthy here
+            else:
+                i_used = 0.0                          # input present, not charging: pack idle
+            s["p_in_w"], s["ichg_est_ma"] = round(p_in, 2), (round(i_used) if charging else "")
+
             if last_t is not None:
                 dh = (t0 - last_t) / 3600.0
-                if s["ibat_ma"] >= 0:
-                    mah_in += s["ibat_ma"] * dh
+                if i_used >= 0:
+                    mah_in += i_used * dh
                 else:
-                    mah_out += -s["ibat_ma"] * dh
+                    mah_out += -i_used * dh
+                if soc is not None and not s["pg"]:       # discharging: coulomb counting
+                    soc -= 100.0 * (-i_used if i_used < 0 else 0.0) * dh / args.capacity_mah
             last_t = t0
             s["mah_in"], s["mah_out"] = round(mah_in, 2), round(mah_out, 2)
 
-            net = mah_in - mah_out
-            ocv_cell = (s["vbat_mv"] - s["ibat_ma"] * args.r_ohm) / args.cells
+            ocv_cell = (s["vbat_mv"] - i_used * args.r_ohm) / args.cells
             s["ocv_cell_mv"] = round(ocv_cell)
-            if s["chg_stat"] == "done":
-                soc_anchor = (100.0, net, "full")
-            elif soc_anchor is None and s["vbat_mv"] > 0:
-                soc_anchor = (soc_from_ocv(ocv_cell), net, "voltage")
-            if soc_anchor:
-                soc = min(100.0, max(0.0, soc_anchor[0] + 100.0 * (net - soc_anchor[1]) / args.capacity_mah))
-                s["soc_pct"], s["soc_src"] = round(soc, 1), soc_anchor[2] + ("" if net == soc_anchor[1] else "+coulomb")
-            else:
-                soc = None
-                s["soc_pct"], s["soc_src"] = "", ""
-            i_avg = s["ibat_ma"] if i_avg is None else i_avg + alpha * (s["ibat_ma"] - i_avg)
+            if s["vbat_mv"] <= 0:
+                pass
+            elif s["chg_stat"] == "done":
+                soc, soc_src = 100.0, "full"
+            elif soc is None:
+                soc, soc_src = soc_from_ocv(ocv_cell), "voltage"
+            elif charging:
+                # voltage-based while charging (IR-corrected with the estimated current), smoothed, never
+                # moving backwards; in the CV/taper phase the voltage is pinned near VREG, so cap at 97 %
+                v = soc_from_ocv(ocv_cell)
+                if s["chg_stat"] in ("taper (CV)", "top-off"):
+                    v = min(v, 97.0)
+                v_soc_avg = v if v_soc_avg is None else v_soc_avg + 0.05 * (v - v_soc_avg)
+                soc, soc_src = max(soc, v_soc_avg), "charging (voltage)"
+            elif not s["pg"]:
+                soc_src = "battery (coulomb)"
+            if not charging:
+                v_soc_avg = None
+            if soc is not None:
+                soc = min(100.0, max(0.0, soc))
+            s["soc_pct"], s["soc_src"] = (round(soc, 1) if soc is not None else ""), soc_src
+            i_avg = i_used if i_avg is None else i_avg + alpha * (i_used - i_avg)
             s["ibat_avg_ma"] = round(i_avg)
             s["min_left"] = round(soc / 100 * args.capacity_mah / -i_avg * 60) if soc is not None and i_avg < -50 else ""
             s["min_to_full"] = (round((100 - soc) / 100 * args.capacity_mah / i_avg * 60)
@@ -212,7 +257,8 @@ def main():
                 left = (f", ~{s['min_left']} min left" if s["min_left"] != "" else
                         f", ~{s['min_to_full']} min to full" if s["min_to_full"] != "" else "")
                 print(f"bq25798: battery ~{s['soc_pct']} % ({s['soc_src']}), VBAT {s['vbat_mv']} mV, "
-                      f"IBAT avg {s['ibat_avg_ma']} mA{left}", flush=True)
+                      f"battery current avg {s['ibat_avg_ma']} mA, input {s['p_in_w']} W, "
+                      f"system ~{p_sys_in:.2f} W{left}", flush=True)
                 last_report = t0
             s["ts_utc"] = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime()) + f".{int(time.time() % 1 * 1000):03d}"
             s["up_s"] = round(time.clock_gettime(time.CLOCK_BOOTTIME), 1)
