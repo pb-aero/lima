@@ -1520,6 +1520,16 @@ median hAcc 10.2 m (vs ~30 m in yesterday's patio spot), GPS horizontal extent 2
 live .BIN over this Wi-Fi crawled and `scp` of a file ArduPlane is still writing never ends: **snapshot with cp
 first, build on BB1, copy back the ~0.5 MB HTML.** Output kept in the scratchpad only (it traces the walk).
 Viewer note: with no EKF origin the EKF dot is not aligned to the GPS track.
+**`[measured]` SCAR 2026-11-19 — "logs always on" was FALSE past one boot; Peter's test drive was LOST.** The AeroNode
+collector OWNS `LOG_DISARMED` (`config.collector.log_disarmed_follows_record=True`): 1 on record START, 0 on STOP,
+and at startup while idle it resets a 1 to 0 (`collector.py` ~2952, "[startup] LOG_DISARMED=1 on the FC while
+idle ... setting it back to 0"). My param_set write survived only until the next boot (11:06 SAST); the drive boot
+(11:17–12:41, no network, clock unsynced) wrote no .BIN, and with no session recorded `device_health.db`
+sensor_data/flights are empty too (events.jsonl = health only). Log 2 (walk + 80 min after) = 250 m extent, no drive.
+**I set a control and never checked it across a reboot — verify-at-point-of-use failed.** Correct way to log a
+drive/flight: **start a recording in the AeroSync app / dashboard** (sets LOG_DISARMED=1 AND records sensors).
+Truly always-on needs `log_disarmed_follows_record=false` — a design change to AeroNode, Peter's call (the config
+comment explains why it exists: a 29 GB eMMC once filled with bench data).
 
 **`[measured]` 2026-11-18, BB1's DAN-F10N (u-blox F10) GNSS:** on `/dev/ttyAMA0`. Factory state was NMEA at
 38400. **Since ArduPlane ran it (Peter's go-ahead), it is UBX-only at 230400, saved to the receiver's flash**
