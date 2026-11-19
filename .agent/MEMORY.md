@@ -1596,3 +1596,17 @@ reboot`), not from power or my code. Its SSH source address is the Mac's own, th
 can't tell us apart; only the commands can. **Before long or stateful work on BB1, run `ListAgents` and look for
 peer sessions touching the board. When BB1 reboots unexpectedly, read `journalctl -b -1` for `sudo ... reboot`
 before blaming power.** Every reboot = GNSS cold start (no V_BCKP), so uncoordinated reboots cost ~10 min of EKF.
+
+**`[measured]` 2026-11-19 — Blackbox board rev 0.0.2 has NO fuel gauge; battery logging now from the BQ25798's own ADC.**
+Vendor schematic PDF + our KiCad: only BQ25798 (U3); I2C-1 = 0x2D LP5815, 0x34 (unidentified, "audio expansion"),
+0x46 BMP581, 0x48 ADS1115, 0x6B BQ25798, 0x77 BME690 — no BQ27/MAX17/etc. AeroNode's power monitor wants a PiPower5
+UPS (absent: `power_ups` table has never had a row). `scripts/bq25798_logger.py` + `bq25798-logger.service` (node,
+i2c group): every 2 s -> `~/aeronode/logs/battery.csv` (fsync per row; mah_in/mah_out count from logger start).
+Writes ONLY REG2E=0x90 (ADC on, continuous 14-bit), REG14 bit5 EN_IBAT (discharge sensing in battery-only), REG10 bit3
+WD_RST — all from SLUSDV2C (local copy `~/Downloads/aeronode-design-docs-20260813-full/library/bq25798.pdf`). ADC_EN
+and EN_IBAT are reset by WATCHDOG (40 s default, REG10=0x85 at boot) -> logger stops = charger back to defaults.
+16-bit ADC regs MSB first. Survived a reboot (also re-verified aeromic-record, recorder-prune, ArduPlane 00000005.BIN).
+First readings on USB 5 V: VBUS 5.22 V, IBUS ~1.05 A ("unknown adapter"), VSYS 7.34 V, **VBAT 6.60 V (3.3 V/cell)**,
+CHG fast (CC) but **IBAT only 20–130 mA** — the ~5.5 W input barely exceeds BB1's own draw, so USB 5 V hardly charges
+the pack while running. TS 56 %, die 49–50 C. **Discharge sign (battery-only IBAT < 0) NOT yet proven** — needs USB
+unplugged. Before this, power.csv's ext5v was the only "battery" data: a flat pack = clean cut, no warning.
