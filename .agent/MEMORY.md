@@ -1614,3 +1614,11 @@ unplugged. Before this, power.csv's ext5v was the only "battery" data: a flat pa
 charging", VBUS 5.22 V -> 72 mV -> 0, PG 0, **IBAT +~90 mA -> -429…-631 mA (mean ≈ -550 mA)**, VBAT sagged 6.66 -> ~6.46 V
 (3.23 V/cell under load), VSYS 7.34 -> ~6.45 V (follows VBAT), die 49 -> 38 C (no switching), mah_out climbing ≈0.3 mAh
 per sample. **BB1 on battery ≈ 3.6 W.** EN_IBAT works — without it IBAT would read 0 in battery-only mode.
+**`[measured]`/`[assumed]` BB1 pack + SoC estimate (2026-11-19):** Peter: "4s li-ion 7.2v … 5Ah" — 7.2 V nominal is
+2 cells in SERIES (4S Li-ion would be 14.4 V; measured 6.5–6.7 V and the charger's 2S strap agree) -> read as 2S2P, 5 Ah.
+Logger now adds ocv_cell_mv / soc_pct / soc_src / ibat_avg_ma / min_left / min_to_full: start SoC from OCV =
+VBAT − IBAT×0.30 Ω (R measured from the unplug step, 0.29–0.34 Ω), GENERIC NMC rest curve **[assumed]**, then
+coulomb counting on 5000 mAh, re-anchored to 100 % at charge DONE; journal line every 10 min. CSV header changed ->
+old file kept as battery.csv.old-<UTC>. **First estimate: OCV ≈ 3.27 V/cell ≈ 2 % — the pack is essentially flat**
+(it was already near-empty before the drive: 85 min × ~3.6 W ≈ 5 Wh of a ~36 Wh pack). USB 5 V nets only ~30–100 mA
+into it while BB1 runs (~50+ h to full) — charge it with BB1 off or from a proper charger.

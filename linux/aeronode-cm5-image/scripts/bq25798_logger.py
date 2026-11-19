@@ -16,6 +16,17 @@ e.g. after the 2026-11-17 OTG test), the kick is a harmless no-op.
 
 --once  : read and print one sample, WRITE NOTHING (the ADC may be off -> zeros; it says so).
 
+STATE OF CHARGE (an ESTIMATE — this is not a fuel gauge). Pack per Peter 2026-11-19: Li-ion, 7.2 V nominal
+(= 2 cells in series; he read "4S" — 4 cells, so 2S2P), 5 Ah. Charger is strapped 2S, VREG 8.40 V.
+  * At logger start: SoC from the open-circuit voltage, OCV = VBAT - IBAT x R (R = --r-ohm, 0.30 ohm
+    measured from the 2026-11-19 unplug step: 0.29-0.34 ohm incl. wiring/BATFET), per cell, through a
+    GENERIC Li-ion (NMC/NCA) rest curve [assumed — the pack's own curve is unknown].
+  * Then coulomb counting: SoC += net mAh / capacity. Re-anchored to 100 % when the charger reports
+    charge DONE. Every start re-anchors from voltage (a power cut may hide a charge in between).
+  * min_left (discharging) / min_to_full (charging) from a ~1 min average of IBAT.
+Expect the start value to be off by ~10 % until a first full charge anchors it; it is worst near empty
+and at the 3.6-3.8 V/cell plateau.
+
 Register map, byte order and scales from TI SLUSDV2C (Jun 2026): 16-bit ADC registers, MSB at the lower
 offset; IBUS/IBAT/TDIE two's complement; 1 mA / 1 mV steps; TS 0.0976563 %/LSB; TDIE 0.5 C/LSB.
 """
@@ -31,7 +42,21 @@ CHG_STAT = ["not charging", "trickle", "pre-charge", "fast (CC)", "taper (CV)", 
 VBUS_STAT = {0: "no input", 1: "USB SDP", 2: "USB CDP", 3: "USB DCP", 4: "HVDCP", 5: "unknown adapter",
              6: "non-standard adapter", 7: "OTG", 8: "not qualified", 0xB: "powered from VBUS"}
 FIELDS = ["ts_utc", "up_s", "vbat_mv", "ibat_ma", "vbus_mv", "ibus_ma", "vac1_mv", "vac2_mv", "vsys_mv",
-          "ts_pct", "tdie_c", "chg_stat", "vbus_stat", "pg", "faults", "mah_in", "mah_out"]
+          "ts_pct", "tdie_c", "chg_stat", "vbus_stat", "pg", "faults", "mah_in", "mah_out",
+          "ocv_cell_mv", "soc_pct", "soc_src", "ibat_avg_ma", "min_left", "min_to_full"]
+
+# Generic Li-ion (NMC/NCA) open-circuit voltage per cell -> % [assumed; typical 18650 rest curve]
+OCV_CURVE = [(3000, 0), (3300, 2), (3450, 5), (3550, 10), (3620, 15), (3670, 20), (3700, 30), (3730, 40),
+             (3770, 50), (3820, 60), (3880, 70), (3950, 80), (4040, 90), (4100, 95), (4200, 100)]
+
+
+def soc_from_ocv(cell_mv: float) -> float:
+    if cell_mv <= OCV_CURVE[0][0]:
+        return 0.0
+    for (v0, p0), (v1, p1) in zip(OCV_CURVE, OCV_CURVE[1:]):
+        if cell_mv <= v1:
+            return p0 + (p1 - p0) * (cell_mv - v0) / (v1 - v0)
+    return 100.0
 
 
 def s16(b: bytes) -> int:
@@ -77,6 +102,9 @@ def main():
     ap.add_argument("--period", type=float, default=2.0)
     ap.add_argument("--once", action="store_true", help="one read, no writes")
     ap.add_argument("--max-mb", type=float, default=50.0, help="rotate the CSV to .1 when bigger at start")
+    ap.add_argument("--capacity-mah", type=float, default=5000.0)
+    ap.add_argument("--cells", type=int, default=2, help="cells in SERIES")
+    ap.add_argument("--r-ohm", type=float, default=0.30, help="pack resistance for the OCV correction")
     args = ap.parse_args()
 
     with SMBus(1) as bus:
@@ -90,8 +118,13 @@ def main():
                 print(f"  {k:9s} {v}")
             return
 
-        if os.path.exists(args.out) and os.path.getsize(args.out) > args.max_mb * 1e6:
-            os.replace(args.out, args.out + ".1")
+        if os.path.exists(args.out):
+            with open(args.out) as f:
+                old_header = f.readline().strip()
+            if old_header != ",".join(FIELDS):          # columns changed: keep the old file aside
+                os.replace(args.out, args.out + time.strftime(".old-%Y%m%dT%H%M%SZ", time.gmtime()))
+            elif os.path.getsize(args.out) > args.max_mb * 1e6:
+                os.replace(args.out, args.out + ".1")
         new = not os.path.exists(args.out)
         fh = open(args.out, "a", buffering=1)
         if new:
@@ -102,6 +135,10 @@ def main():
         mah_in = mah_out = 0.0
         last_t = None
         last_state = None
+        soc_anchor = None               # (soc %, net mAh at the anchor, source)
+        i_avg = None
+        alpha = 2.0 / (30 + 1)          # ~1 min EMA at 2 s samples
+        last_report = 0.0
         while True:
             t0 = time.monotonic()
             try:
@@ -120,6 +157,31 @@ def main():
                     mah_out += -s["ibat_ma"] * dh
             last_t = t0
             s["mah_in"], s["mah_out"] = round(mah_in, 2), round(mah_out, 2)
+
+            net = mah_in - mah_out
+            ocv_cell = (s["vbat_mv"] - s["ibat_ma"] * args.r_ohm) / args.cells
+            s["ocv_cell_mv"] = round(ocv_cell)
+            if s["chg_stat"] == "done":
+                soc_anchor = (100.0, net, "full")
+            elif soc_anchor is None and s["vbat_mv"] > 0:
+                soc_anchor = (soc_from_ocv(ocv_cell), net, "voltage")
+            if soc_anchor:
+                soc = min(100.0, max(0.0, soc_anchor[0] + 100.0 * (net - soc_anchor[1]) / args.capacity_mah))
+                s["soc_pct"], s["soc_src"] = round(soc, 1), soc_anchor[2] + ("" if net == soc_anchor[1] else "+coulomb")
+            else:
+                soc = None
+                s["soc_pct"], s["soc_src"] = "", ""
+            i_avg = s["ibat_ma"] if i_avg is None else i_avg + alpha * (s["ibat_ma"] - i_avg)
+            s["ibat_avg_ma"] = round(i_avg)
+            s["min_left"] = round(soc / 100 * args.capacity_mah / -i_avg * 60) if soc is not None and i_avg < -50 else ""
+            s["min_to_full"] = (round((100 - soc) / 100 * args.capacity_mah / i_avg * 60)
+                                if soc is not None and i_avg > 50 else "")
+            if t0 - last_report >= 600 and soc is not None:   # a journal line every 10 min
+                left = (f", ~{s['min_left']} min left" if s["min_left"] != "" else
+                        f", ~{s['min_to_full']} min to full" if s["min_to_full"] != "" else "")
+                print(f"bq25798: battery ~{s['soc_pct']} % ({s['soc_src']}), VBAT {s['vbat_mv']} mV, "
+                      f"IBAT avg {s['ibat_avg_ma']} mA{left}", flush=True)
+                last_report = t0
             s["ts_utc"] = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime()) + f".{int(time.time() % 1 * 1000):03d}"
             s["up_s"] = round(time.clock_gettime(time.CLOCK_BOOTTIME), 1)
             fh.write(",".join(str(s[k]) for k in FIELDS) + "\n")
