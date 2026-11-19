@@ -1610,3 +1610,7 @@ First readings on USB 5 V: VBUS 5.22 V, IBUS ~1.05 A ("unknown adapter"), VSYS 7
 CHG fast (CC) but **IBAT only 20–130 mA** — the ~5.5 W input barely exceeds BB1's own draw, so USB 5 V hardly charges
 the pack while running. TS 56 %, die 49–50 C. **Discharge sign (battery-only IBAT < 0) NOT yet proven** — needs USB
 unplugged. Before this, power.csv's ext5v was the only "battery" data: a flat pack = clean cut, no warning.
+**`[measured]` Discharge sign PROVEN 2026-11-19 12:48:07Z (Peter unplugged USB):** within one 2 s sample CHG -> "not
+charging", VBUS 5.22 V -> 72 mV -> 0, PG 0, **IBAT +~90 mA -> -429…-631 mA (mean ≈ -550 mA)**, VBAT sagged 6.66 -> ~6.46 V
+(3.23 V/cell under load), VSYS 7.34 -> ~6.45 V (follows VBAT), die 49 -> 38 C (no switching), mah_out climbing ≈0.3 mAh
+per sample. **BB1 on battery ≈ 3.6 W.** EN_IBAT works — without it IBAT would read 0 in battery-only mode.
