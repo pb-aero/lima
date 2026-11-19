@@ -1523,8 +1523,9 @@ Viewer note: with no EKF origin the EKF dot is not aligned to the GPS track.
 **`[measured]` SCAR 2026-11-19 — "logs always on" was FALSE past one boot; Peter's test drive was LOST.** The AeroNode
 collector OWNS `LOG_DISARMED` (`config.collector.log_disarmed_follows_record=True`): 1 on record START, 0 on STOP,
 and at startup while idle it resets a 1 to 0 (`collector.py` ~2952, "[startup] LOG_DISARMED=1 on the FC while
-idle ... setting it back to 0"). My param_set write survived only until the next boot (11:06 SAST); the drive boot
-(11:17–12:41, no network, clock unsynced) wrote no .BIN, and with no session recorded `device_health.db`
+idle ... setting it back to 0"). My param_set write survived until the drive boot itself: journal 11:17:38 SAST, 6 s after
+ArduPlane started, "[startup] ... (a stop that never finished) — setting it back to 0" (the 11:06 boot was too
+short to get there). The drive boot (11:17–12:41, no network, clock unsynced) wrote no .BIN, and with no session recorded `device_health.db`
 sensor_data/flights are empty too (events.jsonl = health only). Log 2 (walk + 80 min after) = 250 m extent, no drive.
 **I set a control and never checked it across a reboot — verify-at-point-of-use failed.** Correct way to log a
 drive/flight: **start a recording in the AeroSync app / dashboard** (sets LOG_DISARMED=1 AND records sensors).
