@@ -1719,3 +1719,9 @@ iin_sweep.py, logger stopped during each, registers restored + read back).** Pi 
 => No documented charger loop is limiting; NOT a configuration problem. Ceiling ≈1.38 A by the charger's own ADC.
 **CANNOT-MEASURE-FROM-A-DESK:** needs an external DC clamp on the battery lead and/or a USB-C power meter to split
 "ADC scale" vs "real cap". The logger's power-balance estimate (η 0.90, P_sys 2.85 W) reads ~1.1 A here — likely low.
+**`[measured]` 2026-11-19 ~14:39Z WIPE (Peter: "wipe all audio and logs"; scope chosen in a confirm dialog):** deleted ALL
+aeromic FLAC (136 files, 303 MB), ALL ArduPilot .BIN + LASTLOG (6 logs, 651 MB — numbering restarted at 00000001, so
+older log numbers in these notes no longer exist), battery.csv + .old copies, and my Mac scratch copies (walk/test/
+synthetic track pages, copied .BINs, 30 s audio clip); localhost preview server stopped. KEPT by Peter's choice:
+AeroNode power.csv / events.jsonl / device_health.db, the journal, ap-build*.log. Services stopped around the deletes
+and restarted; verified 60 s later: new aeromic files, 00000001.BIN growing, battery.csv fresh header, web API live.
