@@ -253,8 +253,14 @@ GMA's failsafe check relies on a mono headset plug shorting the ring (RIGHT) to 
 therefore be a 2-circuit mono PJ-055 (PJ-055B), or tie ring to sleeve, not a 3-conductor plug with the ring floating.
 H1 carries no PTT; the pilot keys from the yoke switch (J2401-34 to ground).
 
-## Open — codec core-supply bulk capacitor (found 2026-11-13, reviewing ALFA's AeroAudio)
+## FIXED 2026-11-20 — codec core-supply bulk capacitor (found 2026-11-13, reviewing ALFA's AeroAudio)
 
-CODEC_DVDD (U6 REG_OUT/DVDD, pins 28/29) has only C29 1 µF + C30 100 nF. ADAU1372 Rev 0 p.39: *"Bypass each supply
+CODEC_DVDD (U6 REG_OUT/DVDD, pins 28/29) had only C29 1 µF + C30 100 nF. ADAU1372 Rev 0 p.39: *"Bypass each supply
 signal on the board with a single bulk capacitor (10 µF to 47 µF)"*; the regulator's load regulation is 6 mV/mA.
-GOLF raised the same on AeroAudio (E1). **Fix:** C29 → 10 µF (0603/0805). Not yet changed.
+GOLF raised the same on AeroAudio (E1).
+
+**Fixed (Peter, 2026-11-20): C29 1 µF → 10 µF**, same 0603 footprint, so placement and routing are unchanged. This is
+the data sheet's own typical application circuit, which shows 10 µF + 0.10 µF on REG_OUT/DVDD `[repo, ADAU1372 Rev 0,
+typical application circuit; local copy chris/golf/baseplate-2026-09-25/ADAU1372.pdf]`. DVDD sits at 1.1–1.2 V, so a
+6.3 V X5R 0603 part has ample margin and little DC-bias loss `[assumed — no part number chosen; the BOM carries value and
+footprint only]`. C30 100 nF stays as the pin decoupler. Value field changed in both the schematic and the PCB.

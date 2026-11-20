@@ -8565,7 +8565,7 @@
 				)
 			)
 		)
-		(property "Value" "1uF"
+		(property "Value" "10uF"
 			(at 0 1.43 90)
 			(unlocked yes)
 			(layer "F.SilkS")

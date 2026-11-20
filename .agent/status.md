@@ -1963,3 +1963,12 @@ Peter: *"are we running ardupilot plane natively on bb1 yet?"* (no) → *"Yes, b
   3D trajectory page from a .BIN (relative metres only).** No real trajectory yet: needs GPS + a walk.
   Found: boot preload had no clock/network at 05:48Z -> position-only assistance.
   Offered a network/clock wait in the preload; **Peter: "Not now" (2026-11-19)** — don't build it unasked.
+
+## 2026-11-20 · Audio board: C29 (CODEC_DVDD bulk) 1 µF → 10 µF — DONE (Peter: "lets do the audio board dvdd fix")
+
+Same 0603 footprint, value only, in schematic and PCB (PCB via Konnect IPC; board must be opened from the KiCad
+project manager — the standalone PCB Editor app answers IPC with AS_UNHANDLED). ADAU1372 typical application circuit
+shows 10 µF + 0.10 µF on REG_OUT/DVDD `[repo]`. Netlists before/after: 120 parts, 140 nets, nets identical, only C29
+value differs; design_nets OK; ERC 0 err / 4 known warn; DRC 0 err, 0 unconnected, parity 5 known text-field warnings
+(C29 parity flag fired before the PCB update = positive control) `[measured]`. No part number chosen `[assumed X5R 6.3 V]`.
+Republishing `reports/peter/LIMA_audio_board.html` (schematic report) with C29's label patched into the drawing.
