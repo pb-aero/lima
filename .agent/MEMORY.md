@@ -1739,3 +1739,7 @@ PG, AC1/AC2/VBUS_PRESENT changes, CHG — no CHG_TMR (12 h safety timer, REG0E 0
 so the Pi USB-C PSU keeps/turns VBUS off -> no charging while BB1 is off. The schematic flags exactly this case ("charger
 negotiation when CPU is off — eg. empty battery, and charger needs to charge it a bit before CPU can boot"). Test: leave
 the PSU plugged, power BB1 off ~15 min, boot, check VBUS at boot + VBAT rise + flags.
+**2026-11-20 follow-up:** Peter: the PSU was NOT plugged in all night ("No, unplugged") — so the low overnight % is mostly
+explained by no input. He still believed it charged "quite a while after power down"; the pack voltage (3.64 V/cell at
+boot) shows little or no charge in that period, so the "no VBUS while the CM5 is off" hypothesis stays OPEN — test it
+(plugged in, BB1 off ~30 min, compare VBAT at boot + flags) before relying on charging-while-off.
