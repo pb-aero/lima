@@ -1751,3 +1751,8 @@ Flags latched while off/boot: IINDPM, WD, CHG only — **no PG / VBUS_PRESENT / 
 the Pi PSU keeps 5 V on with the CM5 off. Overnight low % = simply unplugged. Script `scratchpad/offcharge.py`
 (copy on BB1 ~/offcharge.py, results ~/offcharge_test.txt). While off, charging runs at the charger's defaults (ICHG 1 A,
 IINDPM stays 3 A since EN_EXTILIM=0 persists) — the 1.5 A only applies while the logger runs.
+**`[measured]` 2026-11-20 — first logged DRIVE (log 00000004.BIN, boot 07:36 SAST, LOG_DISARMED fix working):** 54.4 min,
+GPS 3D fix 100 %, **median hAcc 1.6 m**, median 20 sats, path 28.5 km while moving (36.5 min, avg 47 km/h, max 96 km/h),
+extent 10.7 km. **EKF3 had an origin and FUSED GPS this time** (EKF extent 10 721 m ≈ GPS 10 721 m; last XKF4 SV 0.07,
+SP 0.09) — unlike the walk (hAcc 10 m, CONST_POS). track3d built on BB1 (~2 min for 158 MB), page 1.4 MB, no
+coordinates in it (checked); kept in scratchpad/drive only; BB1 /tmp copies deleted.
