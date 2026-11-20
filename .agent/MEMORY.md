@@ -1725,3 +1725,7 @@ older log numbers in these notes no longer exist), battery.csv + .old copies, an
 synthetic track pages, copied .BINs, 30 s audio clip); localhost preview server stopped. KEPT by Peter's choice:
 AeroNode power.csv / events.jsonl / device_health.db, the journal, ap-build*.log. Services stopped around the deletes
 and restarted; verified 60 s later: new aeromic files, 00000001.BIN growing, battery.csv fresh header, web API live.
+**`[measured]` 2026-11-20 — mic recording DISABLED (Peter: "lets disable the mic recording"):** `systemctl disable --now
+aeromic-record` on BB1 -> inactive + disabled (won't start at boot); no arecord/ffmpeg left. The 7 FLAC files recorded
+since the wipe (12 MB) were left in place (not asked to delete). recorder-prune.timer still runs (now only the .BINs
+grow). Re-enable: `sudo systemctl enable --now aeromic-record`. Unit + scripts stay in the repo.
