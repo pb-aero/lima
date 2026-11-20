@@ -1756,3 +1756,14 @@ GPS 3D fix 100 %, **median hAcc 1.6 m**, median 20 sats, path 28.5 km while movi
 extent 10.7 km. **EKF3 had an origin and FUSED GPS this time** (EKF extent 10 721 m ≈ GPS 10 721 m; last XKF4 SV 0.07,
 SP 0.09) — unlike the walk (hAcc 10 m, CONST_POS). track3d built on BB1 (~2 min for 158 MB), page 1.4 MB, no
 coordinates in it (checked); kept in scratchpad/drive only; BB1 /tmp copies deleted.
+**2026-11-20 — street map of the drive (Peter: "Show street map", after being told it sends the area to OSM):** Leaflet
+1.9.4 (unpkg) + tile.openstreetmap.org, 1 s GPS points coloured by speed, start/end markers; built locally from
+scratchpad/drive/track_points.json by scratchpad/drive/make_map.py, served on 127.0.0.1:8766 for the browser pane
+(24/24 tiles loaded, route on the roads). **This page and the JSON CONTAIN COORDINATES — scratchpad only, never commit.**
+**`[measured]` 2026-11-20 — 1.5 A charge limit now also applies while BB1 is OFF (Peter: "set the charge current to
+1.5A when off too"):** ICHG is "reset by WATCHDOG", so bq25798_logger now DISABLES the charger's I2C watchdog
+(REG10[2:0]=0; was 0x85 -> 0x80) instead of kicking it, and on SIGTERM/exit turns the ADC (REG2E 0x30) and EN_IBAT off
+(they'd drain the pack while off) while keeping ICHG/IINDPM/EN_EXTILIM. Verified: logger stopped 56 s -> ICHG still
+1500, ADC_EN 0, EN_IBAT 0; restart re-enables; full reboot -> previous boot logged the stop cleanup and the new logger
+did NOT need to rewrite ICHG or the watchdog (both persisted). Trade-off accepted: no "logger dies -> defaults" fail-safe;
+POR (battery AND input removed) still resets everything. Hard crash/power cut leaves the ADC on (small drain).

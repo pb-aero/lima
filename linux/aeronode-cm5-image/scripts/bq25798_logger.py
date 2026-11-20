@@ -7,7 +7,8 @@ them every --period s to a CSV (fsync'd every row, so the last reading before a 
 and keeps a running coulomb count (mAh in/out since the logger started).
 
 CHARGE LIMITS (Peter 2026-11-19: "set 3A input and 1.5A charge"; apply_limits()):
-  ICHG (REG03-04) = --ichg-ma 1500 — reset by WATCHDOG, so if this logger stops it falls back to 1 A (fail-safe).
+  ICHG (REG03-04) = --ichg-ma 1500 — "reset by WATCHDOG", so the watchdog is now DISABLED (below) and 1.5 A also
+    applies while BB1 is switched off (Peter 2026-11-20: "set the charge current to 1.5A when off too").
   EN_EXTILIM (REG14 bit1) = 0 — the board's ILIM_HIZ resistors (100k/100k) clamp at 1.83 A; the schematic intended
     3.0 A ("Rtop = 47k"). Reset only by REG_RST/POR: if this logger stops, the charger keeps its OWN per-adapter
     limits (BC1.2 table) without the 1.83 A clamp.
@@ -22,10 +23,13 @@ HVDCP_EN, and IINDPM -> 1.5 A ONLY when a DCP is detected, per TI), plus the CHA
 VREG and VSYSMIN are never written:
   REG2E ADC_Control  = 0x90  ADC_EN=1, continuous, 14-bit, no averaging         [SLUSDV2C 7.5.1.42]
   REG14 bit5 EN_IBAT = 1     (read-modify-write) discharge current in battery-only mode, slightly higher Iq [7.5.1.17]
-  REG10 bit3 WD_RST  = 1     (read-modify-write) kick the I2C watchdog                   [7.5.1.13]
-ADC_EN and EN_IBAT are "reset by WATCHDOG": if this logger stops, the watchdog (40 s default) expires and
-the charger returns to exactly its pin-set defaults — fail-safe. If the watchdog is disabled (REG10[2:0]=0,
-e.g. after the 2026-11-17 OTG test), the kick is a harmless no-op.
+  REG10 bits2:0 WATCHDOG = 0 (read-modify-write) I2C watchdog DISABLED                   [7.5.1.13]
+WATCHDOG (changed 2026-11-20): it used to be kicked, so a stopped logger let it expire (40 s) and the charger fell
+back to its defaults — including ICHG 1 A, which is why charging while BB1 was off ran at 1 A. Now it is disabled,
+so ICHG 1.5 A / IINDPM / EN_EXTILIM persist until REG_RST or POR (battery AND input both removed; the logger
+re-applies everything at its next start). Trade-off: no more "logger dies -> defaults" fail-safe — accepted, the
+limits are safe values for the 5 Ah pack (0.3 C). On a clean stop (SIGTERM, i.e. every shutdown) the logger turns
+the ADC and EN_IBAT OFF so they don't drain the pack while BB1 is off; only a hard crash/power cut leaves them on.
 
 --once  : read and print one sample, WRITE NOTHING (the ADC may be off -> zeros; it says so).
 
@@ -100,14 +104,34 @@ def rd(bus, reg, n=1):
     return bytes(bus.read_i2c_block_data(ADDR, reg, n))
 
 
+LOGGING_STARTED = False
+
+
 def setup(bus):
-    """Enable the ADC + discharge sensing and kick the watchdog. Charging limits are never touched."""
+    """Enable the ADC + discharge sensing; keep the I2C watchdog DISABLED (see WATCHDOG in the header)."""
     if rd(bus, 0x2E)[0] != 0x90:
         bus.write_byte_data(ADDR, 0x2E, 0x90)
     r14 = rd(bus, 0x14)[0]
     if not r14 & 0x20:
         bus.write_byte_data(ADDR, 0x14, r14 | 0x20)
-    bus.write_byte_data(ADDR, 0x10, rd(bus, 0x10)[0] | 0x08)
+    r10 = rd(bus, 0x10)[0]
+    if r10 & 0x07:                                     # WATCHDOG_2:0 -> 0 (disabled); other bits kept
+        bus.write_byte_data(ADDR, 0x10, r10 & ~0x07 & 0xFF)
+        print(f"bq25798: I2C watchdog disabled (REG10 0x{r10:02X} -> 0x{r10 & ~0x07 & 0xFF:02X})", flush=True)
+
+
+def shutdown_cleanup() -> None:
+    """On logger stop (SIGTERM at shutdown, or any exit): turn OFF the ADC and EN_IBAT (they would otherwise stay
+    on with the watchdog disabled and drain the pack while BB1 is off), KEEP the charge limits (ICHG etc.)."""
+    try:
+        with SMBus(1) as bus:
+            bus.write_byte_data(ADDR, 0x2E, 0x30)                       # ADC_EN=0, POR sample setting
+            r14 = rd(bus, 0x14)[0]
+            bus.write_byte_data(ADDR, 0x14, r14 & ~0x20 & 0xFF)         # EN_IBAT=0
+            ichg = (u16(rd(bus, 0x03, 2)) & 0x1FF) * 10
+        print(f"bq25798 logger: stopping — ADC and discharge sensing off; charge limit stays {ichg} mA", flush=True)
+    except OSError as e:
+        print(f"bq25798 logger: stop cleanup failed: {e}", flush=True)
 
 
 def write16(bus, reg: int, value: int) -> None:
@@ -268,6 +292,8 @@ def main():
         n_samples = 0
         db_err = None
         qc = QuickCharge()
+        global LOGGING_STARTED
+        LOGGING_STARTED = True
         while True:
             t0 = time.monotonic()
             try:
@@ -367,4 +393,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import signal
+    signal.signal(signal.SIGTERM, lambda *_: sys.exit(0))       # systemd stop / shutdown -> clean exit
+    try:
+        main()
+    finally:
+        if LOGGING_STARTED:
+            shutdown_cleanup()
