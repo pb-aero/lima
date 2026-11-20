@@ -1743,3 +1743,11 @@ the PSU plugged, power BB1 off ~15 min, boot, check VBUS at boot + VBAT rise + f
 explained by no input. He still believed it charged "quite a while after power down"; the pack voltage (3.64 V/cell at
 boot) shows little or no charge in that period, so the "no VBUS while the CM5 is off" hypothesis stays OPEN — test it
 (plugged in, BB1 off ~30 min, compare VBAT at boot + flags) before relying on charging-while-off.
+**`[measured]` 2026-11-20 — BB1 DOES charge while switched off (hypothesis above DISPROVED).** Test: PSU (Pi 5 A) left
+plugged; baseline 04:46Z with charging paused 60 s -> relaxed VBAT **7330 mV**, flags cleared; poweroff 06:46:35 SAST;
+Peter booted 07:16:35 (30 min off). After (same 60 s pause, uptime 92 s): relaxed VBAT **7421 mV (+91 mV ≈ +45 mV/cell,
+≈ +7–10 %, ≈ 0.35–0.5 Ah -> ~0.7–1 A, i.e. the watchdog-default ICHG 1 A)** — a resting pack would have read ≤ 7330.
+Flags latched while off/boot: IINDPM, WD, CHG only — **no PG / VBUS_PRESENT / AC / POORSRC**, so VBUS never dropped:
+the Pi PSU keeps 5 V on with the CM5 off. Overnight low % = simply unplugged. Script `scratchpad/offcharge.py`
+(copy on BB1 ~/offcharge.py, results ~/offcharge_test.txt). While off, charging runs at the charger's defaults (ICHG 1 A,
+IINDPM stays 3 A since EN_EXTILIM=0 persists) — the 1.5 A only applies while the logger runs.
