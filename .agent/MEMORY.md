@@ -1729,3 +1729,13 @@ and restarted; verified 60 s later: new aeromic files, 00000001.BIN growing, bat
 aeromic-record` on BB1 -> inactive + disabled (won't start at boot); no arecord/ffmpeg left. The 7 FLAC files recorded
 since the wipe (12 MB) were left in place (not asked to delete). recorder-prune.timer still runs (now only the .BINs
 grow). Re-enable: `sudo systemctl enable --now aeromic-record`. Unit + scripts stay in the repo.
+**`[measured]` 2026-11-20 "% looks too low" — the PACK really didn't charge overnight; suspect: no VBUS while the CM5 is off.**
+BB1 was shut down by power key 2026-11-19 16:40:22 SAST while charging at ~1.3 A (est 16 %). Booted 06:30 SAST: battery-only,
+**VBUS 0 V, pg 0 ('no input')**, VBAT 7.17 V @ −0.39 A -> OCV ≈ 3.64 V/cell ≈ 17 % — consistent with almost no overnight
+charge (a full 2S is 8.2–8.4 V). VBUS appeared at 04:34:57Z (uptime 260 s), ~2 min after I reported "on battery" — Peter
+may have re-plugged, unknown. Charger flags latched since the last read (read+cleared 04:38Z): IINDPM, WD, **POORSRC**,
+PG, AC1/AC2/VBUS_PRESENT changes, CHG — no CHG_TMR (12 h safety timer, REG0E 0x3D), no TS, no faults.
+**Hypothesis [assumed, untested]:** J1 CC goes ONLY to the CM5; powered off, the CM5 presents no (or no valid) sink Rd,
+so the Pi USB-C PSU keeps/turns VBUS off -> no charging while BB1 is off. The schematic flags exactly this case ("charger
+negotiation when CPU is off — eg. empty battery, and charger needs to charge it a bit before CPU can boot"). Test: leave
+the PSU plugged, power BB1 off ~15 min, boot, check VBUS at boot + VBAT rise + flags.
