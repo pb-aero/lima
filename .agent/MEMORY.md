@@ -1775,3 +1775,12 @@ from 6.25 V, ~40 min before the brownout (accidental reserve). On replug (13:05 
 (IPRECHG 120 mA, REG08=0xC3 -> VBAT_LOWV 72.5 % of VREG 8.40 V = ~6.09 V typ, 5.96–6.22 V) at ~0.1 A, 5.66 -> 6.05 V in
 12 min; fast charge (ICHG 1500 confirmed) starts above that threshold. Follow-up offered: clean low-battery shutdown in
 bq25798_logger.
+**2026-11-21 — low-battery shutdown ADDED to bq25798_logger (Peter: "Yes, add it"; commit f3143f8):** on battery only,
+VBAT < 3100 mV/cell x cells (6.20 V) for 60 s -> final row (web DB shutdown_request=1) + `sudo -n /usr/bin/systemctl
+poweroff`, retry every 60 s; input returning cancels; warning at +100 mV/cell; `--low-action log` for testing. Depends
+on node's passwordless sudo and NO NoNewPrivileges= in the unit. `[measured]` negative control: plugged in with a 9.0 V
+threshold -> no countdown; `sudo -n` poweroff allowed from a node service context (systemd-run, `--dry-run` rc 0).
+**UNTESTED (Peter: "Skip the test"): the unplugged positive control — no real low-battery poweroff has fired yet.**
+To test: `sudo systemd-run --unit=lowbatt-test --uid=node --gid=node -p SupplementaryGroups=i2c -p RuntimeMaxSec=1800
+<venv python> -I bq25798_logger.py --out /tmp/x.csv --db "" --low-cell-mv 3500 --low-hold-s 20`, unplug, then read
+`journalctl -b -1 -u lowbatt-test`. Residual: a halted CM5 still draws a little from the pack while off.
