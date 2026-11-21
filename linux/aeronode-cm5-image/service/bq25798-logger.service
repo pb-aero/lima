@@ -1,7 +1,9 @@
 # /etc/systemd/system/bq25798-logger.service — battery/input logging from the Blackbox board's BQ25798
 # charger (no fuel gauge on rev 0.0.2; this is the charger's own ADC). Every 2 s to
-# /home/node/aeronode/logs/battery.csv, fsync'd per row. Writes only ADC_EN, EN_IBAT and the watchdog kick
-# (see the script header); if this stops, the charger's 40 s watchdog returns it to its defaults.
+# /home/node/aeronode/logs/battery.csv, fsync'd per row. Also sets the charge/input limits (watchdog disabled, so they
+# persist while off) and does the LOW-BATTERY SHUTDOWN: on battery below 3.10 V/cell for 60 s it runs
+# `sudo -n /usr/bin/systemctl poweroff` — needs node's passwordless sudo and NO NoNewPrivileges= here.
+# See the script header for all of it.
 [Unit]
 Description=BQ25798 battery logger (VBAT/IBAT/VBUS/IBUS/VSYS/TS/die temp + coulomb count)
 After=local-fs.target

@@ -31,6 +31,17 @@ re-applies everything at its next start). Trade-off: no more "logger dies -> def
 limits are safe values for the 5 Ah pack (0.3 C). On a clean stop (SIGTERM, i.e. every shutdown) the logger turns
 the ADC and EN_IBAT OFF so they don't drain the pack while BB1 is off; only a hard crash/power cut leaves them on.
 
+LOW-BATTERY SHUTDOWN (Peter 2026-11-21: "Yes, add it", after BB1 ran its pack flat and browned out at 5.2 V =
+2.6 V/cell — the board has no other cutoff; the 5 V rail simply drops out mid-write):
+  ON BATTERY ONLY (no power-good), when VBAT stays below --low-cell-mv x cells (3100 mV/cell = 6.20 V for 2S, under
+  load) for --low-hold-s (60 s) of consecutive samples, the logger writes a final row (web DB shutdown_request=1),
+  logs it, and runs `sudo -n /usr/bin/systemctl poweroff` (node has passwordless sudo on the AeroNode image) — a
+  clean shutdown, so ArduPilot closes its log and the filesystem is synced; the stop path below then turns the ADC
+  off. Plugging in input at any point cancels the countdown. If poweroff fails it retries every 60 s.
+  Why 3.10 V/cell: on 2026-11-21 the pack fell 6.20 -> 5.20 V in ~37 min at ~0.37 A (the knee is steep below
+  ~3.1 V/cell), so this leaves ~5 % for the off-state drain instead of discharging the cells to 2.6 V.
+  A warning goes to the journal once below --low-cell-mv + 100 mV/cell. --low-action log = detect and log only.
+
 --once  : read and print one sample, WRITE NOTHING (the ADC may be off -> zeros; it says so).
 
 STATE OF CHARGE (an ESTIMATE — this is not a fuel gauge). Pack per Peter 2026-11-19: Li-ion, 7.2 V nominal
@@ -64,6 +75,7 @@ offset; IBUS/IBAT/TDIE two's complement; 1 mA / 1 mV steps; TS 0.0976563 %/LSB; 
 import argparse
 import os
 import sqlite3
+import subprocess
 import sys
 import time
 
@@ -230,8 +242,21 @@ def db_insert(path: str, s: dict) -> None:
             (ts, int(now * 1000), s["vbus_mv"], s["ibus_ma"], s["vsys_mv"], None, s["vbat_mv"],
              s["ichg_est_ma"] if s.get("ichg_est_ma") not in ("", None) else s["ibat_ma"],
              round(soc) if soc != "" and soc is not None else None, "external" if s["pg"] else "battery",
-             s["pg"], int(s["chg_stat"] in CHARGING_PHASES), 0))
+             s["pg"], int(s["chg_stat"] in CHARGING_PHASES), int(s.get("_shutdown", 0))))
     conn.close()
+
+
+def low_battery_poweroff(log) -> bool:
+    """Clean shutdown. True if systemctl accepted it."""
+    try:
+        r = subprocess.run(["sudo", "-n", "/usr/bin/systemctl", "poweroff"], capture_output=True, text=True,
+                           timeout=30)
+    except (OSError, subprocess.TimeoutExpired) as e:
+        log(f"bq25798 logger: LOW BATTERY poweroff failed: {e}")
+        return False
+    if r.returncode != 0:
+        log(f"bq25798 logger: LOW BATTERY poweroff failed (rc {r.returncode}): {(r.stderr or r.stdout).strip()}")
+    return r.returncode == 0
 
 
 def main():
@@ -252,6 +277,11 @@ def main():
     ap.add_argument("--db", default="/home/node/aeronode/data/device_health.db",
                     help="AeroNode health DB for the web page's battery card ('' = off)")
     ap.add_argument("--db-every", type=int, default=5, help="write a power_ups row every N samples")
+    ap.add_argument("--low-cell-mv", type=int, default=3100,
+                    help="on battery: shut down when VBAT/cells stays below this (mV, under load); 0 = off")
+    ap.add_argument("--low-hold-s", type=float, default=60.0, help="how long VBAT must stay below it, s")
+    ap.add_argument("--low-action", choices=["poweroff", "log"], default="poweroff",
+                    help="'log' = detect and log only (testing)")
     args = ap.parse_args()
 
     with SMBus(1) as bus:
@@ -292,6 +322,10 @@ def main():
         n_samples = 0
         db_err = None
         qc = QuickCharge()
+        low_mv = args.low_cell_mv * args.cells
+        low_since = None                # monotonic time VBAT first went below low_mv on battery
+        low_warned = False
+        low_fired_at = None             # monotonic time of the last poweroff attempt / log-mode trigger
         global LOGGING_STARTED
         LOGGING_STARTED = True
         while True:
@@ -370,6 +404,29 @@ def main():
                       f"battery current avg {s['ibat_avg_ma']} mA, input {s['p_in_w']} W, "
                       f"system ~{p_sys_in:.2f} W{left}", flush=True)
                 last_report = t0
+            # low-battery shutdown (see LOW-BATTERY SHUTDOWN in the header)
+            fire = False
+            on_batt = not s["pg"] and s["vbat_mv"] > 1000 * args.cells     # >1 V/cell: ignore a zero/garbage read
+            if args.low_cell_mv and on_batt and s["vbat_mv"] < low_mv:
+                if low_since is None:
+                    low_since = t0
+                    print(f"bq25798 logger: VBAT {s['vbat_mv']} mV < {low_mv} mV on battery — shutting down in "
+                          f"{args.low_hold_s:g} s unless input returns ({args.low_action})", flush=True)
+                if t0 - low_since >= args.low_hold_s and (low_fired_at is None or t0 - low_fired_at >= 60):
+                    fire = True
+            elif low_since is not None:
+                print(f"bq25798 logger: low-battery countdown cancelled (VBAT {s['vbat_mv']} mV, "
+                      f"power-good {s['pg']})", flush=True)
+                low_since = low_fired_at = None
+            if args.low_cell_mv and on_batt and not low_warned and s["vbat_mv"] < low_mv + 100 * args.cells:
+                print(f"bq25798 logger: battery LOW — VBAT {s['vbat_mv']} mV, shutdown at {low_mv} mV", flush=True)
+                low_warned = True
+            if s["pg"]:
+                low_warned = False
+            s["_shutdown"] = int(fire)
+            if fire:
+                n_samples = 0            # force this row into the web DB too (n_samples % db_every == 1 below)
+
             s["ts_utc"] = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime()) + f".{int(time.time() % 1 * 1000):03d}"
             s["up_s"] = round(time.clock_gettime(time.CLOCK_BOOTTIME), 1)
             fh.write(",".join(str(s[k]) for k in FIELDS) + "\n")
@@ -389,6 +446,13 @@ def main():
                 print(f"bq25798: {s['chg_stat']}, input {s['vbus_stat']}, power-good {s['pg']}, faults {s['faults']}; "
                       f"VBAT {s['vbat_mv']} mV, IBAT {s['ibat_ma']} mA, VBUS {s['vbus_mv']} mV", flush=True)
                 last_state = state
+            if fire:
+                low_fired_at = t0
+                print(f"bq25798 logger: LOW BATTERY — VBAT {s['vbat_mv']} mV below {low_mv} mV on battery for "
+                      f"{t0 - low_since:.0f} s; " + ("powering off" if args.low_action == "poweroff"
+                                                     else "would power off (--low-action log)"), flush=True)
+                if args.low_action == "poweroff":
+                    low_battery_poweroff(lambda m: print(m, flush=True))
             time.sleep(max(0.0, args.period - (time.monotonic() - t0)))
 
 
