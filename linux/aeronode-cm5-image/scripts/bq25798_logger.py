@@ -50,15 +50,19 @@ STATE OF CHARGE (an ESTIMATE — this is not a fuel gauge). Pack per Peter 2026-
     measured from the 2026-11-19 unplug step: 0.29-0.34 ohm incl. wiring/BATFET), per cell, through a
     GENERIC Li-ion (NMC/NCA) rest curve [assumed — the pack's own curve is unknown].
   * ON BATTERY (no input): coulomb counting from the IBAT ADC — verified right when discharging.
-  * CHARGING: the IBAT ADC UNDER-READS here (2026-11-19: ~0.1 A shown while the power balance and the VBAT
-    step said ~0.33 A), so the charge current is ESTIMATED as (VBUS*IBUS - P_sys) * eta / VBAT, with BB1's
-    own input-side draw P_sys (default 2.85 W, measured with charging paused) re-learned whenever input is
-    present but not charging. SoC then follows the IR-corrected voltage (smoothed, never backwards while
-    charging, capped at 97 % in the CV/taper phase where the voltage is pinned at VREG).
-  * 100 % when the charger reports DONE. Input present + not charging: held. Every start re-anchors from
-    voltage (a power cut may hide a charge in between).
+  * CHARGING: two current sources, each under-reading in its own regime — the IBAT ADC at low charge currents
+    (2026-11-19: ~0.1 A shown while the power balance and the VBAT step said ~0.33 A) and the power-balance
+    ESTIMATE (VBUS*IBUS - P_sys) * eta / VBAT at ~1.4 A (2026-11-21: est ~1.1 A, ADC ~1.4 A, matching the
+    VBAT step), with BB1's own input-side draw P_sys (default 2.85 W, measured with charging paused)
+    re-learned whenever input is present but not charging. The charge current used is the LARGER of the two.
+    SoC is COULOMB-COUNTED with it (Peter 2026-11-21: "Yes, fix it" — the voltage-following % read 14 % after
+    1.2-1.3 Ah had gone into a flat pack, i.e. ~25 %), with the IR-corrected voltage curve as a smoothed floor,
+    held at 97 % until DONE.
+  * 100 % when the charger reports DONE. Input present + not charging: held. Each start re-anchors from voltage
+    (a power cut may hide a charge in between) — EXCEPT a plain restart: if the CSV's last row is <= --resume-s
+    (300 s) old, its SoC is kept. --soc-start sets it by hand (logged as soc_src "set by hand").
   * min_left (discharging) / min_to_full (charging) from a ~1 min average of that battery current.
-  * ibat_ma stays the raw ADC value; ichg_est_ma / mah_in use the estimate while charging.
+  * ibat_ma stays the raw ADC value and ichg_est_ma the power-balance estimate; mah_in uses the larger.
 Expect it to be off by ~10 % until a first full charge anchors it; worst near empty and on the 3.6-3.8 V/cell
 plateau.
 
@@ -73,6 +77,7 @@ Register map, byte order and scales from TI SLUSDV2C (Jun 2026): 16-bit ADC regi
 offset; IBUS/IBAT/TDIE two's complement; 1 mA / 1 mV steps; TS 0.0976563 %/LSB; TDIE 0.5 C/LSB.
 """
 import argparse
+import calendar
 import os
 import sqlite3
 import subprocess
@@ -246,6 +251,23 @@ def db_insert(path: str, s: dict) -> None:
     conn.close()
 
 
+def last_soc(path: str):
+    """(soc %, age s) from the CSV's last row, or None. Age from its UTC timestamp vs now."""
+    try:
+        with open(path, "rb") as f:
+            f.seek(0, os.SEEK_END)
+            f.seek(max(0, f.tell() - 4096))
+            lines = [ln for ln in f.read().decode(errors="replace").splitlines() if ln.strip()]
+        row = dict(zip(FIELDS, lines[-1].split(",")))
+        if not row.get("soc_pct") or row["ts_utc"] == "ts_utc":
+            return None
+        ts = calendar.timegm(time.strptime(row["ts_utc"].split(".")[0], "%Y-%m-%dT%H:%M:%S"))
+        age = time.time() - ts
+        return (float(row["soc_pct"]), age) if age >= 0 else None
+    except (OSError, ValueError, IndexError, KeyError):
+        return None
+
+
 def low_battery_poweroff(log) -> bool:
     """Clean shutdown. True if systemctl accepted it."""
     try:
@@ -282,6 +304,10 @@ def main():
     ap.add_argument("--low-hold-s", type=float, default=60.0, help="how long VBAT must stay below it, s")
     ap.add_argument("--low-action", choices=["poweroff", "log"], default="poweroff",
                     help="'log' = detect and log only (testing)")
+    ap.add_argument("--soc-start", type=float, default=None,
+                    help="start the SoC estimate at this %% instead of from voltage (a one-off correction)")
+    ap.add_argument("--resume-s", type=float, default=300.0,
+                    help="at start, keep the last row's SoC if that row is at most this old, s (logger restart)")
     args = ap.parse_args()
 
     with SMBus(1) as bus:
@@ -295,9 +321,12 @@ def main():
                 print(f"  {k:9s} {v}")
             return
 
+        resume = None                   # (soc %, age s) from the last row, if the logger was only restarted
         if os.path.exists(args.out):
             with open(args.out) as f:
                 old_header = f.readline().strip()
+            if old_header == ",".join(FIELDS):
+                resume = last_soc(args.out)
             if old_header != ",".join(FIELDS):          # columns changed: keep the old file aside
                 os.replace(args.out, args.out + time.strftime(".old-%Y%m%dT%H%M%SZ", time.gmtime()))
             elif os.path.getsize(args.out) > args.max_mb * 1e6:
@@ -314,6 +343,12 @@ def main():
         last_state = None
         soc = None                      # % estimate (float)
         soc_src = ""
+        if args.soc_start is not None:
+            soc, soc_src = float(args.soc_start), "set by hand"
+            print(f"bq25798 logger: SoC set by hand to {soc:g} %", flush=True)
+        elif resume and resume[1] <= args.resume_s:
+            soc, soc_src = resume[0], "resumed"
+            print(f"bq25798 logger: SoC resumed at {soc:g} % from the last row ({resume[1]:.0f} s old)", flush=True)
         v_soc_avg = None                # smoothed voltage-based % while charging
         p_sys_in = args.p_sys_w         # system draw seen at the INPUT (W), recalibrated when not charging
         i_avg = None                    # ~1 min average of the battery current actually used (mA)
@@ -357,7 +392,11 @@ def main():
             else:
                 i_used = 0.0                          # input present, not charging: pack idle
             s["p_in_w"], s["ichg_est_ma"] = round(p_in, 2), (round(i_used) if charging else "")
+            if charging:
+                # each source under-reads in a different regime (see CHARGING in the header): take the larger
+                i_used = max(i_used, float(s["ibat_ma"]))
 
+            soc_prev = soc
             if last_t is not None:
                 dh = (t0 - last_t) / 3600.0
                 if i_used >= 0:
@@ -366,6 +405,8 @@ def main():
                     mah_out += -i_used * dh
                 if soc is not None and not s["pg"]:       # discharging: coulomb counting
                     soc -= 100.0 * (-i_used if i_used < 0 else 0.0) * dh / args.capacity_mah
+                elif soc is not None and charging:        # charging: coulomb counting too
+                    soc += 100.0 * i_used * dh / args.capacity_mah
             last_t = t0
             s["mah_in"], s["mah_out"] = round(mah_in, 2), round(mah_out, 2)
 
@@ -378,13 +419,14 @@ def main():
             elif soc is None:
                 soc, soc_src = soc_from_ocv(ocv_cell), "voltage"
             elif charging:
-                # voltage-based while charging (IR-corrected with the estimated current), smoothed, never
-                # moving backwards; in the CV/taper phase the voltage is pinned near VREG, so cap at 97 %
+                # coulomb-counted (above) with the IR-corrected voltage as a FLOOR (smoothed); never past 97 %
+                # until the charger says DONE (unless it was already above, e.g. a top-off from full)
                 v = soc_from_ocv(ocv_cell)
                 if s["chg_stat"] in ("taper (CV)", "top-off"):
                     v = min(v, 97.0)
                 v_soc_avg = v if v_soc_avg is None else v_soc_avg + 0.05 * (v - v_soc_avg)
-                soc, soc_src = max(soc, v_soc_avg), "charging (voltage)"
+                soc_src = "charging (coulomb)" if soc >= v_soc_avg else "charging (voltage)"
+                soc = min(max(soc, v_soc_avg), max(97.0, soc_prev if soc_prev is not None else 0.0))
             elif not s["pg"]:
                 soc_src = "battery (coulomb)"
             if not charging:

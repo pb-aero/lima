@@ -1784,3 +1784,12 @@ threshold -> no countdown; `sudo -n` poweroff allowed from a node service contex
 To test: `sudo systemd-run --unit=lowbatt-test --uid=node --gid=node -p SupplementaryGroups=i2c -p RuntimeMaxSec=1800
 <venv python> -I bq25798_logger.py --out /tmp/x.csv --db "" --low-cell-mv 3500 --low-hold-s 20`, unplug, then read
 `journalctl -b -1 -u lowbatt-test`. Residual: a halted CM5 still draws a little from the pack while off.
+**`[measured]` 2026-11-21 — charging % now COULOMB-COUNTED (Peter: "Yes, fix it"):** the voltage-following % read 14 %
+after a flat pack had taken 1.2–1.3 Ah. Charge current used = max(IBAT ADC, power-balance estimate) — the ADC
+under-reads at low currents (LDO/pre-charge: ~0.2 A vs est 0.36 A), the estimate at ~1.4 A CC (est ~1.1 A vs ADC
+~1.4 A). Voltage curve kept as a smoothed floor; held at 97 % until DONE. New: a logger RESTART keeps the last row's
+SoC if <= --resume-s 300 s old (no more re-anchor-to-voltage on every deploy); --soc-start sets it by hand (soc_src
+"set by hand"). This charge anchored by hand at **31.6 % = 0 % at the 5.2 V brownout + 1.58 Ah counted since replug
+(max of the two sources) / 5000 mAh** [assumed: brownout = 0 %, capacity = nominal 5 Ah]. Verified: scratch-CSV
+runs (fresh/resume/hand-set/resume-s 0) on BB1, then the live service "SoC resumed at 31.6 %", web API
+battery_percent 33 two minutes later. ADC back to 0x90 after the test instances' stop cleanup.
