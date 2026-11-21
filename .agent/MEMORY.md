@@ -1767,3 +1767,11 @@ scratchpad/drive/track_points.json by scratchpad/drive/make_map.py, served on 12
 1500, ADC_EN 0, EN_IBAT 0; restart re-enables; full reboot -> previous boot logged the stop cleanup and the new logger
 did NOT need to rewrite ICHG or the watchdog (both persisted). Trade-off accepted: no "logger dies -> defaults" fail-safe;
 POR (battery AND input removed) still resets everything. Hard crash/power cut leaves the ADC on (small drain).
+**SCAR `[measured]` 2026-11-21 — BB1 ran its pack flat and BROWNED OUT; there is no low-battery shutdown.** Boot -1
+(07:19 SAST, on battery, no input) started at 6.57 V and died mid-run at 08:26 SAST at **5.195 V under ~0.45 A
+(2.6 V/cell loaded)** — journal just stops, no shutdown. The board's only cutoff is the 5 V rail dropping out. Boot -2
+(20 Nov) also ended abruptly, but at 6.62 V, so that was a power cut / switch, not a brownout. The SoC estimate read 0 %
+from 6.25 V, ~40 min before the brownout (accidental reserve). On replug (13:05 SAST) the charger was in PRE-CHARGE
+(IPRECHG 120 mA, REG08=0xC3 -> VBAT_LOWV 72.5 % of VREG 8.40 V = ~6.09 V typ, 5.96–6.22 V) at ~0.1 A, 5.66 -> 6.05 V in
+12 min; fast charge (ICHG 1500 confirmed) starts above that threshold. Follow-up offered: clean low-battery shutdown in
+bq25798_logger.
