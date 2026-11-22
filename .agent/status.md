@@ -1,5 +1,15 @@
 # status — Agent LIMA
 
+## BB1 (Blackbox AeroNode CM5) — current state, 2026-11-22
+
+Our services on BB1 (all in `linux/aeronode-cm5-image/`, details + verification in MEMORY.md):
+`bq25798-logger` (battery CSV + web %, 1.5 A charge, coulomb-counted SoC, **low-battery poweroff < 6.2 V for 60 s —
+real unplugged trigger never tested**), `recorder-prune` (14 GB ring for ArduPilot logs + mic), `co-logger` (CO →
+CSV + Live-page tile; needs `co = 1` in BB1 config.toml), `power-button-shutdown` (double-press = clean poweroff,
+verified on the real button), `led-gps-status` (red blip = no fix, green blip = 3D fix; 2 mA, 0.1 s/1 s).
+Mic recording disabled. Open: Wi-Fi to BB1 drops packets at times (cause not found); built-in browser pane can't
+open ws://:9001 so Live tiles can't be checked from here; ~1.38 A charge ceiling left as is (Peter).
+
 **Updated:** 2026-08-21
 
 ## Where things stand
