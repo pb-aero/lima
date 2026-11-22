@@ -91,7 +91,7 @@ def main():
     ap.add_argument("--min-fix", type=int, default=3, help="GPS_RAW_INT fix_type counted as a fix (3 = 3D)")
     ap.add_argument("--stale-s", type=float, default=3.0, help="no gps_raw for this long = no fix known")
     ap.add_argument("--period-s", type=float, default=1.0, help="blink period")
-    ap.add_argument("--on-s", type=float, default=0.5, help="LED on-time per period")
+    ap.add_argument("--on-s", type=float, default=0.1, help="LED on-time per period (0.1 s blip; was 0.5 — Peter 2026-11-22: \"more of a blip\")")
     ap.add_argument("--pwm", type=int, default=255, help="brightness 0-255 within the dot current")
     ap.add_argument("--dc", type=int, default=0x14, help="LP5815 dot current code, 0.1 mA steps (0x14 = 2 mA; was 0x50 = 8 mA — Peter 2026-11-22: \"its a bit bright\")")
     args = ap.parse_args()
