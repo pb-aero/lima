@@ -1822,3 +1822,14 @@ shutdown); confirm with `journalctl -b -1` showing "double press" + the stop seq
 Peter: single press 11:46:24 -> "single press — ignored"; 11:46:28.46 + .86 -> "double press (0.40 s apart) —
 powering off"; then the full stop sequence: arduplane stopped, bq25798 logger cleanup (ADC off), co_logger restored the
 ADS1115, collector stopped, poweroff.target, "Syncing filesystems", "Journal stopped" at 11:46:32 (4 s). Rebooted 11:47.
+**`[measured]` 2026-11-22 — RGB LED shows GPS fix (Peter: red blink while looking, green blink once fixed).**
+`scripts/led_gps_status.py` + `service/led-gps-status.service` (User node, i2c): LP5815 0x2D init as led_test.py
+(outputs R+G only, dot current 0x50 ~8 mA), 1 s period / 0.5 s on; follows MQTT `aeronode/BB1/gps_raw`
+data.fix_type — FIX = fix_type >= 3 within 3 s, else red (no fix, 2D, or no messages; journal says which). CHIP_EN
+re-checked every 30 s; exit = LED off + standby. AeroNode's leds module is NeoPixel-only and never touches the LP5815.
+Verified by sampling 18h/19h at 4 Hz: --min-fix 9 -> R toggles 00/FF, G 00; no data (--device-id NOPE) -> red;
+default with the real 3D fix -> G toggles, R 00; live service "FIX (fix_type 3) -> GREEN". NOT seen by eye.
+SCAR (again): `pkill -f led_gps_status.py` over ssh killed the ssh's own `bash -c` (its command line contains the
+pattern) -> exit 255 mid-test; `pgrep -fc` likewise counts itself. Use the full exec path anchored with `^`, or
+`systemctl show -p MainPID` + `ps … | grep -v "bash -c"`.
+Also: printing a raw gps_raw MQTT message puts lat/lon in the transcript — select fix_type only.

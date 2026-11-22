@@ -1,0 +1,21 @@
+# /etc/systemd/system/led-gps-status.service — Blackbox board RGB LED (LP5815 0x2D): red blink while GPS has no fix,
+# green blink once it has a 3D fix. Follows the AeroNode collector's live MQTT gps_raw stream. See the script.
+[Unit]
+Description=RGB LED shows GPS fix (red blink = looking, green blink = fix)
+After=mosquitto.service
+Wants=mosquitto.service
+StartLimitIntervalSec=300
+StartLimitBurst=10
+
+[Service]
+Type=simple
+User=node
+Group=node
+SupplementaryGroups=i2c
+ExecStart=/home/node/aeronode/.venv/bin/python -I /home/node/aeronode-scripts/led_gps_status.py
+Restart=always
+RestartSec=5
+MemoryMax=48M
+
+[Install]
+WantedBy=multi-user.target
