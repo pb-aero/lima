@@ -1818,3 +1818,7 @@ apart -> `sudo -n systemctl poweroff`; single presses ignored. Verified with a u
 --dry-run): single ignored, 0.53 s double -> fires, 0.05 s bounce ignored, 2.5 s apart -> two singles. Live service
 watching event0. **UNTESTED on the real button** — Peter to single-press (nothing) then double-press (clean
 shutdown); confirm with `journalctl -b -1` showing "double press" + the stop sequence.
+**`[measured]` 2026-11-22 11:46 SAST — double-press shutdown VERIFIED on the real button (supersedes "UNTESTED" above).**
+Peter: single press 11:46:24 -> "single press — ignored"; 11:46:28.46 + .86 -> "double press (0.40 s apart) —
+powering off"; then the full stop sequence: arduplane stopped, bq25798 logger cleanup (ADC off), co_logger restored the
+ADS1115, collector stopped, poweroff.target, "Syncing filesystems", "Journal stopped" at 11:46:32 (4 s). Rebooted 11:47.
