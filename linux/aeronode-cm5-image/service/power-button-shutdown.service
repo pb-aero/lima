@@ -1,0 +1,19 @@
+# /etc/systemd/system/power-button-shutdown.service — DOUBLE-press the CM5 power button (within 1.5 s) for a clean
+# `systemctl poweroff`; single presses stay ignored (AeroNode's logind.conf.d/ignore-power-key.conf is kept). Runs as
+# node: needs the `input` group for /dev/input/event* and node's passwordless sudo for poweroff (no NoNewPrivileges=).
+[Unit]
+Description=Power button: double-press for a clean shutdown (single press ignored)
+After=systemd-logind.service
+
+[Service]
+Type=simple
+User=node
+Group=node
+SupplementaryGroups=input
+ExecStart=/home/node/aeronode/.venv/bin/python -I /home/node/aeronode-scripts/power_button_shutdown.py
+Restart=always
+RestartSec=5
+MemoryMax=32M
+
+[Install]
+WantedBy=multi-user.target

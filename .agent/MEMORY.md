@@ -1806,3 +1806,15 @@ flights.db/sessions. Verified: mosquitto_sub from the Mac gets 1 Hz co messages 
 browser pane refuses ws://<box>:9001 instantly (2 ms error), so EVERY tile reads WAITING / "RECONNECTING 0 msgs" there;
 that is the pane, not BB1 (curl WebSocket handshake 101 + mosquitto_sub work from the Mac).
 Also 2026-11-22: boot -1 ended abruptly at 8.15 V (~96 %) on battery = switched off, not a low-battery shutdown.
+**SCAR `[measured]` 2026-11-22 — BB1's power button did NOT shut down safely; double-press shutdown ADDED (Peter: "Yes,
+double-press").** AeroNode ships `/etc/systemd/logind.conf.d/ignore-power-key.conf` (HandlePowerKey=ignore — a bumped
+chassis button by the Ethernet jack caused two accidental shutdowns in 2026-08; "a flight recorder must not die to a
+bumped button"; ALFA's file, left untouched). So a press is logged ("Power key pressed short") and ignored; power then
+went 3 s later with NO stop sequence (boot -1 2026-11-22 09:29:05 SAST); boot -2 ended with no key log at all —
+consistent with a hold until the CM5 PMIC hard-cuts [assumed: hold duration not found in RPi docs]. Every
+button-off was effectively a power cut. New: `scripts/power_button_shutdown.py` + `service/power-button-shutdown.service`
+(User node, group input): reads `pwr_button` (/dev/input/event0, gpio-keys, KEY_POWER 116) raw; 2 presses 0.15–1.5 s
+apart -> `sudo -n systemctl poweroff`; single presses ignored. Verified with a uinput virtual key (`lima-test-key`,
+--dry-run): single ignored, 0.53 s double -> fires, 0.05 s bounce ignored, 2.5 s apart -> two singles. Live service
+watching event0. **UNTESTED on the real button** — Peter to single-press (nothing) then double-press (clean
+shutdown); confirm with `journalctl -b -1` showing "double press" + the stop sequence.
