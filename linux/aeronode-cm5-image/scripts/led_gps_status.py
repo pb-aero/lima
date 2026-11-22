@@ -7,7 +7,7 @@ led blink once there is a fix".
 
 LED: LED3 IN-S126TBSRGB via TI LP5815 (U8, I2C-1 0x2D): out0 red, out1 green, out2 blue (blue never lit on BB1 —
 unused here). Init per TI SNVSCP2B §8.2.3.2, same as scripts/led_test.py (measured 2026-11-17): 00h<-03h CHIP_EN,
-01h<-00h 25.5 mA range, 14h-16h dot current (--dc, 0x50 ~8 mA), 02h<-03h outputs R+G, 04h<-00h manual, 0Fh<-55h
+01h<-00h 25.5 mA range, 14h-16h dot current (--dc, 0x14 = 2 mA; 8 mA was "a bit bright"), 02h<-03h outputs R+G, 04h<-00h manual, 0Fh<-55h
 UPDATE_CMD; then manual PWM in 18h (R) / 19h (G). CHIP_EN is re-checked every 30 s and the init re-run if the chip lost
 it (brownout/POR). On exit: LED off, chip back in standby.
 
@@ -93,7 +93,7 @@ def main():
     ap.add_argument("--period-s", type=float, default=1.0, help="blink period")
     ap.add_argument("--on-s", type=float, default=0.5, help="LED on-time per period")
     ap.add_argument("--pwm", type=int, default=255, help="brightness 0-255 within the dot current")
-    ap.add_argument("--dc", type=int, default=0x50, help="LP5815 dot current code (0x50 ~ 8 mA)")
+    ap.add_argument("--dc", type=int, default=0x14, help="LP5815 dot current code, 0.1 mA steps (0x14 = 2 mA; was 0x50 = 8 mA — Peter 2026-11-22: \"its a bit bright\")")
     args = ap.parse_args()
 
     import paho.mqtt.client as mqtt
