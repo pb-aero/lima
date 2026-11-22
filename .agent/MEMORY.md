@@ -1793,3 +1793,16 @@ SoC if <= --resume-s 300 s old (no more re-anchor-to-voltage on every deploy); -
 (max of the two sources) / 5000 mAh** [assumed: brownout = 0 %, capacity = nominal 5 Ah]. Verified: scratch-CSV
 runs (fresh/resume/hand-set/resume-s 0) on BB1, then the live service "SoC resumed at 31.6 %", web API
 battery_percent 33 two minutes later. ADC back to 0x90 after the test instances' stop cleanup.
+**`[measured]` 2026-11-22 — CO on AeroNode's Live page via OUR OWN service (Peter: "Add CO to the web page" -> "Own CO
+service"; AeroNode is ALFA's code, runtime-only copy on BB1, UI source not on the box, so no AeroNode code changed).**
+`linux/aeronode-cm5-image/scripts/co_logger.py` + `service/co-logger.service` (User node, i2c): ADS1115 AIN0 1 Hz,
+auto-range, 4-read average -> `~/aeronode/logs/co.csv` + MQTT `aeronode/BB1/co` in make_msg shape
+{"type":"sensor","sensor":"co","ts","data":{co_ppm, co_mv, range_v, railed, valid, calibrated:false, ...}}.
+co_ppm = max(0,(mV-5)/2) INDICATIVE; railed (<1 mV) -> valid false. The Live page draws a "More streams" tile for any
+stream in config.toml [collector.store_rates] (via /api/streams), so BB1's config.toml got `co = 1` (backup
+config.toml.bak-20261122-co; an AeroNode redeploy may drop it -> tile vanishes, CSV/MQTT continue). LIVE ONLY — not in
+flights.db/sessions. Verified: mosquitto_sub from the Mac gets 1 Hz co messages (clean air 2.6-7.5 mV, ~0-1 ppm);
+/api/streams lists co; the page's "More streams" shows a CO tile. NOT verified: the tile showing values — the built-in
+browser pane refuses ws://<box>:9001 instantly (2 ms error), so EVERY tile reads WAITING / "RECONNECTING 0 msgs" there;
+that is the pane, not BB1 (curl WebSocket handshake 101 + mosquitto_sub work from the Mac).
+Also 2026-11-22: boot -1 ended abruptly at 8.15 V (~96 %) on battery = switched off, not a low-battery shutdown.
