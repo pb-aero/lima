@@ -1840,3 +1840,13 @@ receives the AAAA (`dns-sd -G v4v6 bb1.local` -> only FE80…%en0) — IPv4 mDNS
 (:8000) + mosquitto (:9001) listen on 0.0.0.0 only, so the IPv6 connect is refused. Use the IP at the office. ssh to
 bb1.local still works (sshd listens on IPv6). Mac known_hosts holds ANOTHER device's key for 192.168.10.177 ("Host key
 verification failed"); BB1's ed25519 is SHA256:B60POIg6…+Lms — left as is, unasked.
+**`[measured]` 2026-11-23 — `bb1.local` now works at the office (Peter: "make bb1.local work at the office too").**
+Two box-local changes, no AeroNode file touched:
+1. **avahi `publish-a-on-ipv6=yes`** in /etc/avahi/avahi-daemon.conf (backup .bak-20261123): the A record now also
+   goes out over IPv6 mDNS, which IS delivered on the office LAN -> `dns-sd -G v4v6 bb1.local` returns both
+   fe80::f5ad:c176:5aee:b4f5 and 192.168.10.177; curl name lookup 5.007 s -> 0.006 s (before, every lookup waited 5 s
+   for the A record that never came).
+2. **`ipv6-bridge.service`** (`scripts/ipv6_bridge.py`, User node): IPV6_V6ONLY listeners on [::]:8000 and [::]:9001
+   piped to 127.0.0.1, coexisting with aeronode-web/mosquitto's 0.0.0.0 listeners. macOS prefers the link-local
+   IPv6, so the browser goes through the bridge: page 200 in ~15 ms, 345 kB JS asset in 50 ms, MQTT websocket
+   handshake 101 via bb1.local. AeroNode sees bridged clients as 127.0.0.1. NOT seen in Peter's browser yet.

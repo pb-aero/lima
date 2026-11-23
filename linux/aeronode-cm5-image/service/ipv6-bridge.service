@@ -1,0 +1,18 @@
+# /etc/systemd/system/ipv6-bridge.service — AeroNode web (8000) + live MQTT websocket (9001) also over IPv6, so
+# http://<box>.local:8000 works where mDNS only resolves the IPv6 address (office LAN, 2026-11-23). IPv6-only
+# listeners piped to 127.0.0.1; AeroNode's own services/config untouched. See the script.
+[Unit]
+Description=IPv6 access to the AeroNode web page and live data (ports 8000, 9001)
+After=network.target aeronode-web.service mosquitto.service
+
+[Service]
+Type=simple
+User=node
+Group=node
+ExecStart=/home/node/aeronode/.venv/bin/python -I /home/node/aeronode-scripts/ipv6_bridge.py 8000 9001
+Restart=always
+RestartSec=5
+MemoryMax=64M
+
+[Install]
+WantedBy=multi-user.target
