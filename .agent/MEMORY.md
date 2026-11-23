@@ -1833,3 +1833,10 @@ SCAR (again): `pkill -f led_gps_status.py` over ssh killed the ssh's own `bash -
 pattern) -> exit 255 mid-test; `pgrep -fc` likewise counts itself. Use the full exec path anchored with `^`, or
 `systemctl show -p MainPID` + `ps … | grep -v "bash -c"`.
 Also: printing a raw gps_raw MQTT message puts lat/lon in the transcript — select fix_type only.
+**`[measured]` 2026-11-23 — BB1 at the OFFICE: Wi-Fi `Aerosense-5G-primary`, 192.168.10.177 (DHCP), Mac wired
+192.168.10.29.** `http://192.168.10.177:8000` works (200, 66 ms); **`http://bb1.local:8000` FAILS**: avahi on BB1
+registers both A (192.168.10.177) and AAAA (fe80::f5ad:c176:5aee:b4f5), but on the office LAN the Mac only ever
+receives the AAAA (`dns-sd -G v4v6 bb1.local` -> only FE80…%en0) — IPv4 mDNS doesn't make it across — and aeronode-web
+(:8000) + mosquitto (:9001) listen on 0.0.0.0 only, so the IPv6 connect is refused. Use the IP at the office. ssh to
+bb1.local still works (sshd listens on IPv6). Mac known_hosts holds ANOTHER device's key for 192.168.10.177 ("Host key
+verification failed"); BB1's ed25519 is SHA256:B60POIg6…+Lms — left as is, unasked.
