@@ -1860,3 +1860,10 @@ Two box-local changes, no AeroNode file touched:
 - `printf '*IDN?\n' | nc host 5555` returns **nothing**: nc hangs up before the reply. Hold the socket open
   (`(printf 'Q\n'; perl -e 'select(undef,undef,undef,1.5)') | nc -G 2 host 5555`) or use a Python socket.
 - Screenshots: `scripts/scope_shot.py <ip> out.png` (`:DISP:DATA? PNG`, 1024x600). Verified 2026-11-24.
+- **Scar (2026-11-24): GI's real output is ~1/21 of its set amplitude.** GI cabled straight into CH1 (1 MΩ, 1X,
+  no probe): set 1.0 / 2.83 / 5.0 Vpp → read 17.7 / 47.6 / 83.8 mV rms at 1 kHz (should be 0.354 / 1.00 / 1.77 V)
+  `[measured]`. Linear, so it's a scale problem, not noise. SCPI reads back AMPL 2.83, HIGH/LOW ±1.415 V, option
+  AFG50 licensed (`:SYST:OPT:STAT? AFG50` → 1). Datasheet: 50 Ω source, 2 mVpp–20 Vpp into HighZ — so this is not
+  the 50 Ω/HighZ doubling. Cause NOT found yet (check the GI panel's load/amplitude on the scope itself). Until it is,
+  **never trust the GI setting as the level — measure it with CH1.** Unknown SCPI queries get no reply (time out).
+- Web Control (remote screen) opens in a popup; the Claude browser pane blocks it — the user has to click it.
