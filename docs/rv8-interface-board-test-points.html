@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RV-8 Board Test Points</title>
+<style>
+:root {
+  --bg: #f4f6f7; --panel: #ffffff; --ink: #15212b; --ink-2: #4d5c68; --rule: #d3dbe1; --head: #e8eef2;
+  --listen: #0c7a83; --talk: #6a4cb8; --warn: #9a6200; --stop: #b42318;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --sans: "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10171d; --panel: #172129; --ink: #e2e9ee; --ink-2: #a2b1bc; --rule: #2c3944; --head: #1e2b35;
+    --listen: #3fc0c9; --talk: #ab95f2; --warn: #e3b25a; --stop: #ff7b6e;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10171d; --panel: #172129; --ink: #e2e9ee; --ink-2: #a2b1bc; --rule: #2c3944; --head: #1e2b35;
+  --listen: #3fc0c9; --talk: #ab95f2; --warn: #e3b25a; --stop: #ff7b6e;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--sans); padding: 28px 16px 56px; }
+main { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px; }
+header { border-bottom: 2px solid var(--ink); padding-bottom: 16px; display: flex; flex-direction: column; gap: 8px; }
+.eyebrow { font: 12px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+h1 { margin: 0; font-size: clamp(26px, 5vw, 36px); line-height: 1.1; }
+h2 { margin: 0; font-size: 21px; }
+h2 .tag { font: 600 12px var(--mono); padding: 2px 8px; border-radius: 3px; color: #fff; vertical-align: middle; margin-right: 6px; }
+.tag.listen { background: var(--listen); } .tag.talk { background: var(--talk); }
+p { margin: 0; max-width: 78ch; }
+section { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: 4px; background: var(--panel); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; vertical-align: top; padding: 7px 10px; border-bottom: 1px solid var(--rule); }
+th { background: var(--head); font-weight: 600; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.tp { font: 600 13px var(--mono); white-space: nowrap; }
+td.fill { min-width: 110px; border-left: 1px dashed var(--rule); }
+.note { font-size: 13.5px; color: var(--ink-2); max-width: 82ch; }
+.box { background: var(--panel); border: 1px solid var(--rule); border-left: 4px solid var(--warn); border-radius: 3px; padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; }
+.box.stop { border-left-color: var(--stop); }
+ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; max-width: 82ch; }
+code { font-family: var(--mono); font-size: .9em; background: var(--head); padding: 0 4px; border-radius: 3px; }
+.sign { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.sign div { border-bottom: 1px solid var(--ink-2); padding-top: 22px; font-size: 12.5px; color: var(--ink-2); }
+@media print {
+  body { background: #fff; padding: 0; font-size: 12px; }
+  main { gap: 16px; }
+  .scroll { overflow: visible; }
+  section { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <div class="eyebrow">Aerosense · LIMA · 24 Nov 2026 · companion to the build sheet of 23 Nov</div>
+  <h1>RV-8 cockpit interface board: test points</h1>
+  <p>What each port of the GMA 245R ↔ ADAU1860 interface board should read, and what fails it. Print it and fill in
+  the blank column. Run the build sheet's power-off resistance and isolation checks <strong>first</strong>. This
+  sheet starts once those pass.</p>
+  <p class="note">Every expected value is worked from the build sheet's own figures (−8.3 dBFS at 3.12 V rms;
+  0.22 V rms at 0 dBFS; codec full scale 0.98 V rms; P30 legs at 0.85 V DC). The rms → peak-to-peak conversions
+  assume a sine. <strong>Nothing on this page has been measured yet.</strong> The blank column is where that starts.</p>
+</header>
+
+<section>
+  <div class="box stop">
+    <strong>Before probing</strong>
+    <ul>
+      <li><strong>Scope ground is a wire across the isolation line.</strong> Never clip one probe's ground on the
+        aircraft side (TB1, J1, J2) and another on our side (P11, P30) at the same time. Use a differential probe,
+        or measure one side per session with a battery-powered meter.</li>
+      <li><strong>Never ground a P30 leg</strong>, and that includes a scope ground clip. P30 is a bridge output.
+        Measure tip and ring against DEV-B ground with the probe tips only, or differentially.</li>
+      <li>In the aircraft: DEV-B and any laptop on battery, no PTT, and talk only after Duran's yes.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2><span class="tag listen">LISTEN</span>Panel headphones → T1 → P11</h2>
+  <p class="note">Bench source: 1 kHz sine from a generator or phone into TB1-1 and TB1-2 together, against TB1-3,
+  with 150 Ω across it (or JP1 fitted, no headset in J1). DEV-B input P11 in differential mode (jumper 1–2).</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Test point</th><th>Probe</th><th>Expect</th><th>Fails if</th><th>Measured</th></tr></thead>
+    <tbody>
+      <tr><td class="tp">TB1-1, TB1-2 → TB1-3</td><td>AC V, or scope</td>
+        <td><strong>3.1 V rms ≈ 8.8 Vpp</strong>, sine, no DC. Bench input level.</td>
+        <td>Distorted source; DC on the line</td><td class="fill"></td></tr>
+      <tr><td class="tp">P11 tip → ring</td><td>Differential</td>
+        <td><strong>0.32–0.38 V rms</strong> (0.9–1.07 Vpp), same shape as the input, about 18 dB down</td>
+        <td>Outside 0.27–0.53 V rms (±3 dB)</td><td class="fill"></td></tr>
+      <tr><td class="tp">DEV-B recording, P11</td><td>Level meter</td>
+        <td><strong>−8.3 to −9.8 dBFS</strong>. That leaves about 8 dB of headroom below clipping.</td>
+        <td>Outside −5.3 to −12.8 dBFS; any clipping</td><td class="fill"></td></tr>
+      <tr><td class="tp">P11 tip, ring → sleeve</td><td>DC V</td>
+        <td><strong>Under 50 mV DC</strong> on each. Each leg carries half the audio, in antiphase.</td>
+        <td>Over 50 mV DC on either</td><td class="fill"></td></tr>
+      <tr><td class="tp">Sweep, P11</td><td>Generator + recording</td>
+        <td>Flat across voice band. <strong>Record the −3 dB points</strong>, sweeping 100 Hz – 8 kHz at constant input.</td>
+        <td>Nothing to fail yet. This characterises T1 (see notes)</td><td class="fill">low: ____ Hz<br>high: ____ Hz</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2><span class="tag talk">TALK</span>P30 → T2 → panel rear mic input</h2>
+  <p class="note">S1 at CODEC. Bench load is the panel simulator on TB1-4/TB1-5: a 9 V battery through 470 Ω to mic HI,
+  and 220 Ω in series with 100 µF across HI and LO. DEV-B P30 in headphone mode, P16 open. Codec plays a 1 kHz tone.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Test point</th><th>Probe</th><th>Expect</th><th>Fails if</th><th>Measured</th></tr></thead>
+    <tbody>
+      <tr><td class="tp">P30 tip → DEV-B gnd</td><td>DC V, probe tip only</td>
+        <td><strong>0.85 V DC</strong>, idle and playing</td><td>Off by more than about 0.1 V, or tip and ring unequal</td><td class="fill"></td></tr>
+      <tr><td class="tp">P30 ring → DEV-B gnd</td><td>DC V, probe tip only</td>
+        <td><strong>0.85 V DC</strong>. At 0 dBFS each leg swings 0.14 – 1.56 V, in antiphase to tip.</td><td>As above</td><td class="fill"></td></tr>
+      <tr><td class="tp">P30 tip → ring</td><td>Differential</td>
+        <td>0 dBFS: <strong>1.0 V rms ≈ 2.8 Vpp</strong>, under 50 mV DC</td><td>Over 50 mV DC; clipped tone</td><td class="fill"></td></tr>
+      <tr><td class="tp">TB1-4 → TB1-5, DC</td><td>DC V</td>
+        <td>Bench: <strong>about 9 V</strong> (the battery; C1 blocks DC). Aircraft: <strong>about 11 V</strong>.
+          With JP2/R11 fitted, about 9 V in the aircraft.</td>
+        <td>Near 0 V, meaning C1 is shorted or the bias is missing</td><td class="fill"></td></tr>
+      <tr><td class="tp">TB1-4 → TB1-5, AC</td><td>AC mV</td>
+        <td>0 dBFS: <strong>0.22 V rms ≈ 0.62 Vpp</strong> on top of the DC. At −30 dBFS: about 7 mV rms.</td>
+        <td>Outside 0.16–0.31 V rms (±3 dB) at 0 dBFS</td><td class="fill"></td></tr>
+      <tr><td class="tp">TB1-4 → TB1-5, open line</td><td>AC mV, simulator removed</td>
+        <td><strong>Never over 0.53 V rms</strong> at 0 dBFS (R14 sets the ceiling)</td>
+        <td>Over 0.53 V rms</td><td class="fill"></td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">For scale: a real headset mic gives 0.15–0.2 V rms, so 0 dBFS is slightly hotter than a voice.
+  Start the aircraft talk test at −30 dBFS, as the build sheet says.</p>
+</section>
+
+<section>
+  <h2>In the aircraft: listen, then talk</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>Check</th><th>Expect</th><th>Fails if</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>Master off, rear jacks → airframe</td><td>Open</td><td>Any continuity</td><td class="fill"></td></tr>
+      <tr><td>Avionics on, nothing of ours plugged in: rear mic jack ring → sleeve</td><td>About 11 V DC</td><td>Far from 11 V. Recheck the panel figures before going on</td><td class="fill"></td></tr>
+      <tr><td>S1 at HEADSET, box in line</td><td>Rear headset works exactly as before</td><td>Any change in level, noise or sidetone</td><td class="fill"></td></tr>
+      <tr><td>Listen: intercom speech recorded on P11</td><td>Peaks well below 0 dBFS at the volume used</td><td>Clipping: check DEV-B's input gain (the panel alone can't reach full scale)</td><td class="fill"></td></tr>
+      <tr><td>Quiet COM, squelch open, box running</td><td>No added hum, whine or buzz</td><td>See the next list</td><td class="fill"></td></tr>
+      <tr><td>Talk (after Duran's yes): speech or broken tones from −30 dBFS</td><td>Heard on intercom, clean, no PTT</td><td>Not heard (try JP2), gated or distorted</td><td class="fill"></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>What shouldn't be on either path</h2>
+  <ul>
+    <li><strong>Pitch that tracks engine RPM:</strong> alternator whine coupling in. Clip the ferrites on the leads at the box first.</li>
+    <li><strong>Steady buzz or a fixed tone:</strong> DEV-B's own digital noise. Check that P11's shield reaches the sleeve, and that DEV-B is on battery.</li>
+    <li><strong>A DC step on P11 when audio starts or stops:</strong> a leak across the isolation line. Stop and recheck the power-off isolation.</li>
+    <li><strong>Flat-topped peaks:</strong> clipping. At the panel's 3.12 V rms maximum, listen still has about 8 dB of headroom, so clipping on P11 points to DEV-B's input gain, not the panel. Talk is capped by R14.</li>
+    <li><strong>Steady test tone fading on talk:</strong> not a fault. The panel's voice gate learns steady tones as noise. Use speech or broken tones.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Notes and what isn't known</h2>
+  <ul>
+    <li>The <strong>TY-145P's rated frequency range was not checked</strong>. It's a 600 Ω telephone-grade part, which is why
+      the listen sweep row records the −3 dB points rather than passing or failing them. That matters if prop tones are
+      wanted in the recording: a 2-blade prop at 2,400 rpm is about 80 Hz.</li>
+    <li>The talk path's low-frequency corner (C1 with R4 and the panel's 150 Ω) is estimated at around 60 Hz, which is fine for voice. That's an estimate, not a figure from the build sheet.</li>
+    <li>The ±3 dB windows are the build sheet's gate, converted to volts here. The P30 DC tolerance (about 0.1 V) is
+      this sheet's suggestion. The build sheet gives only 0.85 V.</li>
+    <li>Source: <code>RV-8 Cockpit Interface Board.html</code>, built for Peter on 23 Nov 2026 from ALFA's protoboard rev B
+      and GOLF's interface kit and ground test. Refs, pins and values here follow that sheet. If they disagree, the build sheet wins.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="sign">
+    <div>Bench tested by / date</div>
+    <div>Aircraft tested by / date</div>
+    <div>DEV-B config checked by (ALFA)</div>
+  </div>
+</section>
+
+</main>
+</body>
+</html>
