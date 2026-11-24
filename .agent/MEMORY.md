@@ -1850,3 +1850,13 @@ Two box-local changes, no AeroNode file touched:
    piped to 127.0.0.1, coexisting with aeronode-web/mosquitto's 0.0.0.0 listeners. macOS prefers the link-local
    IPv6, so the browser goes through the bridge: page 200 in ~15 ms, 345 kB JS asset in 50 ms, MQTT websocket
    handshake 101 via bb1.local. AeroNode sees bridged clients as 127.0.0.1. NOT seen in Peter's browser yet.
+
+## Fact — the office network oscilloscope: Rigol MHO984 at 192.168.10.229 (2026-11-24)
+- `*IDN?` → `RIGOL TECHNOLOGIES,MHO984,MHO9B282404233,00.01.00` `[measured]`. 4 analog channels + 16-ch logic (L) on screen.
+- On **Wi-Fi** ("AeroSense 2.4G"), MAC `90:DE:80:3B:90:C1`, IP `192.168.10.229` (DHCP, so it can move — the MAC is
+  the identifier to search for in `arp -an` after a ping sweep of 192.168.10.0/24). VISA `TCPIP::192.168.10.229::INSTR`.
+- Reachable from the Mac: raw SCPI on **port 5555** (not 5025), VXI-11 portmapper on 111, web control on port 80
+  ("RIGOL Web Control"). It does **not** advertise LXI/SCPI over mDNS, so `dns-sd -B _lxi._tcp` finds nothing.
+- `printf '*IDN?\n' | nc host 5555` returns **nothing**: nc hangs up before the reply. Hold the socket open
+  (`(printf 'Q\n'; perl -e 'select(undef,undef,undef,1.5)') | nc -G 2 host 5555`) or use a Python socket.
+- Screenshots: `scripts/scope_shot.py <ip> out.png` (`:DISP:DATA? PNG`, 1024x600). Verified 2026-11-24.
