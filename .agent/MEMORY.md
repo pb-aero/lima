@@ -1869,3 +1869,28 @@ Two box-local changes, no AeroNode file touched:
   trust the setting. GI panel was right all along: ON, HighZ, sine, no modulation; AFG50 licensed. First move next
   time a level looks ~10x off: check `:CHAN<n>:PROB?` against the probe in hand. Unknown SCPI queries time out silently.
 - Web Control (remote screen) opens in a popup; the Claude browser pane blocks it — the user has to click it.
+
+## Claude Code CLI on this Mac (2026-11-25)
+
+- **Three installs, three separate auth stores** `[measured]`: (1) the **desktop app** that runs me
+  (`$CLAUDE_CODE_EXECPATH`, version-pinned under `~/Library/Application Support/Claude/claude-code/<ver>/`) —
+  this is the authenticated one; (2) the same binary invoked from a shell; (3) the **standalone native CLI** at
+  `~/.local/bin/claude` -> `~/.local/share/claude/versions/<ver>`. Both CLI paths reported `loggedIn: false`
+  while the app was fully authenticated.
+- **`claude auth status` saying `loggedIn: false` is NOT evidence the app is logged out.** The app holds its own
+  auth (it sets `CLAUDE_CODE_SDK_HAS_HOST_AUTH_REFRESH=1`). A terminal `claude auth login` authenticates the CLI
+  only and does **not** switch the desktop app. Account switching happens in the app's own UI.
+- Updating the standalone CLI: `claude update` (self-updater, no `curl | bash`, no npm, no brew). Took 2.1.237 ->
+  2.1.332 in place and repointed the `~/.local/bin/claude` symlink `[measured]`. Old version binaries are left
+  behind in `versions/` (302 MB for 2.1.237) — reclaimable by hand.
+- **Scar: my Bash-tool shell's PATH is NOT the user's interactive zsh PATH.** `command -v claude` resolved fine
+  for me while a fresh tab in Peter's own login shell said `zsh: command not found: claude` — the harness puts
+  `~/.local/bin` on my PATH and his `.zshrc` did not. I nearly reported "installed and working" off my own shell.
+  **Verify anything PATH- or environment-dependent in the user's real shell** (`mcp__terminal__run_in_terminal`,
+  or `zsh -ic 'echo $PATH'`), never in mine. Fixed by appending `export PATH=$HOME/.local/bin:$PATH` to
+  `~/.zshrc` (line 11; backup at `~/.zshrc.bak-20261125-110845`), then re-verified in a fresh tab: `2.1.332`,
+  `/Users/peterbruce/.local/bin/claude` `[measured]`.
+- Account state as of this date `[measured]`: plan **Pro**, org `peter@aerosenseaviation.com's Organization`
+  (personal, auto-named), `organizationRole` null. Peter wants to move to the **Aerosense team account** — see
+  the 2026-11-25 handoff for what a post-switch session must re-verify (org name, connector re-auth,
+  org-managed settings outranking the local deny net).
