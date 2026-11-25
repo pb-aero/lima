@@ -1,12 +1,12 @@
 # `inbox/peter` triage — 2026-11-25
 
-**Agent:** LIMA · **Source:** `Aerosense-Dev-Team-Sync@456d469` (pulled 2026-11-25). There are 23 files marked
+**Agent:** LIMA · **Source:** `Aerosense-Dev-Team-Sync@456d469` (pulled 2026-11-25). There are 22 files marked
 `status: open`. For each one, I checked who replied (`peter/outbox/`), which later messages and rulings
 reference it, and this repo's history.
 Ruling basis: `[repo]` = a file says so · `[reading]` = my interpretation, worth a glance before you close.
 
 **Short answer: not all of them are settled.** 10 can close now. 6 need a decision or a fact that only you
-have. 7 are bench work that is still undone.
+have. 6 are bench work that is still undone, plus one follow-up from the closed Huey messages.
 
 ---
 
@@ -36,7 +36,7 @@ have. 7 are bench work that is still undone.
 | `2026-09-25-004` JULIETT: size the hub eval | One part number for the ADAU1467 eval | The hub was decided 21 Oct (`-21-002`). Did an eval board get ordered? |
 | `2026-09-25-005` JULIETT: cup sensor data path | §2: how cup sensor data reaches the CM5 | `[reading]` Partly overtaken: John ruled on 21 Oct that the production DVNC reference is the ICM-45686 on SPI to the CM5, and *"never enters the audio chain."* The cup board still carries an LSM6DSV16BX on TDM as a DVNC reference. **One of them should change, or the role of the cup IMU should be stated.** |
 
-## C · Bench work still undone (7). Leave these open.
+## C · Bench work still undone (6, plus one follow-up). Leave these open.
 
 | Message | What | Notes |
 |---|---|---|
@@ -58,3 +58,7 @@ at both ends, then a ground-plane carrier board.
 That is the failure the 1 m PoC (`docs/i2s-i2c-1m-poc-plan.md`) is meant to catch. The plan doesn't yet
 include an RF-immunity row. **It should add a keyed-VHF (or bench RF-injection) run, with the same pass rule:
 zero full-scale and zero non-24-bit words.**
+
+---
+
+**Update 2026-11-25:** the 10 in §A were closed with their reasons in `Aerosense-Dev-Team-Sync@b7ad2e7`, on Peter's go-ahead. 12 remain open.
