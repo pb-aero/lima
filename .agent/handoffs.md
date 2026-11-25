@@ -277,3 +277,25 @@ committed blind). `kicad/*/.history/`, `kicad/cup-board/doc/cup-board.step`, `sc
   board and the cup board. Still open.
 - Three layout-blocking questions from `2026-10-21-004` section 8; mic supply pick from `2026-10-21-005` section 2;
   `2026-10-29-002` 81 mm fit; cup board power budget re-run for the current mic config.
+
+## 2026-11-25 ~11:35 — account switch DONE; personal sessions copied into the team org
+
+**Switch took [measured]:** `~/.claude.json` `oauthAccount` now shows org `91350b4d-…` with
+`seatTier: team_standard`. Same `accountUuid` (`ddbac649-…`) — one person, two orgs.
+
+**How the desktop app stores Code-tab sessions [measured]:**
+`~/Library/Application Support/Claude/claude-code-sessions/<accountUuid>/<orgUuid>/local_<id>.json` — one
+metadata file per session, keyed by org in the FOLDER NAME only (no org UUID inside the files). The transcripts
+themselves live in `~/.claude/projects/<cwd>/<cliSessionId>.jsonl`, which is account-agnostic. So a session
+"belongs" to an org only by which folder its metadata file sits in.
+
+**What I did:** `cp -pn` all 45 `local_*.json` from personal org `3e26950f-…` into team org `91350b4d-…`.
+Copy, not move — personal originals left untouched as the fallback. Pre-checks: 0 ID collisions, 0 sessions
+missing their transcript. Post-check: all 45 byte-identical (`cmp`). Team folder 1 → 46 sessions.
+`scheduled-tasks.json` not touched (empty on both sides).
+
+**NOT yet verified:** the running app caches the list — `list_sessions` right after the copy returned
+"No other sessions found". Needs a full quit + reopen. Next boot: run `list_sessions` and confirm ~45 show.
+Expected residuals: copied sessions carry personal-org `remoteMcpServersConfig` connector IDs and
+`bridgeSessionIds` (Remote Control); those may fail to resolve under the team org — reconnect connectors,
+don't debug the session. **Undo:** delete the 45 copied files from the team folder (IDs = those in the personal folder).
