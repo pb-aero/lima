@@ -206,3 +206,51 @@ tab) — he was told to clear it; (5) `flash_cm5.sh` ant2 default; (6) status.md
 (7) Wi-Fi drops ~1/20 min (DHCP 600 s lease once, beacon loss once) — keeper recovers in <1 min.
 **Mistakes of mine today:** cold-reset test threw away a working fix; MAVLink bulk injection assumed working
 (it wasn't); dropped `utime`; sanity check printed a distance band to Peter's position.
+
+## 2026-11-25 · Claude account switch: personal Pro -> Aerosense team org (Peter's request)
+
+**Why this note exists:** Peter asked to move this machine off the personal account onto the team account. The
+logout/login happens in the desktop app UI (I cannot sign in - prohibited), and it may kill this session
+mid-flight. Memory was level with origin before the switch (`git rev-list --left-right --count origin/main...HEAD`
+= `0 0`, `.agent/` clean) so nothing strands.
+
+**Account state BEFORE the switch [measured 2026-11-25]:** plan `Pro`; account `peter@aerosenseaviation.com`;
+org `peter@aerosenseaviation.com's Organization` (the auto-generated personal org), org UUID
+`3e26950f-d304-4237-a033-0257e5e2124b`, account UUID `ddbac649-bc45-4932-bc60-2ab8506273ba`;
+`ANTHROPIC_BASE_URL=https://api.anthropic.com`, no API key / Bedrock / Vertex. `organizationRole` and
+`workspaceRole` both null - i.e. no team role. Source: the app's own usage card + `oauthAccount` in
+`~/.claude.json` + the `CLAUDE_CODE_ORGANIZATION_UUID` the app launched with; all three agreed.
+
+**Gotcha found [measured]:** `claude auth status` from the terminal reports `loggedIn: false` even though the
+desktop app is authenticated. The desktop app holds its own auth (it sets
+`CLAUDE_CODE_SDK_HAS_HOST_AUTH_REFRESH=1`) and the CLI keychain store is SEPARATE. So `claude auth login` in a
+terminal authenticates the CLI only - it does NOT switch the desktop app, and the CLI's `loggedIn: false` is not
+evidence that the app is logged out. Switch the app in the app.
+
+**After the switch, a next session must re-verify, not assume:**
+1. Re-run the account check (`oauthAccount` in `~/.claude.json` + usage card). A team org should show a real
+   org name and a non-null `organizationRole`. If the org name is still `...'s Organization`, the switch did NOT
+   take - say so, do not round up to green.
+2. **Connectors re-auth:** Google Drive and the Docs connector were authorised under the personal account. They
+   are per-account and will need reconnecting under the team org.
+3. **Org-managed settings may now apply.** A team/enterprise org can push managed settings and managed plugins
+   that OUTRANK this repo's `settings.json` deny net. If a permission behaves differently after the switch,
+   suspect org policy before suspecting the local rules. Verify the off-switch protection still fires from a
+   session booted after the change (brain section 6).
+4. The plugin catalog `SearchPlugins` reads becomes the team org's, not the personal one's.
+
+**Untouched / not mine:** `docs/f01-imu-waveforms.html` is untracked in the working tree (not a memory file, not
+committed blind). `kicad/*/.history/`, `kicad/cup-board/doc/cup-board.step`, `scratch-aeromic/` also untracked.
+
+**Still open across the switch (highest first):**
+- **KILO/Stefan `2026-11-23-002`** - wants STEP models for AeroVault, AeroIMU, AeroMic for the H1 manufacturing
+  plan + full BOM (task WS2, **due 30 Nov**). All three verified present on this Mac in `~/Downloads`:
+  `AeroIMU_Rev0.bin` (7,943,862 B - **genuine STEP despite the .bin extension**),
+  `AeroVault Rev0.0.2.step` (7,777,339 B), `AeroMic Rev 0.1.step` (15,443,551 B). Origin
+  `AS_Engineering/CAD/Aeronode` - a CAD share, NOT a git repo, which is why Stefan's repo search found nothing.
+  NOT YET SENT - Peter has not authorised the publish. ~31 MB total; precedent is `peter/agents/`.
+- BB1 test results not yet posted as `re: 2026-11-13-001` (offered, not authorised).
+- **ADAU1861 DVDD/REG_EN fault** - 0.9 V core rail wired to 1.8 V against a 1.21 V abs max, on BOTH the audio
+  board and the cup board. Still open.
+- Three layout-blocking questions from `2026-10-21-004` section 8; mic supply pick from `2026-10-21-005` section 2;
+  `2026-10-29-002` 81 mm fit; cup board power budget re-run for the current mic config.
