@@ -227,6 +227,23 @@ desktop app is authenticated. The desktop app holds its own auth (it sets
 terminal authenticates the CLI only - it does NOT switch the desktop app, and the CLI's `loggedIn: false` is not
 evidence that the app is logged out. Switch the app in the app.
 
+**ATTEMPT 1 FAILED (2026-11-25 ~11:26).** Peter signed out/in; `~/.claude.json` was rewritten at 11:26:23 and
+came back with the **same** personal org, same org UUID, `organizationRole` still null, plan still Pro
+`[measured]`. Not a stale cache - the app wrote that record after the sign-in. Peter confirms a team org DOES
+exist and the same email belongs to both.
+**Cause:** the org is chosen in the **browser OAuth Authorize step**, not in the app. The browser still held a
+claude.ai session defaulting to the personal account, so Authorize went through on that identity without asking.
+Ruled out by measurement: no `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` (these silently override a new login
+and keep billing the old org), and no `forceLoginOrgUUID` in any settings file, system managed-settings absent.
+**Routes:** (a) account switcher = initials/name at the LOWER-LEFT on claude.ai and the desktop app - one email
+can hold both accounts; (b) sign out of claude.ai IN THE BROWSER first, then re-run the app sign-in so Authorize
+must ask which org; (c) `claude auth login` from a Terminal tab -> "Claude account with subscription" -> pick the
+team org -> `claude auth status`. If the picker omits the org: `claude auth logout`, restart the terminal, retry.
+**Deterministic fix worth asking Chris for:** an admin pushes `forceLoginOrgUUID` = the Aerosense org UUID, which
+restricts standard sign-in on the device to that org - turns a silent wrong-org login into an impossible one.
+Needs the team org UUID from an admin. `[fetched: support.claude.com]`
+The desktop app must be fully quit and reopened to adopt a new identity.
+
 **After the switch, a next session must re-verify, not assume:**
 1. Re-run the account check (`oauthAccount` in `~/.claude.json` + usage card). A team org should show a real
    org name and a non-null `organizationRole`. If the org name is still `...'s Organization`, the switch did NOT
