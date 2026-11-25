@@ -248,7 +248,13 @@ committed blind). `kicad/*/.history/`, `kicad/cup-board/doc/cup-board.step`, `sc
   `AeroIMU_Rev0.bin` (7,943,862 B - **genuine STEP despite the .bin extension**),
   `AeroVault Rev0.0.2.step` (7,777,339 B), `AeroMic Rev 0.1.step` (15,443,551 B). Origin
   `AS_Engineering/CAD/Aeronode` - a CAD share, NOT a git repo, which is why Stefan's repo search found nothing.
-  NOT YET SENT - Peter has not authorised the publish. ~31 MB total; precedent is `peter/agents/`.
+  **CLOSED 2026-11-25 on Peter's word: "kilo found the step files".** Never sent by me, and **nothing in the
+  sync repo records it** - `stefan/outbox/` still ends at the request itself (2026-11-23-002) and no reply
+  landed in `inbox/peter/`, checked against a fetch current to `456d469` (24 Nov 10:53) `[measured]`. So the
+  closure is Peter's statement, not a repo artefact - if WS2 later stalls for want of a model, re-check rather
+  than trusting this line. Residual worth one question if it ever comes up: Stefan reported "nothing called
+  AeroMic turned up", and `AeroIMU_Rev0.bin` is a STEP file with a `.bin` extension that a browser or importer
+  will skip as a binary blob - so "found the STEP files" may mean two of three.
 - BB1 test results not yet posted as `re: 2026-11-13-001` (offered, not authorised).
 - **ADAU1861 DVDD/REG_EN fault** - 0.9 V core rail wired to 1.8 V against a 1.21 V abs max, on BOTH the audio
   board and the cup board. Still open.
