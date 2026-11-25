@@ -1886,10 +1886,21 @@ Two box-local changes, no AeroNode file touched:
 - **Scar: my Bash-tool shell's PATH is NOT the user's interactive zsh PATH.** `command -v claude` resolved fine
   for me while a fresh tab in Peter's own login shell said `zsh: command not found: claude` — the harness puts
   `~/.local/bin` on my PATH and his `.zshrc` did not. I nearly reported "installed and working" off my own shell.
-  **Verify anything PATH- or environment-dependent in the user's real shell** (`mcp__terminal__run_in_terminal`,
-  or `zsh -ic 'echo $PATH'`), never in mine. Fixed by appending `export PATH=$HOME/.local/bin:$PATH` to
-  `~/.zshrc` (line 11; backup at `~/.zshrc.bak-20261125-110845`), then re-verified in a fresh tab: `2.1.332`,
-  `/Users/peterbruce/.local/bin/claude` `[measured]`.
+  **Verify anything PATH- or environment-dependent in the user's real shell**
+  (`mcp__terminal__run_in_terminal`), never in mine.
+- **Scar, part 2 (same day): a child `zsh -c` INHERITS my exported PATH, so `zsh -c 'command -v claude'` from
+  my own shell "passes" no matter what the rc files say.** My first attempt to test which rc file was at fault
+  returned found/found/found and was worthless. Test rc files with the environment stripped:
+  `env -i HOME=$HOME PATH=/usr/bin:/bin:/usr/sbin:/sbin zsh -c '...'`. With a clean env the truth appeared:
+  non-interactive `NOT-FOUND`, interactive found `[measured]`.
+- **The real fix is `~/.zshenv`, not `~/.zshrc`.** zsh reads `.zshrc` only for **interactive** shells, so the
+  Terminal panel tab worked while Claude Code's `!` prompt (non-interactive) still said `command not found` —
+  I declared victory off the interactive tab and the user's next `!` command disproved it. `.zshenv` did not
+  exist on this Mac; created it with `typeset -U path; path=($HOME/.local/bin $path)` (the `-U` stops nested
+  shells growing PATH — `.zshrc` already has duplicate pyenv/ccache entries from exactly that). Duplicate line
+  removed from `.zshrc`. Proven with a positive control (all three shell modes find it on a clean env) **and a
+  negative control** (rename `.zshenv` -> `NOT-FOUND` again), plus `1` as the PATH-entry count `[measured]`.
+  Backup of the original `.zshrc` at `~/.zshrc.bak-20261125-110845`.
 - Account state as of this date `[measured]`: plan **Pro**, org `peter@aerosenseaviation.com's Organization`
   (personal, auto-named), `organizationRole` null. Peter wants to move to the **Aerosense team account** — see
   the 2026-11-25 handoff for what a post-switch session must re-verify (org name, connector re-auth,
