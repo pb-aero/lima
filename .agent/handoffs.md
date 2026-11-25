@@ -244,6 +244,24 @@ restricts standard sign-in on the device to that org - turns a silent wrong-org 
 Needs the team org UUID from an admin. `[fetched: support.claude.com]`
 The desktop app must be fully quit and reopened to adopt a new identity.
 
+**ATTEMPT 2 SUCCEEDED (2026-11-25 11:33:54) `[measured]`.** `~/.claude.json` now reads org
+**`Aerosense Aviation`**, org UUID **`91350b4d-e091-4514-8e1e-a0bfbb55d7bf`** (was `3e26950f-...`), and the
+app's usage card reports plan **`Team`** (was `Pro`). Google Drive connector dropped out of the session and the
+team org's connectors replaced it - the predicted per-account connector change, observed.
+**The single most important fact, and it is easy to get wrong:** `accountUuid` is **UNCHANGED**
+(`ddbac649-bc45-4932-bc60-2ab8506273ba`). There is ONE account/identity on ONE email belonging to TWO orgs.
+The "personal account" is not a separate account - it is this same account viewing its personal org. So
+**closing the personal account would delete the identity the Aerosense team seat hangs off.** Peter asked to
+close it; I declined (irreversible, his to do, and the risk is unverifiable from here) and recommended
+cancelling the **Pro subscription** instead - account stays, seat stays, charge stops. He agreed. Billing is
+**per-org**: the Pro subscription lives under the PERSONAL org, so the org switcher must show the personal org,
+not Aerosense, or you are looking at team seats. Also note: anything in the personal workspace (chats,
+projects, files) does NOT follow into Aerosense.
+**NOT DONE by me:** the Claude browser pane is NOT signed in to claude.ai (bounced to `/logout?involuntary=1`),
+and I did not ask Peter to authenticate a browser for a billing page whose cancel control sits beside the
+account-deletion ones. Left with him. Unknown from here: whether a Pro subscription is still billing at all
+(the usage card reports the plan Claude Code USES, not what is subscribed), the term-end date, and proration.
+
 **After the switch, a next session must re-verify, not assume:**
 1. Re-run the account check (`oauthAccount` in `~/.claude.json` + usage card). A team org should show a real
    org name and a non-null `organizationRole`. If the org name is still `...'s Organization`, the switch did NOT
