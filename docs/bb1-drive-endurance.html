@@ -1,0 +1,243 @@
+<title>BB1 Drive Endurance</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one reading column (~72ch); key numbers, then five stacked time charts sharing one minute axis with a single hover readout, then findings, estimate, method, open items. */
+:root {
+  --bg: #f6f7f5; --surface: #ffffff; --ink: #18211f; --muted: #55625e; --rule: #d6ddd9; --grid: #e7ece9;
+  --accent: #b8620a; --accent-soft: #f6e7d6; --shade: rgba(71, 96, 143, .08);
+  --s-speed: #47608f; --s-pack: #b8620a; --s-pi: #2f7a6a; --s-volt: #7a4fa0; --s-soc: #2f7a4f; --s-cpu: #b3261e; --s-chg: #8a6d1f;
+  --tag-m: #2f6f5f; --tag-r: #47608f; --tag-f: #6b5a8e; --tag-a: #a8510b;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-head: "Avenir Next", "Segoe UI Semibold", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121715; --surface: #1a211e; --ink: #e5ebe8; --muted: #9aa8a3; --rule: #2d3733; --grid: #232b28;
+  --accent: #e8954a; --accent-soft: #3a2a1a; --shade: rgba(157, 179, 224, .08);
+  --s-speed: #9db3e0; --s-pack: #e8954a; --s-pi: #6cc4b0; --s-volt: #c1a2e6; --s-soc: #6cc48f; --s-cpu: #f08a80; --s-chg: #d9bb5f;
+  --tag-m: #7fc4b0; --tag-r: #9db3e0; --tag-f: #bba9e0; --tag-a: #e8954a; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #121715; --surface: #1a211e; --ink: #e5ebe8; --muted: #9aa8a3; --rule: #2d3733; --grid: #232b28;
+  --accent: #e8954a; --accent-soft: #3a2a1a; --shade: rgba(157, 179, 224, .08);
+  --s-speed: #9db3e0; --s-pack: #e8954a; --s-pi: #6cc4b0; --s-volt: #c1a2e6; --s-soc: #6cc48f; --s-cpu: #f08a80; --s-chg: #d9bb5f;
+  --tag-m: #7fc4b0; --tag-r: #9db3e0; --tag-f: #bba9e0; --tag-a: #e8954a; color-scheme: dark; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.6 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+main { max-width: 960px; margin: 0 auto; padding-block: 2.5rem 4rem; display: flex; flex-direction: column; gap: 2.25rem; }
+section { display: flex; flex-direction: column; gap: .75rem; min-width: 0; }
+h1, h2, h3 { font-family: var(--font-head); text-wrap: balance; line-height: 1.25; margin: 0; }
+h1 { font-size: 2rem; letter-spacing: -.01em; }
+h2 { font-size: 1.35rem; padding-top: .75rem; border-top: 1px solid var(--rule); }
+h3 { font-size: 1.05rem; }
+p, ul, ol { margin: 0; max-width: 72ch; }
+ul, ol { padding-left: 1.25rem; display: flex; flex-direction: column; gap: .35rem; }
+.eyebrow { font: 600 .75rem/1.2 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.meta { color: var(--muted); font-size: .9rem; display: flex; flex-wrap: wrap; gap: .25rem 1.25rem; }
+.meta b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 1.08rem; max-width: 70ch; }
+code, .mono { font-family: var(--font-mono); font-size: .86em; }
+.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tbl { overflow-x: auto; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th, td { text-align: left; vertical-align: top; padding: .55rem .75rem; border-bottom: 1px solid var(--rule); }
+th { font: 600 .74rem/1.3 var(--font-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td.k { font-weight: 600; min-width: 9rem; }
+.tag { font: 600 .68rem/1 var(--font-mono); letter-spacing: .03em; padding: .12rem .35rem; border-radius: 3px; border: 1px solid currentColor; white-space: nowrap; vertical-align: .08em; }
+.t-m { color: var(--tag-m); } .t-r { color: var(--tag-r); } .t-f { color: var(--tag-f); } .t-a { color: var(--tag-a); }
+.legend { display: flex; flex-wrap: wrap; gap: .5rem 1rem; font-size: .85rem; color: var(--muted); }
+.callout { background: var(--accent-soft); border-left: 3px solid var(--accent); padding: .8rem 1rem; border-radius: 0 6px 6px 0; max-width: 72ch; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr)); gap: .6rem; }
+.tile { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: .7rem .85rem; display: flex; flex-direction: column; gap: .15rem; min-width: 0; }
+.tile .v { font: 600 1.45rem/1.15 var(--font-mono); font-variant-numeric: tabular-nums; }
+.tile .l { font-size: .8rem; color: var(--muted); }
+.charts { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: .75rem .75rem .5rem; display: flex; flex-direction: column; gap: .25rem; min-width: 0; }
+.readout { font: .8rem/1.45 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--muted); min-height: 2.9em; display: flex; flex-wrap: wrap; gap: .1rem 1rem; padding: .1rem .25rem .4rem; border-bottom: 1px solid var(--rule); }
+.readout b { color: var(--ink); font-weight: 600; }
+.panel { display: flex; flex-direction: column; min-width: 0; }
+.ptitle { font-size: .8rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: .1rem .9rem; padding: .35rem .25rem 0; }
+.key { display: inline-flex; align-items: center; gap: .35rem; }
+.key i { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+svg.ch { width: 100%; height: auto; display: block; touch-action: pan-y; }
+svg.ch text { fill: var(--muted); font: 10px var(--font-mono); }
+svg.ch .grid { stroke: var(--grid); stroke-width: 1; }
+svg.ch .shade { fill: var(--shade); }
+svg.ch .ev { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 2 3; }
+svg.ch .xh { stroke: var(--ink); stroke-width: 1; opacity: .5; }
+svg.ch path.ln { fill: none; stroke-width: 1.75; stroke-linejoin: round; stroke-linecap: round; }
+a { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 560px) { h1 { font-size: 1.6rem; } th, td { padding: .45rem .55rem; } }
+</style>
+
+<main>
+<header style="display:flex;flex-direction:column;gap:.6rem">
+  <div class="eyebrow">AeroNode · battery endurance on a drive</div>
+  <h1>BB1 Drive Endurance</h1>
+  <div class="meta"><span>Run <b>23 Nov 2026, 07:18–08:57</b> local (UTC+2)</span><span>Board <b>BB1</b>, Blackbox AeroNode rev 0.0.2 with CM5</span><span>Pack <b>2S, 5 Ah</b> (label value)</span><span>Written by <b>LIMA</b>, 25 Nov 2026</span></div>
+  <p class="lede">BB1 ran on its own pack for 99 minutes: a 92 km drive to the office and 25 minutes parked and indoors. It drew a steady <b>2.06 W</b> (0.26 A), used <b>3.4 Wh</b>, and went from <b>91.9 % to 83.3 %</b>. Speed and road made no difference to the draw. At this rate a full pack runs BB1 for <b>about 18 hours</b> before the low-battery shutdown.</p>
+  <div class="legend"><span><span class="tag t-m">measured</span> on BB1</span><span><span class="tag t-r">repo</span> our code or notes</span><span><span class="tag t-a">assumed</span> not yet checked</span></div>
+</header>
+
+<section>
+  <h2>Key numbers</h2>
+  <div class="tiles">
+    <div class="tile"><span class="v">2.06 W</span><span class="l">mean pack draw, 0.26 A</span></div>
+    <div class="tile"><span class="v">5.2 %/h</span><span class="l">state of charge used per hour</span></div>
+    <div class="tile"><span class="v">3.38 Wh</span><span class="l">energy out of the pack, 425 mAh</span></div>
+    <div class="tile"><span class="v">≈18 h</span><span class="l">full pack to low-battery shutdown (estimate)</span></div>
+    <div class="tile"><span class="v">50.1 °C</span><span class="l">hottest CPU reading, at the 1.5 GHz cap</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>The run, minute by minute</h2>
+  <p>Each line is a 30-second average. Hover or drag across any chart to read every value at that moment. The shaded band is the time BB1 was parked or indoors after the drive. Dashed lines mark the first GPS fix, the end of the drive and the last GPS fix indoors.</p>
+  <div class="charts" id="charts">
+    <div class="readout" id="readout"><span>Hover a chart to read the values.</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>What the run shows</h2>
+  <h3>The draw does not depend on driving</h3>
+  <p>Split by GPS speed, the mean pack draw was <span class="num">2.04 W</span> below walking pace, <span class="num">2.04 W</span> between 4 and 70 km/h, and <span class="num">2.03 W</span> above 70 km/h <span class="tag t-m">measured</span>. Motion, vibration and road speed don't change BB1's power. The compute load sets it, and on this run the CPU was capped at 1.5 GHz <span class="tag t-r">repo</span>. Draw stayed between <span class="num">1.70 W</span> and <span class="num">4.08 W</span> in 2-second samples, with 95 % of samples under <span class="num">2.37 W</span>.</p>
+  <h3>About a fifth of the pack power never reaches the CM5</h3>
+  <p>The CM5's own power monitor (its PMIC) read a mean <span class="num">1.62 W</span> on the Pi rails against <span class="num">2.06 W</span> out of the pack <span class="tag t-m">measured</span>. The gap of about <span class="num">0.44 W</span> (21 %) covers the 5 V conversion and everything on the board outside the CM5: sensors, GNSS, IMU and the charger itself. These two numbers come from different instruments, and this run can't split the gap between conversion loss and the other loads <span class="tag t-a">assumed</span>.</p>
+  <h3>A cold start warms up in about 40 minutes</h3>
+  <p>The charger chip started at <span class="num">11.5 °C</span> and reached <span class="num">29.5 °C</span>. The CPU went from <span class="num">20.4 °C</span> to a plateau of 47–48 °C after about 40 minutes, peaking at <span class="num">50.1 °C</span> <span class="tag t-m">measured</span>. The warm-up didn't change the draw. Cabin air temperature wasn't logged, so the rise can't be split between the car heating up and BB1 heating itself.</p>
+  <h3>The draw rose about 0.2 W once indoors</h3>
+  <p>From minute 84, around when BB1 went indoors, the draw rose from about <span class="num">2.0 W</span> to <span class="num">2.2–2.4 W</span>, and the Pi rails rose with it. The GPS fix dropped out two minutes later. The most likely cause is BB1 joining the office Wi-Fi <span class="tag t-a">assumed</span>. Nothing on this run isolates it.</p>
+  <h3>The pack powered BB1 alone</h3>
+  <p>BB1 wasn't connected to car power. The pack discharged for the whole run and no sample shows charging <span class="tag t-m">measured</span>. These figures are the pack's endurance with nothing topping it up.</p>
+</section>
+
+<section>
+  <h2>Endurance estimate</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Starting from</th><th>To</th><th>Estimate at 5.2 %/h</th><th>With ±15 % current error</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Full (100 %)</td><td>Low-battery shutdown (~5 % left)</td><td class="num">≈ 18 h</td><td class="num">16–21 h</td></tr>
+      <tr><td class="k">83 %, at arrival</td><td>Low-battery shutdown</td><td class="num">≈ 15 h</td><td class="num">13–18 h</td></tr>
+      <tr><td class="k">This commute</td><td>One way, 99 min</td><td class="num">8.6 % of the pack</td><td class="num">7–10 %</td></tr>
+    </tbody>
+  </table></div>
+  <p>The low-battery shutdown powers BB1 off after the pack has spent 60 seconds below 3.1 V per cell (6.2 V for this pack), which leaves about 5 % <span class="tag t-r">repo</span>. The estimate assumes the draw stays at this run's 2.06 W.</p>
+  <div class="callout">Both the percentage and the hours scale with the pack's capacity. The logger counts charge against the label value of 5 Ah, and BB1's pack has never been run from full to empty on a meter to check it <span class="tag t-a">assumed</span>. A 10 % smaller real capacity means 10 % fewer hours.</div>
+</section>
+
+<section>
+  <h2>How it was measured</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Quantity</th><th>Source</th><th>Rate, rows</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Pack voltage, current, power, state of charge, charger temperature</td><td>BQ25798 charger ADC via <code>bq25798-logger</code>. State of charge is counted from the battery current while on battery. Power is voltage × current.</td><td class="num">2 s, 2,951</td></tr>
+      <tr><td class="k">CPU temperature, Pi rails power</td><td>AeroNode's <code>power.csv</code>: CPU thermal sensor and the CM5 PMIC reading</td><td class="num">≈5 Hz, 29,496</td></tr>
+      <tr><td class="k">Speed</td><td>ArduPilot dataflash log, GPS instance 0, 3D fix only. Speed was the only GPS field used; position is not part of this report.</td><td class="num">1 s, 4,530</td></tr>
+    </tbody>
+  </table></div>
+  <p>All three were aligned on UTC and averaged into 30-second bins. The battery figures come from the charger's own ADC, not an external meter, so treat currents and power as about ±15 % <span class="tag t-r">repo</span>. Pack voltage is the one figure that doesn't depend on the current measurement: the five-minute means at the start and end of the run were <span class="num">8.045 V</span> and <span class="num">7.835 V</span> <span class="tag t-m">measured</span>.</p>
+</section>
+
+<section>
+  <h2>Not covered, still open</h2>
+  <ul>
+    <li><b>The pack's real capacity.</b> Every hour figure on this page rests on the 5 Ah label value. A full run-down on an external meter would settle it.</li>
+    <li><b>Draw at the full CPU clock.</b> This run was at the 1.5 GHz cap. A heavier compute load or an uncapped clock will draw more.</li>
+    <li><b>Wi-Fi's share.</b> Wi-Fi was on for the whole run. The step at minute 84 suggests it matters, but it wasn't switched off to measure it.</li>
+    <li><b>Cabin temperature.</b> The BME690 only stores readings while an AeroNode recording runs, and none was running, so no air temperature was logged.</li>
+    <li><b>GPS gaps.</b> The first 3D fix came 2.2 minutes into the run, and there was a 3D fix for 4,530 of the 5,029 seconds the log spans. Speed is missing in those gaps. Battery and power data are complete.</li>
+    <li><b>Car power.</b> Charging from the car while driving wasn't tried. The board takes 5 V USB only, which caps charging at about 12 W in.</li>
+  </ul>
+</section>
+
+<footer class="meta" style="border-top:1px solid var(--rule);padding-top:.75rem">
+  <span>Repo <b>lima</b> · <code>docs/bb1-drive-endurance.html</code></span>
+  <span>Series builder <code>linux/aeronode-cm5-image/analysis/drive_series.py</code></span>
+  <span>Related: BB1 Power Reference, <code>docs/bb1-power-reference.html</code></span>
+</footer>
+</main>
+
+<script>
+const S = {"stats":{"utc_start":"2026-11-23T05:18:08Z","utc_end":"2026-11-23T06:56:58Z","batt_rows":2951,"power_rows":29496,"gps_points":4530,"dur_min":98.8,"gps_first_min":2.2,"gps_last_min":86.0,"moving_min":65.7,"vmax":125,"soc_start":91.9,"soc_end":83.3,"v_start5":8.045,"v_end5":7.835,"wh":3.38,"mah":425,"w_mean":2.06,"w_p95":2.37,"w_max":4.08,"w_min":1.7,"a_mean":0.26,"pi_w_mean":1.62,"pi_w_p95":2.61,"cpu_min":20.4,"cpu_max":50.1,"tdie_min":11.5,"tdie_max":29.5,"soc_per_h":5.22,"w_parked":[2.04,23],"w_town":[2.04,51],"w_road":[2.03,94]},"series":[{"m":0.0,"soc":91.847,"v":8.048,"a":0.273,"w":2.196,"chg_c":11.5,"cpu_c":23.027,"pi_w":1.586},{"m":0.5,"soc":91.8,"v":8.053,"a":0.244,"w":1.968,"chg_c":12.0,"cpu_c":24.547,"pi_w":1.523},{"m":1.0,"soc":91.787,"v":8.045,"a":0.246,"w":1.975,"chg_c":12.4,"cpu_c":26.262,"pi_w":1.563},{"m":1.5,"soc":91.7,"v":8.047,"a":0.253,"w":2.038,"chg_c":12.867,"cpu_c":27.537,"pi_w":1.675},{"m":2.0,"soc":91.7,"v":8.046,"a":0.239,"w":1.921,"chg_c":13.333,"cpu_c":28.595,"pi_w":1.549,"kmh":95.511},{"m":2.5,"soc":91.633,"v":8.045,"a":0.246,"w":1.982,"chg_c":13.867,"cpu_c":29.489,"pi_w":1.652,"kmh":104.704},{"m":3.0,"soc":91.6,"v":8.043,"a":0.259,"w":2.085,"chg_c":14.333,"cpu_c":30.449,"pi_w":1.641,"kmh":99.204},{"m":3.5,"soc":91.573,"v":8.042,"a":0.248,"w":1.998,"chg_c":14.8,"cpu_c":31.183,"pi_w":1.55,"kmh":101.919},{"m":4.0,"soc":91.5,"v":8.04,"a":0.253,"w":2.036,"chg_c":15.233,"cpu_c":31.925,"pi_w":1.58,"kmh":102.267},{"m":4.5,"soc":91.5,"v":8.04,"a":0.246,"w":1.979,"chg_c":15.7,"cpu_c":32.557,"pi_w":1.546,"kmh":88.041},{"m":5.0,"soc":91.413,"v":8.037,"a":0.254,"w":2.04,"chg_c":16.067,"cpu_c":33.206,"pi_w":1.59,"kmh":101.43},{"m":5.5,"soc":91.4,"v":8.037,"a":0.247,"w":1.988,"chg_c":16.5,"cpu_c":33.802,"pi_w":1.574,"kmh":101.3},{"m":6.0,"soc":91.353,"v":8.037,"a":0.244,"w":1.961,"chg_c":16.933,"cpu_c":34.437,"pi_w":1.587,"kmh":102.557},{"m":6.5,"soc":91.3,"v":8.037,"a":0.254,"w":2.04,"chg_c":17.367,"cpu_c":34.962,"pi_w":1.508,"kmh":110.593},{"m":7.0,"soc":91.293,"v":8.032,"a":0.247,"w":1.983,"chg_c":17.733,"cpu_c":35.579,"pi_w":1.55,"kmh":108.407},{"m":7.5,"soc":91.2,"v":8.032,"a":0.246,"w":1.976,"chg_c":18.0,"cpu_c":35.945,"pi_w":1.525,"kmh":106.689},{"m":8.0,"soc":91.2,"v":8.031,"a":0.256,"w":2.054,"chg_c":18.467,"cpu_c":36.451,"pi_w":1.537,"kmh":110.154},{"m":8.5,"soc":91.133,"v":8.03,"a":0.248,"w":1.988,"chg_c":18.633,"cpu_c":36.824,"pi_w":1.531,"kmh":107.704},{"m":9.0,"soc":91.1,"v":8.029,"a":0.248,"w":1.993,"chg_c":19.033,"cpu_c":37.263,"pi_w":1.609,"kmh":115.029},{"m":9.5,"soc":91.073,"v":8.029,"a":0.248,"w":1.994,"chg_c":19.433,"cpu_c":37.671,"pi_w":1.553,"kmh":116.333},{"m":10.0,"soc":91.0,"v":8.027,"a":0.245,"w":1.966,"chg_c":19.5,"cpu_c":37.928,"pi_w":1.495,"kmh":103.096},{"m":10.5,"soc":91.0,"v":8.027,"a":0.245,"w":1.969,"chg_c":19.967,"cpu_c":38.285,"pi_w":1.573,"kmh":86.033},{"m":11.0,"soc":90.92,"v":8.025,"a":0.252,"w":2.025,"chg_c":20.133,"cpu_c":38.643,"pi_w":1.518,"kmh":115.085},{"m":11.5,"soc":90.9,"v":8.023,"a":0.249,"w":2.0,"chg_c":20.5,"cpu_c":38.973,"pi_w":1.54,"kmh":113.907},{"m":12.0,"soc":90.853,"v":8.02,"a":0.257,"w":2.062,"chg_c":20.633,"cpu_c":39.162,"pi_w":1.549,"kmh":115.985},{"m":12.5,"soc":90.8,"v":8.02,"a":0.251,"w":2.015,"chg_c":21.0,"cpu_c":39.509,"pi_w":1.57,"kmh":113.919},{"m":13.0,"soc":90.793,"v":8.02,"a":0.249,"w":1.995,"chg_c":21.033,"cpu_c":39.704,"pi_w":1.558,"kmh":118.996},{"m":13.5,"soc":90.7,"v":8.018,"a":0.249,"w":1.994,"chg_c":21.433,"cpu_c":39.927,"pi_w":1.58,"kmh":120.442},{"m":14.0,"soc":90.7,"v":8.018,"a":0.252,"w":2.021,"chg_c":21.5,"cpu_c":40.231,"pi_w":1.544,"kmh":117.156},{"m":14.5,"soc":90.633,"v":8.015,"a":0.251,"w":2.013,"chg_c":21.733,"cpu_c":40.516,"pi_w":1.632,"kmh":111.715},{"m":15.0,"soc":90.6,"v":8.016,"a":0.262,"w":2.099,"chg_c":22.0,"cpu_c":40.645,"pi_w":1.512,"kmh":95.733},{"m":15.5,"soc":90.567,"v":8.014,"a":0.263,"w":2.11,"chg_c":22.0,"cpu_c":40.87,"pi_w":1.644,"kmh":86.256},{"m":16.0,"soc":90.5,"v":8.014,"a":0.266,"w":2.131,"chg_c":22.233,"cpu_c":41.047,"pi_w":1.581,"kmh":58.033},{"m":16.5,"soc":90.5,"v":8.01,"a":0.238,"w":1.906,"chg_c":22.5,"cpu_c":41.215,"pi_w":1.666,"kmh":14.536},{"m":17.0,"soc":90.4,"v":8.01,"a":0.252,"w":2.022,"chg_c":22.5,"cpu_c":41.377,"pi_w":1.593,"kmh":75.967},{"m":17.5,"soc":90.4,"v":8.009,"a":0.254,"w":2.03,"chg_c":22.567,"cpu_c":41.524,"pi_w":1.592,"kmh":93.026},{"m":18.0,"soc":90.34,"v":8.007,"a":0.258,"w":2.063,"chg_c":23.0,"cpu_c":41.721,"pi_w":1.559,"kmh":98.714},{"m":18.5,"soc":90.3,"v":8.007,"a":0.251,"w":2.012,"chg_c":23.0,"cpu_c":41.839,"pi_w":1.582,"kmh":98.931},{"m":19.0,"soc":90.28,"v":8.006,"a":0.251,"w":2.01,"chg_c":23.0,"cpu_c":41.988,"pi_w":1.566,"kmh":104.3},{"m":19.5,"soc":90.2,"v":8.005,"a":0.251,"w":2.01,"chg_c":23.133,"cpu_c":42.118,"pi_w":1.553,"kmh":108.667},{"m":20.0,"soc":90.2,"v":8.004,"a":0.252,"w":2.017,"chg_c":23.467,"cpu_c":42.163,"pi_w":1.518,"kmh":106.982},{"m":20.5,"soc":90.113,"v":8.003,"a":0.253,"w":2.024,"chg_c":23.5,"cpu_c":42.281,"pi_w":1.552,"kmh":97.841},{"m":21.0,"soc":90.1,"v":8.001,"a":0.251,"w":2.009,"chg_c":23.5,"cpu_c":42.427,"pi_w":1.642,"kmh":78.896},{"m":21.5,"soc":90.053,"v":8.001,"a":0.253,"w":2.025,"chg_c":23.5,"cpu_c":42.583,"pi_w":1.553,"kmh":89.23},{"m":22.0,"soc":90.0,"v":7.999,"a":0.256,"w":2.044,"chg_c":23.767,"cpu_c":42.695,"pi_w":1.609,"kmh":100.138},{"m":22.5,"soc":89.993,"v":7.999,"a":0.247,"w":1.977,"chg_c":23.967,"cpu_c":42.721,"pi_w":1.596,"kmh":113.118},{"m":23.0,"soc":89.9,"v":7.996,"a":0.257,"w":2.055,"chg_c":24.0,"cpu_c":42.874,"pi_w":1.583,"kmh":110.704},{"m":23.5,"soc":89.9,"v":7.996,"a":0.255,"w":2.041,"chg_c":24.0,"cpu_c":42.906,"pi_w":1.587,"kmh":106.114},{"m":24.0,"soc":89.827,"v":7.994,"a":0.252,"w":2.013,"chg_c":24.0,"cpu_c":43.077,"pi_w":1.638,"kmh":100.954},{"m":24.5,"soc":89.8,"v":7.994,"a":0.254,"w":2.029,"chg_c":24.033,"cpu_c":43.095,"pi_w":1.598,"kmh":97.985},{"m":25.0,"soc":89.767,"v":7.992,"a":0.251,"w":2.01,"chg_c":24.3,"cpu_c":43.215,"pi_w":1.539,"kmh":90.341},{"m":25.5,"soc":89.7,"v":7.993,"a":0.251,"w":2.009,"chg_c":24.5,"cpu_c":43.276,"pi_w":1.576,"kmh":82.827},{"m":26.0,"soc":89.693,"v":7.989,"a":0.266,"w":2.123,"chg_c":24.5,"cpu_c":43.377,"pi_w":1.551,"kmh":81.418},{"m":26.5,"soc":89.6,"v":7.989,"a":0.251,"w":2.005,"chg_c":24.5,"cpu_c":43.421,"pi_w":1.539,"kmh":76.204},{"m":27.0,"soc":89.6,"v":7.987,"a":0.265,"w":2.113,"chg_c":24.5,"cpu_c":43.57,"pi_w":1.678,"kmh":72.704},{"m":27.5,"soc":89.533,"v":7.987,"a":0.246,"w":1.969,"chg_c":24.5,"cpu_c":43.581,"pi_w":1.549,"kmh":67.367},{"m":28.0,"soc":89.5,"v":7.984,"a":0.265,"w":2.116,"chg_c":24.833,"cpu_c":43.641,"pi_w":1.607,"kmh":79.181},{"m":28.5,"soc":89.467,"v":7.986,"a":0.246,"w":1.966,"chg_c":25.0,"cpu_c":43.79,"pi_w":1.641,"kmh":85.185},{"m":29.0,"soc":89.4,"v":7.983,"a":0.26,"w":2.078,"chg_c":25.0,"cpu_c":43.933,"pi_w":1.609,"kmh":83.404},{"m":29.5,"soc":89.4,"v":7.983,"a":0.255,"w":2.034,"chg_c":25.0,"cpu_c":44.157,"pi_w":1.508,"kmh":81.126},{"m":30.0,"soc":89.3,"v":7.98,"a":0.259,"w":2.067,"chg_c":25.033,"cpu_c":44.309,"pi_w":1.639,"kmh":71.185},{"m":30.5,"soc":89.3,"v":7.981,"a":0.254,"w":2.029,"chg_c":25.5,"cpu_c":44.481,"pi_w":1.57,"kmh":77.792},{"m":31.0,"soc":89.233,"v":7.979,"a":0.253,"w":2.02,"chg_c":25.5,"cpu_c":44.755,"pi_w":1.607,"kmh":76.818},{"m":31.5,"soc":89.2,"v":7.978,"a":0.257,"w":2.053,"chg_c":25.5,"cpu_c":45.071,"pi_w":1.579,"kmh":78.138},{"m":32.0,"soc":89.173,"v":7.978,"a":0.257,"w":2.049,"chg_c":25.5,"cpu_c":45.189,"pi_w":1.529,"kmh":77.282},{"m":32.5,"soc":89.1,"v":7.975,"a":0.251,"w":1.999,"chg_c":25.767,"cpu_c":45.403,"pi_w":1.586,"kmh":63.97},{"m":33.0,"soc":89.1,"v":7.973,"a":0.258,"w":2.058,"chg_c":26.0,"cpu_c":45.609,"pi_w":1.579,"kmh":76.611},{"m":33.5,"soc":89.007,"v":7.974,"a":0.268,"w":2.136,"chg_c":26.0,"cpu_c":45.861,"pi_w":1.579,"kmh":76.722},{"m":34.0,"soc":89.0,"v":7.973,"a":0.251,"w":2.0,"chg_c":26.0,"cpu_c":45.94,"pi_w":1.58,"kmh":68.585},{"m":34.5,"soc":88.933,"v":7.971,"a":0.255,"w":2.036,"chg_c":26.167,"cpu_c":46.169,"pi_w":1.611,"kmh":73.681},{"m":35.0,"soc":88.9,"v":7.969,"a":0.26,"w":2.071,"chg_c":26.5,"cpu_c":46.291,"pi_w":1.555,"kmh":70.481},{"m":35.5,"soc":88.873,"v":7.969,"a":0.247,"w":1.972,"chg_c":26.5,"cpu_c":46.511,"pi_w":1.55,"kmh":76.393},{"m":36.0,"soc":88.8,"v":7.966,"a":0.253,"w":2.013,"chg_c":26.5,"cpu_c":46.575,"pi_w":1.625,"kmh":68.556},{"m":36.5,"soc":88.8,"v":7.964,"a":0.247,"w":1.969,"chg_c":26.9,"cpu_c":46.766,"pi_w":1.726,"kmh":44.422},{"m":37.0,"soc":88.713,"v":7.963,"a":0.237,"w":1.891,"chg_c":27.0,"cpu_c":46.862,"pi_w":1.601,"kmh":56.67},{"m":37.5,"soc":88.7,"v":7.961,"a":0.241,"w":1.921,"chg_c":27.0,"cpu_c":47.087,"pi_w":1.617,"kmh":79.326},{"m":38.0,"soc":88.66,"v":7.962,"a":0.257,"w":2.044,"chg_c":27.033,"cpu_c":47.175,"pi_w":1.599,"kmh":75.393},{"m":38.5,"soc":88.6,"v":7.958,"a":0.248,"w":1.975,"chg_c":27.333,"cpu_c":47.209,"pi_w":1.623,"kmh":63.578},{"m":39.0,"soc":88.593,"v":7.96,"a":0.257,"w":2.048,"chg_c":27.5,"cpu_c":47.245,"pi_w":1.616,"kmh":56.173},{"m":39.5,"soc":88.5,"v":7.959,"a":0.257,"w":2.046,"chg_c":27.5,"cpu_c":47.341,"pi_w":1.663,"kmh":66.458},{"m":40.0,"soc":88.5,"v":7.959,"a":0.246,"w":1.959,"chg_c":27.5,"cpu_c":47.492,"pi_w":1.668,"kmh":61.73},{"m":40.5,"soc":88.433,"v":7.958,"a":0.265,"w":2.105,"chg_c":27.5,"cpu_c":47.563,"pi_w":1.594,"kmh":57.314},{"m":41.0,"soc":88.4,"v":7.956,"a":0.26,"w":2.067,"chg_c":27.5,"cpu_c":47.651,"pi_w":1.74,"kmh":46.837},{"m":41.5,"soc":88.367,"v":7.956,"a":0.25,"w":1.985,"chg_c":27.667,"cpu_c":47.698,"pi_w":1.63,"kmh":70.226},{"m":42.0,"soc":88.3,"v":7.954,"a":0.269,"w":2.142,"chg_c":27.867,"cpu_c":47.715,"pi_w":1.642,"kmh":66.379},{"m":42.5,"soc":88.293,"v":7.953,"a":0.262,"w":2.083,"chg_c":28.0,"cpu_c":47.704,"pi_w":1.577,"kmh":34.074},{"m":43.0,"soc":88.2,"v":7.949,"a":0.264,"w":2.096,"chg_c":28.0,"cpu_c":47.701,"pi_w":1.571,"kmh":3.537},{"m":43.5,"soc":88.2,"v":7.95,"a":0.25,"w":1.986,"chg_c":28.0,"cpu_c":47.677,"pi_w":1.632,"kmh":30.344},{"m":44.0,"soc":88.127,"v":7.951,"a":0.254,"w":2.017,"chg_c":28.0,"cpu_c":47.693,"pi_w":1.633,"kmh":56.659},{"m":44.5,"soc":88.1,"v":7.949,"a":0.254,"w":2.021,"chg_c":28.0,"cpu_c":47.821,"pi_w":1.541,"kmh":68.246},{"m":45.0,"soc":88.06,"v":7.947,"a":0.265,"w":2.103,"chg_c":28.0,"cpu_c":47.793,"pi_w":1.637,"kmh":62.741},{"m":45.5,"soc":88.0,"v":7.946,"a":0.265,"w":2.104,"chg_c":28.0,"cpu_c":47.806,"pi_w":1.468,"kmh":57.989},{"m":46.0,"soc":87.987,"v":7.943,"a":0.261,"w":2.07,"chg_c":28.0,"cpu_c":47.824,"pi_w":1.664,"kmh":52.281},{"m":46.5,"soc":87.9,"v":7.944,"a":0.246,"w":1.958,"chg_c":28.033,"cpu_c":47.803,"pi_w":1.538,"kmh":54.837},{"m":47.0,"soc":87.9,"v":7.943,"a":0.259,"w":2.058,"chg_c":28.1,"cpu_c":47.877,"pi_w":1.627,"kmh":69.143},{"m":47.5,"soc":87.827,"v":7.942,"a":0.263,"w":2.088,"chg_c":28.1,"cpu_c":47.913,"pi_w":1.71,"kmh":74.467},{"m":48.0,"soc":87.8,"v":7.939,"a":0.26,"w":2.067,"chg_c":28.2,"cpu_c":47.897,"pi_w":1.66,"kmh":71.118},{"m":48.5,"soc":87.753,"v":7.939,"a":0.252,"w":2.001,"chg_c":28.2,"cpu_c":47.906,"pi_w":1.533,"kmh":75.648},{"m":49.0,"soc":87.7,"v":7.938,"a":0.261,"w":2.069,"chg_c":28.133,"cpu_c":47.989,"pi_w":1.552,"kmh":79.238},{"m":49.5,"soc":87.687,"v":7.938,"a":0.256,"w":2.03,"chg_c":28.0,"cpu_c":47.996,"pi_w":1.559,"kmh":77.663},{"m":50.0,"soc":87.6,"v":7.937,"a":0.266,"w":2.11,"chg_c":28.0,"cpu_c":47.931,"pi_w":1.64,"kmh":77.5},{"m":50.5,"soc":87.6,"v":7.933,"a":0.26,"w":2.065,"chg_c":28.067,"cpu_c":47.93,"pi_w":1.603,"kmh":80.326},{"m":51.0,"soc":87.52,"v":7.933,"a":0.262,"w":2.078,"chg_c":28.0,"cpu_c":48.051,"pi_w":1.646,"kmh":80.304},{"m":51.5,"soc":87.5,"v":7.934,"a":0.254,"w":2.017,"chg_c":28.1,"cpu_c":48.087,"pi_w":1.546,"kmh":88.57},{"m":52.0,"soc":87.453,"v":7.932,"a":0.265,"w":2.099,"chg_c":28.067,"cpu_c":48.003,"pi_w":1.639,"kmh":73.469},{"m":52.5,"soc":87.4,"v":7.929,"a":0.264,"w":2.09,"chg_c":28.033,"cpu_c":47.71,"pi_w":1.73,"kmh":64.319},{"m":53.0,"soc":87.38,"v":7.93,"a":0.253,"w":2.004,"chg_c":28.0,"cpu_c":47.161,"pi_w":1.613,"kmh":55.681},{"m":53.5,"soc":87.3,"v":7.928,"a":0.26,"w":2.064,"chg_c":28.0,"cpu_c":47.249,"pi_w":1.677,"kmh":55.744},{"m":54.0,"soc":87.3,"v":7.929,"a":0.26,"w":2.059,"chg_c":28.0,"cpu_c":47.162,"pi_w":1.559,"kmh":57.967},{"m":54.5,"soc":87.213,"v":7.925,"a":0.264,"w":2.095,"chg_c":28.0,"cpu_c":47.123,"pi_w":1.685,"kmh":58.404},{"m":55.0,"soc":87.2,"v":7.925,"a":0.253,"w":2.006,"chg_c":28.0,"cpu_c":47.111,"pi_w":1.561,"kmh":64.382},{"m":55.5,"soc":87.14,"v":7.924,"a":0.263,"w":2.082,"chg_c":28.0,"cpu_c":47.156,"pi_w":1.666,"kmh":66.467},{"m":56.0,"soc":87.1,"v":7.924,"a":0.252,"w":1.998,"chg_c":28.0,"cpu_c":47.108,"pi_w":1.6,"kmh":84.363},{"m":56.5,"soc":87.073,"v":7.922,"a":0.264,"w":2.095,"chg_c":28.0,"cpu_c":47.081,"pi_w":1.555,"kmh":84.674},{"m":57.0,"soc":87.0,"v":7.92,"a":0.26,"w":2.058,"chg_c":28.0,"cpu_c":47.0,"pi_w":1.629,"kmh":72.174},{"m":57.5,"soc":87.0,"v":7.919,"a":0.258,"w":2.044,"chg_c":28.0,"cpu_c":46.981,"pi_w":1.624,"kmh":72.948},{"m":58.0,"soc":86.907,"v":7.92,"a":0.253,"w":2.002,"chg_c":28.0,"cpu_c":46.99,"pi_w":1.573,"kmh":73.248},{"m":58.5,"soc":86.9,"v":7.918,"a":0.253,"w":2.007,"chg_c":28.0,"cpu_c":47.003,"pi_w":1.663,"kmh":75.071},{"m":59.0,"soc":86.84,"v":7.917,"a":0.26,"w":2.06,"chg_c":28.0,"cpu_c":46.941,"pi_w":1.619,"kmh":101.519},{"m":59.5,"soc":86.8,"v":7.915,"a":0.269,"w":2.125,"chg_c":28.0,"cpu_c":46.944,"pi_w":1.68,"kmh":90.915},{"m":60.0,"soc":86.773,"v":7.914,"a":0.255,"w":2.015,"chg_c":28.0,"cpu_c":46.913,"pi_w":1.61,"kmh":93.356},{"m":60.5,"soc":86.7,"v":7.914,"a":0.251,"w":1.988,"chg_c":28.0,"cpu_c":46.855,"pi_w":1.673,"kmh":91.011},{"m":61.0,"soc":86.7,"v":7.913,"a":0.252,"w":1.996,"chg_c":28.0,"cpu_c":46.815,"pi_w":1.685,"kmh":99.356},{"m":61.5,"soc":86.607,"v":7.912,"a":0.255,"w":2.021,"chg_c":28.0,"cpu_c":46.849,"pi_w":1.589,"kmh":99.537},{"m":62.0,"soc":86.6,"v":7.911,"a":0.267,"w":2.114,"chg_c":28.0,"cpu_c":46.813,"pi_w":1.743,"kmh":87.756},{"m":62.5,"soc":86.54,"v":7.91,"a":0.256,"w":2.024,"chg_c":28.0,"cpu_c":46.83,"pi_w":1.601,"kmh":85.437},{"m":63.0,"soc":86.5,"v":7.909,"a":0.255,"w":2.018,"chg_c":28.0,"cpu_c":46.865,"pi_w":1.651,"kmh":75.804},{"m":63.5,"soc":86.473,"v":7.908,"a":0.251,"w":1.985,"chg_c":28.0,"cpu_c":46.731,"pi_w":1.648,"kmh":75.73},{"m":64.0,"soc":86.4,"v":7.906,"a":0.265,"w":2.098,"chg_c":28.0,"cpu_c":46.919,"pi_w":1.638,"kmh":62.83},{"m":64.5,"soc":86.4,"v":7.906,"a":0.267,"w":2.11,"chg_c":28.0,"cpu_c":46.771,"pi_w":1.634,"kmh":69.381},{"m":65.0,"soc":86.3,"v":7.903,"a":0.258,"w":2.043,"chg_c":28.0,"cpu_c":46.898,"pi_w":1.554,"kmh":66.218},{"m":65.5,"soc":86.3,"v":7.904,"a":0.249,"w":1.966,"chg_c":28.0,"cpu_c":46.837,"pi_w":1.59,"kmh":67.608},{"m":66.0,"soc":86.233,"v":7.903,"a":0.262,"w":2.074,"chg_c":28.0,"cpu_c":46.942,"pi_w":1.548,"kmh":70.104},{"m":66.5,"soc":86.2,"v":7.902,"a":0.252,"w":1.991,"chg_c":28.0,"cpu_c":46.887,"pi_w":1.539,"kmh":70.029},{"m":67.0,"soc":86.173,"v":7.9,"a":0.255,"w":2.017,"chg_c":28.0,"cpu_c":46.915,"pi_w":1.615,"kmh":58.633},{"m":67.5,"soc":86.1,"v":7.898,"a":0.258,"w":2.041,"chg_c":28.0,"cpu_c":46.986,"pi_w":1.592,"kmh":34.741},{"m":68.0,"soc":86.1,"v":7.899,"a":0.255,"w":2.011,"chg_c":28.0,"cpu_c":47.023,"pi_w":1.607,"kmh":1.663},{"m":68.5,"soc":86.007,"v":7.898,"a":0.249,"w":1.969,"chg_c":28.033,"cpu_c":46.99,"pi_w":1.62,"kmh":31.578},{"m":69.0,"soc":86.0,"v":7.896,"a":0.255,"w":2.01,"chg_c":28.133,"cpu_c":46.975,"pi_w":1.628,"kmh":34.315},{"m":69.5,"soc":85.94,"v":7.895,"a":0.258,"w":2.035,"chg_c":28.167,"cpu_c":47.01,"pi_w":1.574,"kmh":20.486},{"m":70.0,"soc":85.9,"v":7.893,"a":0.258,"w":2.04,"chg_c":28.4,"cpu_c":47.111,"pi_w":1.657,"kmh":26.915},{"m":70.5,"soc":85.873,"v":7.893,"a":0.255,"w":2.016,"chg_c":28.433,"cpu_c":47.072,"pi_w":1.575,"kmh":43.204},{"m":71.0,"soc":85.8,"v":7.892,"a":0.26,"w":2.049,"chg_c":28.5,"cpu_c":47.147,"pi_w":1.674,"kmh":39.856},{"m":71.5,"soc":85.8,"v":7.892,"a":0.249,"w":1.968,"chg_c":28.5,"cpu_c":47.139,"pi_w":1.663,"kmh":34.037},{"m":72.0,"soc":85.713,"v":7.889,"a":0.256,"w":2.023,"chg_c":28.5,"cpu_c":47.203,"pi_w":1.522,"kmh":35.437},{"m":72.5,"soc":85.7,"v":7.89,"a":0.255,"w":2.014,"chg_c":28.5,"cpu_c":47.317,"pi_w":1.658,"kmh":25.863},{"m":73.0,"soc":85.647,"v":7.889,"a":0.252,"w":1.991,"chg_c":28.5,"cpu_c":47.293,"pi_w":1.628,"kmh":13.404},{"m":73.5,"soc":85.6,"v":7.887,"a":0.253,"w":1.993,"chg_c":28.5,"cpu_c":47.341,"pi_w":1.568,"kmh":15.807},{"m":74.0,"soc":85.587,"v":7.886,"a":0.256,"w":2.02,"chg_c":28.5,"cpu_c":47.386,"pi_w":1.73,"kmh":2.459},{"m":74.5,"soc":85.5,"v":7.885,"a":0.265,"w":2.087,"chg_c":28.5,"cpu_c":47.402,"pi_w":1.67,"kmh":1.765},{"m":75.0,"soc":85.5,"v":7.884,"a":0.25,"w":1.972,"chg_c":28.5,"cpu_c":47.503,"pi_w":1.599,"kmh":2.789},{"m":75.5,"soc":85.413,"v":7.882,"a":0.264,"w":2.079,"chg_c":28.5,"cpu_c":47.56,"pi_w":1.65,"kmh":2.404},{"m":76.0,"soc":85.4,"v":7.882,"a":0.258,"w":2.031,"chg_c":28.533,"cpu_c":47.509,"pi_w":1.505,"kmh":2.542},{"m":76.5,"soc":85.347,"v":7.882,"a":0.259,"w":2.04,"chg_c":28.5,"cpu_c":47.646,"pi_w":1.616,"kmh":2.363},{"m":77.0,"soc":85.3,"v":7.881,"a":0.252,"w":1.986,"chg_c":28.633,"cpu_c":47.539,"pi_w":1.669,"kmh":1.671},{"m":77.5,"soc":85.28,"v":7.879,"a":0.265,"w":2.085,"chg_c":28.667,"cpu_c":47.699,"pi_w":1.643,"kmh":1.827},{"m":78.0,"soc":85.2,"v":7.879,"a":0.255,"w":2.009,"chg_c":28.867,"cpu_c":47.69,"pi_w":1.648,"kmh":2.054},{"m":78.5,"soc":85.2,"v":7.877,"a":0.253,"w":1.99,"chg_c":28.967,"cpu_c":47.793,"pi_w":1.621,"kmh":2.022},{"m":79.0,"soc":85.113,"v":7.877,"a":0.258,"w":2.032,"chg_c":28.967,"cpu_c":47.757,"pi_w":1.689,"kmh":1.915},{"m":79.5,"soc":85.1,"v":7.874,"a":0.268,"w":2.109,"chg_c":29.0,"cpu_c":47.829,"pi_w":1.626,"kmh":1.842},{"m":80.0,"soc":85.047,"v":7.875,"a":0.254,"w":2.004,"chg_c":29.0,"cpu_c":47.854,"pi_w":1.576,"kmh":1.219},{"m":80.5,"soc":85.0,"v":7.874,"a":0.255,"w":2.008,"chg_c":29.0,"cpu_c":47.909,"pi_w":1.603,"kmh":0.978},{"m":81.0,"soc":84.98,"v":7.873,"a":0.254,"w":2.002,"chg_c":29.0,"cpu_c":47.883,"pi_w":1.666,"kmh":0.852},{"m":81.5,"soc":84.9,"v":7.87,"a":0.263,"w":2.068,"chg_c":29.0,"cpu_c":47.899,"pi_w":1.609,"kmh":0.856},{"m":82.0,"soc":84.9,"v":7.871,"a":0.259,"w":2.036,"chg_c":29.0,"cpu_c":47.95,"pi_w":1.582,"kmh":0.963},{"m":82.5,"soc":84.813,"v":7.869,"a":0.261,"w":2.053,"chg_c":29.0,"cpu_c":47.957,"pi_w":1.611,"kmh":0.8},{"m":83.0,"soc":84.8,"v":7.869,"a":0.254,"w":1.997,"chg_c":29.0,"cpu_c":47.985,"pi_w":1.641,"kmh":2.8},{"m":83.5,"soc":84.747,"v":7.868,"a":0.252,"w":1.985,"chg_c":29.0,"cpu_c":48.168,"pi_w":1.673,"kmh":11.859},{"m":84.0,"soc":84.7,"v":7.864,"a":0.278,"w":2.189,"chg_c":29.5,"cpu_c":48.279,"pi_w":1.878,"kmh":5.911},{"m":84.5,"soc":84.667,"v":7.864,"a":0.266,"w":2.091,"chg_c":29.4,"cpu_c":48.316,"pi_w":1.673,"kmh":2.619},{"m":85.0,"soc":84.6,"v":7.861,"a":0.28,"w":2.198,"chg_c":28.6,"cpu_c":47.64,"pi_w":1.645,"kmh":3.131},{"m":85.5,"soc":84.587,"v":7.859,"a":0.283,"w":2.226,"chg_c":27.4,"cpu_c":46.692,"pi_w":1.748,"kmh":4.8},{"m":86.0,"soc":84.5,"v":7.86,"a":0.296,"w":2.324,"chg_c":27.0,"cpu_c":46.483,"pi_w":1.757},{"m":86.5,"soc":84.487,"v":7.858,"a":0.294,"w":2.313,"chg_c":27.0,"cpu_c":46.446,"pi_w":1.787},{"m":87.0,"soc":84.4,"v":7.855,"a":0.277,"w":2.178,"chg_c":27.0,"cpu_c":46.463,"pi_w":1.737},{"m":87.5,"soc":84.4,"v":7.854,"a":0.28,"w":2.199,"chg_c":27.0,"cpu_c":46.496,"pi_w":1.746},{"m":88.0,"soc":84.3,"v":7.854,"a":0.3,"w":2.356,"chg_c":27.0,"cpu_c":46.565,"pi_w":1.83},{"m":88.5,"soc":84.3,"v":7.852,"a":0.306,"w":2.403,"chg_c":27.0,"cpu_c":46.651,"pi_w":1.805},{"m":89.0,"soc":84.2,"v":7.849,"a":0.285,"w":2.238,"chg_c":27.0,"cpu_c":46.649,"pi_w":1.774},{"m":89.5,"soc":84.2,"v":7.847,"a":0.296,"w":2.326,"chg_c":25.933,"cpu_c":46.527,"pi_w":1.738},{"m":90.0,"soc":84.107,"v":7.847,"a":0.281,"w":2.207,"chg_c":24.8,"cpu_c":46.232,"pi_w":1.773},{"m":90.5,"soc":84.1,"v":7.846,"a":0.282,"w":2.215,"chg_c":24.233,"cpu_c":46.023,"pi_w":1.797},{"m":91.0,"soc":84.02,"v":7.845,"a":0.282,"w":2.21,"chg_c":23.7,"cpu_c":45.729,"pi_w":1.765},{"m":91.5,"soc":84.0,"v":7.844,"a":0.284,"w":2.228,"chg_c":23.5,"cpu_c":45.623,"pi_w":1.709},{"m":92.0,"soc":83.933,"v":7.844,"a":0.284,"w":2.224,"chg_c":23.5,"cpu_c":45.311,"pi_w":1.733},{"m":92.5,"soc":83.9,"v":7.843,"a":0.278,"w":2.184,"chg_c":23.433,"cpu_c":45.197,"pi_w":1.706},{"m":93.0,"soc":83.847,"v":7.843,"a":0.281,"w":2.206,"chg_c":23.133,"cpu_c":44.969,"pi_w":1.85},{"m":93.5,"soc":83.8,"v":7.842,"a":0.283,"w":2.221,"chg_c":23.1,"cpu_c":44.922,"pi_w":1.747},{"m":94.0,"soc":83.76,"v":7.84,"a":0.283,"w":2.22,"chg_c":23.133,"cpu_c":44.778,"pi_w":1.807},{"m":94.5,"soc":83.7,"v":7.839,"a":0.283,"w":2.221,"chg_c":23.433,"cpu_c":44.637,"pi_w":1.705},{"m":95.0,"soc":83.667,"v":7.838,"a":0.285,"w":2.237,"chg_c":23.467,"cpu_c":44.595,"pi_w":1.797},{"m":95.5,"soc":83.6,"v":7.837,"a":0.28,"w":2.193,"chg_c":22.733,"cpu_c":44.44,"pi_w":1.75},{"m":96.0,"soc":83.58,"v":7.834,"a":0.288,"w":2.256,"chg_c":22.367,"cpu_c":44.305,"pi_w":1.73},{"m":96.5,"soc":83.5,"v":7.835,"a":0.283,"w":2.221,"chg_c":22.033,"cpu_c":44.209,"pi_w":1.787},{"m":97.0,"soc":83.493,"v":7.832,"a":0.286,"w":2.24,"chg_c":22.0,"cpu_c":44.039,"pi_w":1.755},{"m":97.5,"soc":83.4,"v":7.834,"a":0.292,"w":2.289,"chg_c":22.0,"cpu_c":43.982,"pi_w":1.692},{"m":98.0,"soc":83.4,"v":7.832,"a":0.289,"w":2.262,"chg_c":22.0,"cpu_c":43.038,"pi_w":1.747},{"m":98.5,"soc":83.355,"v":7.827,"a":0.3,"w":2.35,"chg_c":22.045,"cpu_c":43.143,"pi_w":1.724}]};
+const T0_LOCAL_MIN = 7 * 60 + 18 + 8 / 60;    // 05:18:08 UTC = 07:18:08 local (UTC+2)
+const EVENTS = [[2.2, 'first GPS fix'], [73.5, 'drive ends'], [86.0, 'GPS lost indoors']];
+const PARK = [73.5, S.series[S.series.length - 1].m + 0.5];
+const W = 720, PL = 40, PR = 12, PT = 8, PB = 20;
+const XMAX = Math.ceil(S.series[S.series.length - 1].m + 0.5);
+const panels = [
+  { t: 'Speed', u: 'km/h', lo: 0, hi: 130, step: 40, d: 0, s: [['kmh', 'GPS speed', '--s-speed']] },
+  { t: 'Power', u: 'W', lo: 0, hi: 3, step: 1, d: 2, s: [['w', 'pack (charger ADC)', '--s-pack'], ['pi_w', 'Pi rails (CM5 PMIC)', '--s-pi']] },
+  { t: 'Pack voltage', u: 'V', lo: 7.8, hi: 8.1, step: 0.1, d: 3, s: [['v', 'pack voltage', '--s-volt']] },
+  { t: 'State of charge', u: '%', lo: 82, hi: 93, step: 2, d: 1, s: [['soc', 'battery % (coulomb counted)', '--s-soc']] },
+  { t: 'Temperature', u: '°C', lo: 0, hi: 55, step: 10, d: 1, s: [['cpu_c', 'CPU', '--s-cpu'], ['chg_c', 'charger chip', '--s-chg']] },
+];
+const NS = 'http://www.w3.org/2000/svg';
+const el = (n, a, p) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
+const X = m => PL + (W - PL - PR) * m / XMAX;
+const clock = m => { const t = T0_LOCAL_MIN + m; const h = Math.floor(t / 60), mm = Math.floor(t % 60); return String(h).padStart(2, '0') + ':' + String(mm).padStart(2, '0'); };
+const host = document.getElementById('charts');
+const hairs = [];
+panels.forEach((p, idx) => {
+  const H = idx === panels.length - 1 ? 130 : 112;
+  const Y = v => PT + (H - PT - PB) * (1 - (v - p.lo) / (p.hi - p.lo));
+  const wrap = document.createElement('div'); wrap.className = 'panel';
+  const ti = document.createElement('div'); ti.className = 'ptitle';
+  ti.innerHTML = '<b style="color:var(--ink)">' + p.t + ' <span style="font-weight:400;color:var(--muted)">(' + p.u + ')</span></b> ' + p.s.map(s => '<span class="key"><i style="background:var(' + s[2] + ')"></i>' + s[1] + '</span>').join('');
+  wrap.appendChild(ti);
+  const svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'ch', role: 'img', 'aria-label': p.t + ' against minutes into the run' });
+  el('rect', { x: X(PARK[0]), y: PT, width: X(Math.min(PARK[1], XMAX)) - X(PARK[0]), height: H - PT - PB, class: 'shade' }, svg);
+  for (let v = p.lo; v <= p.hi + 1e-9; v += p.step) {
+    el('line', { x1: PL, x2: W - PR, y1: Y(v), y2: Y(v), class: 'grid' }, svg);
+    el('text', { x: PL - 6, y: Y(v) + 3, 'text-anchor': 'end' }, svg).textContent = String(+v.toFixed(2));
+  }
+  for (let m = 0; m <= XMAX; m += 10) {
+    el('line', { x1: X(m), x2: X(m), y1: PT, y2: H - PB, class: 'grid' }, svg);
+    if (idx === panels.length - 1)
+      el('text', { x: X(m), y: H - 6, 'text-anchor': 'middle' }, svg).textContent = m === 0 ? '0 min' : String(m);
+  }
+  EVENTS.forEach(([m, label]) => {
+    el('line', { x1: X(m), x2: X(m), y1: PT, y2: H - PB, class: 'ev' }, svg);
+    if (idx === 0) el('text', { x: X(m) + 4, y: H - PB - 5 }, svg).textContent = label;
+  });
+  p.s.forEach(([k, , c]) => {
+    let d = '', pen = false, prev = null;
+    S.series.forEach(r => {
+      if (r[k] == null || (prev != null && r.m - prev > 1.01)) { pen = false; }
+      if (r[k] == null) return;
+      const v = Math.max(p.lo, Math.min(p.hi, r[k]));
+      d += (pen ? 'L' : 'M') + X(r.m).toFixed(1) + ' ' + Y(v).toFixed(1);
+      pen = true; prev = r.m;
+    });
+    el('path', { d, class: 'ln', style: 'stroke:var(' + c + ')' }, svg);
+  });
+  const xh = el('line', { x1: 0, x2: 0, y1: PT, y2: H - PB, class: 'xh', visibility: 'hidden' }, svg);
+  hairs.push(xh);
+  wrap.appendChild(svg); host.appendChild(wrap);
+  const move = ev => {
+    const r = svg.getBoundingClientRect();
+    const cx = ((ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left) * W / r.width;
+    const m = Math.max(0, Math.min(XMAX, (cx - PL) * XMAX / (W - PL - PR)));
+    show(m);
+  };
+  svg.addEventListener('pointermove', move);
+  svg.addEventListener('pointerdown', move);
+  svg.addEventListener('pointerleave', () => hairs.forEach(h => h.setAttribute('visibility', 'hidden')));
+});
+const ro = document.getElementById('readout');
+const f = (v, n, u) => v == null ? '–' : '<b>' + v.toFixed(n) + '</b> ' + u;
+function show(m) {
+  let best = S.series[0];
+  for (const r of S.series) if (Math.abs(r.m - m) < Math.abs(best.m - m)) best = r;
+  hairs.forEach(h => { h.setAttribute('x1', X(best.m)); h.setAttribute('x2', X(best.m)); h.setAttribute('visibility', 'visible'); });
+  ro.innerHTML = [
+    '<b>' + clock(best.m) + '</b> local · ' + best.m.toFixed(1) + ' min in',
+    'speed ' + f(best.kmh, 0, 'km/h'),
+    'pack ' + f(best.v, 3, 'V') + ' · ' + f(best.a, 3, 'A') + ' · ' + f(best.w, 2, 'W'),
+    'Pi rails ' + f(best.pi_w, 2, 'W'),
+    'battery ' + f(best.soc, 1, '%'),
+    'CPU ' + f(best.cpu_c, 1, '°C') + ' · charger ' + f(best.chg_c, 1, '°C'),
+  ].map(s => '<span>' + s + '</span>').join('');
+}
+show(40);
+</script>
