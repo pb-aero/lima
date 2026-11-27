@@ -1905,3 +1905,18 @@ Two box-local changes, no AeroNode file touched:
   (personal, auto-named), `organizationRole` null. Peter wants to move to the **Aerosense team account** — see
   the 2026-11-25 handoff for what a post-switch session must re-verify (org name, connector re-auth,
   org-managed settings outranking the local deny net).
+
+## Analysis — is BB1's weak L1 (C/N0 27–29 dB-Hz outdoors, ~15 dB low) the power supply? (2026-11-27)
+`[repo]` vendor schematic 0.0.2 rev 1 (`~/Downloads/Schematic for Aeronode HW ver 0.0.2 rev 1.PDF`) sheets 1, 2, 9, 10.
+Switchers: BQ25798 buck-boost (R13 6.04k on PROG = **1.5 MHz**, 2S `[fetched]` SLUSDV2), U2 + U3 TPS564252 bucks
+(**600 kHz nominal, Eco-mode at light load = wandering frequency** `[fetched]` TI), 1 µH MGAH06031R0M-10 on all three.
+**Conducted path into the GNSS is well filtered:** Vgps = U11 TPS7A2033 LDO off Vcm5 (U2) + NFM18PS105R0J3D
+feedthrough + 10 µF. VccRF (U12 load switch, 27 pF + 39 nH LQG15 to RFin) only matters on the external antenna.
+**The open risk is RADIATED**: the DAN-F10N's antenna is on the board, so switch-node hash near it bypasses
+every filter — layout-dependent, and we do NOT have the Altium layout. Equal or bigger suspects `[assumed]`:
+CM5 digital (USB3/PCIe Gen2-3 to the Hailo, LPDDR4X, HDMI), heater FET + fan PWM on Vcm5.
+**"no jamming" proves nothing here** — jamInd flags narrowband CW; broadband hash shows as AGC/noisePerMS
+(MON-RF) and, if F10 SPG 6.00 has it `[assumed]`, as a comb in UBX-MON-SPAN with 0.6 MHz or 1.5 MHz spacing.
+A uniform 15 dB deficit fits antenna-gain loss just as well. **Verdict: Unknown until the A/B is run**
+(baseline / USB-C unplugged = BQ25798 off / PCIe_Power_Enable low = U3 + Hailo off / heater+fan off /
+external active antenna on J13 on a 1 m cable).
